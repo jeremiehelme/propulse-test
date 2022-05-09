@@ -1,0 +1,30 @@
+.faq_item {
+  cursor: pointer;
+  .faq_title {
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: 700;
+  }
+  .faq_content {
+    @extend .text;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.5s, opacity 0.3s;
+  }
+  .arrow {
+    transform-origin: center;
+    transform: rotateZ(0deg);
+  }
+  &.selected {
+    .faq_content {
+      opacity: 1;
+      height: auto;
+      max-height: 9999px;
+      transition: max-height 0.5s, opacity 0.3s;
+    }
+    .arrow {
+      transform: rotateZ(180deg);
+    }
+  }
+}

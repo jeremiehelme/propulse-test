@@ -1,0 +1,58 @@
+.comment {
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(200, 200, 200, 0.3);
+  border-radius: 5px;
+
+  .comment-author {
+    font-size: 18px;
+    line-height: 16px;
+    font-weight: 700;
+    font-family: var(--font, $font);
+  }
+
+  .comment-date {
+    color: $lightGrey;
+    font-size: 18px;
+    line-height: 16px;
+    font-weight: 300;
+    font-family: var(--font, $font);
+  }
+
+  .comment-text {
+    color: $color_primary;
+    font-size: 18px;
+    line-height: 22px;
+    font-weight: 300;
+    font-family: var(--font, $font);
+  }
+}
+
+#comments {
+  .comment-respond {
+    .comment-reply-title {
+      padding-block: 10px;
+    }
+    .logged-in-as {
+      display: none;
+    }
+
+    .comment-form-comment {
+      border: 1px solid var(--button-color);
+      border-radius: 5px;
+      background-color: white;
+      padding: 1px;
+      line-height: 0;
+    }
+
+    .form-submit {
+      padding-block: 10px;
+      input[type="submit"] {
+        width: 100%;
+        @include breakpoint("md") {
+          width: max-content;
+        }
+      }
+    }
+  }
+}

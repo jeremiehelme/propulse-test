@@ -1,0 +1,16 @@
+.reinsurance {
+  padding-left: 10px;
+  padding-right: 10px;
+  justify-content: start !important;
+  .text {
+    font-weight: 100;
+    font-size: 32px;
+    line-height: 40px;
+    font-family: "Roboto";
+  }
+  .author {
+    font-size: 18px;
+    line-height: 20px;
+    color: $darkGrey;
+  }
+}

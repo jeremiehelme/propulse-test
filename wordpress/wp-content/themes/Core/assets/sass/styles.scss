@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "vendors/normalize";
+@import "vendors/ie10-viewport-bug-workaround";
+
+@import "variables/_sizes";
+@import "mixins/_mixins-master";
+
+@import "variables/_colors";
+@import "typography/_typography";
+
+@import "components/_icons";
+@import "components/_buttons";
+@import "components/_menus";
+@import "components/_wp_blocks";
+@import "components/_premium";
+@import "components/_premium-list";
+@import "components/_form";
+@import "components/_comments";
+@import "components/_faq";
+@import "components/_player";
+@import "components/_library";
+@import "components/_offre";
+@import "components/_reinsurance";
+
+@import "layout/_header";
+@import "layout/_main";
+@import "layout/_footer";

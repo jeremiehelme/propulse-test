@@ -1,0 +1,10 @@
+$max-site-width: 1250px;
+$max-content-width: 1040px;
+
+$breakpoints: (
+  "xs": 0,
+  "sm": 576px,
+  "md": 768px,
+  "lg": 1024px,
+  "xl": 1290px,
+) !default;

@@ -1,0 +1,17 @@
+<svg class='icon icon-filter' width="29" height="30" viewBox="0 0 29 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+	<g clip-path="url(#clip0_641_1148)">
+		<path d="M17.5146 7.14C19.1348 7.14 20.4482 5.76551 20.4482 4.07C20.4482 2.37449 19.1348 1 17.5146 1C15.8945 1 14.5811 2.37449 14.5811 4.07C14.5811 5.76551 15.8945 7.14 17.5146 7.14Z"  stroke-width="2" stroke-miterlimit="10" />
+		<path d="M6.66891 29C8.28907 29 9.60246 27.6255 9.60246 25.93C9.60246 24.2345 8.28907 22.86 6.66891 22.86C5.04875 22.86 3.73535 24.2345 3.73535 25.93C3.73535 27.6255 5.04875 29 6.66891 29Z"  stroke-width="2" stroke-miterlimit="10" />
+		<path d="M25.1113 18.07C26.7314 18.07 28.0448 16.6955 28.0448 15C28.0448 13.3045 26.7314 11.93 25.1113 11.93C23.4911 11.93 22.1777 13.3045 22.1777 15C22.1777 16.6955 23.4911 18.07 25.1113 18.07Z"  stroke-width="2" stroke-miterlimit="10" />
+		<path d="M1.28906 4.07001H13.8928"  stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" />
+		<path d="M20.4478 4.07001H27.9584"  stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" />
+		<path d="M1.28906 15H22.1775"  stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" />
+		<path d="M9.60254 25.93H28.0448"  stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" />
+		<path d="M1.28906 25.93H3.73528"  stroke-width="2" stroke-miterlimit="10" stroke-linecap="round" />
+	</g>
+	<defs>
+		<clipPath id="clip0_641_1148">
+			<rect width="28.6667" height="30" fill="white" transform="translate(0.333496)" />
+		</clipPath>
+	</defs>
+</svg>

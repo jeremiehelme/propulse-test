@@ -1,0 +1,52 @@
+header {
+  top: 0;
+  z-index: 1;
+  background-color: var(--background-color);
+  transition: filter 0.2s, background-color 0.2s;
+  #logo {
+    max-height: 40px;
+    max-width: 150px;
+    display: block;
+
+    @include breakpoint("lg") {
+      max-height: 70px;
+      max-width: 300px;
+    }
+    img {
+      width: 100%;
+      display: block;
+    }
+  }
+
+  .icon-close {
+    display: none;
+
+    path {
+      stroke: black;
+    }
+  }
+}
+
+.menu-opened header {
+  height: 100vh;
+  overflow-y: scroll;
+
+  @include breakpoint("lg") {
+    height: auto;
+  }
+
+  .icon-close {
+    display: block;
+    width: 30px;
+    height: 30px;
+  }
+
+  .icon-menu {
+    display: none;
+  }
+}
+
+.scrolled header {
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+  transition: filter 0.2s, background-color 0.2s;
+}

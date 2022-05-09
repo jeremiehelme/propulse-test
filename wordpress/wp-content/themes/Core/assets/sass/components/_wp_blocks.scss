@@ -1,0 +1,50 @@
+.wp-block-image {
+  width: 100%;
+  margin: 0;
+  img {
+    width: 100%;
+  }
+}
+
+.wp-block-image figcaption {
+  font-size: 14px;
+  line-height: 18px;
+  font-style: italic;
+}
+
+.article-content {
+  h2 {
+    @extend .title-1;
+    padding-bottom: 20px;
+  }
+  ul {
+    list-style-type: disc;
+    li {
+      margin-left: 10px;
+    }
+  }
+}
+
+.wp-block-quote,
+.wp-block-pullquote {
+  margin-block: 40px;
+  p {
+    font-size: 32px;
+    line-height: 40px;
+    font-style: italic;
+  }
+  cite {
+    font-size: 16px;
+    line-height: 20px;
+    font-style: normal;
+  }
+}
+
+.wp-block-pullquote {
+  border-top: 3px solid $darkGrey;
+  border-bottom: 3px solid $darkGrey;
+}
+
+.wp-block-button .wp-block-button__link {
+  @extend button;
+}

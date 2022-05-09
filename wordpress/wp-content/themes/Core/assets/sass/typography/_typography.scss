@@ -1,0 +1,142 @@
+@import "https://fonts.googleapis.com/css?family=Roboto+Slab:100,300,400,700";
+
+$font: "Roboto";
+
+body {
+  font-family: var(--font, $font);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
+.title-1 {
+  color: var(--title-color);
+  font-size: 26px;
+  line-height: 30px;
+  letter-spacing: 0px;
+  font-family: var(--font, $font);
+  font-weight: 700;
+
+  @include breakpoint("lg") {
+    font-size: 30px;
+    line-height: 38px;
+  }
+}
+
+h1 {
+  @extend .title-1;
+}
+
+.title-2 {
+  color: var(--title-color);
+  font-size: 21px;
+  line-height: 24px;
+  letter-spacing: 0px;
+  font-family: var(--font, $font);
+  font-weight: 700;
+
+  @include breakpoint("lg") {
+    font-size: 26px;
+    line-height: 30px;
+  }
+}
+
+h2 {
+  @extend .title-2;
+}
+
+.h2 {
+  font-size: 18px;
+  line-height: 22px;
+  color: white;
+  @include breakpoint("lg") {
+    font-size: 22px;
+    line-height: 24px;
+  }
+}
+
+.title-3 {
+  color: var(--title-color);
+  font-size: 18px;
+  line-height: 22px;
+  letter-spacing: 0px;
+  font-family: var(--font, $font);
+  font-weight: 700;
+
+  @include breakpoint("lg") {
+    font-size: 24px;
+    line-height: 28px;
+  }
+}
+
+h3 {
+  @extend .title-3;
+}
+
+.text {
+  color: $color_text;
+  font-size: var(--font-size, 16px);
+  line-height: var(--line-height, 24px);
+  letter-spacing: 0px;
+  font-family: var(--font, $font);
+
+  p {
+    color: $color_text;
+    margin-bottom: 1.25rem;
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  @include breakpoint("lg") {
+    font-size: var(--font-size, 16px);
+    line-height: var(--line-height, 24px);
+  }
+
+  &.small {
+    font-size: 14px;
+    line-height: 18px;
+    @include breakpoint("lg") {
+      font-size: 16px;
+      line-height: 20px;
+    }
+  }
+
+  &.color-secondary {
+    color: var(--secondary-color);
+    p {
+      color: var(--secondary-color);
+    }
+  }
+}
+
+.bold,
+strong,
+b {
+  font-family: var(--font, $font);
+  font-weight: 700;
+}
+
+i {
+  font-family: var(--font, $font);
+  font-style: italic;
+}
+
+.mentions {
+  font-size: 18px;
+  line-height: 22px;
+}
+
+.alert,
+.text .alert {
+  color: red;
+  a {
+    color: red;
+  }
+}

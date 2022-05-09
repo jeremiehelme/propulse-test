@@ -1,0 +1,69 @@
+.acfgfs-font-family {
+    float:left;
+    width:100%;
+}
+
+.acf-field select{
+    width:50%;
+}
+
+.acfgfs-font-variants, .acfgfs-font-subsets {
+    float:left;
+    width:20%;
+    margin-left:6%;
+}
+
+.acfgfs-font-selector {
+    overflow:hidden;
+}
+
+.acfgfs-form-control-title {
+    font-size:11px;
+    text-transform: uppercase;
+    display:block;
+    margin: 0 0 5px 0
+}
+
+.acfgfs-font-selector .acfgfs-list input[type="checkbox"] {
+    position: relative;
+    top:2px;
+}
+
+.acfgfs-font-selector {
+    position: relative;
+}
+
+.acfgfs-font-data {
+    display:none;
+}
+
+.acfgfs-loader {
+    height:100%;
+    width:100%;
+    position: absolute;
+    background:rgba(255,255,255,0.9) url('../images/loader.gif') no-repeat 50% 50%;
+    z-index:5000;
+    display:none;
+}
+
+.acfgfs-preview {
+    margin-top:20px;
+    background: #ffffff;
+    padding:20px 30px;
+    line-height: 1.1;
+    font-size: 62.5%;
+}
+
+.acfgfs-preview h1 {
+    font-size: 40px;
+}
+
+.acfgfs-preview p.button {
+    margin-top: 1em;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.acfgfs-preview p.small {
+    font-size: 20px;
+}

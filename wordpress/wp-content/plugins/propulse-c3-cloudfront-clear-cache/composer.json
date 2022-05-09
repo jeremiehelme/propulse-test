@@ -1,0 +1,8 @@
+{
+  "name": "propulse-c3-cloudfront-clear-cache",
+  "version": "0.0.0",
+  "type": "wordpress-plugin",
+  "require": {
+    "php": ">=5.5"
+  }
+}
