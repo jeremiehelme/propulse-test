@@ -509,27 +509,6 @@ function mytheme_comment($comment, $args, $depth)
         return new WP_Query($args);
     }
 
-    //filter out dripped and restricted content from the posts returned by a query
-    function populate_posts_data($posts, $query)
-    {
-        global $wpdb;
-
-        if (!count($posts)) {
-            return $posts;  // posts array is empty send it back.
-        }
-        $posts = array_filter($posts, function ($premium) {
-            return apply_filters('arm_is_allow_access', true, ['post_type' => 'premium', 'post_id' => $premium->ID]);
-        });
-
-        //!\\ Le filtre se fait apres que la query ait été effectuée. 
-        // Le nombre de posts total est donc erroné, et la pagination est faussée 
-        // On met a jour manuellement le nombre de posts total apres exclusion des posts restreints
-        $query->found_posts = count($posts);
-        return $posts;
-    }
-    // add_filter('the_posts', 'populate_posts_data', 1, 2);
-
-
 
     //renvoie la liste des premiums en JSON
     //Appelé par library.js via AJAX
