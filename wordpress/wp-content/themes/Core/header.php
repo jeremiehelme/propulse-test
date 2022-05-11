@@ -20,7 +20,7 @@
 
 <?php
 $user = wp_get_current_user();
-print_r($user->user_login);
+echo "user : $user->user_login";
 $logo = get_field('logo', 'option');
 $logo_url = wp_get_attachment_url($logo);
 if (!$logo_url && isset($logo['url'])) {
