@@ -7,18 +7,18 @@ if (!class_exists('ARM_access_rules'))
 		{
 			global $wpdb, $ARMember, $arm_slugs;
 
-			add_action('wp_ajax_arm_update_access_rules', array(&$this, 'arm_update_access_rules'));
-			add_action('wp_ajax_arm_update_default_access_rules', array(&$this, 'arm_update_default_access_rules'));
+			add_action('wp_ajax_arm_update_access_rules', array($this, 'arm_update_access_rules'));
+			add_action('wp_ajax_arm_update_default_access_rules', array($this, 'arm_update_default_access_rules'));
 
 			/* Extend post meta query */
-			add_action('posts_where', array(&$this, 'arm_posts_where_find_in_set'), 10, 2); 
+			add_action('posts_where', array($this, 'arm_posts_where_find_in_set'), 10, 2); 
 			
 			/* Post Meta Box Functions */
-			add_action('arm_add_meta_boxes', array(&$this, 'arm_add_meta_boxes_access_rules'), 10, 3);
-                        add_action('wp_insert_post', array(&$this, 'arm_insert_new_post_action'), 10, 3);
-                        //add_action('save_post', array(&$this, 'arm_save_post_rules'), 20, 3);
-                        add_action('created_term', array(&$this, 'arm_created_term_rules'), 10, 3);
-                        add_action('arm_reactivate_plugin',array(&$this,'arm_install_plugin_data_reactivation'),1000);
+			add_action('arm_add_meta_boxes', array($this, 'arm_add_meta_boxes_access_rules'), 10, 3);
+                        add_action('wp_insert_post', array($this, 'arm_insert_new_post_action'), 10, 3);
+                        //add_action('save_post', array($this, 'arm_save_post_rules'), 20, 3);
+                        add_action('created_term', array($this, 'arm_created_term_rules'), 10, 3);
+                        add_action('arm_reactivate_plugin',array($this,'arm_install_plugin_data_reactivation'),1000);
             add_filter( 'get_post_metadata', array( $this, 'get_post_meta' ), 11, 4 );
         }
 
@@ -819,7 +819,7 @@ if (!class_exists('ARM_access_rules'))
                      
                      $arm_redirection_settings['signup']['page_id'] = $edit_profile_page_id;
                      $arm_redirection_settings['signup']['url'] = ARM_HOME_URL;
-                     
+                     $arm_redirection_settings['signup']['refferel'] = ARM_HOME_URL; 
                    
                      $arm_redirection_settings['signup']['redirect_type'] = 'common';
                     $arm_redirection_settings['signup']['conditional_redirect'][] = array('form_id' => 0,
@@ -1071,13 +1071,12 @@ if (!class_exists('ARM_access_rules'))
 		function arm_add_meta_boxes_access_rules($screen = '', $arm_context = 'side', $arm_priority = 'high')
 		{
 			global $wpdb, $pagenow, $ARMember, $arm_global_settings, $arm_access_rules;
-			if (!current_user_can('administrator')) {
-				return;
-			}
-			if (!empty($screen)) {
-				$arm_context = (!empty($arm_context)) ? 'side' : '';
-				$arm_priority = (!empty($arm_priority)) ? 'high' : '';
-				add_meta_box('arm_membership_access_id', __('ARMember Access Rules', 'ARMember'), array(&$this, 'arm_rule_plan_metabox_callback'), $screen, $arm_context, $arm_priority);
+			if (current_user_can('administrator') || current_user_can('arm_content_access_rules_metabox')) {
+				if (!empty($screen)) {
+					$arm_context = (!empty($arm_context)) ? 'side' : '';
+					$arm_priority = (!empty($arm_priority)) ? 'high' : '';
+					add_meta_box('arm_membership_access_id', __('ARMember Access Rules', 'ARMember'), array(&$this, 'arm_rule_plan_metabox_callback'), $screen, $arm_context, $arm_priority);
+				}
 			}
 			return;
 		}
@@ -1205,61 +1204,75 @@ if (!class_exists('ARM_access_rules'))
 			if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
 				return;
 			}
-			if (!current_user_can('administrator')) {
-				return;
-			}
-			$default_rules = $this->arm_get_default_access_rules();
-			if (!$update) {
-				if (isset($post->post_type) && $post->post_type == 'nav_menu_item') {
-					if (!empty($default_rules['nav_menu'])) {
-						$access_plans = trim(implode(',', $default_rules['nav_menu']), ',');
-						
-						delete_post_meta($post_id, 'arm_access_plan','0');
-						update_post_meta($post_id, 'arm_access_plan','0');
-						foreach( $default_rules['nav_menu'] as $key => $access_plan ){
-			                            /*add_post_meta($post_id,'arm_access_plan',$access_plan);*/
-			                            $wpdb->query("INSERT INTO ".$wpdb->prefix."postmeta (`post_id`, `meta_key`, `meta_value`) VALUES ($post_id, 'arm_access_plan', $access_plan)");
+			if (current_user_can('administrator') || current_user_can('arm_content_access_rules_metabox')) {
+				$default_rules = $this->arm_get_default_access_rules();
+				if (!$update) {
+					if (isset($post->post_type) && $post->post_type == 'nav_menu_item') {
+						if (!empty($default_rules['nav_menu'])) {
+							$access_plans = trim(implode(',', $default_rules['nav_menu']), ',');
+							
+							delete_post_meta($post_id, 'arm_access_plan','0');
+							update_post_meta($post_id, 'arm_access_plan','0');
+							foreach( $default_rules['nav_menu'] as $key => $access_plan ){
+								/*add_post_meta($post_id,'arm_access_plan',$access_plan);*/
+								$wpdb->query("INSERT INTO ".$wpdb->prefix."postmeta (`post_id`, `meta_key`, `meta_value`) VALUES ($post_id, 'arm_access_plan', $access_plan)");
+							}
+						} else {
+							$wpdb->query( $wpdb->prepare("DELETE FROM `".$wpdb->prefix."postmeta` WHERE post_id = %d AND meta_key IN (%s,%s)",$post_id,'arm_protection','arm_access_plan') );
 						}
+						return;
 					} else {
 						$wpdb->query( $wpdb->prepare("DELETE FROM `".$wpdb->prefix."postmeta` WHERE post_id = %d AND meta_key IN (%s,%s)",$post_id,'arm_protection','arm_access_plan') );
 					}
+				}
+				if (!isset($_POST['arm_rule']) && ( empty($_REQUEST['page']) || (!empty($_REQUEST['page']) && ($_REQUEST['page'] != "pmxi-admin-import")) ) && (empty($_POST['fetch_attachments']))) {
+					//Special condition for WP All Import plugin.
 					return;
+				}
+				$protection = isset($_POST['arm_rule']['protection']) ? $_POST['arm_rule']['protection'] : 0;
+				$plans = '';                        
+				if ($protection == '1') {
+					$plans = !empty($_POST['arm_rule']['plans']) ? trim(implode(',', $_POST['arm_rule']['plans']), ',') : '';
 				} else {
+					/* Delete Post meta if no any plan assigned to post or page */
 					$wpdb->query( $wpdb->prepare("DELETE FROM `".$wpdb->prefix."postmeta` WHERE post_id = %d AND meta_key IN (%s,%s)",$post_id,'arm_protection','arm_access_plan') );
 				}
-			}
-			if (!isset($_POST['arm_rule'])) {
-				return;
-			}
-			$protection = $_POST['arm_rule']['protection'];                        
-			$plans = '';                        
-			if ($protection == '1') {
-				$plans = !empty($_POST['arm_rule']['plans']) ? trim(implode(',', $_POST['arm_rule']['plans']), ',') : '';
-			} else {
-				/* Delete Post meta if no any plan assigned to post or page */
-				$wpdb->query( $wpdb->prepare("DELETE FROM `".$wpdb->prefix."postmeta` WHERE post_id = %d AND meta_key IN (%s,%s)",$post_id,'arm_protection','arm_access_plan') );
-			}
-            delete_post_meta($post_id,'arm_access_plan');
-			
-			if ($protection == '1') {
-			                        /*add_post_meta($post_id, 'arm_access_plan','0');*/
-			                        $wpdb->query("INSERT INTO ".$wpdb->prefix."postmeta (`post_id`, `meta_key`, `meta_value`) VALUES ($post_id, 'arm_access_plan', '0')");
+				delete_post_meta($post_id,'arm_access_plan');
+				
+				if ($protection == '1') {
+				                        /*add_post_meta($post_id, 'arm_access_plan','0');*/
+				                        $wpdb->query("INSERT INTO ".$wpdb->prefix."postmeta (`post_id`, `meta_key`, `meta_value`) VALUES ($post_id, 'arm_access_plan', '0')");
+						}
+				
+
+				$plans = apply_filters( 'arm_modify_restriction_plans_outside', $plans, $post_id );
+
+
+				if((!empty($_REQUEST['page']) && ($_REQUEST['page'] == "pmxi-admin-import")) || !empty($_POST['fetch_attachments']))
+				{
+					$default_rules_post_post_type = !empty($default_rules[$post->post_type]) ? $default_rules[$post->post_type] : array();
+					if(!empty($default_rules_post_post_type))
+					{
+						foreach($default_rules_post_post_type as $default_rule_key => $default_rule_val)
+						{
+							$plans .= ','.$default_rule_val;
+						}
 					}
-			
-
-			$plans = apply_filters( 'arm_modify_restriction_plans_outside', $plans, $post_id );
-
-			if( $plans != '' ){
-				$all_plans = explode(',',$plans );
-                           
-				foreach( $all_plans as $key => $plan ){
-                                    /*add_post_meta($post_id, 'arm_access_plan',$plan);*/
-                                    $wpdb->query("INSERT INTO ".$wpdb->prefix."postmeta (`post_id`, `meta_key`, `meta_value`) VALUES ($post_id, 'arm_access_plan', $plan)");
-                                    
-                          
 				}
-                                
+
+				if( $plans != '' ){
+					$all_plans = explode(',',$plans );
+	                           
+					foreach( $all_plans as $key => $plan ){
+	                                    /*add_post_meta($post_id, 'arm_access_plan',$plan);*/
+	                                    $wpdb->query("INSERT INTO ".$wpdb->prefix."postmeta (`post_id`, `meta_key`, `meta_value`) VALUES ($post_id, 'arm_access_plan', $plan)");
+	                                    
+	                          
+					}
+	                                
+				}
 			}
+			return;
 		}
 		function arm_created_term_rules($term_id, $tt_id, $taxonomy)
 		{

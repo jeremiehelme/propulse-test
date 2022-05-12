@@ -10,18 +10,19 @@ if (!class_exists('ARM_manage_coupons'))
             $is_coupon_feature = get_option('arm_is_coupon_feature', 0);
             $this->isCouponFeature = ($is_coupon_feature == '1') ? true : false;
 
-            add_action('wp_ajax_arm_generate_code', array(&$this, 'arm_generate_code'));
-            add_action('arm_admin_save_coupon_details', array(&$this, 'arm_admin_save_coupon_details'));
-            add_action('wp_ajax_arm_apply_coupon_code', array(&$this, 'arm_apply_coupon_code'));
-            add_action('wp_ajax_nopriv_arm_apply_coupon_code', array(&$this, 'arm_apply_coupon_code'));
-            add_action('wp_ajax_arm_delete_single_coupon', array(&$this, 'arm_delete_single_coupon'));
-            add_action('wp_ajax_arm_delete_bulk_coupons',array(&$this,'arm_delete_bulk_coupons'));
-            add_action('wp_ajax_arm_update_coupons_status', array(&$this, 'arm_update_coupons_status'));
-            add_action('wp_ajax_arm_get_coupon_members_data', array(&$this, 'arm_get_coupon_members_data_func'));
+            add_action('wp_ajax_arm_generate_code', array($this, 'arm_generate_code'));
+            add_action('arm_admin_save_coupon_details', array($this, 'arm_admin_save_coupon_details'));
+            add_action('wp_ajax_arm_apply_coupon_code', array($this, 'arm_apply_coupon_code'));
+            add_action('wp_ajax_nopriv_arm_apply_coupon_code', array($this, 'arm_apply_coupon_code'));
+            add_action('wp_ajax_arm_delete_single_coupon', array($this, 'arm_delete_single_coupon'));
+            add_action('wp_ajax_arm_delete_bulk_coupons',array($this,'arm_delete_bulk_coupons'));
+            add_action('wp_ajax_arm_update_coupons_status', array($this, 'arm_update_coupons_status'));
+            add_action('wp_ajax_arm_get_coupon_members_data', array($this, 'arm_get_coupon_members_data_func'));
 
             //Load coupon data with ajax
-            add_action('wp_ajax_arm_get_coupon_data', array(&$this, 'arm_load_coupon_data'));
+            add_action('wp_ajax_arm_get_coupon_data', array($this, 'arm_load_coupon_data'));
 
+            add_action( 'wp_ajax_arm_get_paid_post_item_coupon_options', array( $this, 'arm_get_paid_post_item_coupon_options' ) );
         }
 
 
@@ -65,6 +66,7 @@ if (!class_exists('ARM_manage_coupons'))
 
             if( !empty( $get_coupons ))
             {
+                $current_timestamp = current_time('timestamp');
                 foreach ($get_coupons as $key => $coupon_val) 
                 {
                     if( !isset($grid_data[$ai]) || !is_array( $grid_data[$ai] ) ){
@@ -74,14 +76,7 @@ if (!class_exists('ARM_manage_coupons'))
                     $couponID = $coupon_val->arm_coupon_id;
                     $edit_link = admin_url('admin.php?page='.$arm_slugs->coupon_management.'&action=edit_coupon&coupon_eid='.$couponID);
 
-                    $data_class = "";
-
-                    if($coupon_val->arm_coupon_period_type == 'daterange') {
-                        if(strtotime($coupon_val->arm_coupon_expire_date) < strtotime(date("Y-m-d"))) {
-                            $data_class = "arm_coupon_date_expire";
-                        }
-                    }
-
+                    
                     /**/
                     $global_currency = $arm_payment_gateways->arm_get_global_currency();
                     $grid_data[$ai][] = '<tr class="arm_coupons_tr_'.$couponID.' row_'.$couponID.'"><td class="center"><input class="chkstanard arm_bulk_select_single" type="checkbox" value="'.$couponID.'" name="item-action[]"></td>';
@@ -99,24 +94,86 @@ if (!class_exists('ARM_manage_coupons'))
                         $grid_data[$ai][] = $filter_data;
                     }
 
-                    $grid_data[$ai][] = date_i18n($date_format,strtotime($coupon_val->arm_coupon_start_date));
+                    $arm_coupon_expire_date_class = "";
+                    if($coupon_val->arm_coupon_period_type == 'daterange') {
+                        if(strtotime($coupon_val->arm_coupon_expire_date) < $current_timestamp) {
+                            $arm_coupon_expire_date_class = "arm_coupon_date_expire";
+                        }
+                        $arm_coupon_expire_date_val = date_i18n($date_format,strtotime($coupon_val->arm_coupon_expire_date));
+                    }else {
+                        $arm_coupon_expire_date_val = __('Unlimited', 'ARMember');
+                    }
 
-                    $grid_data[$ai][] = '<td class="'.$data_class.'">'.($coupon_val->arm_coupon_period_type == 'daterange') ? date_i18n($date_format,strtotime($coupon_val->arm_coupon_expire_date)) : __('Unlimited', 'ARMember').'</td>';
+                    $grid_data[$ai][] = date_i18n($date_format,strtotime($coupon_val->arm_coupon_start_date));
+                    $grid_data[$ai][] = '<td><span class="'.$arm_coupon_expire_date_class.'">'.$arm_coupon_expire_date_val.'</span></td>';
 
                     $switchChecked = ($coupon_val->arm_coupon_status == '1') ? 'checked="checked"' : '';
                     $grid_data[$ai][] = '<td class="center"><div class="armswitch"><input type="checkbox" class="armswitch_input arm_coupon_status_action" id="arm_coupon_status_input_'.$couponID.'" value="1" data-item_id="'.$couponID.'" '.$switchChecked.'><label class="armswitch_label" for="arm_coupon_status_input_'.$couponID.'"></label><span class="arm_status_loader_img"></span></div></td>';
 
                     $subs_plan_title = '';
-                    if(!empty($coupon_val->arm_coupon_subscription))
+                    $arm_coupon_type = isset($coupon_val->arm_coupon_type) ? $coupon_val->arm_coupon_type : 1;
+                    $arm_coupon_subscription_plans = !empty($coupon_val->arm_coupon_subscription) ? @explode(',', $coupon_val->arm_coupon_subscription) : array();
+                    $arm_coupon_paid_posts = !empty($coupon_val->arm_coupon_paid_posts) ? @explode(',', $coupon_val->arm_coupon_paid_posts) : array();
+
+                    if($arm_coupon_type == 1)
                     {
-                        $plans_id = @explode(',', $coupon_val->arm_coupon_subscription);
-                        $subs_plan_title = $arm_subscription_plans->arm_get_comma_plan_names_by_ids($plans_id);
-                        $subs_plan_title = (!empty($subs_plan_title)) ? $subs_plan_title : '--';
+                        if(!empty($arm_coupon_subscription_plans))
+                        {
+                            $exclude_paid_posts = 1;
+                            $subs_plan_title = $arm_subscription_plans->arm_get_comma_plan_names_by_ids($arm_coupon_subscription_plans, $exclude_paid_posts);
+                            $subs_plan_title = (!empty($subs_plan_title)) ? $subs_plan_title : '--';
+                        }
+                        else{
+                            $subs_plan_title = __('All Membership Plans', 'ARMember');
+                        }
                     }
-                    else 
+                    else if($arm_coupon_type == 2)
                     {
-                        $subs_plan_title = __('All Membership Plans', 'ARMember');
+                        if(!empty($arm_coupon_paid_posts))
+                        {
+                            $exclude_paid_posts = 0;
+                            $subs_plan_title_data = $arm_subscription_plans->arm_get_comma_plan_names_by_ids($arm_coupon_paid_posts, $exclude_paid_posts);
+                            $subs_plan_title = (!empty($subs_plan_title_data)) ? $subs_plan_title_data : '';
+                        }
+                        else
+                        {
+                            $subs_plan_title = __('All Paid Posts', 'ARMember');
+                        }
                     }
+                    else
+                    {
+                        if(empty($arm_coupon_subscription_plans) && empty($arm_coupon_paid_posts))
+                        {
+                            $subs_plan_title .= __('All Membership Plans and paid posts', 'ARMember');
+                        }
+                        else if(!empty($arm_coupon_subscription_plans) && empty($arm_coupon_paid_posts))
+                        {
+                            $exclude_paid_posts = 1;
+                            $subs_plan_title_data = $arm_subscription_plans->arm_get_comma_plan_names_by_ids($arm_coupon_subscription_plans, $exclude_paid_posts);
+                            $subs_plan_title .= (!empty($subs_plan_title_data)) ? $subs_plan_title_data : '';
+                            
+                            $subs_plan_title .= "<br>";
+                            $subs_plan_title .= __('All Paid Posts', 'ARMember');
+                        }
+                        else if(empty($arm_coupon_subscription_plans) && !empty($arm_coupon_paid_posts))
+                        {
+                            $subs_plan_title .= __('All Membership Plans', 'ARMember');
+                            $subs_plan_title .= "<br>";
+                            $exclude_paid_posts = 0;
+                            $subs_plan_title_data = $arm_subscription_plans->arm_get_comma_plan_names_by_ids($arm_coupon_paid_posts, $exclude_paid_posts);
+                            $subs_plan_title .= (!empty($subs_plan_title_data)) ? $subs_plan_title_data : '--';
+                        }
+			else if(!empty($arm_coupon_subscription_plans) && !empty($arm_coupon_paid_posts))
+                        {
+                            $subs_plan_title_data = $arm_subscription_plans->arm_get_comma_plan_names_by_ids($arm_coupon_subscription_plans, $exclude_paid_posts);
+                            $subs_plan_title .= (!empty($subs_plan_title_data)) ? $subs_plan_title_data : '';
+                            $subs_plan_title .= "<br>";
+                            $exclude_paid_posts = 0;
+                            $subs_plan_title_data = $arm_subscription_plans->arm_get_comma_plan_names_by_ids($arm_coupon_paid_posts, $exclude_paid_posts);
+                            $subs_plan_title .= (!empty($subs_plan_title_data)) ? $subs_plan_title_data : '';
+                        }
+                    }
+
                     $grid_data[$ai][] = $subs_plan_title;
 
                     $used_coupon_cnt = $coupon_val->arm_coupon_used;
@@ -124,9 +181,9 @@ if (!class_exists('ARM_manage_coupons'))
                     {
                         $used_coupon_cnt = '<a class="arm_coupon_members_list_detail" href="javascript:void(0);" data-list_id="'.$couponID.'">'.$coupon_val->arm_coupon_used.'</a>';
                     }
-                    $grid_data[$ai][] = '<td class="center">'.$used_coupon_cnt.'</td>';
+                    $grid_data[$ai][] = '<td>'.$used_coupon_cnt.'</td>';
 
-                    $grid_data[$ai][] = '<td class="form_entries center">'.(($coupon_val->arm_coupon_allowed_uses == 0) ? __('Unlimited', 'ARMember') : $coupon_val->arm_coupon_allowed_uses).'</td>';
+                    $grid_data[$ai][] = '<td class="form_entries">'.(($coupon_val->arm_coupon_allowed_uses == 0) ? __('Unlimited', 'ARMember') : $coupon_val->arm_coupon_allowed_uses).'</td>';
 
                     $gridActionData = '<td class="armGridActionTD">';
                     $gridActionData .= '<div class="arm_grid_action_btn_container">';
@@ -175,11 +232,15 @@ if (!class_exists('ARM_manage_coupons'))
                 'discount' => 0,
                 'discount_type' => '',
             );
-            $err_empty_coupon = $arm_global_settings->common_message['arm_empty_coupon'];
-            $err_invalid_coupon = $arm_global_settings->common_message['arm_invalid_coupon'];
-            $err_invalid_coupon_plan = $arm_global_settings->common_message['arm_invalid_coupon_plan'];
-            $err_coupon_expire = $arm_global_settings->common_message['arm_coupon_expire'];
-            $success_coupon = $arm_global_settings->common_message['arm_success_coupon'];
+            $err_empty_coupon = !empty($arm_global_settings->common_message['arm_empty_coupon']) ? $arm_global_settings->common_message['arm_empty_coupon'] : __('Please enter the coupon code', 'ARMember');
+
+            $err_invalid_coupon = !empty($arm_global_settings->common_message['arm_invalid_coupon']) ? $arm_global_settings->common_message['arm_invalid_coupon'] : __('Coupon code is not valid', 'ARMember');
+
+            $err_invalid_coupon_plan = !empty($arm_global_settings->common_message['arm_invalid_coupon_plan']) ? $arm_global_settings->common_message['arm_invalid_coupon_plan'] : __('Coupon code is not valid for the selected plan', 'ARMember');
+
+            $err_coupon_expire = !empty($arm_global_settings->common_message['arm_coupon_expire']) ? $arm_global_settings->common_message['arm_coupon_expire'] : __('Coupon code has expired', 'ARMember');
+
+            $success_coupon = !empty($arm_global_settings->common_message['arm_success_coupon']) ? $arm_global_settings->common_message['arm_success_coupon'] : __('Coupon has been successfully applied', 'ARMember');
      
             $gateway = (isset($_REQUEST['gateway']) && !empty($_REQUEST['gateway'])) ? sanitize_text_field($_REQUEST['gateway']) : '';
             $payment_mode = (isset($_REQUEST['payment_mode']) && !empty($_REQUEST['payment_mode'])) ? sanitize_text_field($_REQUEST['payment_mode']) : '';
@@ -216,9 +277,14 @@ if (!class_exists('ARM_manage_coupons'))
                     if ($planObj->exists()) {
                         $plans = $couponData['arm_coupon_subscription'];
                         $allow_plan_ids = explode(',', $plans);
+                        $paid_posts = $couponData['arm_coupon_paid_posts'];
+                        $allow_post_ids = explode(',', $paid_posts);
                         $allowOnTrial = $couponData['arm_coupon_allow_trial'];
                         $user_count = $couponData['arm_coupon_used'];
                         $allowed_uses = $couponData['arm_coupon_allowed_uses'];
+                        $arm_coupon_type = $couponData['arm_coupon_type'];
+                        $arm_isPaidPost = (isset($planObj->isPaidPost) && $planObj->isPaidPost != 0 ) ? 1 : 0 ;
+                        
                         if ($couponData['arm_coupon_status'] != '1') {
                             $return['message'] = $err_invalid_coupon;
                             $return['validity'] = 'invalid_coupon';
@@ -231,10 +297,19 @@ if (!class_exists('ARM_manage_coupons'))
                         } elseif ($couponData['arm_coupon_period_type'] == 'daterange' && time() > strtotime($couponData['arm_coupon_expire_date'])) {
                             $return['message'] = $err_coupon_expire;
                             $return['validity'] = 'expired';
-                        } elseif (!empty($plans) && !in_array($planObj->ID, $allow_plan_ids)) {
+                        }elseif ($arm_coupon_type == 1 && (!empty($plans) && !in_array($planObj->ID, $allow_plan_ids) || $arm_isPaidPost == 1)) {
                             $return['message'] = $err_invalid_coupon_plan;
                             $return['validity'] = 'invalid_plan';
-                        } else {
+                        }elseif ($arm_coupon_type == 2 && (!empty($paid_posts) && !in_array($planObj->ID, $allow_post_ids) || $arm_isPaidPost == 0)) {
+                            $return['message'] = $err_invalid_coupon_plan;
+                            $return['validity'] = 'invalid_plan';
+                        }elseif ($arm_coupon_type == 0 && $arm_isPaidPost == 0 && (!empty($plans) && !in_array($planObj->ID, $allow_plan_ids))){
+                            $return['message'] = $err_invalid_coupon_plan;
+                            $return['validity'] = 'invalid_plan';
+                        }elseif ($arm_coupon_type == 0 && $arm_isPaidPost == 1 && (!empty($paid_posts) && !in_array($planObj->ID, $allow_post_ids))){
+                            $return['message'] = $err_invalid_coupon;
+                            $return['validity'] = 'invalid_coupon';
+                        }else{
                             $arm_coupon_not_allowed_on_trial = 0;
                             
                             if($planObj->is_recurring()) {
@@ -249,6 +324,7 @@ if (!class_exists('ARM_manage_coupons'))
                             else {
                                 $planAmt = str_replace(',','',$planObj->amount);
                             }
+			    $planAmt = apply_filters('arm_modify_plan_amount_for_coupon', $planAmt, $planObj, $paymentCycle );
                             
                             if ($planObj->has_trial_period() && (empty($arm_user_old_plan) || $arm_user_old_plan == 0)) {
                                 if ($allowOnTrial == '1') {
@@ -259,8 +335,8 @@ if (!class_exists('ARM_manage_coupons'))
                                     $arm_coupon_not_allowed_on_trial = 1;
                                 }
                             }
-                      
-                            if (!empty($planAmt) && $planAmt != 0) {
+
+                            if ((!empty($planAmt) && $planAmt != 0 && $arm_coupon_not_allowed_on_trial == 0) || (!empty($couponData['arm_coupon_on_each_subscriptions']) && $arm_coupon_not_allowed_on_trial == 0)) {
                                 do_action('arm_before_apply_coupon_code', $coupon_code, $planObj->ID);
                                 $couponAmt = $couponData['arm_coupon_discount'];
                                 if ($couponData['arm_coupon_discount_type'] == 'percentage') {
@@ -275,7 +351,11 @@ if (!class_exists('ARM_manage_coupons'))
                                         $discount_amount = $discount_amount - $couponAmt;
                                     }
                                 }
-
+                                
+				                //Group Membership addon Discount calculate if the selected child user not empty.
+                                if(!empty($_REQUEST['arm_selected_child_users'])){
+                                    $_REQUEST['armgm'] = $_REQUEST['arm_selected_child_users'];
+                                }
 
                                 $discount_amount = apply_filters('arm_modify_coupon_pricing', $discount_amount, $planObj, $planAmt, $couponAmt);
 
@@ -293,7 +373,7 @@ if (!class_exists('ARM_manage_coupons'))
                                 );
                                 do_action('arm_after_apply_coupon_code', $coupon_code, $planObj->ID);
                             } else {
-                                if(($planAmt == 0 && $is_used_as_invitation_code == true && $arm_coupon_not_allowed_on_trial == 0) || (!empty($couponData['arm_coupon_on_each_subscriptions'])) )
+                                if(($planAmt == 0 && $is_used_as_invitation_code == true) || (!empty($couponData['arm_coupon_on_each_subscriptions']) && $arm_coupon_not_allowed_on_trial == 0) )
                                 {
                                     $couponAmt = $couponData['arm_coupon_discount'];
                                     $discount_amount = $planAmt;
@@ -318,8 +398,13 @@ if (!class_exists('ARM_manage_coupons'))
                     $return['message'] = $err_invalid_coupon;
                     $return['validity'] = 'invalid_coupon';
                 }
-                /* Modify Coupon Code outside from plugin */
+
                 $planObj = isset($planObj) ? $planObj : '';
+                if(isset($planObj->type) && 'recurring' != $planObj->type){
+                    $payment_mode = "";
+                }
+
+                /* Modify Coupon Code outside from plugin */
                 $return = apply_filters('arm_change_coupon_code_outside_from_'.$gateway,$return,$payment_mode,$couponData,$planAmt,$planObj);
             }
 
@@ -339,11 +424,16 @@ if (!class_exists('ARM_manage_coupons'))
                 $plan_id = (isset($plan_data['arm_subscription_plan_id'])) ? $plan_data['arm_subscription_plan_id'] : 0;
                 $check_coupon = $this->arm_apply_coupon_code($coupon_code, $plan_id);
                 
-                $err_empty_coupon = $arm_global_settings->common_message['arm_empty_coupon'];
-                $err_invalid_coupon = $arm_global_settings->common_message['arm_invalid_coupon'];
-                $err_invalid_coupon_plan = $arm_global_settings->common_message['arm_invalid_coupon_plan'];
-                $err_coupon_expire = $arm_global_settings->common_message['arm_coupon_expire'];
-                $success_coupon = $arm_global_settings->common_message['arm_success_coupon'];
+                $err_empty_coupon = !empty($arm_global_settings->common_message['arm_empty_coupon']) ? $arm_global_settings->common_message['arm_empty_coupon'] : __('Please enter the coupon code', 'ARMember');
+
+            $err_invalid_coupon = !empty($arm_global_settings->common_message['arm_invalid_coupon']) ? $arm_global_settings->common_message['arm_invalid_coupon'] : __('Coupon code is not valid', 'ARMember');
+
+            $err_invalid_coupon_plan = !empty($arm_global_settings->common_message['arm_invalid_coupon_plan']) ? $arm_global_settings->common_message['arm_invalid_coupon_plan'] : __('Coupon code is not valid for the selected plan', 'ARMember');
+
+            $err_coupon_expire = !empty($arm_global_settings->common_message['arm_coupon_expire']) ? $arm_global_settings->common_message['arm_coupon_expire'] : __('Coupon code has expired', 'ARMember');
+
+            $success_coupon = !empty($arm_global_settings->common_message['arm_success_coupon']) ? $arm_global_settings->common_message['arm_success_coupon'] : __('Coupon has been successfully applied', 'ARMember');
+            
                 $couponMessages = '<div data-ng-message="required" class="arm_error_msg"><div class="arm_error_box_arrow"></div>' . stripcslashes($err_empty_coupon) . '</div>';
                 $couponMessages .= '<div data-ng-message="invalid_coupon" class="arm_error_msg"><div class="arm_error_box_arrow"></div>' . stripcslashes($err_invalid_coupon) . '</div>';
                 $couponMessages .= '<div data-ng-message="invalid_plan" class="arm_error_msg"><div class="arm_error_box_arrow"></div>' . stripcslashes($err_invalid_coupon_plan) . '</div>';
@@ -456,8 +546,14 @@ if (!class_exists('ARM_manage_coupons'))
             $coupon_expire = (isset($coupon_data['arm_coupon_expire_date']) && !empty($coupon_data['arm_coupon_expire_date'])) ? $coupon_data['arm_coupon_expire_date'] : date('Y-m-d');
             $coupon_status = (isset($coupon_data['arm_coupon_status']) && !empty($coupon_data['arm_coupon_status'])) ? intval($coupon_data['arm_coupon_status']) : 0;
             $coupon_allow_trial = (isset($coupon_data['arm_coupon_allow_trial']) && !empty($coupon_data['arm_coupon_allow_trial'])) ? intval($coupon_data['arm_coupon_allow_trial']) : 0;
-            $coupon_subscription = (isset($coupon_data['arm_subscription_coupons']) && !empty($coupon_data['arm_subscription_coupons'])) ? $coupon_data['arm_subscription_coupons'] : '';
+            $coupon_subscription = (isset($coupon_data['arm_subscription_coupons']) && !empty($coupon_data['arm_subscription_coupons'])) ? $coupon_data['arm_subscription_coupons'] : array();                  
+
+            $paid_post_coupon_subscription = (isset( $coupon_data['arm_paid_post_item_id'] ) && !empty($coupon_data['arm_paid_post_item_id']) )  ? $coupon_data['arm_paid_post_item_id'] : array();
+
+            $arm_coupon_type = isset($coupon_data['arm_coupon_type']) ? $coupon_data['arm_coupon_type'] : 0;
+            
             $coupon_subscription = (!empty($coupon_subscription)) ? @implode(',', $coupon_subscription) : '';
+            $paid_post_coupon_subscription = (!empty($paid_post_coupon_subscription)) ? @implode(',', $paid_post_coupon_subscription) : '';
             $coupon_allowed_uses = (!empty($coupon_data['arm_allowed_uses']) && is_numeric($coupon_data['arm_allowed_uses'])) ? $coupon_data['arm_allowed_uses'] : 0;
             $coupon_apply_to = (isset($coupon_data['arm_coupon_apply_to']) && !empty($coupon_data['arm_coupon_apply_to'])) ? $coupon_data['arm_coupon_apply_to'] : '';
             $coupon_start_date = date('Y-m-d H:i:s', strtotime($coupon_start));
@@ -487,9 +583,11 @@ if (!class_exists('ARM_manage_coupons'))
                 'arm_coupon_start_date' => $coupon_start_date,
                 'arm_coupon_expire_date' => $coupon_expire_date,
                 'arm_coupon_subscription' => $coupon_subscription,
+                'arm_coupon_paid_posts' => $paid_post_coupon_subscription,
                 'arm_coupon_allow_trial' => $coupon_allow_trial,
                 'arm_coupon_allowed_uses' => $coupon_allowed_uses,
                 'arm_coupon_status' => $coupon_status,
+                'arm_coupon_type' => $arm_coupon_type,
                 'arm_coupon_added_date' => date('Y-m-d H:i:s')
             );
             $coupons_values = apply_filters( 'arm_before_admin_save_coupon', $coupons_values, $coupon_data );
@@ -1016,27 +1114,32 @@ if (!class_exists('ARM_manage_coupons'))
                 }
             }
         }
-        function arm_coupon_form_html($c_discount,$c_type,$period_type,$sdate_status,$edit_mode,$c_sdate,$c_edate,$c_allow_trial,$c_allowed_uses,$c_label,$c_coupon_on_each_subscriptions,$coupon_status,$c_subs,$c_data){
-            global $arm_payment_gateways, $arm_subscription_plans, $arm_global_settings;
+        function arm_coupon_form_html($c_discount,$c_type,$period_type,$sdate_status,$edit_mode,$c_sdate,$c_edate,$c_allow_trial,$c_allowed_uses,$c_label,$c_coupon_on_each_subscriptions,$coupon_status,$c_subs,$c_data, $arm_coupon_type = 1, $arm_paid_posts = array()){
+
+            global $arm_payment_gateways, $arm_subscription_plans, $arm_global_settings,$arm_pay_per_post_feature,$ARMember,$wpdb;
 
             $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get_option('date_format'));
 
             $global_currency = $arm_payment_gateways->arm_get_global_currency();
             $arm_coupon_form_html='';
             $c_discount=(isset($c_discount)) ? $c_discount : '';
+            $c_post_subs = !empty($arm_paid_posts) ? array_filter($arm_paid_posts) : array();
+            $c_subs = (!empty($c_subs)) ? $c_subs : array();
+
             $period_type_section=($period_type == 'daterange') ? '' : 'hidden_section';
             $arm_rtl_style=(is_rtl()) ? 'margin-left: 10px;' : 'margin-right: 10px;';
+            $arm_coupon_form_html .='<div class="arm_paid_post_items_list_container" id="arm_paid_post_items_list_container"></div>';
             $arm_coupon_form_html .='<tr class="form-field form-required">
-                                        <th><label>'.esc_html('Discount', 'ARMember').'</label></th>
+                                        <th><label>'.esc_html__('Discount', 'ARMember').'</label></th>
                                         <td>
-                                            <input type="text" id="arm_coupon_discount" value="'.$c_discount.'" onkeypress="return ArmNumberValidation(event, this)" name="arm_coupon_discount" class="arm_coupon_input_fields arm_coupon_discount_input arm_no_paste" data-msg-required="'. esc_html('Please add discount amount.', 'ARMember').'" required style="width: 230px;'.$arm_rtl_style.'"/>
+                                            <input type="text" id="arm_coupon_discount" value="'.$c_discount.'" onkeypress="return ArmNumberValidation(event, this)" name="arm_coupon_discount" class="arm_coupon_input_fields arm_coupon_discount_input arm_no_paste" data-msg-required="'. esc_html__('Please add discount amount.', 'ARMember').'" required style="'.$arm_rtl_style.'"/>
                                             <input type="hidden" id="arm_discount_type" name="arm_discount_type" value="'.$c_type.'"/>
-                                            <dl class="arm_selectbox column_level_dd">
-                                                <dt style="width: 230px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                            <dl class="arm_selectbox arm_coupon_discount_select column_level_dd">
+                                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                 <dd>
                                                     <ul data-id="arm_discount_type">
-                                                        <li data-label="'.esc_html('Fixed', 'ARMember').' ('.$global_currency.')" data-value="fixed">'.esc_html('Fixed', 'ARMember').' ('.$global_currency.')</li>
-                                                        <li data-label="'.esc_html('Percentage', 'ARMember').' (%)" data-value="percentage">'.esc_html('Percentage', 'ARMember').' (%)</li>
+                                                        <li data-label="'.esc_html__('Fixed', 'ARMember').' ('.$global_currency.')" data-value="fixed">'.esc_html__('Fixed', 'ARMember').' ('.$global_currency.')</li>
+                                                        <li data-label="'.esc_html__('Percentage', 'ARMember').' (%)" data-value="percentage">'.esc_html__('Percentage', 'ARMember').' (%)</li>
                                                     </ul>
                                                 </dd>
                                             </dl>
@@ -1045,14 +1148,14 @@ if (!class_exists('ARM_manage_coupons'))
             $daterange_chk=($period_type=='daterange')? "checked='checked'" :"";
             $unlimited_chk=($period_type=='unlimited')? "checked='checked'" :"";
             $arm_coupon_form_html .='<tr class="form-field form-required">
-                                        <th><label>'.esc_html('Period Type', 'ARMember').'</label></th>
+                                        <th><label>'.esc_html__('Period Type', 'ARMember').'</label></th>
                                         <td>
                                             <div class="arm_coupon_period_box">
                                                 <span class="arm_period_types_container" id="arm_period_types_container">
                                                     <input type="radio" class="arm_iradio" '.$daterange_chk.' value="daterange" name="arm_coupon_period_type" id="period_type_daterange" >
-                                                    <label for="period_type_daterange">'.esc_html('Date Range', 'ARMember').'</label>
+                                                    <label for="period_type_daterange">'.esc_html__('Date Range', 'ARMember').'</label>
                                                     <input type="radio" class="arm_iradio" '.$unlimited_chk.' value="unlimited" name="arm_coupon_period_type" id="period_type_unlimited" >
-                                                    <label for="period_type_unlimited">'.esc_html('Unlimited', 'ARMember').'</label>
+                                                    <label for="period_type_unlimited">'.esc_html__('Unlimited', 'ARMember').'</label>
                                                 </span>
                                                 <div class="armclear"></div>
                                             </div> 
@@ -1060,26 +1163,58 @@ if (!class_exists('ARM_manage_coupons'))
                                     </tr>';
             
             $arm_coupon_form_html .='<tr class="form-field form-required coupon_period_options '.$period_type_section.'">
-                                        <th><label>'.esc_html('Start Date', 'ARMember').'</label></th>
-                                        <td style="position: relative;">
-                                            <input type="text" id="arm_coupon_start_date" '.$sdate_status.' value="'.(!empty($c_sdate) ? date($arm_common_date_format, strtotime($c_sdate)) : '').'" name="arm_coupon_start_date" data-date_format="'.$arm_common_date_format.'" class="arm_coupon_input_fields '.(!empty($sdate_status) ? '' : 'arm_datepicker_coupon' ).'" data-msg-required="'.esc_html('Please select start date.', 'ARMember').'" required />';
+                                        <th><label>'.esc_html__('Start Date', 'ARMember').'</label></th>
+                                        <td class="arm_position_relative">
+                                            <input type="text" id="arm_coupon_start_date" '.$sdate_status.' value="'.(!empty($c_sdate) ? date($arm_common_date_format, strtotime($c_sdate)) : '').'" name="arm_coupon_start_date" data-date_format="'.$arm_common_date_format.'" class="arm_coupon_input_fields '.(!empty($sdate_status) ? '' : 'arm_datepicker_coupon' ).'" data-msg-required="'.esc_html__('Please select start date.', 'ARMember').'" required />';
                                             if ($edit_mode == TRUE && $sdate_status != '') {
-                                                $arm_coupon_form_html .='<i class="arm_helptip_icon armfa armfa-question-circle" title="'.esc_html("Date Can't Be Changed, Because coupon usage has been started.", 'ARMember').'"></i>';
+                                                $arm_coupon_form_html .='<i class="arm_helptip_icon armfa armfa-question-circle" title="'.esc_html__("Date Can't Be Changed, Because coupon usage has been started.", 'ARMember').'"></i>';
                                             }
             $arm_coupon_form_html .='   </td>
                                     </tr>';
-            $c_edate=(!empty($c_edate) ? date('m/d/Y', strtotime($c_edate)) : '');   
+
             $edit_mode=($edit_mode) ? '1' : '0';
             $arm_coupon_form_html .='<tr class="form-field form-required coupon_period_options '.$period_type_section.'">
-                                        <th><label>'.esc_html('Expire Date', 'ARMember').'</label></th>
-                                        <td style="position: relative;">
-                                            <input type="text" id="arm_coupon_expire_date" value="'.date($arm_common_date_format, strtotime($c_edate)).'" name="arm_coupon_expire_date" data-date_format="'.$arm_common_date_format.'" class="arm_coupon_input_fields arm_datepicker_coupon" data-editmode="'.$edit_mode.'" data-msg-required="'.esc_html('Please select expire date.', 'ARMember').'" data-armgreaterthan-msg="'.esc_html('Expire date can not be earlier than start date', 'ARMember').'" required />
+                                        <th><label>'.esc_html__('Expire Date', 'ARMember').'</label></th>
+                                        <td class="arm_position_relative">
+                                            <input type="text" id="arm_coupon_expire_date" value="'.(!empty($c_edate) ? date($arm_common_date_format, strtotime($c_edate)) : '').'" name="arm_coupon_expire_date" data-date_format="'.$arm_common_date_format.'" class="arm_coupon_input_fields arm_datepicker_coupon" data-editmode="'.$edit_mode.'" data-msg-required="'.esc_html__('Please select expire date.', 'ARMember').'" data-armgreaterthan-msg="'.esc_html__('Expire date can not be earlier than start date', 'ARMember').'" required />
                                         </td>
                                     </tr>';
-            $arm_coupon_form_html .='<tr class="form-field form-required">
-                                        <th><label>'.esc_html('Membership Plan', 'ARMember').'</label></th>
+
+            if(!empty($arm_pay_per_post_feature->isPayPerPostFeature)){
+
+            $arm_membership_plan_chk = ($arm_coupon_type == 1) ? "checked='checked'" : "";
+            $arm_paid_post_chk = ($arm_coupon_type == 2) ? "checked='checked'" : "";
+            $arm_both_chk = ($arm_coupon_type == 0) ? "checked='checked'" : "";
+
+            $arm_coupon_form_html.= '<tr class="form-field form-required">
+                                        <th><label>' . esc_html__('Coupon Type', 'ARMember').'<label></th>
                                         <td>
-                                            <select name="arm_subscription_coupons[]" id="arm_subscription_coupons" class="arm_chosen_selectbox arm_coupons_select_box_sub arm_coupon_input_fields" data-placeholder="'.esc_html('Select Plan(s)..', 'ARMember').'" multiple>';
+                                            <div class="arm_coupon_period_box">
+                                                <span class="arm_coupon_types_container" id="arm_coupon_types_container">
+                                                    <input type="radio" class="arm_iradio" '.$arm_membership_plan_chk.' value="1" name="arm_coupon_type" id="coupon_type_membership_plan" >
+                                                    <label for="coupon_type_membership_plan">'.esc_html__('Membership Plan', 'ARMember').'</label>
+
+                                                    <input type="radio" class="arm_iradio" '.$arm_paid_post_chk.' value="2" name="arm_coupon_type" id="coupon_type_paid_post">
+                                                    <label for="coupon_type_paid_post">'.esc_html__('Paid Post', 'ARMember').'</label>
+
+                                                    <input type="radio" class="arm_iradio" '.$arm_both_chk.' value="0" name="arm_coupon_type" id="coupon_type_both" >
+                                                    <label for="coupon_type_both">'.esc_html__('Both', 'ARMember').'</label>
+                                                </span>
+                                                <div class="armclear"></div>
+                                            </div> 
+                                        </td>
+                                    </tr>';
+            }
+
+            $arm_display_membership_plan_class = "";
+            if(!empty($arm_pay_per_post_feature->isPayPerPostFeature)){   
+                $arm_display_membership_plan_class = ($arm_coupon_type == 2) ? " hidden_section" : '';
+            }
+
+            $arm_coupon_form_html .='<tr class="form-field form-required coupon_type_membership_plan '.$arm_display_membership_plan_class.'">
+                                        <th><label>'.esc_html__('Membership Plan', 'ARMember').'</label></th>
+                                        <td>
+                                            <select name="arm_subscription_coupons[]" id="arm_subscription_coupons" class="arm_chosen_selectbox arm_coupons_select_box_sub arm_coupon_input_fields" data-placeholder="'.esc_html__('Select Plan(s)..', 'ARMember').'" multiple>';
                                                 
                                                 $subs_data = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscription_plan_id, arm_subscription_plan_name, arm_subscription_plan_type');
                                                 if (!empty($subs_data)) {
@@ -1091,25 +1226,54 @@ if (!class_exists('ARM_manage_coupons'))
                                                 }
                                 
             $arm_coupon_form_html .='       </select>
-                                            <i class="arm_helptip_icon armfa armfa-question-circle" title="'.esc_html("Leave blank for all plans.", 'ARMember').'"></i>
+                                            <span class="arm_coupon_blank_field_warning">'.__('Leave blank for apply coupon to all plan(s)', 'ARMember').'</span>
                                         </td>
                                     </tr>';
+            if(!empty($arm_pay_per_post_feature->isPayPerPostFeature)){   
+            $arm_display_paid_post_class = ($arm_coupon_type == 1) ? " hidden_section" : '';
+
+            $arm_coupon_form_html.= '<tr class="form-field form-required coupon_type_paid_post'.$arm_display_paid_post_class.'">
+                                        <th><label>' . esc_html__('Paid Posts', 'ARMember').'<label></th>
+                                        <td>
+                                            <div class="arm_text_align_center arm_width_100_pct" ><img src="'.MEMBERSHIP_IMAGES_URL.'/arm_loader.gif" id="arm_loader_img_paid_post_items" class="arm_loader_img_paid_post_items" style="display: none;" width="20" height="20" /></div>
+
+                                            <input id="arm_coupon_paid_post_items_input" type="text" value="" placeholder="'. esc_html__( 'Search by paid post title...', 'ARMember').'" />
+                                            <span class="arm_coupon_blank_field_warning">'.__('Leave blank for apply coupon to all paid post(s)', 'ARMember').'</span>
+                                            <div class="arm_paid_post_items" id="arm_paid_post_items" style="'.(empty($c_post_subs) ? 'display:none' : '').'">';
+
+                                            if( !empty( $c_post_subs) ) {
+                                                $arm_plan_name ='';
+                                                foreach ($c_post_subs as $key => $arm_paid_post_id_val) {       
+						    $arm_subscription_plan_name = $arm_subscription_plans->arm_get_plan_name_by_id($arm_paid_post_id_val);
+
+                                                    $arm_coupon_form_html .= '<div class="arm_paid_post_itembox arm_paid_post_itembox_'.$arm_paid_post_id_val.'">';
+                                                    $arm_coupon_form_html .='<input type="hidden" name="arm_paid_post_item_id['.$arm_paid_post_id_val.']" value="'.$arm_paid_post_id_val.'" />';
+                                                    $arm_coupon_form_html .='<label style="color:#FFF">'.$arm_subscription_plan_name.'<span class="arm_remove_selected_itembox">x</span></label>';
+                                                    $arm_coupon_form_html .='</div>';
+                                                }
+                                            }
+                $arm_coupon_form_html .=  '</div>
+                                        </td>
+                                    </tr>';
+            }
+
+
             $c_allow_trial_chk=($c_allow_trial=='1')?"checked='checked'":"";                                   
             $arm_coupon_form_html .='<tr class="form-field form-required">
-                                        <th><label>'.esc_html('Allow this coupon with trial period amount?', 'ARMember').'</label></th>
+                                        <th><label>'.esc_html__('Allow this coupon with trial period amount?', 'ARMember').'</label></th>
                                         <td valign="middle">
                                             <input type="checkbox" class="arm_coupon_input_fields arm_icheckbox" value="1" name="arm_coupon_allow_trial" '.$c_allow_trial_chk.'>
                                         </td>
                                     </tr>';
             $arm_coupon_form_html .='<tr class="form-field form-required">
-                                        <th><label>'.esc_html('No. of time uses allowed', 'ARMember').'</label></th>
+                                        <th><label>'.esc_html__('No. of time uses allowed', 'ARMember').'</label></th>
                                         <td valign="middle">
                                             <input type="text" onkeypress="javascript:return isNumber(event)" id="arm_allowed_uses" value="'.(!empty($c_allowed_uses) ? $c_allowed_uses : 0).'" name="arm_allowed_uses" class="arm_coupon_input_fields"/>
-                                            <i class="arm_helptip_icon armfa armfa-question-circle" title="'.esc_html("Leave blank or '0' for unlimited uses.", 'ARMember').'"></i>
+                                            <i class="arm_helptip_icon armfa armfa-question-circle" title="'.esc_html__("Leave blank or '0' for unlimited uses.", 'ARMember').'"></i>
                                         </td>
                                     </tr>';
             $arm_coupon_form_html .='<tr class="form-field form-required">
-                                        <th><label>'.esc_html('Coupon Label', 'ARMember').'</label></th>
+                                        <th><label>'.esc_html__('Coupon Label', 'ARMember').'</label></th>
                                         <td valign="middle">
                                             <input type="text"  id="arm_coupon_label" value="'.(isset($c_label) ? stripslashes_deep($c_label) : '').'" name="arm_coupon_label" class="arm_coupon_input_fields"/>
                                            
@@ -1117,7 +1281,7 @@ if (!class_exists('ARM_manage_coupons'))
                                     </tr>';
             $c_coupon_on_each_subscriptions_chk=($c_coupon_on_each_subscriptions=='1')?"checked='checked'":"";
             $arm_coupon_form_html .='<tr class="form-field">
-                                        <th><label>'.esc_html('For Recurring Plan Apply to Entire Duration', 'ARMember').'</label></th>
+                                        <th><label>'.esc_html__('For Recurring Plan Apply to Entire Duration', 'ARMember').'</label></th>
                                         <td valign="middle">
                                             <input type="checkbox" class="arm_coupon_input_fields arm_icheckbox" value="1" name="arm_coupon_on_each_subscriptions" '.$c_coupon_on_each_subscriptions_chk.'>
                                         </td>
@@ -1299,6 +1463,38 @@ if (!class_exists('ARM_manage_coupons'))
             }
             echo json_encode($response);
             die;
+        }
+        function arm_get_paid_post_item_coupon_options() {
+
+            global $wpdb, $ARMember, $arm_capabilities_global;
+            $ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_coupons'], '1');
+
+            $search_key = isset( $_POST['search_key'] ) ? $_POST['search_key'] : '';
+
+            if( $search_key != '' ){
+                $postQuery = $wpdb->get_results( $wpdb->prepare( "SELECT p.arm_subscription_plan_id, p.arm_subscription_plan_name FROM {$ARMember->tbl_arm_subscription_plans} p  WHERE p.arm_subscription_plan_post_id != %d AND p.arm_subscription_plan_is_delete = %d AND p.arm_subscription_plan_name LIKE %s LIMIT 0,10",0,0,'%' . $wpdb->esc_like( $search_key ) . '%') );
+            } else {
+                $postQuery = $wpdb->get_results( $wpdb->prepare( "SELECT p.arm_subscription_plan_id, p.arm_subscription_plan_name FROM {$ARMember->tbl_arm_subscription_plans} p  WHERE p.arm_subscription_plan_post_id != %d AND p.arm_subscription_plan_is_delete = %d LIMIT 0,10",0,0) );
+            }
+
+            $ppData = array();
+            if( isset( $postQuery ) && !empty( $postQuery ) ){
+                foreach( $postQuery as $k => $postData ){
+                    $isEnablePaidPost = get_post_meta( $postData->ID, 'arm_is_paid_post', true );
+                    if( 0 == $isEnablePaidPost || empty($isEnablePaidPost) ){
+                        $ppData[] = array(
+                            'id' => $postData->arm_subscription_plan_id,
+                            'value' => $postData->arm_subscription_plan_name,
+                            'label' => $postData->arm_subscription_plan_name
+                        );
+                    }
+                }
+            }
+
+            $response = array('status' => 'success', 'data' => $ppData);
+            echo json_encode($response);
+            die;
+
         }
 	
     }

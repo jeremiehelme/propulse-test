@@ -28,6 +28,9 @@ switch ($profile_template) {
     case 4:
         $temp_slug = 'profiletemplate4';
         break;
+    case 5:
+        $temp_slug = 'profiletemplate5';
+        break;
 
     default:
         $temp_slug = 'profiletemplate1';
@@ -93,51 +96,51 @@ $options = array(
     'show_joining' => 1,
     'hide_empty_profile_fields' => 1,
     'color_scheme' => 'blue',
-    'title_color' => '#0c7cd5',
-    'subtitle_color' => '#575d70',
-    'border_color' => '#0c7cd5',
-    'button_color' => '',
-    'button_font_color' => '',
+    'title_color' => '#1A2538',
+    'subtitle_color' => '#2F3F5C',
+    'border_color' => '#005AEE',
+    'button_color' => '#005AEE',
+    'button_font_color' => '#FFFFFF',
     'tab_bg_color' => '',
-    'tab_link_color' => '',
-    'tab_link_hover_color' => '',
+    'tab_link_color' => '#1A2538',
+    'tab_link_hover_color' => '#005AEE',
     'tab_link_bg_color' => '',
     'tab_link_hover_bg_color' => '',
     'link_color' => '',
     'link_hover_color' => '',
-    'content_font_color' => '#616175',
+    'content_font_color' => '#3E4857',
     'box_bg_color' => '',
     'title_font' => array(
-        'font_family' => 'Open Sans Semibold',
-        'font_size' => '26',
+        'font_family' => 'Poppins',
+        'font_size' => '18',
         'font_bold' => 1,
         'font_italic' => 0,
         'font_decoration' => '',
     ),
     'subtitle_font' => array(
-        'font_family' => 'Open Sans Semibold',
-        'font_size' => '16',
+        'font_family' => 'Poppins',
+        'font_size' => '15',
         'font_bold' => 0,
         'font_italic' => 0,
         'font_decoration' => '',
     ),
     'button_font' => array(
-        'font_family' => 'Open Sans Semibold',
-        'font_size' => '16',
+        'font_family' => 'Poppins',
+        'font_size' => '15',
         'font_bold' => 0,
         'font_italic' => 0,
         'font_decoration' => '',
     ),
     'tab_link_font' => array(
-        'font_family' => 'Open Sans Semibold',
-        'font_size' => '16',
+        'font_family' => 'Poppins',
+        'font_size' => '15',
         'font_bold' => 1,
         'font_italic' => 0,
         'font_decoration' => '',
     ),
     'content_font' => array(
-        'font_family' => 'Open Sans Semibold',
-        'font_size' => '16',
+        'font_family' => 'Poppins',
+        'font_size' => '15',
         'font_bold' => 0,
         'font_italic' => 0,
         'font_decoration' => '',
@@ -147,7 +150,7 @@ $options = array(
 );
 
 
-
+$arm_template_title = "";
 $display_joining_date = $options['show_joining'];
 $display_member_badges = $options['show_badges'];
 $display_admin_profile = 0;
@@ -156,13 +159,14 @@ $template_id = 0;
 $is_default_template = 0;
 $hide_empty_profile_fields = 0;
 $default_data = array();
-if( isset($_GET['action']) && $_GET['action'] == 'edit_profile' ){
+if((isset($_GET['action']) && $_GET['action'] == 'edit_profile') || (isset($_GET['action']) && $_GET['action'] == 'duplicate_profile')){
     $template_id = intval($_GET['id']);
     $data = $wpdb->get_row($wpdb->prepare("SELECT * FROM `".$ARMember->tbl_arm_member_templates."` WHERE arm_type = %s and arm_id = %d",'profile',$template_id) );
     if( $data == '' || empty($data) ){
         wp_redirect(admin_url('admin.php?page=arm_profiles_directories'));
         exit;
     }
+    $arm_template_title = !empty($data->arm_title) ? $data->arm_title : '';
     $subscription_plans = ( isset($data->arm_subscription_plan) && $data->arm_subscription_plan != '' ) ? explode(',',$data->arm_subscription_plan) : array();
     $default_data = $data;
     $temp_slug = $data->arm_slug;
@@ -191,7 +195,7 @@ $options = apply_filters('arm_profile_default_options_outside',$options);
 ?>
 <div class="wrap arm_page arm_profiles_main_wrapper armPageContainer">
     <div class="arm_toast_container" id="arm_toast_container"></div>
-    <div class="content_wrapper arm_profiles_directories_container" id="content_wrapper" style="min-height: 500px; width: 100%; float:left;">
+    <div class="content_wrapper arm_profiles_directories_container arm_min_height_500 arm_width_100_pct"  id="content_wrapper" style=" float:left;">
         <div class="page_title"><?php _e('Profiles & Directories', 'ARMember'); ?></div>
         <div class="armclear"></div>
         <?php
@@ -220,9 +224,11 @@ $options = apply_filters('arm_profile_default_options_outside',$options);
                 </div>
             </div>
             <div class="arm_belt_box arm_template_action_belt" style="padding: 10px 15px; margin-bottom: 30px;">
-                <div class="arm_belt_block" style="font-size: 20px; vertical-align: middle;">
+                <div class="arm_belt_block arm_vertical_align_middle arm_font_size_20 arm_padding_left_20">
                     <?php if($_GET['action'] == 'edit_profile'){
                         _e('Edit Profile Template', 'ARMember');
+                    } else if($_GET['action'] == 'duplicate_profile') {
+                        _e('Copy Profile Template', 'ARMember');
                     } else {
                         _e('Add Profile Template', 'ARMember');
                     }
@@ -230,10 +236,16 @@ $options = apply_filters('arm_profile_default_options_outside',$options);
                 </div>
                 <div class="arm_belt_block arm_temp_action_btns" align="<?php echo (is_rtl()) ? 'left' : 'right'; ?>">
                     <button type="button" class="arm_save_btn arm_add_profile_template_submit" data-type="profile"><?php _e('Save', 'ARMember'); ?></button>
-                    <button type="button" class="arm_save_btn arm_add_profile_template_reset" id="arm_add_profile_template_reset" data-type="profile" style="background-color: #00b2f0; border:1px solid #00b2f0;"><?php _e('Reset', 'ARMember'); ?></button>
+                    <button type="button" class="arm_save_btn arm_add_profile_template_reset" id="arm_add_profile_template_reset" data-type="profile"><?php _e('Reset', 'ARMember'); ?></button>
                 </div>
                 <div class="armclear"></div>
             </div>
+
+            <div class="arm_profile_template_name_div arm_form_fields_wrapper">
+                <label class="arm_opt_title"><?php _e('Profile Template Name', 'ARMember'); ?></label>
+                <input type="text" name="arm_profile_template_name" class="arm_form_input_box" value="<?php echo $arm_template_title; ?>">
+            </div>
+
             <div class="arm_profile_editor_left_div">
                 <div class="arm_profile_belt">
                     <div id="" class="arm_profile_belt_icon desktop selected" title="<?php _e('Desktop View', 'ARMember'); ?>" data-type="desktop"></div>
@@ -250,8 +262,8 @@ $options = apply_filters('arm_profile_default_options_outside',$options);
                                 <span class='arm_profile_settings_popup_close_button' data-id='arm_profile_settings_popup_div'></span>
                             </div>
                             <input type="hidden" name="arm_profile_template" value="<?php echo $temp_slug; ?>" id="arm_profile_template" />
-                            <dl class="arm_selectbox column_level_dd" style="width:100%;">
-                                <dt style="width:100%;"><span><?php echo (isset($profile_templates) && is_array($profile_templates) && count($profile_templates) > 0 ) ? $profile_templates[0]['arm_title'] : 'Profile Template 1'; ?></span><input type="text" style="display:none;" class="arm_autocomplete" readonly="readonly"><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                            <dl class="arm_selectbox column_level_dd arm_width_100_pct">
+                                <dt><span><?php echo (isset($profile_templates) && is_array($profile_templates) && count($profile_templates) > 0 ) ? $profile_templates[0]['arm_title'] : 'Profile Template 1'; ?></span><input type="text" style="display:none;" class="arm_autocomplete" readonly="readonly"><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                 <dd>
                                     <ul data-id="arm_profile_template" style="display: none;">
                                         <?php
@@ -292,9 +304,9 @@ $options = apply_filters('arm_profile_default_options_outside',$options);
                                     <div class="arm_temp_font_opts_box">
                                         <div class="arm_opt_label"><?php echo $value; ?></div>
                                         <div class="arm_temp_font_opts">
-                                            <input type="hidden" id="arm_template_font_family_<?php echo $key; ?>" name="template_options[<?php echo $key; ?>][font_family]" value="<?php echo ($_GET['action'] == 'edit_profile' && $options[$key]['font_family'] != '' ) ? $options[$key]['font_family'] : 'Helvetica' ?> "/>
-                                            <dl class="arm_selectbox column_level_dd">
-                                                <dt><span><?php echo ($_GET['action'] == 'edit_profile' ) ? $options[$key]['font_family'] : 'Helvetica' ?></span><input type="text" style="display:none;" value="" class="arm_autocomplete" readonly="readonly"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                            <input type="hidden" id="arm_template_font_family_<?php echo $key; ?>" name="template_options[<?php echo $key; ?>][font_family]" value="<?php echo ($_GET['action'] == 'edit_profile' && $options[$key]['font_family'] != '' ) ? $options[$key]['font_family'] : 'Poppins' ?> "/>
+                                            <dl class="arm_selectbox column_level_dd arm_width_200">
+                                                <dt><span><?php echo ($_GET['action'] == 'edit_profile' ) ? $options[$key]['font_family'] : 'Poppins' ?></span><input type="text" style="display:none;" value="" class="arm_autocomplete" readonly="readonly"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                 <dd>
                                                     <ul data-id="arm_template_font_family_<?php echo $key; ?>"><?php echo $arm_member_forms->arm_fonts_list(); ?></ul>
                                                 </dd>
@@ -303,8 +315,8 @@ $options = apply_filters('arm_profile_default_options_outside',$options);
                                                 $fontSize = $options[$key]['font_size'];
                                             ?>
                                             <input type="hidden" id="arm_template_font_size_<?php echo $key; ?>" name="template_options[<?php echo $key; ?>][font_size]" value="<?php echo $fontSize; ?>"/>
-                                            <dl class="arm_selectbox column_level_dd">
-                                                <dt style="width:75px;min-width: 75px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" readonly="readonly"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                            <dl class="arm_selectbox column_level_dd arm_width_83">
+                                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" readonly="readonly"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                 <dd>
                                                     <ul data-id="arm_template_font_size_<?php echo $key; ?>">
                                                         <?php for ($i = 8; $i < 41; $i++): ?>
@@ -431,7 +443,7 @@ $options = apply_filters('arm_profile_default_options_outside',$options);
                                 
 
                                 <div class="arm_accordion_separator"></div>
-                                <div class="arm_accordion_inner_title" style="margin-top: 20px;"><?php _e('After profile fields', 'ARMember'); ?></div>
+                                <div class="arm_accordion_inner_title arm_margin_top_20" ><?php _e('After profile fields', 'ARMember'); ?></div>
                                 <?php
                                 $content = "";
                                 $editor_id = "arm_after_profile_fields_content";
@@ -456,7 +468,7 @@ $options = apply_filters('arm_profile_default_options_outside',$options);
                                 <div class="arm_profile_fields_dropdown">
                                     <input type="hidden" id="arm_profile_fields" value="" />
                                     <dl class="arm_selectbox column_level_dd" style="width:96%;">
-                                        <dt style="width: 100%;"><span><?php _e('Select Field', 'ARMember'); ?></span><input type="text" style="display:none;" class="arm_autocomplete" readonly="readonly" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dt><span><?php _e('Select Field', 'ARMember'); ?></span><input type="text" style="display:none;" class="arm_autocomplete" readonly="readonly" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                         <dd>
                                             <ul data-id="arm_profile_fields" style="display: none;">
                                                 <li data-label="<?php _e('Select Field', 'ARMember'); ?>" data-value=""><?php _e('Select Field', 'ARMember'); ?></li>
@@ -623,10 +635,10 @@ $options = apply_filters('arm_profile_default_options_outside',$options);
                         <span class="popup_close_btn arm_popup_close_btn arm_custom_css_popup_close_btn"></span>    
                     </div>
                     <div class="arm_custom_css_popup_container">
-                        <textarea class="arm_codemirror_field" id="arm_codemirror_field" name="template_options[custom_css]" cols="10" rows="6" style="width: 500px;"><?php echo isset($options['custom_css']) ? $options['custom_css'] : ''; ?></textarea>
+                        <textarea class="arm_codemirror_field arm_width_500" id="arm_codemirror_field" name="template_options[custom_css]" cols="10" rows="6" ><?php echo isset($options['custom_css']) ? $options['custom_css'] : ''; ?></textarea>
                     </div>
                     <div class="popup_content_btn popup_footer">
-                        <button type="button" class="arm_custom_css_popup_footer_button" id="arm_custom_css_apply_button"><?php _e('Apply','ARMember'); ?></button>
+                        <button type="button" class="arm_custom_css_popup_footer_button armemailaddbtn" id="arm_custom_css_apply_button" style="padding-bottom: 10px;"><?php _e('Apply','ARMember'); ?></button>
                     </div>
                 </div>
                 <style type="text/css" id='arm_profile_template_custom_css'><?php echo isset($options['custom_css']) ? $options['custom_css'] : ''; ?></style>
@@ -652,13 +664,16 @@ if($enable_crop){ ?>
 <div id="arm_crop_cover_div_wrapper" class="arm_crop_cover_div_wrapper" style="display:none;">
     <div id="arm_crop_cover_div_wrapper_close" class="arm_clear_field_close_btn arm_popup_close_btn"></div>
     <div id="arm_crop_cover_div">
-        <img id="arm_crop_cover_image" src="" style="max-width:100%;max-height: 100%;" />
+        <img id="arm_crop_cover_image" class="arm_max_width_100_pct arm_max_height_100_pct" src=""  />
     </div>
     <div class="arm_skip_cvr_crop_button_wrapper_admn">
-        <button  class="arm_crop_cover_button">
-            <?php _e('crop','ARMember' ); ?>
-        </button>
-        <label id="arm_skip_cvr_crop_nav_admn" title="<?php _e('Skip Cover Cropping', 'ARMember') ?>" class="arm_helptip_icon tipso_style"><?php _e('Skip', 'ARMember') ?></label>
+        <button class="arm_crop_cover_button arm_img_cover_setting armhelptip tipso_style" title="<?php _e('Crop', 'ARMember'); ?>" data-method="crop"><span class="armfa armfa-crop"></span></button>
+        <button class="arm_clear_cover_button arm_img_cover_setting armhelptip tipso_style" title="<?php _e('Clear', 'ARMember'); ?>" data-method="clear" style="display:none;"><span class="armfa armfa-times"></span></button>
+        <button class="arm_zoom_cover_button arm_zoom_plus arm_img_cover_setting armhelptip tipso_style" data-method="zoom" data-option="0.1" title="<?php _e('Zoom In', 'ARMember'); ?>"><span class="armfa armfa-search-plus"></span></button>
+        <button class="arm_zoom_cover_button arm_zoom_minus arm_img_cover_setting armhelptip tipso_style" data-method="zoom" data-option="-0.1" title="<?php _e('Zoom Out', 'ARMember'); ?>"><span class="armfa armfa-search-minus"></span></button>
+        <button class="arm_rotate_cover_button arm_img_cover_setting armhelptip tipso_style" data-method="rotate" data-option="90" title="<?php _e('Rotate', 'ARMember'); ?>"><span class="armfa armfa-rotate-right"></span></button>
+        <button class="arm_reset_cover_button arm_img_cover_setting armhelptip tipso_style" title="<?php _e('Reset', 'ARMember'); ?>" data-method="reset"><span class="armfa armfa-refresh"></span></button>
+        <button id="arm_skip_cvr_crop_nav_admn" class="arm_cvr_done_front"><?php _e('Done', 'ARMember'); ?></button>
     </div>
 
     <p class="arm_discription">(<?php _e('Use Cropper to set image and use mouse scroller for zoom image','ARMember' ); ?>.)</p>
@@ -667,7 +682,7 @@ if($enable_crop){ ?>
 <div id="arm_crop_div_wrapper" class="arm_crop_div_wrapper" style="display:none;">
     <div id="arm_crop_div_wrapper_close" class="arm_clear_field_close_btn arm_popup_close_btn"></div>
     <div id="arm_crop_div">
-        <img id="arm_crop_image" src="" style="max-width:100%;" />
+        <img id="arm_crop_image" src="" class="arm_max_width_100_pct" />
     </div>
     <button class="arm_crop_button"><?php _e('crop','ARMember' ); ?></button>
     <p class="arm_discription">(<?php _e('Use Cropper to set image and use mouse scroller for zoom image','ARMember' ); ?>.)</p>
@@ -693,3 +708,6 @@ if($enable_crop){ ?>
     var ARM_DELETE = '<?php _e('Delete', 'ARMember'); ?>';
     var ARM_CANCEL = '<?php _e('Cancel', 'ARMember'); ?>';
 </script>
+<?php
+    echo $ARMember->arm_get_need_help_html_content('members-profile-template-add');
+?>

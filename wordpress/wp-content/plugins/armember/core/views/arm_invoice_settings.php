@@ -63,6 +63,13 @@ $enable_tax= isset($general_settings['enable_tax']) ? $general_settings['enable_
                                                 <div class="arm_shortcode_row armhelptip" title="<?php _e("Display Subscription ID", 'ARMember'); ?>">
                                                     <span class="arm_variable_code arm_invoice_code" data-code="{ARM_INVOICE_SUBSCRIPTIONID}" ><?php _e("Subscription ID", 'ARMember'); ?></span>
                                                 </div>
+						
+						<div class="arm_shortcode_row armhelptip" title="<?php _e("Display Plan Start Date", 'ARMember'); ?>">
+                                                    <span class="arm_variable_code arm_invoice_code" data-code="{ARM_SUBSCRIPTION_START_DATE}"><?php _e("Plan Start Date", 'ARMember'); ?></span>
+                                                </div>
+                                                <div class="arm_shortcode_row armhelptip" title="<?php _e("Display Plan End Date", 'ARMember'); ?>">
+                                                    <span class="arm_variable_code arm_invoice_code" data-code="{ARM_SUBSCRIPTION_END_DATE}"><?php _e("Plan End Date", 'ARMember'); ?></span>
+                                                </div>
                                                 
                                                 <div class="arm_shortcode_row armhelptip" title="<?php _e("Display Payment Date", 'ARMember'); ?>">
                                                     <span class="arm_variable_code arm_invoice_code" data-code="{ARM_INVOICE_PAYMENTDATE}" ><?php _e("Payment Date", 'ARMember'); ?></span>
@@ -131,13 +138,13 @@ $enable_tax= isset($general_settings['enable_tax']) ? $general_settings['enable_
                             <tr>
                                 
                                 <td>
-                                    <span style="color:#ff0000;"><?php printf( esc_html__('NOTE : Please add %sbr%s to use line break in plain text.','ARMember'),'&lt;','&gt;'); ?></span>
+                                    <span class="arm-note-message --warning"><?php printf( esc_html__('NOTE : Please add %sbr%s to use line break in plain text.','ARMember'),'&lt;','&gt;'); ?></span>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                     <div class="arm_submit_btn_container">
-                            <button id="arm_invoice_settings_btn" class="arm_save_btn" name="arm_invoice_settings_btn" type="submit"><?php _e('Save', 'ARMember') ?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" style="position:relative;top:8px;display:none;" width="24" height="24" />
+                            <img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_submit_btn_loader" style="display:none;" width="24" height="24" />&nbsp;<button id="arm_invoice_settings_btn" class="arm_save_btn" name="arm_invoice_settings_btn" type="submit"><?php _e('Save', 'ARMember') ?></button>
                     </div>
                     <?php wp_nonce_field( 'arm_wp_nonce' );?>
 		</form>

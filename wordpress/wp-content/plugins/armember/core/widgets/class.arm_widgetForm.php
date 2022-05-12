@@ -7,7 +7,7 @@ if (!class_exists('ARMwidgetForm')) {
             parent::__construct(
                     'arm_member_form_widget', __('ARMember Forms', 'ARMember'), array('description' => __('Display Member Form', 'ARMember'))
             );
-            add_action('wp_enqueue_scripts', array(&$this, 'scripts'));
+            add_action('wp_enqueue_scripts', array($this, 'scripts'));
         }
 
         public function widget($args, $instance) {

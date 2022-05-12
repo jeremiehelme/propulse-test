@@ -6,15 +6,15 @@ if (!class_exists('ARM_manage_communication')) {
 
         function __construct() {
             global $wpdb, $ARMember, $arm_slugs;
-            add_action('wp_ajax_arm_message_operation', array(&$this, 'arm_message_operation'));
-            add_action('wp_ajax_arm_delete_single_communication', array(&$this, 'arm_delete_single_communication'));
-            add_action('wp_ajax_arm_delete_bulk_communication', array(&$this, 'arm_delete_bulk_communication'));
-            add_action('arm_user_plan_status_action_failed_payment', array(&$this, 'arm_user_plan_status_action_mail'), 10, 2);
-            add_action('arm_user_plan_status_action_cancel_payment', array(&$this, 'arm_user_plan_status_action_mail'), 10, 2);
-            add_action('arm_user_plan_status_action_eot', array(&$this, 'arm_user_plan_status_action_mail'), 10, 2);
-            add_action('wp_ajax_arm_update_message_communication_status', array(&$this, 'arm_update_message_communication_status'));
-            add_action('wp_ajax_arm_edit_message_data', array(&$this, 'arm_edit_message_data'));
-            add_action('arm_after_recurring_payment_success_outside', array(&$this, 'arm_recurring_payment_success_email_notification'), 10, 5);
+            add_action('wp_ajax_arm_message_operation', array($this, 'arm_message_operation'));
+            add_action('wp_ajax_arm_delete_single_communication', array($this, 'arm_delete_single_communication'));
+            add_action('wp_ajax_arm_delete_bulk_communication', array($this, 'arm_delete_bulk_communication'));
+            add_action('arm_user_plan_status_action_failed_payment', array($this, 'arm_user_plan_status_action_mail'), 10, 2);
+            add_action('arm_user_plan_status_action_cancel_payment', array($this, 'arm_user_plan_status_action_mail'), 10, 2);
+            add_action('arm_user_plan_status_action_eot', array($this, 'arm_user_plan_status_action_mail'), 10, 2);
+            add_action('wp_ajax_arm_update_message_communication_status', array($this, 'arm_update_message_communication_status'));
+            add_action('wp_ajax_arm_edit_message_data', array($this, 'arm_edit_message_data'));
+            add_action('arm_after_recurring_payment_success_outside', array($this, 'arm_recurring_payment_success_email_notification'), 10, 5);
         }
 
         function arm_message_operation() {
@@ -309,6 +309,7 @@ if (!class_exists('ARM_manage_communication')) {
                     $planData['arm_sent_msgs'] = $alreadysentmsgs;
                     update_user_meta($user_id, 'arm_user_plan_' . $plan_id, $planData);
                 }
+                return $notification;
             }
         }
 
@@ -366,16 +367,19 @@ if (!class_exists('ARM_manage_communication')) {
 
 
                 if (!empty($message_type) && $message_type != 'before_expire') {
-
+			$is_post_plan = 0;
                     if( $arm_pay_per_post_feature->isPayPerPostFeature ){
                         $planResp = $arm_pay_per_post_feature->arm_get_post_from_plan_id( $user_plan );
 
                         if( !empty( $planResp[0] ) && !empty( $planResp[0]['arm_subscription_plan_post_id']) ){
                             if( in_array( $message_type , array( 'on_new_subscription', 'on_renew_subscription', 'on_recurring_subscription', 'on_cancel_subscription', 'on_expire' ) ) ){
                                 $message_type = $message_type .'_post';
+                                $is_post_plan = 1;
                             }
                         }
-                    }
+                    }            
+                    
+                    $message_type = apply_filters('arm_filter_email_message_type', $message_type, $user_plan, $is_post_plan);
                    
                     $messages = $wpdb->get_results("SELECT * FROM `" . $ARMember->tbl_arm_auto_message . "` WHERE `arm_message_status`='1' AND `arm_message_type`='" . $message_type . "' AND (FIND_IN_SET(" . $user_plan . ", `arm_message_subscription`) OR (`arm_message_subscription`=''))");
                     if (!empty($messages)) {
@@ -424,7 +428,7 @@ if (!class_exists('ARM_manage_communication')) {
 
                 $arm_plan_detail = $planData['arm_current_plan_detail'];
                 $using_gateway = $planData['arm_user_gateway'];
-                $arm_plan_description = $arm_plan_detail['arm_subscription_plan_description'];
+                $arm_plan_description = !empty($arm_plan_detail['arm_subscription_plan_description']) ? $arm_plan_detail['arm_subscription_plan_description'] : '';
                 if( isset( $arm_plan_detail['arm_subscription_plan_type'] ) && $arm_plan_detail['arm_subscription_plan_type'] == 'recurring' )
                 {
                     $arm_user_plan_info = new ARM_Plan(0);
@@ -842,6 +846,9 @@ if (!class_exists('ARM_manage_communication')) {
                     default:
                         break;
                 }
+
+                $msge_type = apply_filters('arm_filter_edit_email_notification_type', $msge_type, $result->arm_message_type);
+
                 $return = array(
                     'status' => 'success',
                     'id' => $_REQUEST['message_id'],
@@ -867,7 +874,8 @@ if (!class_exists('ARM_manage_communication')) {
         {
             global $wpdb, $ARMember, $arm_manage_communication;
             $args = array('plan_id' => $plan_id, 'user_id' => $user_id, 'action' => 'on_recurring_subscription');
-            $arm_manage_communication->arm_user_plan_status_action_mail($args);
+
+            $mail_sent = $arm_manage_communication->arm_user_plan_status_action_mail($args);
         }
 
     }

@@ -5,59 +5,177 @@ if (!class_exists('ARM_members')) {
 
         function __construct() {
             global $wpdb, $ARMember, $arm_slugs, $arm_pay_per_post_feature;
-            add_action('wp_ajax_arm_member_ajax_action', array(&$this, 'arm_member_ajax_action'));
-            add_action('wp_ajax_arm_member_bulk_action', array(&$this, 'arm_member_bulk_action'));
-            add_action('wp_ajax_arm_members_hide_column', array(&$this, 'arm_members_hide_column'));
-            add_action('wp_ajax_arm_filter_members_list', array(&$this, 'arm_filter_members_list'));
-            add_action('wp_ajax_arm_change_user_status', array(&$this, 'arm_change_user_status'));
-            add_action('wp_ajax_get_user_all_pan_details_for_grid', array(&$this, 'arm_get_user_all_plan_details_for_grid'));
-            add_action('wp_ajax_get_user_all_plan_details', array(&$this, 'arm_get_user_all_plan_details'));
-            add_action('wp_ajax_arm_manage_plan_get_cycle', array(&$this, 'arm_manage_plan_get_cycle'));
-            add_action('wp_ajax_get_user_plan_failed_payment_details', array(&$this, 'arm_get_user_plan_failed_payment_details'));
-            add_action('wp_ajax_arm_resend_verification_email', array(&$this, 'arm_resend_verification_email_func'));
-            add_action('arm_handle_import_export', array(&$this, 'arm_handle_import_export'));
-            add_action('wp_ajax_arm_handle_import_user', array(&$this, 'arm_handle_import_user'));
-            add_action('wp_ajax_arm_handle_import_user_meta', array(&$this, 'arm_handle_import_user_meta'));
-            add_action('wp_ajax_arm_add_import_user', array(&$this, 'arm_add_import_user'));
-            add_action('wp_ajax_arm_download_sample_csv', array(&$this, 'arm_download_sample_csv'));
+            add_action('wp_ajax_arm_member_ajax_action', array($this, 'arm_member_ajax_action'));
+            add_action('wp_ajax_arm_member_bulk_action', array($this, 'arm_member_bulk_action'));
+            add_action('wp_ajax_arm_members_hide_column', array($this, 'arm_members_hide_column'));
+            add_action('wp_ajax_arm_filter_members_list', array($this, 'arm_filter_members_list'));
+            add_action('wp_ajax_arm_change_user_status', array($this, 'arm_change_user_status'), 10, 1);
+            add_action('wp_ajax_get_user_all_pan_details_for_grid', array($this, 'arm_get_user_all_plan_details_for_grid'));
+            add_action('wp_ajax_get_user_all_plan_details', array($this, 'arm_get_user_all_plan_details'));
+            add_action('wp_ajax_arm_manage_plan_get_cycle', array($this, 'arm_manage_plan_get_cycle'));
+            add_action('wp_ajax_get_user_plan_failed_payment_details', array($this, 'arm_get_user_plan_failed_payment_details'));
+            add_action('wp_ajax_arm_resend_verification_email', array($this, 'arm_resend_verification_email_func'));
+            add_action('arm_handle_import_export', array($this, 'arm_handle_import_export'));
+            add_action('wp_ajax_arm_handle_import_user', array($this, 'arm_handle_import_user'));
+            add_action('wp_ajax_arm_handle_import_user_meta', array($this, 'arm_handle_import_user_meta'));
+            add_action('wp_ajax_arm_add_import_user', array($this, 'arm_add_import_user'));
+            add_action('wp_ajax_arm_download_sample_csv', array($this, 'arm_download_sample_csv'));
             /* Member Iterations */
-            //add_action('user_register', array(&$this, 'arm_user_register_hook_func'));
-            //add_action('profile_update', array(&$this, 'arm_profile_update_hook_func'), 20, 2);
-            //add_action('delete_user', array(&$this, 'arm_before_delete_user_action'), 10, 2);
-            //add_action('deleted_user', array(&$this, 'arm_after_deleted_user_action'), 10, 2);
+            //add_action('user_register', array($this, 'arm_user_register_hook_func'));
+            //add_action('profile_update', array($this, 'arm_profile_update_hook_func'), 20, 2);
+            //add_action('delete_user', array($this, 'arm_before_delete_user_action'), 10, 2);
+            //add_action('deleted_user', array($this, 'arm_after_deleted_user_action'), 10, 2);
             /* Filter User Columns For Search */
-            add_filter('user_search_columns', array(&$this, 'arm_user_search_columns'), 10, 3);
+            add_filter('user_search_columns', array($this, 'arm_user_search_columns'), 10, 3);
             /* Action for progressbar data for import user from csv or xml file */
-            add_action('wp_ajax_arm_import_member_progress', array(&$this, 'arm_import_member_progress'));
-            add_action('wp_ajax_get_member_details', array(&$this, 'arm_get_member_grid_data'));
+            add_action('wp_ajax_arm_import_member_progress', array($this, 'arm_import_member_progress'));
+            add_action('wp_ajax_get_member_details', array($this, 'arm_get_member_grid_data'));
 
             /* Action for multisite, when user assign to site from admin menu */
-            add_action('add_user_to_blog', array(&$this, 'arm_assign_user_to_blog'), 10, 3);
-            add_action('wp_ajax_arm_login_history_pagination', array(&$this, 'arm_login_history_pagination'));
+            add_action('add_user_to_blog', array($this, 'arm_assign_user_to_blog'), 10, 3);
+            add_action('wp_ajax_arm_login_history_pagination', array($this, 'arm_login_history_pagination'));
 
-            add_action('wp_ajax_arm_user_login_history_paging_action', array(&$this, 'arm_user_login_history_paging_action'));
-            add_action('wp_ajax_nopriv_arm_user_login_history_paging_action', array(&$this, 'arm_user_login_history_paging_action'));
+            add_action('wp_ajax_arm_user_login_history_paging_action', array($this, 'arm_user_login_history_paging_action'));
 
-            add_action('wp_ajax_arm_all_user_login_history_paging_action', array(&$this, 'arm_all_user_login_history_paging_action'));
-            add_action('wp_ajax_nopriv_arm_all_user_login_history_paging_action', array(&$this, 'arm_all_user_login_history_paging_action'));
-            add_action('wp_ajax_arm_login_history_search_action', array(&$this, 'arm_all_user_login_history_paging_action'));
-            // add_action('wp_ajax_arm_login_history_pagination_front', array(&$this, 'arm_login_history_pagination_front'));
+            add_action('wp_ajax_arm_all_user_login_history_paging_action', array($this, 'arm_all_user_login_history_paging_action'));
+            add_action('wp_ajax_arm_login_history_search_action', array($this, 'arm_all_user_login_history_paging_action'));
+            // add_action('wp_ajax_arm_login_history_pagination_front', array($this, 'arm_login_history_pagination_front'));
             /* Action for adding user to ARMember with plan */
-            add_action('arm_add_user_to_armember', array(&$this, 'arm_add_user_to_armember_func'), 10, 3);
+            add_action('arm_add_user_to_armember', array($this, 'arm_add_user_to_armember_func'), 10, 3);
 
-            //add_action('user_register', array(&$this, 'arm_add_capabilities_to_new_user'));
+            //add_action('user_register', array($this, 'arm_add_capabilities_to_new_user'));
 
-            //add_action('set_user_role', array(&$this,'arm_add_capabilities_to_change_user_role'), 10, 3);
+            //add_action('set_user_role', array($this,'arm_add_capabilities_to_change_user_role'), 10, 3);
 
-            add_action('wp_ajax_arm_failed_attempt_login_history_paging_action', array(&$this, 'arm_failed_attempt_login_history_paging_action'));
+            add_action('wp_ajax_arm_failed_attempt_login_history_paging_action', array($this, 'arm_failed_attempt_login_history_paging_action'));
 
-            add_action('wp_ajax_arm_user_plan_action', array(&$this, 'arm_user_plan_action'));
-            add_action('wp_ajax_get_arm_member_list', array(&$this, 'get_arm_member_list_func'));
+            add_action('wp_ajax_arm_user_plan_action', array($this, 'arm_user_plan_action'));
+            add_action('wp_ajax_get_arm_member_list', array($this, 'get_arm_member_list_func'));
 
-            add_action('wp_ajax_arm_member_view_detail', array(&$this, 'arm_member_view_detail_func'));
+            add_action('wp_ajax_arm_member_view_detail', array($this, 'arm_member_view_detail_func'));
 
-            add_action('wp_ajax_arm_member_view_paid_plan_detail', array(&$this, 'arm_member_view_paid_plan_detail'));
-            
+            add_action('wp_ajax_arm_member_view_paid_plan_detail', array($this, 'arm_member_view_paid_plan_detail'));
+
+            add_filter('arm_gateway_cancel_subscription_data', array($this, 'arm_gateway_cancel_subscription_data'), 10, 7);
+
+            add_action('arm_cancel_subscription_payment_log_entry', array($this, 'arm_cancel_subscription_payment_log'), 10, 7);
+
+            add_action('wp_ajax_arm_save_debug_logs', array($this, 'arm_save_debug_logs_settings'));
+
+            add_action('wp_ajax_arm_clear_debug_logs_data', array($this, 'arm_clear_debug_logs_data'));
+
+            add_action('arm_after_add_new_user', array($this, 'arm_update_entries_data_after_user_add'), 10, 2);
+        }
+
+        function arm_update_entries_data_after_user_add($user_id, $posted_data){
+            global $wpdb, $ARMember, $arm_payment_gateways;
+            if(!empty($user_id) && !empty($posted_data) && is_array($posted_data)){
+                $arm_entry_id = !empty($posted_data['arm_entry_id']) ? $posted_data['arm_entry_id'] : 0;
+                if(!empty($arm_entry_id)){
+                    $entry_data = $arm_payment_gateways->arm_get_entry_data_by_id($arm_entry_id);
+                    $entry_values = !empty($entry_data['arm_entry_value']) ? maybe_unserialize($entry_data['arm_entry_value']) : array();
+                    if(!empty($entry_values) && isset($entry_values['user_pass'])){
+                        unset($entry_values['user_pass']);
+                        $arm_updated_entry_values = maybe_serialize($entry_values);
+
+                        $wpdb->update($ARMember->tbl_arm_entries, array('arm_user_id' => $user_id, 'arm_entry_value' => $arm_updated_entry_values), array('arm_entry_id' => $arm_entry_id));
+                    }
+                }
+            }
+        }
+
+        function arm_clear_debug_logs_data()
+        {
+            if(!empty($_POST) && !empty($_POST['arm_clear_debug_log_item']))
+            {
+                global $wpdb, $ARMember, $arm_capabilities_global;
+
+                $ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_general_settings'], '1');
+
+                $arm_clear_debug_log_item = $_POST['arm_clear_debug_log_item'];
+                if($arm_clear_debug_log_item=='optins' || $arm_clear_debug_log_item=='cron' || $arm_clear_debug_log_item=='email')
+                {
+
+                    $arm_clear_debu_log_where_qur = " arm_general_log_event='".$arm_clear_debug_log_item."' ";
+                    if($arm_clear_debug_log_item=='optins')
+                    {
+                        $arm_clear_debu_log_where_qur = " arm_general_log_event!='cron' ";
+                    }
+                    
+                    $tbl_arm_debug_general_log = $ARMember->tbl_arm_debug_general_log;
+
+                    //If data exists into general debug log table then delete from that table.
+                    $wpdb->query( $wpdb->prepare( "DELETE FROM {$tbl_arm_debug_general_log} WHERE {$arm_clear_debu_log_where_qur} " ) );
+                }
+                else 
+                {
+                    $tbl_arm_debug_payment_log = $ARMember->tbl_arm_debug_payment_log;
+
+                    //If data exists into payment debug log table then delete from that table.
+                    $arm_payment_log_gateway_where_qur = " arm_payment_log_gateway='".$arm_clear_debug_log_item."' ";
+                    $wpdb->query( $wpdb->prepare( "DELETE FROM {$tbl_arm_debug_payment_log} WHERE {$arm_payment_log_gateway_where_qur} " ) );
+                }
+
+                $response = array('type' => 'success', 'msg' => __('Debug Logs cleared successfully', 'ARMember'));
+                echo json_encode($response);
+                die();
+            }
+        }
+
+        function arm_save_debug_logs_settings()
+        {
+            global $wpdb, $ARMember, $arm_payment_gateways, $arm_email_settings;
+            if(!empty($_POST))
+            {
+                /*
+                * Update payment gateway settings for debug log
+                */
+                    $arm_payment_gateways = get_option('arm_payment_gateway_settings');
+                    $arm_posted_payment_gateway_data = !empty($_POST['payment_gateway_settings']) ? $_POST['payment_gateway_settings'] : array();
+                    
+                    foreach($arm_payment_gateways as $arm_payment_gateway_key => $arm_payment_gateway_val)
+                    {
+                        if(!empty($arm_posted_payment_gateway_data[$arm_payment_gateway_key]['debug_log']))
+                        {
+                            $arm_payment_gateways[$arm_payment_gateway_key]['payment_debug_logs'] = 1;
+                        }
+                        else
+                        {
+                            $arm_payment_gateways[$arm_payment_gateway_key]['payment_debug_logs'] = 0;    
+                        }
+                    }
+
+                    $arm_payment_gateways = arm_array_map($arm_payment_gateways);
+                    update_option('arm_payment_gateway_settings', $arm_payment_gateways);
+
+
+                /*
+                * Update optins settings for debug log
+                */
+                if($arm_email_settings->isOptInsFeature)
+                {
+                    $arm_optins_debug_log = !empty($_POST['arm_optins_debug_log']) ? 1 : 0;
+                    update_option('arm_optins_debug_log', $arm_optins_debug_log);
+                }
+
+                /*
+                * Update cron log option
+                */
+                $arm_is_cron_log_enabled = !empty($_POST['arm_cron_debug_log']) ? 1 : 0;
+                update_option('arm_cron_debug_log', $arm_is_cron_log_enabled);
+
+
+                /*
+                * Update email log option                
+                */
+
+                $arm_is_email_log_enabled = !empty($_POST['arm_email_debug_log']) ? 1 : 0;
+                update_option('arm_email_debug_log', $arm_is_email_log_enabled);
+
+                $response = array('type' => 'success', 'msg' => __('Debug Settings Saved Successfully', 'ARMember'));
+                echo json_encode($response);
+                die();
+            }
         }
 
         function arm_user_plan_action() {
@@ -110,8 +228,9 @@ if (!class_exists('ARM_members')) {
 
 
                     $is_paid_post = (!empty($_POST['arm_paid_post_request']) && ($_POST['arm_paid_post_request'] == 1)) ? 1 : 0;
+                    $is_gift_plan = (!empty($_POST['arm_gift_plan_request']) && ($_POST['arm_gift_plan_request'] == 1)) ? 1 : 0;
 
-                    if($is_paid_post || $is_multiple_membership_feature->isMultipleMembershipFeature)
+                    if($is_gift_plan || $is_paid_post || $is_multiple_membership_feature->isMultipleMembershipFeature)
                     {
                         if(array_key_exists('arm_user_plan', $_POST))
                         {
@@ -137,7 +256,7 @@ if (!class_exists('ARM_members')) {
                     do_action('arm_member_update_meta', $user_ID, $post_data);
 
                     if (isset($post_data['arm_user_plan']) && !empty($post_data['arm_user_plan'])) {
-                        if ((is_array($post_data['arm_user_plan']) && $is_multiple_membership_feature->isMultipleMembershipFeature) || ($is_paid_post)) {
+                        if ((is_array($post_data['arm_user_plan']) && $is_multiple_membership_feature->isMultipleMembershipFeature) || ($is_paid_post) || ($is_gift_plan)) {
                             $old_plan_ids = array_intersect($post_data['arm_user_plan'], $old_plan_ids);
                             foreach ($post_data['arm_user_plan'] as $plan_id) {
                                 if (!in_array($plan_id, $old_plan_ids)) {
@@ -165,9 +284,11 @@ if (!class_exists('ARM_members')) {
                     }
                     else
                     {
-                        $popup_plan_content = $this->arm_get_user_all_plan_details($user_ID, true, $is_paid_post);
+                        $popup_plan_content = $this->arm_get_user_all_plan_details($user_ID, true, $is_paid_post, $is_gift_plan);
                         $response = array('type' => 'success', 'msg' => __("Plan added successfully.", 'ARMember'), 'content' => $popup_plan_content);
                     }
+
+                    $response = apply_filters('arm_modify_admin_plan_add_response', $response, $user_ID, $popup_plan_content, $post_data);
                 }
             } else if ($post_data['arm_action'] == 'delete') {
                 $user_ID = intval($post_data['user_id']);
@@ -214,6 +335,8 @@ if (!class_exists('ARM_members')) {
                     do_action('arm_cancel_subscription', $user_ID, $plan_id);
                     $arm_subscription_plans->arm_clear_user_plan_detail($user_ID, $plan_id, $is_paid_post);
 
+                    $cancel_plan_action = isset($planObj->options['cancel_plan_action']) ? $planObj->options['cancel_plan_action'] : 'immediate';
+
                     $user_future_plans = get_user_meta($user_ID, 'arm_user_future_plan_ids', true);
                     $user_future_plans = !empty($user_future_plans) ? $user_future_plans : array();
 
@@ -233,9 +356,11 @@ if (!class_exists('ARM_members')) {
                     }
                     else
                     {
-                        $popup_plan_content = $this->arm_get_user_all_plan_details($user_ID, true, $is_paid_post);
+                        $popup_plan_content = $this->arm_get_user_all_plan_details($user_ID, true, $is_paid_post, $is_gift_plan);
                         $response = array('type' => 'success', 'msg' => __("Plan deleted successfully.", 'ARMember'), 'content' => $popup_plan_content);
                     }
+
+                    $response = apply_filters('arm_modify_admin_plan_delete_response', $response, $user_ID, $popup_plan_content, $post_data);
                 }
 
             } else if ($post_data['arm_action'] == 'status') {
@@ -250,6 +375,30 @@ if (!class_exists('ARM_members')) {
                     if (in_array($plan_id, $user_suspended_plans)) {
                         unset($user_suspended_plans[array_search($plan_id, $user_suspended_plans)]);
                         update_user_meta($user_ID, 'arm_user_suspended_plan_ids', array_values($user_suspended_plans));
+
+                        //update user meta for the keep record for admin has removed suspended plan.
+                        update_user_meta($user_ID, 'arm_admin_user_remove_suspended_plan_'.$plan_id, current_time('mysql'));
+
+                        $arm_user_plan_failed_status = get_user_meta($user_ID, 'arm_user_failed_payment_plan_status_'.$plan_id, true);
+
+                        if($arm_user_plan_failed_status=='yes')
+                        {
+                            $userPlanDatameta = get_user_meta($user_ID, 'arm_user_plan_' . $plan_id, true);
+                            $planDataCheck = !empty($userPlanDatameta) ? $userPlanDatameta : array();
+                            if(!empty($planDataCheck))
+                            {
+                                $payment_cycle = $planData['arm_payment_cycle'];
+                                $completed_recurrence = $planDataCheck['arm_completed_recurring'];
+                                $completed_recurrence++;
+                                $planDataCheck['arm_completed_recurring'] = $completed_recurrence;
+                                $arm_next_payment_date = $arm_members_class->arm_get_next_due_date($user_ID, $plan_id, false, $payment_cycle);
+                                $planDataCheck['arm_next_due_payment'] = $arm_next_payment_date;
+                                
+                                update_user_meta($user_ID, 'arm_user_plan_' . $plan_id, $planDataCheck);
+                            }
+                            
+                            delete_user_meta($user_ID, 'arm_user_failed_payment_plan_status_'.$plan_id);
+                        }
                     }
                 }
 
@@ -264,9 +413,11 @@ if (!class_exists('ARM_members')) {
                 }
                 else
                 {
-                    $popup_plan_content = $this->arm_get_user_all_plan_details($user_ID, true, $is_paid_post);
+                    $popup_plan_content = $this->arm_get_user_all_plan_details($user_ID, true, $is_paid_post, $is_gift_plan);
                     $response = array('type' => 'success', 'msg' => __("Plan status changed successfully.", 'ARMember'), 'content' => $popup_plan_content);
                 }
+
+                $response = apply_filters('arm_modify_admin_plan_add_response', $response, $user_ID, $popup_plan_content, $post_data);
                 
             } else if ($post_data['arm_action'] == 'edit') {
                 $is_paid_post = (!empty($_POST['arm_paid_post_request']) && ($_POST['arm_paid_post_request'] == 1)) ? 1 : 0;
@@ -297,8 +448,10 @@ if (!class_exists('ARM_members')) {
                     }
                     else
                     {
-                        $popup_plan_content = $this->arm_get_user_all_plan_details($user_ID, true, $is_paid_post);
+                        $popup_plan_content = $this->arm_get_user_all_plan_details($user_ID, true, $is_paid_post, $is_gift_plan);
                     }
+                    $popup_plan_content = apply_filters('arm_modify_admin_edit_popup_plan_content', $popup_plan_content, $user_ID, $post_data);
+
                     $response = array('type' => 'success', 'msg' => __("Expiry date updated successfully.", 'ARMember'), 'content' => $popup_plan_content);
                 }
             }
@@ -312,11 +465,12 @@ if (!class_exists('ARM_members')) {
         			$userPostIDs = get_user_meta($user_ID, 'arm_user_post_ids', true);
         	                foreach($userPlanIDs as $arm_plan_key => $arm_plan_val)
         	                {
-        	                    if(in_array($userPostIDs[$arm_plan_val], $userPostIDs))
+        	                    if(isset($userPostIDs[$arm_plan_val]) && in_array($userPostIDs[$arm_plan_val], $userPostIDs))
         	                    {
         	                        unset($userPlanIDs[$arm_plan_key]);
         	                    }
         	                }
+				$userPlanIDs = apply_filters('arm_modify_plan_ids_externally',$userPlanIDs,$user_ID);
         		}
                 $arm_all_user_plans = $userPlanIDs;
                 $arm_future_user_plans = get_user_meta($user_ID, 'arm_user_future_plan_ids', true);
@@ -344,12 +498,13 @@ if (!class_exists('ARM_members')) {
                 if ($is_multiple_membership_feature->isMultipleMembershipFeature) {
                     $response['multiple_membership'] = '1';
 
-                    $arm_user_plans = '<div style="min-width:120px;">';
+                    $arm_user_plans = '<div class="arm_min_width_120">';
                     $arm_user_plans .= "<a href='javascript:void(0)'  id='arm_show_user_more_plans_" . $user_ID . "' class='arm_show_user_more_plans' data-id='" . $user_ID . "'>";
 
                     if (!empty($arm_all_user_plans) && is_array($arm_all_user_plans)) {
                         foreach ($arm_all_user_plans as $plan_id) {
-                            $plan_color_id = ($plan_id > 101) ? intval($plan_id / 100) : $plan_id;
+                            $plan_color_id = ($plan_id > 10) ? intval($plan_id / 10) : $plan_id;
+                            $plan_color_id = ($plan_color_id > 10) ? intval($plan_color_id / 10) : $plan_color_id;
                             $arm_user_plans .= "<span class='armhelptip arm_user_plan_circle arm_user_plan_" . $plan_color_id . "' title='" . $plan_names[$plan_id] . "' >";
                             $plan_name = str_replace('-', '', $plan_names[$plan_id]);
                             $words = explode(" ", $plan_name);
@@ -393,6 +548,10 @@ if (!class_exists('ARM_members')) {
                             }
                         }
                     }
+                }
+
+                if (isset($post_data['arm_action']) && $post_data['arm_action'] == 'delete') {
+                    do_action('arm_after_cancel_subscription', $user_ID, $planObj, $cancel_plan_action, $planData);
                 }
             }
             echo json_encode($response);
@@ -454,7 +613,8 @@ if (!class_exists('ARM_members')) {
             }
         }
 
-        function arm_get_user_all_plan_details($user_id = 0, $is_ajax = false, $is_paid_post = false) {
+        function arm_get_user_all_plan_details($user_id = 0, $is_ajax = false, $is_paid_post = false, $is_gift_plan = false) {
+
             global $arm_global_settings, $ARMember, $arm_capabilities_global, $arm_pay_per_post_feature;
 
             $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get_option('date_format'));
@@ -542,38 +702,38 @@ if (!class_exists('ARM_members')) {
 
 
 
-                $return .= '<div class="popup_content_text arm_add_plan" style="text-align:center; display:none;">';
-                $return .= '<div class="arm_edit_plan_wrapper" style="position: relative; margin-top: 10px;">';
+                $return .= '<div class="popup_content_text arm_add_plan arm_text_align_center" style="display:none;">';
+                $return .= '<div class="arm_edit_plan_wrapper arm_margin_top_10 arm_position_relative" >';
                 $return .= ($is_paid_post) ? '<span class="arm_edit_plan_lbl">' . __('Select Post', 'ARMember') . '*</span> ' : '<span class="arm_edit_plan_lbl">' . __('Select Plan', 'ARMember') . '*</span> ';
-                $return .= '<div class="arm_edit_field">';
+                $return .= '<div class="arm_edit_field arm_max_width_500">';
                 if ($is_multiple_membership_feature->isMultipleMembershipFeature || $is_paid_post) {
                     $return .= '<input type="hidden" class="arm_user_plan_change_input arm_user_plan_change_input_get_cycle" name="arm_user_plan[]" id="arm_user_plan" value="" data-manage-plan-grid="1"/>';
                 } else {
                     $return .= '<input type="hidden" class="arm_user_plan_change_input arm_user_plan_change_input_get_cycle" name="arm_user_plan" id="arm_user_plan" value="" data-manage-plan-grid="1"/>';
                 }
-                $return .= '<dl class="arm_selectbox column_level_dd arm_member_form_dropdown" style="float: left;">';
+                $return .= '<dl class="arm_selectbox column_level_dd arm_member_form_dropdown arm_float_left" >';
                 $return .= '<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
                 $return .= '<dd><ul data-id="arm_user_plan">' . $plansLists . '</ul></dd>';
                 $return .= '</dl>';
-                $return .= ($is_paid_post) ? '<br/><span class="arm_error_select_plan error arm_invalid" style="display:none; text-align:left;">' . __('Please select Post.', 'ARMember') . '</span>' : '<br/><span class="arm_error_select_plan error arm_invalid" style="display:none; text-align:left;">' . __('Please select Plan.', 'ARMember') . '</span>';
+                $return .= ($is_paid_post) ? '<br/><span class="arm_error_select_plan error arm_invalid arm_text_align_left" style="display:none; ">' . __('Please select Post.', 'ARMember') . '</span>' : '<br/><span class="arm_error_select_plan error arm_invalid arm_text_align_left" style="display:none; ">' . __('Please select Plan.', 'ARMember') . '</span>';
                 $return .= '</div>';
                 $return .= '</div>';
 
-                $return .= '<div class="arm_selected_plan_cycle" style="position: relative; margin-top: 10px;">';
+                $return .= '<div class="arm_selected_plan_cycle arm_margin_top_10 arm_position_relative">';
                 $return .= '</div>';
 
-                $return .= '<div  style="position: relative; margin-top: 10px;">';
+                $return .= '<div class="arm_margin_top_10 arm_position_relative" >';
                 $return .= ($is_paid_post) ? '<span class="arm_edit_plan_lbl">' . __('Post Start Date', 'ARMember') . '</span>' : '<span class="arm_edit_plan_lbl">' . __('Plan Start Date', 'ARMember') . '</span>';
-                $return .= '<div class="arm_edit_field" style="position: relative;">';
+                $return .= '<div class="arm_edit_field"" >';
                 if ($is_multiple_membership_feature->isMultipleMembershipFeature || $is_paid_post) {
-                    $return .= '<input type="text" value="' . date($arm_common_date_format, strtotime(date('Y-m-d'))) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_start_date[]" class="arm_datepicker arm_member_form_input arm_user_add_plan_date_picker"  style="width: 500px; min-width: 500px;"/>';
+                    $return .= '<input type="text" value="' . date($arm_common_date_format, strtotime(date('Y-m-d'))) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_start_date[]" class="arm_datepicker arm_member_form_input arm_user_add_plan_date_picker arm_width_500 arm_min_width_500"  />';
                 } else {
-                    $return .= '<input type="text" value="' . date($arm_common_date_format, strtotime(date('Y-m-d'))) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_start_date" class="arm_datepicker arm_member_form_input arm_user_add_plan_date_picker"  style="width: 500px; min-width: 500px;"/>';
+                    $return .= '<input type="text" value="' . date($arm_common_date_format, strtotime(date('Y-m-d'))) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_start_date" class="arm_datepicker arm_member_form_input arm_user_add_plan_date_picker arm_width_500 arm_min_width_500"  />';
                 }
                 $return .= '</div>';
                 $return .= '</div>';
 
-                $return .= '<div  style="position: relative; margin-top: 10px;">';
+                $return .= '<div  class="arm_position_relative arm_margin_top_10">';
                 $return .= '<span class="arm_edit_plan_lbl">&nbsp;</span>';
                 $return .= '<div class="arm_edit_field">';
 
@@ -588,7 +748,7 @@ if (!class_exists('ARM_members')) {
                 }
 
 
-                $return .= '<img src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" class="arm_loader_img_user_add_plan" style="position:relative;top:8px;display:none;" width="24" height="24" />';
+                $return .= '<img src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" class="arm_loader_img_user_add_plan arm_submit_btn_loader" style="display:none;" width="24" height="24" />';
                 $return .= '</div>';
                 $return .= '</div>';
 
@@ -604,7 +764,7 @@ if (!class_exists('ARM_members')) {
                 }
 
                 $return .= '<div class="arm_loading_grid arm_plan_loading_grid" style="display: none;"><img src="' . MEMBERSHIP_IMAGES_URL . '/loader.gif" alt="Loading.."></div>';
-                $return .= '<table class="arm_user_edit_plan_table" cellspacing="1" style="text-align: center; width:95%;     border-left: 1px solid #eaeaea; margin: 20px; border-right: 1px solid #eaeaea;">';
+                $return .= '<table class="arm_user_edit_plan_table arm_text_align_center" cellspacing="1" style="width:calc(100% - 40px); border-left: 1px solid #eaeaea; margin: 20px; border-right: 1px solid #eaeaea;">';
 
                 $return .= '<tr class="arm_user_plan_row arm_user_plan_head odd">';
                 $return .= ($is_paid_post) ? '<th class="arm_edit_plan_name">' . __('Post Name', 'ARMember') . '</th>' : '<th class="arm_edit_plan_name">' . __('Membership Plan', 'ARMember') . '</th>';
@@ -622,6 +782,8 @@ if (!class_exists('ARM_members')) {
                 } else {
                     $all_user_plans = $user_plans;
                 }
+                
+                $all_user_plans = apply_filters('arm_modify_plan_ids_externally', $all_user_plans, $user_id);
 
                 if (!empty($all_user_plans)) {
 
@@ -641,11 +803,20 @@ if (!class_exists('ARM_members')) {
                             else
                             {
                                 $arm_plan_condition = (!empty($planData) && (isset($planData['arm_current_plan_detail']) && !empty($planData['arm_current_plan_detail']) && ($planData['arm_current_plan_detail']['arm_subscription_plan_post_id'] == 0)));
+                                if($arm_plan_condition && $is_gift_plan)
+                                {
+                                    $arm_plan_condition = (!empty($planData) && (isset($planData['arm_current_plan_detail']) && !empty($planData['arm_current_plan_detail']) && ($planData['arm_current_plan_detail']['arm_subscription_plan_gift_status'] == 0)));
+                                }
                             }
                         }
                         else
                         {
                             $arm_plan_condition = !empty($planData);
+
+                            if($is_gift_plan)
+                            {
+                                $arm_plan_condition = (!empty($planData) && (isset($planData['arm_current_plan_detail']) && !empty($planData['arm_current_plan_detail']) && ($planData['arm_current_plan_detail']['arm_subscription_plan_gift_status'] == 0)));
+                            }
                         }
 
                         if($arm_plan_condition)
@@ -674,7 +845,7 @@ if (!class_exists('ARM_members')) {
                             $suspended_plan_ids = (isset($suspended_plan_ids) && !empty($suspended_plan_ids)) ? $suspended_plan_ids : array();
                             if (!empty($suspended_plan_ids)) {
                                 if (in_array($uplans, $suspended_plan_ids)) {
-                                    $arm_plan_is_suspended = '<div class="arm_manage_plan_status_div" style="position: relative; width:55%;">';
+                                    $arm_plan_is_suspended = '<div class="arm_manage_plan_status_div arm_position_relative">';
                                     $arm_plan_is_suspended .= '<span style="color: #ec4444;">(' . __('Suspended', 'ARMember') . ')</span>';
                                     $arm_plan_is_suspended .= '<img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png"  title="' . __('Activate Plan', 'ARMember') . '" class="armhelptip tipso_style" width="26" data-plan_id="' . $uplans . '" data-user_id="' . $user_id . '" onclick="showConfirmBoxCallback_plan(\'status_' . $uplans . '\');" style="margin: -5px 0; position: absolute; "/>';
 
@@ -728,7 +899,7 @@ if (!class_exists('ARM_members')) {
                                 }
                             }
 
-                            $arm_delete_plan .= '<div style="position:relative;">';
+                            $arm_delete_plan .= '<div class="arm_position_relative">';
                             $arm_delete_plan .= '<img src="' . MEMBERSHIP_IMAGES_URL . '/grid_delete_icon_trans.png"  title="' . __('Delete Plan', 'ARMember') . '" class="arm_edit_plan_action_button armhelptip tipso_style" id="arm_member_delete_plan" data-plan_id="' . $uplans . '" data-user_id="' . $user_id . '" onclick="showConfirmBoxCallback_plan(' . $uplans . ');"/>';
 
 
@@ -754,13 +925,13 @@ if (!class_exists('ARM_members')) {
 
                             $arm_edit_plan_text_box = '';
                             if ($expiry_date != '') {
-                                $arm_edit_plan_text_box = '<input value="' . date('m/d/Y', $expiry_date) . '" name="arm_subscription_expiry_date_' . $uplans . '_' . $user_id . '" id="arm_subscription_expiry_date_' . $uplans . '_' . $user_id . '" class="arm_datepicker arm_expire_date arm_edit_plan_expire_date" style="min-width:100px; width:100px" aria-invalid="false" type="text">';
+                                $arm_edit_plan_text_box = '<input value="' . date('m/d/Y', $expiry_date) . '" name="arm_subscription_expiry_date_' . $uplans . '_' . $user_id . '" id="arm_subscription_expiry_date_' . $uplans . '_' . $user_id . '" class="arm_datepicker arm_expire_date arm_edit_plan_expire_date arm_width_100 arm_min_width_100"  aria-invalid="false" type="text">';
                                 $arm_edit_plan .= "<a class='arm_member_edit_plan' >"
                                         . "<img src='" . MEMBERSHIP_IMAGES_URL . "/grid_edit_hover_trns.png' style='position: absolute; margin: -4px 0 0 5px; cursor: pointer;' width='26' title='" . __('Change Expiry Date', 'ARMember') . "' class='armhelptip tipso_style'/>"
                                         . "</a>";
-                                $arm_edit_plan .= "<img src='" . MEMBERSHIP_IMAGES_URL . "/arm_save_icon.png' style='vertical-align: middle;display:none;' width='14' height='16' title='" . __('Save Expiry Date', 'ARMember') . "' class='arm_edit_plan_action_button arm_member_save_plan armhelptip tipso_style' data-plan_id='" . $uplans . "' data-user_id='" . $user_id . "' />&nbsp;";
+                                $arm_edit_plan .= "<img src='" . MEMBERSHIP_IMAGES_URL . "/arm_save_icon.png' style='display:none;' width='14' height='16' title='" . __('Save Expiry Date', 'ARMember') . "' class='arm_edit_plan_action_button arm_member_save_plan armhelptip tipso_style arm_vertical_align_middle' data-plan_id='" . $uplans . "' data-user_id='" . $user_id . "' />&nbsp;";
                                 $arm_edit_plan .= "<img src='" . MEMBERSHIP_IMAGES_URL . "/cancel_date_icon.png' style='display:none;' width='14' height='16' title='" . __('Cancel', 'ARMember') . "' class='arm_edit_plan_action_button arm_member_cancel_save_plan armhelptip tipso_style' data-plan_id='" . $uplans . "' data-user_id='" . $user_id . "' data-plan-expire-date='" . date('m/d/Y', $expiry_date) . "' />&nbsp;";
-                                $arm_edit_plan .= '<img src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" class="arm_edit_user_plan_loader" style="    vertical-align: middle;display:none;margin-left: 10px;" width="17" height="18" />';
+                                $arm_edit_plan .= '<img src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" class="arm_edit_user_plan_loader arm_vertical_align_middle arm_margin_left_10" style="display:none;" width="17" height="18" />';
                             }
 
                             $expire_date = ($expiry_date != '') ? date_i18n($date_format, $expiry_date) : __('Never Expires', 'ARMember');
@@ -798,9 +969,9 @@ if (!class_exists('ARM_members')) {
                         }
                     }
                 } else {
-                    $return .= ($is_paid_post) ? '<tr class="arm_user_edit_plan_table" ><td colspan="6" style="text-align:center">'
+                    $return .= ($is_paid_post) ? '<tr class="arm_user_edit_plan_table" ><td colspan="6" class="arm_text_align_center" >'
                             . __("This user don't have any post.", 'ARMember')
-                            . '</td></tr>' : '<tr class="arm_user_edit_plan_table" ><td colspan="6" style="text-align:center">'
+                            . '</td></tr>' : '<tr class="arm_user_edit_plan_table" ><td colspan="6" class="arm_text_align_center">'
                             . __("This user don't have any plans.", 'ARMember')
                             . '</td></tr>';
                 }
@@ -884,14 +1055,14 @@ if (!class_exists('ARM_members')) {
                     $arm_user_plan_cycle_data_id = "arm_user_plan_cycle_input";
                     $arm_user_plan_cycle_name = "arm_selected_payment_cycle";
                     if (isset($_POST['arm_manage_plan_grid']) && ($_POST['arm_manage_plan_grid'] == 0 || $_POST['arm_manage_plan_grid'] == 2)) {
-                        $arm_dropdown_width = 'style="width: 210px;"';
+                        $arm_dropdown_width = 'style="width: 230px;"';
                         $arm_dropdown_style = '';
                         if($_POST['arm_manage_plan_grid'] == 0)
                         {
                             $arm_dropdown_style = 'margin-top:10px;';
                         }
                         $arm_dropdown_style = 'style="float: left;'.$arm_dropdown_style.'"';
-                        if ($is_multiple_membership_feature->isMultipleMembershipFeature || $plan->isPaidPost) {
+                        if ($is_multiple_membership_feature->isMultipleMembershipFeature || $plan->isPaidPost || $plan->isGiftPlan) {
                             $arm_user_plan_cycle_data_id = "arm_user_plan_cycle_input_" . $_POST['plan_id'];
                             $arm_user_plan_cycle_name = "arm_selected_payment_cycle[arm_plan_cycle_" . $_POST['plan_id'] . "]";
                             $arm_dropdown_width = '';
@@ -899,11 +1070,11 @@ if (!class_exists('ARM_members')) {
                     }
 
                     $arm_plan_cycle_dropdown = '<input type="hidden" class="' . $arm_user_plan_cycle_data_id . '" name="' . $arm_user_plan_cycle_name . '" id="' . $arm_user_plan_cycle_data_id . '" value=""/>';
-                    $arm_plan_cycle_dropdown .= '<dl class="arm_selectbox column_level_dd arm_member_form_dropdown" ' . $arm_dropdown_style . '>';
+                    $arm_plan_cycle_dropdown .= '<dl class="arm_selectbox column_level_dd arm_member_form_dropdown arm_width_500_manage_plan_detail" ' . $arm_dropdown_style . '>';
                     $arm_plan_cycle_dropdown .= '<dt ' . $arm_dropdown_width . '><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
                     $arm_plan_cycle_dropdown .= '<dd><ul data-id="' . $arm_user_plan_cycle_data_id . '">' . $plansCycleLists . '</ul></dd>';
                     $arm_plan_cycle_dropdown .= '</dl>';
-                    $arm_plan_cycle_dropdown .= '<br/><span class="arm_error_select_plan_cycle error arm_invalid" style="display:none; text-align:left;">' . __('Please select payment cycle.', 'ARMember') . '</span>';
+                    $arm_plan_cycle_dropdown .= '<br/><span class="arm_error_select_plan_cycle error arm_invalid arm_text_align_left" style="display:none; ">' . __('Please select payment cycle.', 'ARMember') . '</span>';
 
 
                     if (isset($_POST['arm_manage_plan_grid']) && $_POST['arm_manage_plan_grid'] == 1) {
@@ -937,10 +1108,12 @@ if (!class_exists('ARM_members')) {
             if (!empty($user_id)) {
 
                 $user_plans = get_user_meta($user_id, 'arm_user_plan_ids', true);
+                $user_plans = apply_filters('arm_modify_plan_ids_externally', $user_plans, $user_id);
+
                 $user_future_plans = get_user_meta($user_id, 'arm_user_future_plan_ids', true);
-                $return .= '<div class="arm_child_row_div"><table class="arm_user_child_row_table" cellspacing="1" style="text-align: center;">';
+                $return .= '<div class="arm_child_row_div"><table class="arm_user_child_row_table arm_text_align_center" cellspacing="1" >';
                 $return .= '<tr class="arm_child_user_row">';
-                $return .= '<th style="width: 180px;">' . __('Membership Plan', 'ARMember') . '</th>';
+                $return .= '<th class="arm_width_180">' . __('Membership Plan', 'ARMember') . '</th>';
                 $return .= '<th>' . __('Plan Type', 'ARMember') . '</th>';
                 $return .= '<th>' . __('Starts On', 'ARMember') . '</th>';
 
@@ -1004,7 +1177,9 @@ if (!class_exists('ARM_members')) {
                                 }
                             }
 
-                            $plan_name = $planDetail['arm_subscription_plan_name'] . " " . $arm_plan_is_suspended;
+                            $arm_is_cancelled = (!empty($planData['arm_cencelled_plan']) && $planData['arm_cencelled_plan'] == "yes") ? '<span style="color: red;">( '.__('Cancelled', 'ARMember').' )</span>' : '';
+
+                            $plan_name = $planDetail['arm_subscription_plan_name'] . " " . $arm_plan_is_suspended." ".$arm_is_cancelled;
                             $plan_role = $planDetail['arm_subscription_plan_role'];
                             $start_date = (isset($planData['arm_start_plan']) && !empty($planData['arm_start_plan'])) ? date_i18n($date_format, $planData['arm_start_plan']) : '-';
                             $expiry_date = (isset($planData['arm_expire_plan']) && !empty($planData['arm_expire_plan'])) ? date_i18n($date_format, $planData['arm_expire_plan']) : __('Never Expires', 'ARMember');
@@ -1047,7 +1222,7 @@ if (!class_exists('ARM_members')) {
                             }
 
                             $return .= '<tr class="arm_child_user_row">';
-                            $return .= '<td style="color: #0073aa;">' . $plan_name . '</td>';
+                            $return .= '<td>' . $plan_name . '</td>';
                             $return .= '<td>' . $recurring_profile;
 
                             $return .= '</td>';
@@ -1179,7 +1354,7 @@ if (!class_exists('ARM_members')) {
                     }
                 } else {
                     $historyHtml .= '<tr class="arm_member_last_subscriptions_data">';
-                    $historyHtml .= '<td colspan="5" style="text-align: center;">' . __('No Login History Found.', 'ARMember') . '</td>';
+                    $historyHtml .= '<td colspan="5"  class="arm_text_align_center">' . __('No Login History Found.', 'ARMember') . '</td>';
                     $historyHtml .= '</tr>';
                 }
             }
@@ -1277,7 +1452,7 @@ if (!class_exists('ARM_members')) {
                 }
             } else {
                 $historyHtml .= '<tr class="arm_member_last_subscriptions_data">';
-                $historyHtml .= '<td colspan="6" style="text-align: center;">' . __('No Login History Found.', 'ARMember') . '</td>';
+                $historyHtml .= '<td colspan="6" class="arm_text_align_center">' . __('No Login History Found.', 'ARMember') . '</td>';
                 $historyHtml .= '</tr>';
             }
 
@@ -1445,12 +1620,8 @@ if (!class_exists('ARM_members')) {
             /* delete members lockdown table ends */
 
             /* update member id payment log table starts */
-            $update_user_payment_log = $wpdb->query("UPDATE `$ARMember->tbl_arm_payment_log` SET arm_user_id='0', arm_payer_email='' where arm_user_id = " . $id);
+            $update_user_payment_log = $wpdb->query("UPDATE `$ARMember->tbl_arm_payment_log` SET arm_user_id='0', arm_payer_email='', arm_first_name='', arm_last_name='', arm_bank_name='', arm_account_name='', arm_additional_info='' where arm_user_id = " . $id);
             /* update member id payment log table ends */
-
-            /* update member id bt payment log table starts */
-            $update_user_bt_payment_log = $wpdb->query("UPDATE `$ARMember->tbl_arm_payment_log` SET arm_user_id='0', arm_payer_email='', arm_bank_name='', arm_account_name='', arm_additional_info='' where arm_payment_gateway='bank_transfer' and arm_user_id = " . $id);
-            /* update member id bt payment log table ends */
         }
 
         function arm_get_all_members($type = 0, $only_total = 0, $recent_data = 0,$inactive_array=array()) {
@@ -1707,6 +1878,36 @@ if (!class_exists('ARM_members')) {
                                     }
                                 }
                                 $message = __('Member(s) has been deleted successfully.', 'ARMember');
+                            }
+                        }
+                    } elseif($bulkaction == 'arm_user_status-1' || $bulkaction == 'arm_user_status-2' || $bulkaction == 'arm_user_status-3' || $bulkaction == 'arm_user_status-4') {
+                        if (!current_user_can('arm_manage_members')) {
+                            if (MEMBERSHIP_DEBUG_LOG == true) {
+                                $arm_case_types['shortcode']['protected'] = true;
+                                $arm_case_types['shortcode']['type'] = 'delete_user_bulk_action';
+                                $arm_case_types['shortcode']['message'] = __('Current user doesn\'t have permission to delete users', 'ARMember');
+                                $ARMember->arm_debug_response_log('arm_member_bulk_action', $arm_case_types, $_POST, $wpdb->last_query, false);
+                            }
+                            $errors[] = __('Sorry, You do not have permission to perform this action', 'ARMember');
+                        } else {
+                            if (is_array($ids)) {
+                                if ($bulkaction == 'arm_user_status-1') {
+                                    $bulkaction = '1';
+                                } else if ($bulkaction == 'arm_user_status-2') {
+                                    $bulkaction = '2';
+				} else if ($bulkaction == 'arm_user_status-3') {
+                                    $bulkaction = '3';
+                                } else if ($bulkaction == 'arm_user_status-4') {
+                                    $bulkaction = '4';
+                                }
+                                foreach ($ids as $id) {
+                                    $post = array(
+                                        'user_id' => $id,
+                                        'bulkaction' => $bulkaction
+                                    );
+                                    $this->arm_change_user_status($post);
+                                }
+				$message = __('Member(s) status has been changed successfully.', 'ARMember');
                             }
                         }
                     } else {
@@ -1968,7 +2169,7 @@ if (!class_exists('ARM_members')) {
                             $now_time = strtotime(current_time('mysql'));
 
                             $plaData = get_user_meta($user_info->ID, 'arm_user_plan_' . $plan_id, true);
-                            $expire_time = $plaData['arm_expire_plan'];
+                            $expire_time = !empty($plaData['arm_expire_plan']) ? $plaData['arm_expire_plan'] : '' ;
                             if (!empty($expire_time) && $now_time >= $expire_time) {
                                 $arm_subscription_plans->arm_user_plan_status_action(array('plan_id' => $plan_id, 'user_id' => $user_info->ID, 'action' => 'eot'));
                             }
@@ -2145,7 +2346,6 @@ if (!class_exists('ARM_members')) {
                         array_push($select_user_meta, $exist_meta['meta_key']);
                     }
                     $exists_user_meta = array_merge_recursive($allready_exists, $select_user_meta);
-
                     $dbProfileFields = $arm_member_forms->arm_get_db_form_fields();
                     if (!empty($file_data_array[0])):
                         ?><label class = "account_detail_radio arm_account_detail_options">
@@ -2231,7 +2431,7 @@ if (!class_exists('ARM_members')) {
                                 <input type = "checkbox" value = "<?php echo $key; ?>" class = "arm_icheckbox arm_import_user_meta" name = "import_user_meta[<?php echo $key; ?>]" id = "arm_profile_field_input_<?php echo $key; ?>" <?php echo $checkedDefault; ?> />
                                 <label for="arm_profile_field_input_<?php echo $key; ?>"><?php echo $title; ?></label>
                                 <div class="arm_list_sortable_icon"></div>
-                                <span class="arm_user_meta_<?php echo $user_meta; ?>" style="color: gray;font-size: 11px; font-style: italic; text-align: center; width: 100%; margin: 0 0 0 34px;"><?php echo '(' . $user_meta . __(' Meta', 'ARMember') . ')'; ?> </span>
+                                <span class="arm_user_meta_<?php echo $user_meta; ?> arm_user_meta_existing_meta_txt" style="color: gray;font-size: 11px; font-style: italic; text-align: center; width: 100%; margin: 0 0 0 34px;"><?php echo '(' . $user_meta . __(' Meta', 'ARMember') . ')'; ?> </span>
                             </label>
                             <?php
                         endforeach;
@@ -2242,8 +2442,6 @@ if (!class_exists('ARM_members')) {
         }
 
         function arm_handle_import_user() {
-
-
             global $wp, $wpdb, $ARMember, $arm_global_settings, $arm_subscription_plans, $arm_case_types, $arm_member_forms, $arm_capabilities_global;
             $ARMember->arm_check_user_cap($arm_capabilities_global['arm_import_export'], '1');
 
@@ -2384,655 +2582,664 @@ if (!class_exists('ARM_members')) {
                         }
                     }
                     unset($arm_uniqe_user);
-
-
-                    if (!empty($users_array)) {
-                        ?>
+                    if (!empty($users_array))
+                    {
+                ?>
                         <div class="">
-                            <span class="arm_info_text">
-                        <?php _e(" Note that importing user's data will", 'ARMember'); ?><strong> <?php _e('Skip', 'ARMember'); ?> </strong><?php _e("existing user(s), if any duplicate user found.", 'ARMember'); ?>
+                            <span class="arm_info_text"><?php _e(" Note that importing user's data will", 'ARMember'); ?><strong> <?php _e('Skip', 'ARMember'); ?> </strong><?php _e("existing user(s), if any duplicate user found.", 'ARMember'); ?>
                                 <br/>
                                 ( <?php _e('Cosidering duplicate', 'ARMember'); ?> <strong><?php _e('Username', 'ARMember'); ?> </strong><?php _e('and', 'ARMember'); ?><strong> <?php _e('Email', 'ARMember'); ?></strong> )
                             </span>
                             <table width="100%" cellspacing="0">
                                 <tr>
-                                    <th class="center cb-select-all-th" style="max-width:60px;text-align:center;"><input id="cb-select-all-1" type="checkbox" class="chkstanard arm_all_import_user_chks"></th>
-                        <?php
-                        if (!empty($grid_columns)):
-                            foreach ($grid_columns as $key => $title):
-                                if ($key == 'id'):
-                                    continue;
-                                endif;
-                                ?>
+                                    <th class="center cb-select-all-th arm_max_width_60 arm_text_align_center" ><input id="cb-select-all-1" type="checkbox" class="chkstanard arm_all_import_user_chks"></th>
+                <?php
+                                    if (!empty($grid_columns)):
+                                        foreach ($grid_columns as $key => $title):
+                                            if ($key == 'id'):
+                                                continue;
+                                            endif;
+                ?>
                                             <th data-key="<?php echo $key; ?>" class="arm_grid_th_<?php echo $key; ?>" style="min-width: 100px;"><?php echo $title; ?></th>
-                                <?php
-                            endforeach;
-                        endif;
-                        ?>
+                <?php
+                                        endforeach;
+                                    endif;
+                ?>
                                 </tr>
-                        <?php
-                        foreach ($users_array as $value) {
-                            ?>
+                <?php
+                                foreach ($users_array as $value) {
+                ?>
                                     <tr>
-
                                         <td>
-                            <?php
-                            /* Check User's `username` or `email` If user exist AND if `Update User` Set to true */
-                            if (isset($value['username'])) {
-                                $user = get_user_by('login', $value['username']);
-                            }
-                            if (!$user && isset($value['email'])) {
-                                $user = get_user_by('email', $value['email']);
-                            }
-                            $user_disable = '';
-                            if ($user || empty($value['email']) || !is_email($value['email'])) {
-                                $user_disable = 'disabled="disabled"';
-                            } else {
-                                $users_data[$value['username']] = $value;
-                            }
-                            ?>
+                <?php
+                                        /* Check User's `username` or `email` If user exist AND if `Update User` Set to true */
+                                        if (isset($value['username'])) {
+                                            $user = get_user_by('login', $value['username']);
+                                        }
+                                        if (!$user && isset($value['email'])) {
+                                            $user = get_user_by('email', $value['email']);
+                                        }
+                                        $user_disable = '';
+                                        if ($user || empty($value['email']) || !is_email($value['email'])) {
+                                            $user_disable = 'disabled="disabled"';
+                                        } else {
+                                            $users_data[$value['username']] = $value;
+                                        }
+                ?>
                                             <input id="cb-item-action-<?php echo $value['username']; ?>" <?php echo $user_disable; ?> class="chkstanard arm_import_user_chks" type="checkbox" value="<?php echo $value['username']; ?>" name="item-action[]">
                                         </td>
-
-                                        <?php
+                <?php
                                         foreach ($grid_columns as $key => $val) {
                                             echo isset($value[$key]) ? (!empty($value[$key])) ? '<td>' . utf8_encode($value[$key]) . '</td>' : '<td>-</td>' : '';
                                             //echo isset($value[$key]) ? (!empty($value[$key])) ? '<td>' . $value[$key] . '</td>' : '<td>-</td>' : '';
                                         }
-                                        ?>
+                ?>
                                     </tr>									
-                                    <?php
+                <?php
                                 }
-                                ?>
-
+                ?>
                             </table>
                             <input type="hidden" id="arm_import_file_url" name="file_url" value="<?php echo $up_file; ?>" />
                             <input type="hidden" id="arm_import_plan_id" name="plan_id" value="<?php echo $up_plan_id; ?>" />
                             <input type="hidden" id="is_arm_password_column" name="is_arm_password_column" value="<?php echo $is_password_column; ?>"/>
+                            <?php 
+                                $arm_add_other_input_outside = "";
+                                echo apply_filters('arm_add_other_input_for_import_outside', $arm_add_other_input_outside, $request);
+                            ?>
                             <textarea id="arm_import_users_data" name="users_data" style="display:none;"><?php echo json_encode($users_data); ?></textarea>
                         </div>
-                                        <?php
+                <?php
+                    }
+                }
+            }
+            exit;
+        }
+
+        function arm_add_import_user() {
+            global $wpdb, $ARMember, $arm_members_class, $arm_global_settings, $arm_subscription_plans, $arm_case_types, $arm_members_badges, $arm_member_forms, $arm_email_settings, $arm_capabilities_global;
+
+            $ARMember->arm_check_user_cap($arm_capabilities_global['arm_import_export'], '1');
+            if (!isset($_POST)) {
+                return;
+            }
+
+            $ARMember->arm_session_start();
+            $arm_global_settings->arm_set_ini_for_importing_users();
+            $message = '';
+            $file_data_array = $user_ids = $u_errors = $errors = array();
+            $ip_address = $ARMember->arm_get_ip_address();
+            $user_default_fields = self::arm_get_user_import_default_fields();
+            $send_notification = isset($_REQUEST['send_email']) ? $_REQUEST['send_email'] : 'false';
+            
+            $password_type = isset($_REQUEST['password_type']) ? sanitize_text_field($_REQUEST['password_type']) : "hashed";
+            $user_password_type = isset($_REQUEST['generate_password_type']) ? sanitize_text_field($_REQUEST['generate_password_type']) : false;
+            $new_password = isset($_REQUEST['fixed_password']) ? $_REQUEST['fixed_password'] : '';
+
+            $postedFormData = json_decode(stripslashes_deep($_POST['filtered_form']), true);
+
+            $posted_user_data = htmlspecialchars($postedFormData['users_data'], ENT_NOQUOTES);
+
+            $file_data_array = json_decode($posted_user_data, true);
+
+            if (json_last_error() != JSON_ERROR_NONE) {
+                $file_data_array = maybe_unserialize($posted_user_data);
+            }
+
+            $plan_id = isset($postedFormData['plan_id']) ? $postedFormData['plan_id'] : 0;
+            $ids = isset($postedFormData['item-action']) ? $postedFormData['item-action'] : array();
+            $mail_count = 0;
+            $imp_count = 0;
+            $_SESSION['imported_users'] = 0;
+            if (empty($ids)) {
+                $errors[] = __('Please select one or more records.', 'ARMember');
+            } else {
+                if (!is_array($ids)) {
+                    $ids = explode(',', $ids);
+                }
+                if (is_array($ids)) {
+                    if (!empty($file_data_array)) {
+                        $users_data = array();
+                        foreach ($file_data_array as $k1 => $val1) {
+                            if (!in_array($k1, $ids)) {
+                                continue;
+                            }
+                            foreach ($val1 as $k2 => $val2) {
+                                if (in_array($k2, array_keys($user_default_fields['userdata']))) {
+                                    if ($user_default_fields['userdata'][$k2] == 'role') {
+                                        
                                     }
+                                    if ($user_default_fields['userdata'][$k2] == 'user_registered') {
+                                        if (empty($val2)) {
+                                            $val2 = date("Y-m-d H:i:s");
+                                        }
+                                        $val2 = date("Y-m-d H:i:s", strtotime($val2));
+                                    }
+                                    unset($file_data_array[$k1][$k2]);
+                                    if (!empty($val2)) {
+                                        $users_data[$k1]['userdata'][$user_default_fields['userdata'][$k2]] = $val2; /* Set Matched Key Value */
+                                    }
+                                } elseif (in_array($k2, array_keys($user_default_fields['usermeta']))) {
+                                    unset($file_data_array[$k1][$k2]); /* Remove Old Key From Array */
+                                    if (in_array($user_default_fields['usermeta'][$k2], array('arm_user_plan_ids', 'status'))) {
+                                        unset($users_data[$k1]['usermeta'][$k2]);
+                                    } else {
+                                        $users_data[$k1]['usermeta'][$user_default_fields['usermeta'][$k2]] = $val2; /* Set Matched Key Value */
+                                    }
+                                } else {
+                                    $users_data[$k1]['usermeta'][$k2] = $val2;
                                 }
                             }
-                            exit;
                         }
 
-                        function arm_add_import_user() {
-                            global $wpdb, $ARMember, $arm_members_class, $arm_global_settings, $arm_subscription_plans, $arm_case_types, $arm_members_badges, $arm_member_forms, $arm_email_settings, $arm_capabilities_global;
 
-                            $ARMember->arm_check_user_cap($arm_capabilities_global['arm_import_export'], '1');
-                            if (!isset($_POST)) {
-                                return;
+
+                        if (!empty($users_data)) {
+                            $allready_exists = array('username', 'email', 'website', 'joined', 'user_nicename', 'display_name', 'user_pass', 'biographical_info');
+                            $allready_exists_meta = $arm_member_forms->arm_get_db_form_fields(true);
+                            $select_user_meta = array();
+                            foreach ($allready_exists_meta as $exist_meta) {
+                                array_push($select_user_meta, $exist_meta['id']);
+                                array_push($select_user_meta, $exist_meta['label']);
+                                array_push($select_user_meta, $exist_meta['meta_key']);
                             }
+                            $exists_user_meta = array_merge_recursive($allready_exists, $select_user_meta);
 
-                            $ARMember->arm_session_start();
-                            $arm_global_settings->arm_set_ini_for_importing_users();
-                            $message = '';
-                            $file_data_array = $user_ids = $u_errors = $errors = array();
-                            $ip_address = $ARMember->arm_get_ip_address();
-                            $user_default_fields = self::arm_get_user_import_default_fields();
-                            $send_notification = isset($_REQUEST['send_email']) ? $_REQUEST['send_email'] : 'false';
-                            
-                            $password_type = isset($_REQUEST['password_type']) ? sanitize_text_field($_REQUEST['password_type']) : "hashed";
-                            $user_password_type = isset($_REQUEST['generate_password_type']) ? sanitize_text_field($_REQUEST['generate_password_type']) : false;
-                            $new_password = isset($_REQUEST['fixed_password']) ? $_REQUEST['fixed_password'] : '';
+                            if (count($users_data) > 50) {
 
-                            $postedFormData = json_decode(stripslashes_deep($_POST['filtered_form']), true);
+                                $chunked_user_data = array_chunk($users_data, 50, false);
 
-                            $posted_user_data = htmlspecialchars($postedFormData['users_data'], ENT_NOQUOTES);
+                                $total_chunked_data = count($chunked_user_data);
 
-                            $file_data_array = json_decode($posted_user_data, true);
+                                $change_password_page_id = isset($arm_global_settings->global_settings['change_password_page_id']) ? $arm_global_settings->global_settings['change_password_page_id'] : 0;
+                                $arm_change_password_page_url = $arm_global_settings->arm_get_permalink('', $change_password_page_id);
+                                $temp_detail = $arm_email_settings->arm_get_email_template($arm_email_settings->templates->forgot_passowrd_user);
 
-                            if (json_last_error() != JSON_ERROR_NONE) {
-                                $file_data_array = maybe_unserialize($posted_user_data);
-                            }
-
-                            $plan_id = isset($postedFormData['plan_id']) ? $postedFormData['plan_id'] : 0;
-                            $ids = isset($postedFormData['item-action']) ? $postedFormData['item-action'] : array();
-                            $mail_count = 0;
-                            $imp_count = 0;
-                            $_SESSION['imported_users'] = 0;
-                            if (empty($ids)) {
-                                $errors[] = __('Please select one or more records.', 'ARMember');
-                            } else {
-                                if (!is_array($ids)) {
-                                    $ids = explode(',', $ids);
-                                }
-                                if (is_array($ids)) {
-                                    if (!empty($file_data_array)) {
-                                        $users_data = array();
-                                        foreach ($file_data_array as $k1 => $val1) {
-                                            if (!in_array($k1, $ids)) {
-                                                continue;
-                                            }
-                                            foreach ($val1 as $k2 => $val2) {
-                                                if (in_array($k2, array_keys($user_default_fields['userdata']))) {
-                                                    if ($user_default_fields['userdata'][$k2] == 'role') {
-                                                        
-                                                    }
-                                                    if ($user_default_fields['userdata'][$k2] == 'user_registered') {
-                                                        if (empty($val2)) {
-                                                            $val2 = date("Y-m-d H:i:s");
-                                                        }
-                                                        $val2 = date("Y-m-d H:i:s", strtotime($val2));
-                                                    }
-                                                    unset($file_data_array[$k1][$k2]);
-                                                    if (!empty($val2)) {
-                                                        $users_data[$k1]['userdata'][$user_default_fields['userdata'][$k2]] = $val2; /* Set Matched Key Value */
-                                                    }
-                                                } elseif (in_array($k2, array_keys($user_default_fields['usermeta']))) {
-                                                    unset($file_data_array[$k1][$k2]); /* Remove Old Key From Array */
-                                                    if (in_array($user_default_fields['usermeta'][$k2], array('arm_user_plan_ids', 'status'))) {
-                                                        unset($users_data[$k1]['usermeta'][$k2]);
-                                                    } else {
-                                                        $users_data[$k1]['usermeta'][$user_default_fields['usermeta'][$k2]] = $val2; /* Set Matched Key Value */
-                                                    }
-                                                } else {
-                                                    $users_data[$k1]['usermeta'][$k2] = $val2;
-                                                }
-                                            }
+                                for ($ch_data = 0; $ch_data < $total_chunked_data; $ch_data++) {
+                                    $chunked_data = null;
+                                    $chunked_data = $chunked_user_data[$ch_data];
+                                    foreach ($chunked_data as $rkey => $udata) {
+                                        $user_main_data = $udata['userdata'];
+                                        $user_meta_data = isset($udata['usermeta']) ? $udata['usermeta'] : array();
+                                        /* Get User If `ID` is available */
+                                        if (isset($user_main_data['ID'])) {
+                                            unset($user_main_data['ID']);
+                                        }
+                                        /* Check User's `username` or `email` If user exist AND if `Update User` Set to true */
+                                        if (isset($user_main_data['user_login'])) {
+                                            $user = get_user_by('login', $user_main_data['user_login']);
+                                        }
+                                        if (!$user && isset($user_main_data['user_email'])) {
+                                            $user = get_user_by('email', $user_main_data['user_email']);
+                                        }
+                                        /* Skip existing users */
+                                        if ($user) {
+                                            continue;
                                         }
 
-
-
-                                        if (!empty($users_data)) {
-                                            $allready_exists = array('username', 'email', 'website', 'joined', 'user_nicename', 'display_name', 'user_pass', 'biographical_info');
-                                            $allready_exists_meta = $arm_member_forms->arm_get_db_form_fields(true);
-                                            $select_user_meta = array();
-                                            foreach ($allready_exists_meta as $exist_meta) {
-                                                array_push($select_user_meta, $exist_meta['id']);
-                                                array_push($select_user_meta, $exist_meta['label']);
-                                                array_push($select_user_meta, $exist_meta['meta_key']);
+                                        if (!empty($user_main_data['user_email'])) {
+                                            $update = FALSE;
+                                            if ($user) {
+                                                $user_main_data['ID'] = $user->ID;
+                                                $update = TRUE;
                                             }
-                                            $exists_user_meta = array_merge_recursive($allready_exists, $select_user_meta);
+                                            /* Set Password For new users */
+                                            //$user_main_data['user_pass'] = wp_generate_password(8, false);   
+                                            // $user_main_data['user_pass'] = 'adminconnect';
+                                            $generate_from_csv = 0;
+                                            if ($user_password_type == 'generate_dynamic') {
+                                                $user_main_data['user_pass'] = wp_generate_password(8, false);
+                                            } else if ($user_password_type == 'generate_fixed') {
+                                                $user_main_data['user_pass'] = $new_password;
+                                            } else if ($user_password_type == 'generate_from_csv') {
+                                                $generate_from_csv = 1;
+                                            }
 
-                                            if (count($users_data) > 50) {
+                                            $plaintext_pass = $user_main_data['user_pass'];
+                                            $user_role = (!empty($user_main_data['role'])) ? $user_main_data['role'] : '';
+                                            unset($user_main_data['role']);
 
-                                                $chunked_user_data = array_chunk($users_data, 50, false);
-
-                                                $total_chunked_data = count($chunked_user_data);
-
-                                                $change_password_page_id = isset($arm_global_settings->global_settings['change_password_page_id']) ? $arm_global_settings->global_settings['change_password_page_id'] : 0;
-                                                $arm_change_password_page_url = $arm_global_settings->arm_get_permalink('', $change_password_page_id);
-                                                $temp_detail = $arm_email_settings->arm_get_email_template($arm_email_settings->templates->forgot_passowrd_user);
-
-                                                for ($ch_data = 0; $ch_data < $total_chunked_data; $ch_data++) {
-                                                    $chunked_data = null;
-                                                    $chunked_data = $chunked_user_data[$ch_data];
-                                                    foreach ($chunked_data as $rkey => $udata) {
-                                                        $user_main_data = $udata['userdata'];
-                                                        $user_meta_data = isset($udata['usermeta']) ? $udata['usermeta'] : array();
-                                                        /* Get User If `ID` is available */
-                                                        if (isset($user_main_data['ID'])) {
-                                                            unset($user_main_data['ID']);
-                                                        }
-                                                        /* Check User's `username` or `email` If user exist AND if `Update User` Set to true */
-                                                        if (isset($user_main_data['user_login'])) {
-                                                            $user = get_user_by('login', $user_main_data['user_login']);
-                                                        }
-                                                        if (!$user && isset($user_main_data['user_email'])) {
-                                                            $user = get_user_by('email', $user_main_data['user_email']);
-                                                        }
-                                                        /* Skip existing users */
-                                                        if ($user) {
-                                                            continue;
-                                                        }
-
-                                                        if (!empty($user_main_data['user_email'])) {
-                                                            $update = FALSE;
-                                                            if ($user) {
-                                                                $user_main_data['ID'] = $user->ID;
-                                                                $update = TRUE;
-                                                            }
-                                                            /* Set Password For new users */
-                                                            //$user_main_data['user_pass'] = wp_generate_password(8, false);   
-                                                            // $user_main_data['user_pass'] = 'adminconnect';
-                                                            $generate_from_csv = 0;
-                                                            if ($user_password_type == 'generate_dynamic') {
-                                                                $user_main_data['user_pass'] = wp_generate_password(8, false);
-                                                            } else if ($user_password_type == 'generate_fixed') {
-                                                                $user_main_data['user_pass'] = $new_password;
-                                                            } else if ($user_password_type == 'generate_from_csv') {
-                                                                $generate_from_csv = 1;
-                                                            }
-
-                                                            $plaintext_pass = $user_main_data['user_pass'];
-                                                            $user_role = (!empty($user_main_data['role'])) ? $user_main_data['role'] : '';
-                                                            unset($user_main_data['role']);
-
-                                                            if (isset($user_main_data['nickname'])) {
-                                                                $user_main_data['user_nicename'] = $user_main_data['nickname'];
-                                                            }
-                                                            if (isset($user_main_data['joined'])) {
-                                                                $user_main_data['user_registered'] = $user_main_data['joined'];
-                                                            }
+                                            if (isset($user_main_data['nickname'])) {
+                                                $user_main_data['user_nicename'] = $user_main_data['nickname'];
+                                            }
+                                            if (isset($user_main_data['joined'])) {
+                                                $user_main_data['user_registered'] = $user_main_data['joined'];
+                                            }
 
 
-                                                            if ($generate_from_csv == 0) {
-                                                                if ($update) {
-                                                                    $user_id = wp_update_user($user_main_data);
-                                                                } else {
-                                                                    //                                        $user_main_data['user_registered'] = date("Y-m-d H:i:s");
-                                                                    $user_id = wp_insert_user($user_main_data);
-                                                                    $arm_members_badges->arm_add_user_achieve_by_type($user_id, 0, 'defaultbadge');
-                                                                }
-                                                            } else {
-                                                                if ($password_type == 'plain') {
-                                                                    if ($update) {
-                                                                        $user_id = wp_update_user($user_main_data);
-                                                                    } else {
-                                                                        // $user_main_data['user_registered'] = date("Y-m-d H:i:s");
-                                                                        $user_id = wp_insert_user($user_main_data);
-                                                                        $arm_members_badges->arm_add_user_achieve_by_type($user_id, 0, 'defaultbadge');
-                                                                    }
-                                                                } else {
-                                                                    global $wpdb;
-                                                                    if ($update) {
-                                                                        $user_id = wp_update_user($user_main_data);
-                                                                        $wpdb->query("UPDATE " . $wpdb->users . " set `user_pass`='" . $user_main_data['user_pass'] . "' where `ID`=" . $user_id);
-                                                                    } else {
-                                                                        $user_id = wp_insert_user($user_main_data);
-                                                                        $arm_members_badges->arm_add_user_achieve_by_type($user_id, 0, 'defaultbadge');
-                                                                        $wpdb->query("UPDATE " . $wpdb->users . " set `user_pass`='" . $user_main_data['user_pass'] . "' where `ID`=" . $user_id);
-                                                                    }
-                                                                }
-                                                            }
-
-
-
-                                                            /* Is there an error o_O? */
-                                                            if (is_wp_error($user_id)) {
-                                                                $u_errors[$rkey] = $user_id;
-                                                            } else {
-                                                                /* If no error, let's update the user meta too! */
-                                                                if (!empty($user_meta_data)) {
-                                                                    foreach ($user_meta_data as $metakey => $metavalue) {
-                                                                        if ($metakey != 'arm_subscription_start_date') {
-                                                                            if (!in_array($metakey, $exists_user_meta)) {
-                                                                                $fields = array('label' => $metakey);
-                                                                                $metakey = str_replace(' ', '_', $metakey);
-                                                                                $arm_member_forms->arm_db_add_preset_form_field($fields, $metakey);
-                                                                            }
-                                                                            $metavalue = maybe_unserialize($metavalue);
-                                                                            update_user_meta($user_id, $metakey, $metavalue);
-                                                                        }
-                                                                    }
-                                                                }
-                                                                update_user_meta($user_id, 'arm_last_login_date', date('Y-m-d H:i:s'));
-                                                                /* add user to plan */
-
-                                                                $planObj = new ARM_Plan($plan_id);
-
-
-                                                                $posted_data = array(
-                                                                    'arm_user_plan' => $plan_id,
-                                                                    'payment_gateway' => 'manual',
-                                                                    'arm_selected_payment_mode' => 'manual_subscription',
-                                                                    'arm_primary_status' => 1,
-                                                                    'arm_secondary_status' => 0,
-                                                                    'arm_subscription_start_date' => isset($user_meta_data['arm_subscription_start_date']) ? $user_meta_data['arm_subscription_start_date'] : '',
-                                                                    'arm_user_import' => true,
-                                                                        // 'action' => 'add_member'
-                                                                );
-
-
-
-                                                                do_action('arm_member_update_meta', $user_id, $posted_data);
-                                                                if (!$planObj->is_free()) {
-                                                                    $this->arm_manual_update_user_data($user_id, $plan_id, $posted_data);
-                                                                    do_action('arm_handle_expire_subscription');
-                                                                }
-
-
-                                                                /* Some plugins may need to do things after one user has been imported. Who know? */
-                                                                if ($send_notification == 'true') {
-                                                                    $message = '';
-                                                                    $user = new WP_User($user_id);
-                                                                    armMemberSignUpCompleteMail($user, $plaintext_pass);
-                                                                    if ($mail_count == 100) {
-                                                                        sleep(10);
-                                                                        $mail_count = 0;
-                                                                    }
-
-                                                                   
-                                                                    if (isset($user_main_data['user_email']) && $user_main_data['user_email'] != '') {
-
-                                                                        if (function_exists('get_password_reset_key')) {
-                                                                            $user_data = get_user_by('email', trim($user_main_data['user_email']));
-                                                                            $key = get_password_reset_key($user_data);
-
-                                                                        } else {
-                                                                            
-                                                                            do_action('retreive_password', $user_main_data['user_login']);  /* Misspelled and deprecated */
-                                                                            do_action('retrieve_password', $user_main_data['user_login']);
-
-                                                                            /* Generate something random for a key... */
-                                                                            $key = wp_generate_password(20, false);
-                                                                            do_action('retrieve_password_key', $user_main_data['user_login'], $key);
-                                                                            global $wp_hasher;
-                                                                            /* Now insert the new md5 key into the db */
-                                                                            if (empty($wp_hasher)) {
-                                                                                require_once ABSPATH . WPINC . '/class-phpass.php';
-                                                                                $wp_hasher = new PasswordHash(8, true);
-                                                                            }
-                                                                            $hashed = $wp_hasher->HashPassword($key);
-                                                                            $key_saved = $wpdb->update($wpdb->users, array('user_activation_key' => $hashed), array('user_login' => $user_main_data['user_login']));
-                                                                            
-                                                                        }
-                                                                        update_user_meta($user_id, 'arm_reset_password_key', $key);
-                                                                       
-                                                                        if ($change_password_page_id == 0) {
-                                                                            $rp_link = network_site_url("wp-login.php?action=armrp&key=" . rawurlencode($key) . "&login=" . rawurlencode($user_main_data['user_login']), 'login');
-                                                                        } else {
-
-                                                                           
-
-                                                                            $arm_change_password_page_url = $arm_global_settings->add_query_arg('action', 'armrp', $arm_change_password_page_url);
-                                                                            $arm_change_password_page_url = $arm_global_settings->add_query_arg('key', rawurlencode($key), $arm_change_password_page_url);
-                                                                            $arm_change_password_page_url = $arm_global_settings->add_query_arg('login', rawurlencode($user_main_data['user_login']), $arm_change_password_page_url);
-
-                                                                            $rp_link = $arm_change_password_page_url;
-                                                                        }
-
-
-                                                                       
-                                                                        if ($temp_detail->arm_template_status == '1') {
-                                                                            $title = $arm_global_settings->arm_filter_email_with_user_detail($temp_detail->arm_template_subject, $user_id, 0);
-
-                                                                            $message = $arm_global_settings->arm_filter_email_with_user_detail($temp_detail->arm_template_content, $user_id, 0, 0, $key);
-
-                                                                            $message = str_replace('{ARM_RESET_PASSWORD_LINK}', '<a href="' . $rp_link . '">' . $rp_link . '</a>', $message);
-                                                                            $message = str_replace('{VAR1}', '<a href="' . $rp_link . '">' . $rp_link . '</a>', $message);
-                                                                        } else {
-                                                                            $title = $blogname . ' ' . __('Password Reset', 'ARMember');
-                                                                            $message = __('Someone requested that the password be reset for the following account:', 'ARMember') . "\r\n\r\n";
-                                                                            $message .= network_home_url('/') . "\r\n\r\n";
-                                                                            $message .= __('Username', 'ARMember') . ": " . $user_login . "\r\n\r\n";
-                                                                            $message .= __('If this was a mistake, just ignore this email and nothing will happen.', 'ARMember') . "\r\n\r\n";
-                                                                            $message .= __('To reset your password, visit the following address:', 'ARMember') . " " . $rp_link . "\r\n\r\n";
-                                                                        }
-
-
-                                                                        $title = apply_filters('retrieve_password_title', $title, $user_data->ID);
-                                                                        $message = apply_filters('retrieve_password_message', $message, $key, $user_data->user_login, $user_data);
-                                                                        $send_mail = $arm_global_settings->arm_wp_mail('', $user_main_data['user_email'], $title, $message);
-
-                                                                       
-                                                                        // $user_send_mail = $arm_global_settings->arm_wp_mail('', $user_main_data['user_email'], $subject, $message);
-                                                                    }
-                                                                }
-                                                                do_action('arm_after_user_import', $user_id);
-                                                                $user_ids[] = $user_id;
-                                                                if (is_multisite()) {
-                                                                    add_user_to_blog($GLOBALS['blog_id'], $user_id, 'ARMember');
-                                                                }
-                                                                $_SESSION['imported_users']++;
-                                                                @session_write_close();
-                                                                $ARMember->arm_session_start(true);
-                                                                $mail_count++;
-                                                                $imp_count++;
-                                                            }
-                                                        }
-                                                    }
+                                            if ($generate_from_csv == 0) {
+                                                if ($update) {
+                                                    $user_id = wp_update_user($user_main_data);
+                                                } else {
+                                                    //                                        $user_main_data['user_registered'] = date("Y-m-d H:i:s");
+                                                    $user_id = wp_insert_user($user_main_data);
+                                                    $arm_members_badges->arm_add_user_achieve_by_type($user_id, 0, 'defaultbadge');
                                                 }
                                             } else {
-                                                $change_password_page_id = isset($arm_global_settings->global_settings['change_password_page_id']) ? $arm_global_settings->global_settings['change_password_page_id'] : 0;
-                                                $arm_change_password_page_url = $arm_global_settings->arm_get_permalink('', $change_password_page_id);
-                                                $temp_detail = $arm_email_settings->arm_get_email_template($arm_email_settings->templates->forgot_passowrd_user);
-                                                foreach ($users_data as $rkey => $udata) {
-                                                    $user_main_data = $udata['userdata'];
-                                                    $user_meta_data = isset($udata['usermeta']) ? $udata['usermeta'] : array();
-                                                    /* Get User If `ID` is available */
-                                                    if (isset($user_main_data['ID'])) {
-                                                        unset($user_main_data['ID']);
+                                                if ($password_type == 'plain') {
+                                                    if ($update) {
+                                                        $user_id = wp_update_user($user_main_data);
+                                                    } else {
+                                                        // $user_main_data['user_registered'] = date("Y-m-d H:i:s");
+                                                        $user_id = wp_insert_user($user_main_data);
+                                                        $arm_members_badges->arm_add_user_achieve_by_type($user_id, 0, 'defaultbadge');
                                                     }
-                                                    /* Check User's `username` or `email` If user exist AND if `Update User` Set to true */
-                                                    if (isset($user_main_data['user_login'])) {
-                                                        $user = get_user_by('login', $user_main_data['user_login']);
-                                                    }
-                                                    if (!$user && isset($user_main_data['user_email'])) {
-                                                        $user = get_user_by('email', $user_main_data['user_email']);
-                                                    }
-                                                    /* Skip existing users */
-                                                    if ($user) {
-                                                        continue;
-                                                    }
-
-                                                    if (!empty($user_main_data['user_email'])) {
-                                                        $update = FALSE;
-                                                        if ($user) {
-                                                            $user_main_data['ID'] = $user->ID;
-                                                            $update = TRUE;
-                                                        }
-                                                        
-                                                        $generate_from_csv = 0;
-                                                        if ($user_password_type == 'generate_dynamic') {
-                                                            $user_main_data['user_pass'] = wp_generate_password(8, false);
-                                                        } else if ($user_password_type == 'generate_fixed') {
-                                                            $user_main_data['user_pass'] = $new_password;
-                                                        } else if ($user_password_type == 'generate_from_csv') {
-                                                            $generate_from_csv = 1;
-                                                        }
-
-                                                        $plaintext_pass = $user_main_data['user_pass'];
-                                                        $user_role = (!empty($user_main_data['role'])) ? $user_main_data['role'] : '';
-                                                        unset($user_main_data['role']);
-
-                                                        if (isset($user_main_data['nickname'])) {
-                                                            $user_main_data['user_nicename'] = $user_main_data['nickname'];
-                                                        }
-                                                        if (isset($user_main_data['joined'])) {
-                                                            $user_main_data['user_registered'] = $user_main_data['joined'];
-                                                        }
-
-
-                                                        if ($generate_from_csv == 0) {
-                                                            if ($update) {
-                                                                $user_id = wp_update_user($user_main_data);
-                                                            } else {
-                                                                //                                        $user_main_data['user_registered'] = date("Y-m-d H:i:s");
-                                                                $user_id = wp_insert_user($user_main_data);
-                                                                $arm_members_badges->arm_add_user_achieve_by_type($user_id, 0, 'defaultbadge');
-                                                            }
-                                                        } else {
-                                                            if ($password_type == 'plain') {
-                                                                if ($update) {
-                                                                    $user_id = wp_update_user($user_main_data);
-                                                                } else {
-                                                                    // $user_main_data['user_registered'] = date("Y-m-d H:i:s");
-                                                                    $user_id = wp_insert_user($user_main_data);
-                                                                    $arm_members_badges->arm_add_user_achieve_by_type($user_id, 0, 'defaultbadge');
-                                                                }
-                                                            } else {
-                                                                global $wpdb;
-                                                                if ($update) {
-                                                                    $user_id = wp_update_user($user_main_data);
-                                                                    $wpdb->query("UPDATE " . $wpdb->users . " set `user_pass`='" . $user_main_data['user_pass'] . "' where `ID`=" . $user_id);
-                                                                } else {
-                                                                    $user_id = wp_insert_user($user_main_data);
-                                                                    $arm_members_badges->arm_add_user_achieve_by_type($user_id, 0, 'defaultbadge');
-                                                                    $wpdb->query("UPDATE " . $wpdb->users . " set `user_pass`='" . $user_main_data['user_pass'] . "' where `ID`=" . $user_id);
-                                                                }
-                                                            }
-                                                        }
-
-
-
-                                                        /* Is there an error o_O? */
-                                                        if (is_wp_error($user_id)) {
-                                                            $u_errors[$rkey] = $user_id;
-                                                        } else {
-                                                            /* If no error, let's update the user meta too! */
-                                                            if (!empty($user_meta_data)) {
-                                                                foreach ($user_meta_data as $metakey => $metavalue) {
-                                                                    if ($metakey != 'arm_subscription_start_date') {
-                                                                        if (!in_array($metakey, $exists_user_meta)) {
-                                                                            $fields = array('label' => $metakey);
-                                                                            $metakey = str_replace(' ', '_', $metakey);
-                                                                            $arm_member_forms->arm_db_add_preset_form_field($fields, $metakey);
-                                                                        }
-                                                                        $metavalue = maybe_unserialize($metavalue);
-                                                                        update_user_meta($user_id, $metakey, $metavalue);
-                                                                    }
-                                                                }
-                                                            }
-                                                            update_user_meta($user_id, 'arm_last_login_date', date('Y-m-d H:i:s'));
-                                                            /* add user to plan */
-
-                                                            $planObj = new ARM_Plan($plan_id);
-
-                                                            $posted_data = array(
-                                                                'arm_user_plan' => $plan_id,
-                                                                'payment_gateway' => 'manual',
-                                                                'arm_selected_payment_mode' => 'manual_subscription',
-                                                                'arm_primary_status' => 1,
-                                                                'arm_secondary_status' => 0,
-                                                                'arm_subscription_start_date' => isset($user_meta_data['arm_subscription_start_date']) ? $user_meta_data['arm_subscription_start_date'] : '',
-                                                                'arm_user_import' => true,
-                                                                    // 'action' => 'add_member'
-                                                            );
-                                                            
-                                                            
-
-                                                            do_action('arm_member_update_meta', $user_id, $posted_data);
-                                                            if (!$planObj->is_free()) {
-                                                                $this->arm_manual_update_user_data($user_id, $plan_id, $posted_data);
-                                                                do_action('arm_handle_expire_subscription');
-                                                            }
-
-
-                                                            /* Some plugins may need to do things after one user has been imported. Who know? */
-
-                                                          
-                                                            if ($send_notification == 'true') {
-                                                                $message = '';
-                                                                $user = new WP_User($user_id);
-                                                                armMemberSignUpCompleteMail($user, $plaintext_pass);
-                                                                if ($mail_count == 100) {
-                                                                    sleep(10);
-                                                                    $mail_count = 0;
-                                                                }
-                                                                
-                                                                if (isset($user_main_data['user_email'])) {
-
-                                                                   
-
-                                                                    if (isset($user_main_data['user_email']) && $user_main_data['user_email'] != '') {
-
-                                                                        if (function_exists('get_password_reset_key')) {
-                                                                            $user_data = get_user_by('email', trim($user_main_data['user_email']));
-                                                                            $key = get_password_reset_key($user_data);
-
-                                                                        } else {
-                                                                            
-                                                                            do_action('retreive_password', $user_main_data['user_login']);  /* Misspelled and deprecated */
-                                                                            do_action('retrieve_password', $user_main_data['user_login']);
-
-                                                                            /* Generate something random for a key... */
-                                                                            $key = wp_generate_password(20, false);
-                                                                            do_action('retrieve_password_key', $user_main_data['user_login'], $key);
-                                                                            global $wp_hasher;
-                                                                            /* Now insert the new md5 key into the db */
-                                                                            if (empty($wp_hasher)) {
-                                                                                require_once ABSPATH . WPINC . '/class-phpass.php';
-                                                                                $wp_hasher = new PasswordHash(8, true);
-                                                                            }
-                                                                            $hashed = $wp_hasher->HashPassword($key);
-                                                                            $key_saved = $wpdb->update($wpdb->users, array('user_activation_key' => $hashed), array('user_login' => $user_main_data['user_login']));
-                                                                            
-                                                                        }
-                                                                        update_user_meta($user_id, 'arm_reset_password_key', $key);
-                                                                        
-                                                                        if ($change_password_page_id == 0) {
-                                                                            $rp_link = network_site_url("wp-login.php?action=armrp&key=" . rawurlencode($key) . "&login=" . rawurlencode($user_main_data['user_login']), 'login');
-                                                                        } else {
-
-                                                                            
-
-                                                                            $arm_change_password_page_url = $arm_global_settings->add_query_arg('action', 'armrp', $arm_change_password_page_url);
-                                                                            $arm_change_password_page_url = $arm_global_settings->add_query_arg('key', rawurlencode($key), $arm_change_password_page_url);
-                                                                            $arm_change_password_page_url = $arm_global_settings->add_query_arg('login', rawurlencode($user_main_data['user_login']), $arm_change_password_page_url);
-
-                                                                            $rp_link = $arm_change_password_page_url;
-                                                                        }
-
-
-                                                                        
-                                                                        if ($temp_detail->arm_template_status == '1') {
-                                                                            $title = $arm_global_settings->arm_filter_email_with_user_detail($temp_detail->arm_template_subject, $user_id, 0);
-
-                                                                            $message = $arm_global_settings->arm_filter_email_with_user_detail($temp_detail->arm_template_content, $user_id, 0, 0, $key);
-
-                                                                            $message = str_replace('{ARM_RESET_PASSWORD_LINK}', '<a href="' . $rp_link . '">' . $rp_link . '</a>', $message);
-                                                                            $message = str_replace('{VAR1}', '<a href="' . $rp_link . '">' . $rp_link . '</a>', $message);
-                                                                        } else {
-                                                                            $title = $blogname . ' ' . __('Password Reset', 'ARMember');
-                                                                            $message = __('Someone requested that the password be reset for the following account:', 'ARMember') . "\r\n\r\n";
-                                                                            $message .= network_home_url('/') . "\r\n\r\n";
-                                                                            $message .= __('Username', 'ARMember') . ": " . $user_login . "\r\n\r\n";
-                                                                            $message .= __('If this was a mistake, just ignore this email and nothing will happen.', 'ARMember') . "\r\n\r\n";
-                                                                            $message .= __('To reset your password, visit the following address:', 'ARMember') . " " . $rp_link . "\r\n\r\n";
-                                                                        }
-
-
-                                                                        $title = apply_filters('retrieve_password_title', $title, $user_data->ID);
-                                                                        $message = apply_filters('retrieve_password_message', $message, $key, $user_data->user_login, $user_data);
-                                                                        $send_mail = $arm_global_settings->arm_wp_mail('', $user_main_data['user_email'], $title, $message);
-
-                                                                       
-                                                                    }
-                                                                }
-                                                            }
-                                                            do_action('arm_after_user_import', $user_id);
-                                                            $user_ids[] = $user_id;
-                                                            if (is_multisite()) {
-                                                                add_user_to_blog($GLOBALS['blog_id'], $user_id, 'ARMember');
-                                                            }
-                                                            $_SESSION['imported_users'] ++;
-                                                            $wpdb->flush();
-                                                            @session_write_close();
-                                                            $ARMember->arm_session_start(true);
-                                                            $mail_count++;
-                                                            $imp_count++;
-                                                        }
+                                                } else {
+                                                    global $wpdb;
+                                                    if ($update) {
+                                                        $user_id = wp_update_user($user_main_data);
+                                                        $wpdb->query("UPDATE " . $wpdb->users . " set `user_pass`='" . $user_main_data['user_pass'] . "' where `ID`=" . $user_id);
+                                                    } else {
+                                                        $user_id = wp_insert_user($user_main_data);
+                                                        $arm_members_badges->arm_add_user_achieve_by_type($user_id, 0, 'defaultbadge');
+                                                        $wpdb->query("UPDATE " . $wpdb->users . " set `user_pass`='" . $user_main_data['user_pass'] . "' where `ID`=" . $user_id);
                                                     }
                                                 }
                                             }
+
+
+
+                                            /* Is there an error o_O? */
+                                            if (is_wp_error($user_id)) {
+                                                $u_errors[$rkey] = $user_id;
+                                            } else {
+                                                /* If no error, let's update the user meta too! */
+                                                if (!empty($user_meta_data)) {
+                                                    foreach ($user_meta_data as $metakey => $metavalue) {
+                                                        if ($metakey != 'arm_subscription_start_date') {
+                                                            if (!in_array($metakey, $exists_user_meta)) {
+                                                                $fields = array('label' => $metakey);
+                                                                $metakey = str_replace(' ', '_', $metakey);
+                                                                $arm_member_forms->arm_db_add_preset_form_field($fields, $metakey);
+                                                            }
+                                                            $metavalue = maybe_unserialize($metavalue);
+                                                            update_user_meta($user_id, $metakey, $metavalue);
+                                                        }
+                                                    }
+                                                }
+                                                update_user_meta($user_id, 'arm_last_login_date', date('Y-m-d H:i:s'));
+                                                /* add user to plan */
+
+                                                $planObj = new ARM_Plan($plan_id);
+
+
+                                                $posted_data = array(
+                                                    'arm_user_plan' => $plan_id,
+                                                    'payment_gateway' => 'manual',
+                                                    'arm_selected_payment_mode' => 'manual_subscription',
+                                                    'arm_primary_status' => 1,
+                                                    'arm_secondary_status' => 0,
+                                                    'arm_subscription_start_date' => isset($user_meta_data['arm_subscription_start_date']) ? $user_meta_data['arm_subscription_start_date'] : '',
+                                                    'arm_user_import' => true,
+                                                        // 'action' => 'add_member'
+                                                );
+
+
+
+                                                do_action('arm_member_update_meta', $user_id, $posted_data);
+                                                do_action('arm_action_outside_after_assign_import_user_plan', $user_id, $plan_id, $postedFormData);
+                                                if (!$planObj->is_free()) {
+                                                    $this->arm_manual_update_user_data($user_id, $plan_id, $posted_data);
+                                                    do_action('arm_handle_expire_subscription');
+                                                }
+
+
+                                                /* Some plugins may need to do things after one user has been imported. Who know? */
+                                                if ($send_notification == 'true') {
+                                                    $message = '';
+                                                    $user = new WP_User($user_id);
+                                                    armMemberSignUpCompleteMail($user, $plaintext_pass);
+                                                    if ($mail_count == 100) {
+                                                        sleep(10);
+                                                        $mail_count = 0;
+                                                    }
+
+                                                   
+                                                    if (isset($user_main_data['user_email']) && $user_main_data['user_email'] != '') {
+
+                                                        if (function_exists('get_password_reset_key')) {
+                                                            $user_data = get_user_by('email', trim($user_main_data['user_email']));
+                                                            $key = get_password_reset_key($user_data);
+
+                                                        } else {
+                                                            
+                                                            do_action('retreive_password', $user_main_data['user_login']);  /* Misspelled and deprecated */
+                                                            do_action('retrieve_password', $user_main_data['user_login']);
+
+                                                            /* Generate something random for a key... */
+                                                            $key = wp_generate_password(20, false);
+                                                            do_action('retrieve_password_key', $user_main_data['user_login'], $key);
+                                                            global $wp_hasher;
+                                                            /* Now insert the new md5 key into the db */
+                                                            if (empty($wp_hasher)) {
+                                                                require_once ABSPATH . WPINC . '/class-phpass.php';
+                                                                $wp_hasher = new PasswordHash(8, true);
+                                                            }
+                                                            $hashed = $wp_hasher->HashPassword($key);
+                                                            $key_saved = $wpdb->update($wpdb->users, array('user_activation_key' => $hashed), array('user_login' => $user_main_data['user_login']));
+                                                            
+                                                        }
+                                                        update_user_meta($user_id, 'arm_reset_password_key', $key);
+                                                       
+                                                        if ($change_password_page_id == 0) {
+                                                            $rp_link = network_site_url("wp-login.php?action=armrp&key=" . rawurlencode($key) . "&login=" . rawurlencode($user_main_data['user_login']), 'login');
+                                                        } else {
+
+                                                           
+
+                                                            $arm_change_password_page_url = $arm_global_settings->add_query_arg('action', 'armrp', $arm_change_password_page_url);
+                                                            $arm_change_password_page_url = $arm_global_settings->add_query_arg('key', rawurlencode($key), $arm_change_password_page_url);
+                                                            $arm_change_password_page_url = $arm_global_settings->add_query_arg('login', rawurlencode($user_main_data['user_login']), $arm_change_password_page_url);
+
+                                                            $rp_link = $arm_change_password_page_url;
+                                                        }
+
+
+                                                       
+                                                        if ($temp_detail->arm_template_status == '1') {
+                                                            $title = $arm_global_settings->arm_filter_email_with_user_detail($temp_detail->arm_template_subject, $user_id, 0);
+
+                                                            $message = $arm_global_settings->arm_filter_email_with_user_detail($temp_detail->arm_template_content, $user_id, 0, 0, $key);
+
+                                                            $message = str_replace('{ARM_RESET_PASSWORD_LINK}', '<a href="' . $rp_link . '">' . $rp_link . '</a>', $message);
+                                                            $message = str_replace('{VAR1}', '<a href="' . $rp_link . '">' . $rp_link . '</a>', $message);
+                                                        } else {
+                                                            $title = $blogname . ' ' . __('Password Reset', 'ARMember');
+                                                            $message = __('Someone requested that the password be reset for the following account:', 'ARMember') . "\r\n\r\n";
+                                                            $message .= network_home_url('/') . "\r\n\r\n";
+                                                            $message .= __('Username', 'ARMember') . ": " . $user_login . "\r\n\r\n";
+                                                            $message .= __('If this was a mistake, just ignore this email and nothing will happen.', 'ARMember') . "\r\n\r\n";
+                                                            $message .= __('To reset your password, visit the following address:', 'ARMember') . " " . $rp_link . "\r\n\r\n";
+                                                        }
+
+
+                                                        $title = apply_filters('retrieve_password_title', $title, $user_data->ID);
+                                                        $message = apply_filters('retrieve_password_message', $message, $key, $user_data->user_login, $user_data);
+                                                        $send_mail = $arm_global_settings->arm_wp_mail('', $user_main_data['user_email'], $title, $message);
+
+                                                       
+                                                        // $user_send_mail = $arm_global_settings->arm_wp_mail('', $user_main_data['user_email'], $subject, $message);
+                                                    }
+                                                }
+                                                do_action('arm_after_user_import', $user_id);
+                                                $user_ids[] = $user_id;
+                                                if (is_multisite()) {
+                                                    add_user_to_blog($GLOBALS['blog_id'], $user_id, 'ARMember');
+                                                }
+                                                $_SESSION['imported_users']++;
+                                                @session_write_close();
+                                                $ARMember->arm_session_start(true);
+                                                $mail_count++;
+                                                $imp_count++;
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                $change_password_page_id = isset($arm_global_settings->global_settings['change_password_page_id']) ? $arm_global_settings->global_settings['change_password_page_id'] : 0;
+                                $arm_change_password_page_url = $arm_global_settings->arm_get_permalink('', $change_password_page_id);
+                                $temp_detail = $arm_email_settings->arm_get_email_template($arm_email_settings->templates->forgot_passowrd_user);
+                                foreach ($users_data as $rkey => $udata) {
+                                    $user_main_data = $udata['userdata'];
+                                    $user_meta_data = isset($udata['usermeta']) ? $udata['usermeta'] : array();
+                                    /* Get User If `ID` is available */
+                                    if (isset($user_main_data['ID'])) {
+                                        unset($user_main_data['ID']);
+                                    }
+                                    /* Check User's `username` or `email` If user exist AND if `Update User` Set to true */
+                                    if (isset($user_main_data['user_login'])) {
+                                        $user = get_user_by('login', $user_main_data['user_login']);
+                                    }
+                                    if (!$user && isset($user_main_data['user_email'])) {
+                                        $user = get_user_by('email', $user_main_data['user_email']);
+                                    }
+                                    /* Skip existing users */
+                                    if ($user) {
+                                        continue;
+                                    }
+
+                                    if (!empty($user_main_data['user_email'])) {
+                                        $update = FALSE;
+                                        if ($user) {
+                                            $user_main_data['ID'] = $user->ID;
+                                            $update = TRUE;
+                                        }
+                                        
+                                        $generate_from_csv = 0;
+                                        if ($user_password_type == 'generate_dynamic') {
+                                            $user_main_data['user_pass'] = wp_generate_password(8, false);
+                                        } else if ($user_password_type == 'generate_fixed') {
+                                            $user_main_data['user_pass'] = $new_password;
+                                        } else if ($user_password_type == 'generate_from_csv') {
+                                            $generate_from_csv = 1;
+                                        }
+
+                                        $plaintext_pass = $user_main_data['user_pass'];
+                                        $user_role = (!empty($user_main_data['role'])) ? $user_main_data['role'] : '';
+                                        unset($user_main_data['role']);
+
+                                        if (isset($user_main_data['nickname'])) {
+                                            $user_main_data['user_nicename'] = $user_main_data['nickname'];
+                                        }
+                                        if (isset($user_main_data['joined'])) {
+                                            $user_main_data['user_registered'] = $user_main_data['joined'];
+                                        }
+
+
+                                        if ($generate_from_csv == 0) {
+                                            if ($update) {
+                                                $user_id = wp_update_user($user_main_data);
+                                            } else {
+                                                //                                        $user_main_data['user_registered'] = date("Y-m-d H:i:s");
+                                                $user_id = wp_insert_user($user_main_data);
+                                                $arm_members_badges->arm_add_user_achieve_by_type($user_id, 0, 'defaultbadge');
+                                            }
                                         } else {
-                                            $errors[] = __('No user was imported, please check the file.', 'ARMember');
+                                            if ($password_type == 'plain') {
+                                                if ($update) {
+                                                    $user_id = wp_update_user($user_main_data);
+                                                } else {
+                                                    // $user_main_data['user_registered'] = date("Y-m-d H:i:s");
+                                                    $user_id = wp_insert_user($user_main_data);
+                                                    $arm_members_badges->arm_add_user_achieve_by_type($user_id, 0, 'defaultbadge');
+                                                }
+                                            } else {
+                                                global $wpdb;
+                                                if ($update) {
+                                                    $user_id = wp_update_user($user_main_data);
+                                                    $wpdb->query("UPDATE " . $wpdb->users . " set `user_pass`='" . $user_main_data['user_pass'] . "' where `ID`=" . $user_id);
+                                                } else {
+                                                    $user_id = wp_insert_user($user_main_data);
+                                                    $arm_members_badges->arm_add_user_achieve_by_type($user_id, 0, 'defaultbadge');
+                                                    $wpdb->query("UPDATE " . $wpdb->users . " set `user_pass`='" . $user_main_data['user_pass'] . "' where `ID`=" . $user_id);
+                                                }
+                                            }
+                                        }
+
+
+
+                                        /* Is there an error o_O? */
+                                        if (is_wp_error($user_id)) {
+                                            $u_errors[$rkey] = $user_id;
+                                        } else {
+                                            /* If no error, let's update the user meta too! */
+                                            if (!empty($user_meta_data)) {
+                                                foreach ($user_meta_data as $metakey => $metavalue) {
+                                                    if ($metakey != 'arm_subscription_start_date') {
+                                                        if (!in_array($metakey, $exists_user_meta)) {
+                                                            $fields = array('label' => $metakey);
+                                                            $metakey = str_replace(' ', '_', $metakey);
+                                                            $arm_member_forms->arm_db_add_preset_form_field($fields, $metakey);
+                                                        }
+                                                        $metavalue = maybe_unserialize($metavalue);
+                                                        update_user_meta($user_id, $metakey, $metavalue);
+                                                    }
+                                                }
+                                            }
+                                            update_user_meta($user_id, 'arm_last_login_date', date('Y-m-d H:i:s'));
+                                            /* add user to plan */
+
+                                            $planObj = new ARM_Plan($plan_id);
+
+                                            $posted_data = array(
+                                                'arm_user_plan' => $plan_id,
+                                                'payment_gateway' => 'manual',
+                                                'arm_selected_payment_mode' => 'manual_subscription',
+                                                'arm_primary_status' => 1,
+                                                'arm_secondary_status' => 0,
+                                                'arm_subscription_start_date' => isset($user_meta_data['arm_subscription_start_date']) ? $user_meta_data['arm_subscription_start_date'] : '',
+                                                'arm_user_import' => true,
+                                                    // 'action' => 'add_member'
+                                            );
+                                            
+                                            
+
+                                            do_action('arm_member_update_meta', $user_id, $posted_data);
+                                            do_action('arm_action_outside_after_assign_import_user_plan', $user_id, $plan_id, $postedFormData);
+                                            if (!$planObj->is_free()) {
+                                                $this->arm_manual_update_user_data($user_id, $plan_id, $posted_data);
+                                                do_action('arm_handle_expire_subscription');
+                                            }
+
+
+                                            /* Some plugins may need to do things after one user has been imported. Who know? */
+
+                                          
+                                            if ($send_notification == 'true') {
+                                                $message = '';
+                                                $user = new WP_User($user_id);
+                                                armMemberSignUpCompleteMail($user, $plaintext_pass);
+                                                if ($mail_count == 100) {
+                                                    sleep(10);
+                                                    $mail_count = 0;
+                                                }
+                                                
+                                                if (isset($user_main_data['user_email'])) {
+
+                                                   
+
+                                                    if (isset($user_main_data['user_email']) && $user_main_data['user_email'] != '') {
+
+                                                        if (function_exists('get_password_reset_key')) {
+                                                            $user_data = get_user_by('email', trim($user_main_data['user_email']));
+                                                            $key = get_password_reset_key($user_data);
+
+                                                        } else {
+                                                            
+                                                            do_action('retreive_password', $user_main_data['user_login']);  /* Misspelled and deprecated */
+                                                            do_action('retrieve_password', $user_main_data['user_login']);
+
+                                                            /* Generate something random for a key... */
+                                                            $key = wp_generate_password(20, false);
+                                                            do_action('retrieve_password_key', $user_main_data['user_login'], $key);
+                                                            global $wp_hasher;
+                                                            /* Now insert the new md5 key into the db */
+                                                            if (empty($wp_hasher)) {
+                                                                require_once ABSPATH . WPINC . '/class-phpass.php';
+                                                                $wp_hasher = new PasswordHash(8, true);
+                                                            }
+                                                            $hashed = $wp_hasher->HashPassword($key);
+                                                            $key_saved = $wpdb->update($wpdb->users, array('user_activation_key' => $hashed), array('user_login' => $user_main_data['user_login']));
+                                                            
+                                                        }
+                                                        update_user_meta($user_id, 'arm_reset_password_key', $key);
+                                                        
+                                                        if ($change_password_page_id == 0) {
+                                                            $rp_link = network_site_url("wp-login.php?action=armrp&key=" . rawurlencode($key) . "&login=" . rawurlencode($user_main_data['user_login']), 'login');
+                                                        } else {
+
+                                                            
+
+                                                            $arm_change_password_page_url = $arm_global_settings->add_query_arg('action', 'armrp', $arm_change_password_page_url);
+                                                            $arm_change_password_page_url = $arm_global_settings->add_query_arg('key', rawurlencode($key), $arm_change_password_page_url);
+                                                            $arm_change_password_page_url = $arm_global_settings->add_query_arg('login', rawurlencode($user_main_data['user_login']), $arm_change_password_page_url);
+
+                                                            $rp_link = $arm_change_password_page_url;
+                                                        }
+
+
+                                                        
+                                                        if ($temp_detail->arm_template_status == '1') {
+                                                            $title = $arm_global_settings->arm_filter_email_with_user_detail($temp_detail->arm_template_subject, $user_id, 0);
+
+                                                            $message = $arm_global_settings->arm_filter_email_with_user_detail($temp_detail->arm_template_content, $user_id, 0, 0, $key);
+
+                                                            $message = str_replace('{ARM_RESET_PASSWORD_LINK}', '<a href="' . $rp_link . '">' . $rp_link . '</a>', $message);
+                                                            $message = str_replace('{VAR1}', '<a href="' . $rp_link . '">' . $rp_link . '</a>', $message);
+                                                        } else {
+                                                            $title = $blogname . ' ' . __('Password Reset', 'ARMember');
+                                                            $message = __('Someone requested that the password be reset for the following account:', 'ARMember') . "\r\n\r\n";
+                                                            $message .= network_home_url('/') . "\r\n\r\n";
+                                                            $message .= __('Username', 'ARMember') . ": " . $user_login . "\r\n\r\n";
+                                                            $message .= __('If this was a mistake, just ignore this email and nothing will happen.', 'ARMember') . "\r\n\r\n";
+                                                            $message .= __('To reset your password, visit the following address:', 'ARMember') . " " . $rp_link . "\r\n\r\n";
+                                                        }
+
+
+                                                        $title = apply_filters('retrieve_password_title', $title, $user_data->ID);
+                                                        $message = apply_filters('retrieve_password_message', $message, $key, $user_data->user_login, $user_data);
+                                                        $send_mail = $arm_global_settings->arm_wp_mail('', $user_main_data['user_email'], $title, $message);
+
+                                                       
+                                                    }
+                                                }
+                                            }
+                                            do_action('arm_after_user_import', $user_id);
+                                            $user_ids[] = $user_id;
+                                            if (is_multisite()) {
+                                                add_user_to_blog($GLOBALS['blog_id'], $user_id, 'ARMember');
+                                            }
+                                            $_SESSION['imported_users'] ++;
+                                            $wpdb->flush();
+                                            @session_write_close();
+                                            $ARMember->arm_session_start(true);
+                                            $mail_count++;
+                                            $imp_count++;
                                         }
                                     }
                                 }
                             }
-                            /* One more thing to do after all imports? */
-                            do_action('arm_after_all_users_import', $user_ids, $errors);
-                            if (!empty($user_ids)) {
-                                $message = __('User(s) has been imported successfully', 'ARMember');
-                                $ARMember->arm_set_message('success', $message);
-                                if (!empty($postedFormData['file_url'])) {
-                                    $file_path = MEMBERSHIP_UPLOAD_DIR . '/' . basename($postedFormData['file_url']);
-                                    if (file_exists($file_path)) {
-                                        unlink($file_path);
-                                    }
-                                }
-                            }
-                            if (!empty($u_errors)) {
-                                $errors[] = __('Error during user import.', 'ARMember');
-                            }
-                            if (empty($user_ids) && empty($errors) && empty($u_errors)) {
-                                $errors[] = __('No user was imported.', 'ARMember');
-                            }
-                            if (MEMBERSHIP_DEBUG_LOG == true) {
-                                $arm_case_types['shortcode']['protected'] = true;
-                                $arm_case_types['shortcode']['type'] = 'after_import_users';
-                                $arm_case_types['shortcode']['message'] = __('Log after users are imported using xml or csv file.', 'ARMember');
-                                $ARMember->arm_debug_response_log('arm_add_import_user', $arm_case_types, $csv_reader, $wpdb->last_query, false);
-                            }
-                            $return_array = $arm_global_settings->handle_return_messages(@$errors, @$message);
-                            echo json_encode($return_array);
-                            exit;
+                        } else {
+                            $errors[] = __('No user was imported, please check the file.', 'ARMember');
                         }
+                    }
+                }
+            }
+            /* One more thing to do after all imports? */
+            do_action('arm_after_all_users_import', $user_ids, $errors);
+            if (!empty($user_ids)) {
+                $message = __('User(s) has been imported successfully', 'ARMember');
+                $ARMember->arm_set_message('success', $message);
+                if (!empty($postedFormData['file_url'])) {
+
+                    $arm_up_file_name = basename($postedFormData['file_url']);
+                    $file_path = MEMBERSHIP_UPLOAD_DIR . '/' . $arm_up_file_name;
+
+                    $file_name_arm = substr($arm_up_file_name, 0,3);
+
+                    $checkext = explode(".", $arm_up_file_name);
+                    $ext = strtolower( $checkext[count($checkext) - 1] );
+
+                    if(!empty($ext) && ($ext=='csv' || $ext=='xml') && file_exists($file_path) && $file_name_arm=='arm' ) {
+                        unlink($file_path);
+                    }
+                }
+            }
+            if (!empty($u_errors)) {
+                $errors[] = __('Error during user import.', 'ARMember');
+            }
+            if (empty($user_ids) && empty($errors) && empty($u_errors)) {
+                $errors[] = __('No user was imported.', 'ARMember');
+            }
+            if (MEMBERSHIP_DEBUG_LOG == true) {
+                $arm_case_types['shortcode']['protected'] = true;
+                $arm_case_types['shortcode']['type'] = 'after_import_users';
+                $arm_case_types['shortcode']['message'] = __('Log after users are imported using xml or csv file.', 'ARMember');
+                $ARMember->arm_debug_response_log('arm_add_import_user', $arm_case_types, $csv_reader, $wpdb->last_query, false);
+            }
+            $return_array = $arm_global_settings->handle_return_messages(@$errors, @$message);
+            echo json_encode($return_array);
+            exit;
+        }
 
                         function arm_user_import_handle($request) {
                             global $wp, $wpdb, $ARMember, $arm_global_settings, $arm_subscription_plans, $arm_case_types, $arm_members_badges;
@@ -3698,13 +3905,13 @@ if (!class_exists('ARM_members')) {
                                 }
                                 if (isset($request['global_options'])) {
                                     $all_global_settings = $arm_global_settings->arm_get_all_global_settings();
-                                    $arm_email_settings = $arm_email_settings->arm_get_all_email_settings();
+                                    $arm_email_settings_data = $arm_email_settings->arm_get_all_email_settings();
                                     if (!empty($all_global_settings['general_settings'])) {
                                         $all_settings['global_options'] = $all_global_settings['general_settings'];
                                     }
-                                    if (!empty($arm_email_settings)) {
-                                        $arm_email_settings['arm_email_tools'] = array();
-                                        $all_settings['email_options'] = $arm_email_settings;
+                                    if (!empty($arm_email_settings_data)) {
+                                        $arm_email_settings_data['arm_email_tools'] = array();
+                                        $all_settings['email_options'] = $arm_email_settings_data;
                                     }
                                 }
                                 if (isset($request['block_options'])) {
@@ -3829,7 +4036,7 @@ if (!class_exists('ARM_members')) {
                                     areaspline: {
                                         fillOpacity: 0.05,
                                         dataLabels: {enabled: false, format: '{point.y}'},
-                                        lineColor: '#4da4fe',
+                                        lineColor: '#005aee',
                                     }
                                 },
                                 tooltip: {
@@ -3845,10 +4052,10 @@ if (!class_exists('ARM_members')) {
                                         return tooltip;
                                     }
                                 },
-                                colors: ['#766ed2;', '#fbc32b', '#fc6458', '#a7db1b', '#20d381', '#27ddfe', '#4da4fe'],
+                                colors: ['#766ed2;', '#fbc32b', '#fc6458', '#a7db1b', '#20d381', '#005aee', '#4da4fe'],
                                 series: [{
                                     name: "Membership",
-                                    color: 'rgb(77,164,254)',
+                                    color: 'rgb(0,90,238)',
                                     colorByPoint: true,
                                     lineWidth: 2,
                                     data: plan_users,
@@ -3963,7 +4170,7 @@ if (!class_exists('ARM_members')) {
                                 areaspline: {
                                     fillOpacity: 0.05,
                                     dataLabels: {enabled: false, format: '{point.y}'},
-                                    lineColor: '#4da4fe',
+                                    lineColor: '#005aee',
                                 }
                             },
                             tooltip: {
@@ -3976,10 +4183,10 @@ if (!class_exists('ARM_members')) {
                                     return tooltip;
                                 }
                             },
-                            colors: ['#766ed2;', '#fbc32b', '#fc6458', '#a7db1b', '#20d381', '#27ddfe', '#4da4fe'],
+                            colors: ['#766ed2;', '#fbc32b', '#fc6458', '#a7db1b', '#20d381', '#005aee', '#4da4fe'],
                             series: [{
                                 name: "Members",
-                                color: 'rgb(77,164,254)',
+                                color: 'rgb(0,90,238)',
                                 colorByPoint: true,
                                 lineWidth: 2,
                                 data: line1,
@@ -4034,7 +4241,7 @@ if (!class_exists('ARM_members')) {
                     }
                 }
             
-            return '<span class="arm_item_status_text ' . $statusClass . '"><i></i>' . $memberStatusText . '</span>';
+            return '<span class="arm_item_status_text ' . $statusClass . '">' . $memberStatusText . '</span>';
         }
 
         function armGetMemberStatusText($user_id = 0, $default_status = '1') {
@@ -4092,7 +4299,7 @@ if (!class_exists('ARM_members')) {
                     }
                 }
             }
-            return '<span class="arm_item_status_text ' . $statusClass . '"><i></i>' . $memberStatusText . '</span>';
+            return '<span class="arm_item_status_text ' . $statusClass . '">' . $memberStatusText . '</span>';
         }
 
         function armGetMemberStatusTextForAdmin($user_id = 0, $default_status = '1', $secondary_status='') {
@@ -4143,20 +4350,28 @@ if (!class_exists('ARM_members')) {
                     }
                 }
             }
-            return '<span class="arm_item_status_text ' . $statusClass . '"><i></i>' . $memberStatusText . '</span>';
+            return '<span class="arm_item_status_text ' . $statusClass . '">' . $memberStatusText . '</span>';
         }
 
-        function arm_change_user_status() {
+        function arm_change_user_status($user_data_action = array()) {
             global $wpdb, $arm_email_settings, $ARMember, $arm_global_settings, $arm_subscription_plans, $arm_members_class, $arm_subscription_plans, $arm_manage_communication, $arm_slugs, $arm_payment_gateways, $is_multiple_membership_feature, $arm_capabilities_global;
 
             $ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_members'], '1');
 
             $date_format = $arm_global_settings->arm_get_wp_date_format();
-            $user_id = intval($_POST['user_id']);
-            $new_status = intval($_POST['new_status']);
+            $user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : '';
+	    if(empty($user_id))
+	    {
+	    	$user_id = isset($user_data_action['user_id']) ? $user_data_action['user_id'] : '';
+	    }
+            $new_status = isset($_POST['new_status']) ? intval($_POST['new_status']) : '';
+	    if(empty($new_status))
+	    {
+	    	$new_status = isset($user_data_action['bulkaction']) ? $user_data_action['bulkaction'] : '';
+	    }
 
             $nowDate = current_time('mysql');
-            $send_user_notification = intval($_POST['send_user_notification']);
+            $send_user_notification = isset($_POST['send_user_notification']) ? intval($_POST['send_user_notification']) : '';
             $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans();
             $plansLists = '<li data-label="' . __('Select Plan', 'ARMember') . '" data-value="">' . __('Select Plan', 'ARMember') . '</li>';
             if (!empty($all_plans)) {
@@ -4168,6 +4383,7 @@ if (!class_exists('ARM_members')) {
                 }
             }
             $response = array('type' => 'error', 'msg' => __('Sorry, Something went wrong. Please try again.', 'ARMember'));
+            $is_changed = false;
             if (!empty($user_id) && $user_id != 0) {
                 if ($new_status == '1') {
                     arm_set_member_status($user_id, 1);
@@ -4179,6 +4395,8 @@ if (!class_exists('ARM_members')) {
                     }
                 } else if ($new_status == '2') {
                     arm_set_member_status($user_id, 2, 0);
+                } else if ($new_status == '3') {
+                    arm_set_member_status($user_id, 3, 0);
                 } else if ($new_status == '4') {
                     arm_set_member_status($user_id, 4);
                     $defaultPlanData = $arm_subscription_plans->arm_default_plan_array();
@@ -4295,7 +4513,7 @@ if (!class_exists('ARM_members')) {
                     $gridAction .= "<div class='arm_confirm_box_text'>";
                     if ($primary_status == '1') {
                         $gridAction .= "<input type='hidden' id='arm_new_assigned_status_{$userID}' data-id='{$userID}' value=''>";
-                        $gridAction .= "<dl class='arm_selectbox column_level_dd arm_member_form_dropdown' style='margin-top: 10px;'>";
+                        $gridAction .= "<dl class='arm_selectbox column_level_dd arm_member_form_dropdown arm_margin_top_10'>";
                         $gridAction .= "<dt><span> " . __('Select Status', 'ARMember') . " </span><input type='text' style='display:none;' value='' class='arm_autocomplete'/><i class='armfa armfa-caret-down armfa-lg'></i></dt>";
                         $gridAction .= "<dd><ul data-id='arm_new_assigned_status_{$userID}'>";
                         $gridAction .= '<li data-label="' . __('Select Status', 'ARMember') . '" data-value="">' . __('Select Status', 'ARMember') . '</li>';
@@ -4313,7 +4531,7 @@ if (!class_exists('ARM_members')) {
                         //  $gridAction .= __('Are you sure you want to active this member?', 'ARMember');
 
                         $gridAction .= "<input type='hidden' id='arm_new_assigned_status_{$userID}' data-id='{$userID}' value='' class='arm_new_assigned_status' data-status='{$primary_status}'>";
-                        $gridAction .= "<dl class='arm_selectbox column_level_dd arm_member_form_dropdown' style='margin-top: 10px;'>";
+                        $gridAction .= "<dl class='arm_selectbox column_level_dd arm_member_form_dropdown arm_margin_top_10' >";
                         $gridAction .= "<dt><span> " . __('Select Status', 'ARMember') . " </span><input type='text' style='display:none;' value='' class='arm_autocomplete'/><i class='armfa armfa-caret-down armfa-lg'></i></dt>";
                         $gridAction .= "<dd><ul data-id='arm_new_assigned_status_{$userID}'>";
                         $gridAction .= '<li data-label="' . __('Select Status', 'ARMember') . '" data-value="">' . __('Select Status', 'ARMember') . '</li>';
@@ -4330,8 +4548,8 @@ if (!class_exists('ARM_members')) {
                         $gridAction .= "</dl>";
 
                         if ($primary_status == '3') {
-                            $gridAction .= "<label style='margin-top: 10px; display: none;' class='arm_notify_user_via_email'>";
-                            $gridAction .= "<input type='checkbox' class='arm_icheckbox' id='arm_user_activate_check_{$userID}' value='1' checked='checked'>";
+                            $gridAction .= "<label style='display: none;' class='arm_notify_user_via_email arm_margin_top_10'>";
+                            $gridAction .= "<input type='checkbox' class='arm_icheckbox' id='arm_user_activate_check_{$userID}' value='1' checked='checked'>&nbsp;";
                             $gridAction .= __('Notify user via email', 'ARMember');
                             $gridAction .= "</label>";
                         }
@@ -4383,12 +4601,13 @@ if (!class_exists('ARM_members')) {
                 $memberPlanText = '';
                 if ($is_multiple_membership_feature->isMultipleMembershipFeature) {
                     $multiple_membership = 1;
-                    $arm_user_plans = '<div style="min-width:120px;">';
+                    $arm_user_plans = '<div class="arm_min_width_120">';
                     $arm_user_plans .= "<a href='javascript:void(0)'  id='arm_show_user_more_plans_" . $userID . "' class='arm_show_user_more_plans' data-id='" . $userID . "'>";
                     if (!empty($arm_all_user_plans) && is_array($arm_all_user_plans)) {
 
                         foreach ($arm_all_user_plans as $plan_id) {
-                            $plan_color_id = ($plan_id > 101) ? intval($plan_id / 100) : $plan_id;
+                            $plan_color_id = ($plan_id > 10) ? intval($plan_id / 10) : $plan_id;
+                            $plan_color_id = ($plan_color_id > 10) ? intval($plan_color_id / 10) : $plan_color_id;
                             $arm_user_plans .= "<span class='armhelptip arm_user_plan_circle arm_user_plan_" . $plan_color_id . "' title='" . $plan_names[$plan_id] . "' >";
                             $plan_name = str_replace('-', '', $plan_names[$plan_id]);
                             $words = explode(" ", $plan_name);
@@ -4420,11 +4639,15 @@ if (!class_exists('ARM_members')) {
                         }
                     }
                 }
-
+                $is_changed = true;
                 $response = array('type' => 'success', 'msg' => __('User status has been changed successfully.', 'ARMember'), 'status' => $arm_status, 'grid_action' => $gridAction, 'user_role' => $arm_user_role, 'paid_with' => $arm_paid_with, 'membership_type' => $memberTypeText, 'membership_plan' => $memberPlanText, 'multiple_membership' => $multiple_membership);
             }
-            echo json_encode($response);
-            die();
+            if (empty($user_data_action)) {
+                echo json_encode($response);
+                die();
+            } else {
+                return $is_changed;
+            }
         }
 
         function arm_resend_verification_email_func($user_id = 0) {
@@ -4855,7 +5078,8 @@ if (!class_exists('ARM_members')) {
                 }
             }
 
-
+            $planIDs = apply_filters('arm_modify_plan_ids_externally', $planIDs, $user_id);
+    
             $date_format = $arm_global_settings->arm_get_wp_date_format();
             if (!empty($planIDs) && is_array($planIDs)) {
                 $morePlans = '<ul>';
@@ -4875,8 +5099,8 @@ if (!class_exists('ARM_members')) {
                         $planObj = new ARM_Plan($planID);
                     }
                     if (!empty($user_id) && $user_id != 0 && !empty($planID) && $planObj->exists() && ($plan_detail['arm_subscription_plan_post_id'] == 0)) {
-
-
+                        $userPlanCurrencymeta  = "";
+                        $userPlanCurrencymeta = apply_filters('arm_get_member_currency_outside', $userPlanCurrencymeta, $user_id, $planID);
                         $planStart = $planData['arm_start_plan'];
                         $planExpire = $planData['arm_expire_plan'];
                         $paymentMode = $planData['arm_payment_mode'];
@@ -4893,7 +5117,7 @@ if (!class_exists('ARM_members')) {
                                     $planType = __('Subscription', 'ARMember');
                                     $plan_options = $planObj->options;
                                     $planRecurringData = $planObj->prepare_recurring_data($payment_cycle);
-                                    $arm_membership_cycle = $planObj->new_user_plan_text(false, $payment_cycle, false);
+                                    $arm_membership_cycle = $planObj->new_user_plan_text(false, $payment_cycle, false, $userPlanCurrencymeta);
                                     $arm_installments_text = '';
 
                                     if ($paymentMode == 'auto_debit_subscription') {
@@ -5148,7 +5372,7 @@ if (!class_exists('ARM_members')) {
 
             $arm_multiple_membership_list_show = (!empty($_REQUEST['arm_multiple_membership_list_show']) && $_REQUEST['arm_multiple_membership_list_show'] != '0') ? $_REQUEST['arm_multiple_membership_list_show'] : '';
 
-            if(intval($sorting_col) == 11) {
+            if(intval($sorting_col) == 13) {
                 $orderby = "user_registered";
             }
             else {
@@ -5528,6 +5752,8 @@ if (!class_exists('ARM_members')) {
                     }
                 }
 
+                $arm_all_user_plans = apply_filters('arm_modify_plan_ids_externally', $arm_all_user_plans, $userID);
+
                 $userSuspendedPlanIDs = get_user_meta($userID, 'arm_user_suspended_plan_ids', true);
                 $userSuspendedPlanIDs = (isset($userSuspendedPlanIDs) && !empty($userSuspendedPlanIDs)) ? $userSuspendedPlanIDs : array();
 
@@ -5648,15 +5874,11 @@ if (!class_exists('ARM_members')) {
                                             $change_plan_to = $plan_data['arm_change_plan_to'];
 
                                             //$plan_names[$userPlanID] = $arm_subscription_plans->arm_get_plan_name_by_id($userPlanID);
-					    $plan_names[$userPlanID] = $plan_array[$userPlanID];
-                                            if($plan_data['arm_cencelled_plan'] == "yes")
+                                            $plan_names[$userPlanID] = isset($plan_array[$userPlanID]) ? $plan_array[$userPlanID] : '';
+                                            if($plan_data['arm_cencelled_plan'] == "yes" && !$is_multiple_membership_feature->isMultipleMembershipFeature)
                                             {
                                                 $plan_names[$userPlanID] .= " <span style='color: red;'>( ".__('Cancelled', 'ARMember')." )</span>";
                                             }
-                                            
-                                            
-                                            //echo "<br>".$plan_names[$userPlanID];
-                                            
                                             $subscription_effective_from[] = array('arm_subscr_effective' => $subscription_effective_from_date, 'arm_change_plan_to' => $change_plan_to);
                                         }
                                     }
@@ -5664,14 +5886,22 @@ if (!class_exists('ARM_members')) {
 
                                 //if(count($userPlanIDs) > 1){
                                 if ($is_multiple_membership_feature->isMultipleMembershipFeature) {
-                                    $arm_user_plans = '<div style="min-width:120px;">';
+                                    $arm_user_plans = '<div class="arm_min_width_120">';
                                     $arm_user_plans .= "<a href='javascript:void(0)'  id='arm_show_user_more_plans_" . $userID . "' class='arm_show_user_more_plans' data-id='" . $userID . "'>";
 
                                     if (!empty($arm_all_user_plans) && is_array($arm_all_user_plans) ) {
                                         foreach ($arm_all_user_plans as $plan_id) {
-                                            $plan_color_id = ($plan_id > 100) ? intval($plan_id / 100) : $plan_id;
+                                            $plan_color_id = ($plan_id > 10) ? intval($plan_id / 10) : $plan_id;
+                                            $plan_color_id = ($plan_color_id > 10) ? intval($plan_color_id / 10) : $plan_color_id;
                                             if( !empty( $plan_names[$plan_id] ) ) {
-                                                $arm_user_plans .= "<span class='armhelptip arm_user_plan_circle arm_user_plan_" . $plan_color_id . "' title='" . $plan_names[$plan_id] . "' >";
+                                                $arm_plan_title = $plan_names[$plan_id];
+
+                                                if($plan_data['arm_cencelled_plan'] == "yes" && $is_multiple_membership_feature->isMultipleMembershipFeature)
+                                                {
+                                                    $arm_plan_title .= '<span style="color: red;">('.__('Cancelled', 'ARMember').' )</span>';
+                                                }
+
+                                                $arm_user_plans .= "<span class='armhelptip arm_user_plan_circle arm_user_plan_" . $plan_color_id . "' title='" . $arm_plan_title . "' >";
                                                 $plan_name = str_replace('-', '', $plan_names[$plan_id]);
                                                 $words = explode(" ", $plan_name);
                                                 $plan_name = '';
@@ -5690,10 +5920,12 @@ if (!class_exists('ARM_members')) {
                                 } else {
                                     $plan_name = (!empty($plan_names)) ? implode(',', $plan_names) : '';
                                     $grid_data[$ai][$n] = '<span class="arm_user_plan_' . $userID . '">' . stripslashes_deep($plan_name) . '</span>';
-                                    if (!empty($arm_all_user_plans)) {
-                                        if (in_array($arm_all_user_plans[0], $userSuspendedPlanIDs)) {
-
-                                            $grid_data[$ai][$n] .= '<br/><span style="color: red;">(' . __('Suspended', 'ARMember') . ')</span>';
+                                    if(!empty($arm_all_user_plans) && is_array($arm_all_user_plans)) {
+                                        foreach($arm_all_user_plans as $arm_all_user_plan)
+                                        {
+                                            if (in_array($arm_all_user_plan, $userSuspendedPlanIDs)) {
+                                                $grid_data[$ai][$n] .= '<br/><span style="color: red;">(' . __('Suspended', 'ARMember') . ')</span>';
+                                            }
                                         }
                                     }
 
@@ -5719,17 +5951,17 @@ if (!class_exists('ARM_members')) {
                                     {
                                         $arm_paid_post_counter = 0;
                                         $arm_user_post_ids = get_user_meta($userID, 'arm_user_post_ids', true);
-					if(empty($arm_user_post_ids) )
-					{
-						$arm_user_post_ids = array();
-					}
+                    					if(empty($arm_user_post_ids) )
+                    					{
+                    						$arm_user_post_ids = array();
+                    					}
                                         $arm_user_plan_ids = get_user_meta($userID, 'arm_user_plan_ids', true);
-					if(empty($arm_user_plan_ids) )
-					{
-						$arm_user_plan_ids = array();
-					}
-					if(!empty( $arm_user_post_ids ))
-					{
+                    					if(empty($arm_user_plan_ids) )
+                    					{
+                    						$arm_user_plan_ids = array();
+                    					}
+                    					if(!empty( $arm_user_post_ids ))
+                    					{
 	                                        foreach($arm_user_plan_ids as $arm_user_plan_id_val)
 	                                        {
 	                                            if(array_key_exists($arm_user_plan_id_val, $arm_user_post_ids))
@@ -5760,9 +5992,9 @@ if (!class_exists('ARM_members')) {
                                 if (!empty($userPlanIDs) && is_array($userPlanIDs)) {
                                     foreach ($userPlanIDs as $userPlanID) {
                                         $planData = get_user_meta($userID, 'arm_user_plan_' . $userPlanID, true);
-                                        if($planData['arm_current_plan_detail']['arm_subscription_plan_post_id'] == 0)
+                                        if( empty($planData['arm_current_plan_detail']['arm_subscription_plan_post_id']) )
                                         {
-                                            $using_gateway = $planData['arm_user_gateway'];
+                                            $using_gateway = isset($planData['arm_user_gateway']) ? $planData['arm_user_gateway'] : '' ;
                                             if (!empty($using_gateway)) {
                                                 $arm_paid_withs[] = $arm_payment_gateways->arm_gateway_name_by_key($using_gateway);
                                             }
@@ -5814,7 +6046,7 @@ if (!class_exists('ARM_members')) {
                                     if ($primary_status == '1') {
 
                                         $gridAction .= "<input type='hidden' id='arm_new_assigned_status_{$userID}' data-id='{$userID}' value=''>";
-                                        $gridAction .= "<dl class='arm_selectbox column_level_dd arm_member_form_dropdown' style='margin-top: 10px;'>";
+                                        $gridAction .= "<dl class='arm_selectbox column_level_dd arm_member_form_dropdown arm_margin_top_10' >";
                                         $gridAction .= "<dt><span> " . __('Select Status', 'ARMember') . " </span><input type='text' style='display:none;' value='' class='arm_autocomplete'/><i class='armfa armfa-caret-down armfa-lg'></i></dt>";
                                         $gridAction .= "<dd><ul data-id='arm_new_assigned_status_{$userID}'>";
                                         $gridAction .= '<li data-label="' . __('Select Status', 'ARMember') . '" data-value="">' . __('Select Status', 'ARMember') . '</li>';
@@ -5832,7 +6064,7 @@ if (!class_exists('ARM_members')) {
 
                                         // $gridAction .= __('Are you sure you want to active this member?', 'ARMember');
                                         $gridAction .= "<input type='hidden' id='arm_new_assigned_status_{$userID}' data-id='{$userID}' value='' class='arm_new_assigned_status' data-status='{$primary_status}'>";
-                                        $gridAction .= "<dl class='arm_selectbox column_level_dd arm_member_form_dropdown' style='margin-top: 10px;'>";
+                                        $gridAction .= "<dl class='arm_selectbox column_level_dd arm_member_form_dropdown arm_margin_top_10' >";
                                         $gridAction .= "<dt><span> " . __('Select Status', 'ARMember') . " </span><input type='text' style='display:none;' value='' class='arm_autocomplete'/><i class='armfa armfa-caret-down armfa-lg'></i></dt>";
                                         $gridAction .= "<dd><ul data-id='arm_new_assigned_status_{$userID}'>";
 
@@ -5850,8 +6082,8 @@ if (!class_exists('ARM_members')) {
                                         $gridAction .= "</ul></dd>";
                                         $gridAction .= "</dl>";
                                         if ($primary_status == '3') {
-                                            $gridAction .= "<label style='margin-top: 10px; display: none;' class='arm_notify_user_via_email'>";
-                                            $gridAction .= "<input type='checkbox' class='arm_icheckbox' id='arm_user_activate_check_{$userID}' value='1' checked='checked'>";
+                                            $gridAction .= "<label style='display: none;' class='arm_notify_user_via_email arm_margin_top_10'>";
+                                            $gridAction .= "<input type='checkbox' class='arm_icheckbox' id='arm_user_activate_check_{$userID}' value='1' checked='checked'>&nbsp;";
                                             $gridAction .= __('Notify user via email', 'ARMember');
                                             $gridAction .= "</label>";
                                         }
@@ -5880,13 +6112,7 @@ if (!class_exists('ARM_members')) {
                                 break;
                             default:
                                 $user_meta_detail = get_user_meta($userID, $key, true);
-                                $arm_date_key_pattern = '/^(date\_(.*))/';
-                                if ($user_meta_detail != '') {
-                                    if (preg_match($arm_date_key_pattern, $key)) {
-                                        $user_meta_detail = date_i18n($date_format, strtotime($user_meta_detail));
-                                    }
-                                }
-
+                                                            
                                 $arm_form_id = get_user_meta($userID, 'arm_form_id', true);
                                 $grid_data[$ai][$n] = '';
 
@@ -6060,6 +6286,7 @@ if (!class_exists('ARM_members')) {
             global $arm_payment_gateways, $ARMember, $arm_members_class, $arm_subscription_plans, $arm_global_settings, $arm_membership_setup, $arm_pay_per_post_feature;
 
             $is_paid_post = (isset($posted_data['arm_paid_post_request']) && !empty($posted_data['arm_paid_post_request']) && ($posted_data['arm_paid_post_request'] == (bool)"1")) ? 1 : 0 ;
+            $is_arm_gift_plan = (isset($posted_data['arm_gift_request']) && !empty($posted_data['arm_gift_request']) && ($posted_data['arm_gift_request'] == (bool)"1")) ? 1 : 0 ;
 
 
             // $plan_id = $posted_data['arm_user_plan'];
@@ -6238,7 +6465,6 @@ if (!class_exists('ARM_members')) {
                         $return_array['arm_amount'] = $plan_cycle_data_amount;
                         $return_array['arm_currency'] = $currency;
                         $return_array['arm_coupon_code'] = '';
-                        $return_array['arm_response_text'] = '';
                         $return_array['arm_extra_vars'] = maybe_serialize($arm_extra_vars);
 
                         if($is_paid_post)
@@ -6254,6 +6480,8 @@ if (!class_exists('ARM_members')) {
                                 $return_array['arm_paid_post_id'] = $arm_user_post_id;
                             }
                         }
+
+                        $return_array = apply_filters('arm_modify_return_data_for_manual_update_user_data', $return_array, $plan->ID);
 
                         $return_array['arm_created_date'] = date('Y-m-d H:i:s', $start_time);
                         $payment_log_id = $arm_payment_gateways->arm_save_payment_log($return_array);
@@ -6341,7 +6569,6 @@ if (!class_exists('ARM_members')) {
                 $return_array['arm_amount'] = $plan_cycle_data_amount;
                 $return_array['arm_currency'] = $currency;
                 $return_array['arm_coupon_code'] = '';
-                $return_array['arm_response_text'] = '';
 
                 if($is_paid_post)
                 {
@@ -6357,6 +6584,8 @@ if (!class_exists('ARM_members')) {
                     }
                 }
 
+                $return_array = apply_filters('arm_modify_return_data_for_manual_update_user_data', $return_array, $plan->ID);
+                
                 $return_array['arm_extra_vars'] = maybe_serialize($arm_extra_vars);
                 $return_array['arm_created_date'] = date('Y-m-d H:i:s', $start_time);
 
@@ -6449,7 +6678,6 @@ if (!class_exists('ARM_members')) {
             $return_array['arm_amount'] = $plan_cycle_data_amount;
             $return_array['arm_currency'] = $currency;
             $return_array['arm_coupon_code'] = '';
-            $return_array['arm_response_text'] = '';
             $return_array['arm_extra_vars'] = maybe_serialize($arm_extra_vars);
             $return_array['arm_created_date'] = current_time('mysql');
 	        $payment_log_id = $arm_payment_gateways->arm_save_payment_log($return_array);
@@ -6487,7 +6715,7 @@ if (!class_exists('ARM_members')) {
             $historyRecords = $wpdb->get_results("SELECT u.user_login, l.arm_user_id, l.arm_fail_attempts_ip, l.arm_fail_attempts_datetime FROM `{$user_table}` u RIGHT JOIN `" . $ARMember->tbl_arm_fail_attempts . "` l ON u.ID = l.arm_user_id ORDER BY l.arm_fail_attempts_datetime DESC {$historyLimit}", ARRAY_A);
 
             $historyHtml .= '<div class="arm_failed_attempt_loginhistory_wrapper">';
-            $historyHtml .= '<table class="form-table arm_failed_login_history_table" width="100%" style="margin:0">';
+            $historyHtml .= '<table class="form-table arm_failed_login_history_table arm_margin_0" width="100%" >';
             $historyHtml .= '<tr>';
             $historyHtml .= '<td>' . __('Username', 'ARMember') . '</td>';
             $historyHtml .= '<td>' . __('Logged In Date', 'ARMember') . '</td>';
@@ -6508,7 +6736,7 @@ if (!class_exists('ARM_members')) {
                 }
             } else {
                 $historyHtml .= '<tr class="arm_failed_login_history_data">';
-                $historyHtml .= '<td colspan="6" style="text-align: center;">' . __('No Failed Attempt Login History Found.', 'ARMember') . '</td>';
+                $historyHtml .= '<td colspan="6" class="arm_text_align_center">' . __('No Failed Attempt Login History Found.', 'ARMember') . '</td>';
                 $historyHtml .= '</tr>';
             }
 
@@ -6612,7 +6840,7 @@ if (!class_exists('ARM_members')) {
             $user_id = intval($_REQUEST['member_id']);
             if (!empty($user_id) && $user_id != 0) {
         ?>
-                <div class="arm_member_paid_post_popup popup_wrapper arm_import_user_list_detail_popup_wrapper" style="width:1000px; min-height: 200px;">
+                <div class="arm_member_paid_post_popup popup_wrapper arm_import_user_list_detail_popup_wrapper">
                     <form method="GET" id="arm_member_manage_plan_user_form" class="arm_admin_form">
                     <div class="popup_wrapper_inner">
                         <div class="popup_header">
@@ -6621,7 +6849,7 @@ if (!class_exists('ARM_members')) {
                             <input type="hidden" id="arm_delete_paid_post_plan" value="<?php echo $user_id; ?>" />
                             <input type="hidden" id="arm_add_paid_post_plan" value="<?php echo $user_id; ?>" />
                         </div>
-                        <div class="popup_content_text arm_member_view_detail_popup_text arm_member_manage_post_detail_popup_text" style="padding: 0;height: auto;text-align: center;">
+                        <div class="popup_content_text arm_member_view_detail_popup_text arm_member_manage_post_detail_popup_text arm_text_align_center arm_padding_0" style="height: auto;">
                             <?php
                                 global $arm_global_settings, $ARMember, $arm_capabilities_global, $arm_pay_per_post_feature;
 
@@ -6976,8 +7204,8 @@ if (!class_exists('ARM_members')) {
                             <span class="popup_close_btn arm_popup_close_btn arm_member_view_detail_close_btn"></span>
                             <span class="add_rule_content"><?php _e('Member Details','ARMember' );?></span>
                         </div>
-                        <div class="popup_content_text arm_member_view_detail_popup_text" id="arm_member_view_detail_popup_text" style="padding: 0;">
-                            <iframe src="<?php echo $view_link; ?>" id="arm_member_view_iframe" style="width: 100%;height:665px;"></iframe>
+                        <div class="popup_content_text arm_member_view_detail_popup_text arm_padding_0" id="arm_member_view_detail_popup_text" >
+                            <iframe src="<?php echo $view_link; ?>" id="arm_member_view_iframe"></iframe>
                         </div>
                     </div>
                 </div>
@@ -6985,6 +7213,131 @@ if (!class_exists('ARM_members')) {
             }
             die;
         }
+
+        function arm_gateway_cancel_subscription_data($arm_cancel_data = array(), $user_id = 0, $plan_id = 0, $arm_payment_gateway = "", $arm_subscription_id_field_name = "", $arm_transaction_id_field_name = "", $arm_customer_id_field_name = ""){
+            global $wpdb, $ARMember, $arm_global_settings, $arm_subscription_plans, $arm_member_forms, $arm_payment_gateways, $arm_manage_communication, $arm_subscription_cancel_msg;
+
+            if(!empty($user_id) && !empty($plan_id) && !empty($arm_payment_gateway)){
+                $all_payment_gateways = $arm_payment_gateways->arm_get_active_payment_gateways();
+                if(!empty($all_payment_gateways[$arm_payment_gateway])){
+                    $defaultPlanData = $arm_subscription_plans->arm_default_plan_array();
+                    $userPlanDatameta = get_user_meta($user_id, 'arm_user_plan_' . $plan_id, true);
+                    $planData = !empty($userPlanDatameta) ? $userPlanDatameta : array();
+                    //$planData = shortcode_atts($defaultPlanData, $userPlanDatameta);
+
+                    $user_payment_gateway = !empty($planData['arm_user_gateway']) ? $planData['arm_user_gateway'] : '';
+
+                    if(strtolower($user_payment_gateway) == $arm_payment_gateway){
+                        $user_payment_gateway_data = !empty($planData['arm_'.$arm_payment_gateway]) ? $planData['arm_'.$arm_payment_gateway] : array();
+                        $arm_payment_mode = $planData['arm_payment_mode'];
+                        $arm_plan_details = $planData['arm_current_plan_detail'];
+
+                        if(!empty($arm_plan_details)){
+                            $plan = new ARM_Plan(0);
+                            $plan->init((object) $arm_plan_details);
+                        }else{
+                            $plan = new ARM_Plan($plan_id);
+                        }
+
+                        $arm_payment_cycle = $planData['arm_payment_cycle'];
+                        $recurring_data = $plan->prepare_recurring_data($arm_payment_cycle);
+                        $amount = $recurring_data['amount'];
+
+                        $arm_customer_id = $arm_subscr_id = $arm_transaction_id = "";
+
+                        if(!empty($arm_customer_id_field_name)){
+                            $arm_customer_id = isset($user_payment_gateway_data[$arm_customer_id_field_name]) ? $user_payment_gateway_data[$arm_customer_id_field_name] : '';
+                        }
+
+                        if(!empty($arm_subscription_id_field_name)){
+                            $arm_subscr_id = isset($user_payment_gateway_data[$arm_subscription_id_field_name]) ? $user_payment_gateway_data[$arm_subscription_id_field_name] : '';
+                            if(empty($arm_subscr_id))
+                            {
+                                 $arm_subscription_id_field_name_old = str_replace('arm_', '', $arm_subscription_id_field_name);
+                                 $arm_subscr_id = isset($user_payment_gateway_data[$arm_subscription_id_field_name_old]) ? $user_payment_gateway_data[$arm_subscription_id_field_name_old] : '';
+                            }
+                        }
+
+                        if(!empty($arm_transaction_id_field_name)){
+                            $arm_transaction_id = isset($user_payment_gateway_data[$arm_transaction_id_field_name]) ? $user_payment_gateway_data[$arm_transaction_id_field_name] : '';
+                            if(empty($arm_transaction_id))
+                            {
+                                 $arm_transaction_id_field_name_old = str_replace('arm_', '', $arm_transaction_id_field_name);
+                                 $arm_transaction_id = isset($user_payment_gateway_data[$arm_transaction_id_field_name_old]) ? $user_payment_gateway_data[$arm_transaction_id_field_name_old] : '';
+                            }
+                        }
+
+                        $arm_payment_gateway_options = $all_payment_gateways[$arm_payment_gateway];
+
+                        $arm_payment_log_table = $ARMember->tbl_arm_payment_log;
+                        $arm_transaction_payment_log_data = $wpdb->get_row($wpdb->prepare("SELECT * FROM `{$arm_payment_log_table}` WHERE arm_user_id = %d AND arm_plan_id = %d AND arm_payment_type = %s AND arm_payment_gateway = %s AND arm_token != %s ORDER BY arm_created_date DESC LIMIT 0,1", $user_id, $plan_id, 'subscription', $arm_payment_gateway, ''));
+
+                        if(empty($arm_subscr_id))
+                        {
+                            $arm_subscr_id = !empty($arm_transaction_payment_log_data->arm_token) ? $arm_transaction_payment_log_data->arm_token : '';
+                        }
+
+                        $arm_cancel_data = array(
+                            'user_id' => $user_id,
+                            'plan_id' => $plan_id,
+                            'arm_cancel_amount' => $amount,
+                            'arm_plan_data' => $planData,
+                            'payment_gateway_options' => $arm_payment_gateway_options,
+                            'arm_payment_mode' => $arm_payment_mode,
+                            'arm_subscr_id' => $arm_subscr_id,
+                            'arm_customer_id' => $arm_customer_id,
+                            'arm_transaction_id' => $arm_transaction_id,
+                            'arm_payment_log_data' => $arm_transaction_payment_log_data
+                        );
+                    }
+                }
+            }
+
+            return $arm_cancel_data;
+        }
+
+
+        function arm_cancel_subscription_payment_log($user_id = 0, $plan_id = 0, $arm_payment_gateway = "", $arm_subscription_id = "", $arm_transaction_id = "", $arm_customer_id = "", $payment_mode = "manual_subscription", $arm_cancel_amount = 0, $arm_payer_email = ""){
+
+            global $wpdb, $ARMember, $arm_payment_gateways, $arm_manage_communication;
+
+            if(!empty($user_id) && !empty($plan_id)){
+
+                //Check plan cancel entry already exist or not.
+                $armCancelLogData = $wpdb->get_row("SELECT `arm_log_id` FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_token`= '".$arm_subscription_id."' AND arm_transaction_status = 'canceled' AND arm_user_id = '".$user_id."' AND arm_plan_id = '".$plan_id."' ORDER BY `arm_log_id` DESC");
+
+                if(empty($armCancelLogData))
+                {
+                    $user_detail = get_userdata($user_id);
+                    $payer_email = !empty($arm_payer_email) ? $arm_payer_email : $user_detail->user_email;
+
+                    $arm_manage_communication->arm_user_plan_status_action_mail(array('plan_id' => $plan_id, 'user_id' => $user_id, 'action' => 'on_cancel_subscription'));
+
+                    $payment_data = array(
+                        'arm_user_id' => $user_id,
+                        'arm_first_name'=> $user_detail->first_name,
+                        'arm_last_name'=> $user_detail->last_name,
+                        'arm_plan_id' => $plan_id,
+                        'arm_payment_gateway' => $arm_payment_gateway,
+                        'arm_payment_type' => 'subscription',
+                        'arm_token' => $arm_subscription_id,
+                        'arm_payer_email' => $payer_email,
+                        'arm_receiver_email' => '',
+                        'arm_transaction_id' => $arm_transaction_id,
+                        'arm_transaction_payment_type' => 'subscription',
+                        'arm_payment_mode' => $payment_mode,
+                        'arm_transaction_status' => 'canceled',
+                        'arm_payment_date' => current_time('mysql'),
+                        'arm_amount' => $arm_cancel_amount,
+                        'arm_coupon_code' => '',
+                        'arm_is_trial' => '0',
+                        'arm_created_date' => current_time('mysql')
+                    );
+                    $payment_log_id = $arm_payment_gateways->arm_save_payment_log($payment_data);
+                }
+            }
+        }
+
     }
 
 }

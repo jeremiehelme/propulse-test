@@ -12,15 +12,14 @@ global $check_sorting;
 $setact = $arm_members_activity->$check_sorting();
 ?>
 <div class="wrap arm_page arm_manage_forms_main_wrapper">
-	<div class="content_wrapper arm_manage_forms_container" id="content_wrapper">
-		<div class="page_title"><?php _e('Manage Forms','ARMember'); ?></div>
-         <?php
+	<?php
     if ($setact != 1) {
         $admin_css_url = admin_url('admin.php?page=arm_manage_license');
         ?>
-
-        <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
     <?php } ?>
+	<div class="content_wrapper arm_manage_forms_container" id="content_wrapper">
+		<div class="page_title"><?php _e('Manage Forms','ARMember'); ?></div>
 		<div class="armclear"></div>
 		<div class="arm_manage_forms_content armPageContainer">
 			<div class="arm_form_content_box">
@@ -40,13 +39,13 @@ $setact = $arm_members_activity->$check_sorting();
 				$add_form_select .= '<dl id="existing_form_registration" class="arm_selectbox existing_form_select">';
 				$add_form_select .= '<dt><span>'.__('Select Form','ARMember').'</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
 				$add_form_select_style = (is_rtl()) ? 'margin-right: 35px! important;' : '';
-				$add_form_select .= '<dd><ul data-id="existing_form_registration_val" style="'.$add_form_select_style.' width: 362px;">';
+				$add_form_select .= '<dd><ul data-id="existing_form_registration_val" style="'.$add_form_select_style.'">';
 				$add_form_select .="<li data-label='". __('Select Form', 'ARMember')."' data-value=''>".__('Select Form', 'ARMember')."</li>";
 
 				$profile_form_select .= '<input type="hidden" name="existing_form_profile_form" id="existing_form_profile_form_val" class="existing_form_select" value=""/>';;
 				$profile_form_select .= '<dl id="existing_form_profile_form" class="arm_selectbox existing_form_select">';
 				$profile_form_select .= '<dt><span>' . esc_html__( ' Select Form', 'ARMember' ) . '</span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
-				$profile_form_select .= '<dd><ul data-id="existing_form_profile_form_val" style="' . $add_form_select_style . 'width: 362px;">';
+				$profile_form_select .= '<dd><ul data-id="existing_form_profile_form_val" style="' . $add_form_select_style . '">';
 				$profile_form_select .= '<li data-label="' . esc_html__('Select Form','ARMember') . '" data-value="">' . esc_html__('Select Form', 'ARMember').'</li>';
 
 				?>
@@ -255,6 +254,7 @@ $setact = $arm_members_activity->$check_sorting();
 												endif;?>
 											</div>
 										</td>
+										<td></td>
 									</tr>
 								<?php
 								}
@@ -347,7 +347,7 @@ $setact = $arm_members_activity->$check_sorting();
 	</div>
 </div>
 <!--./******************** Add New Member Form ********************/.-->
-<div class="add_new_form_wrapper popup_wrapper" style="width: 650px;">
+<div class="add_new_form_wrapper popup_wrapper">
 	<form method="post" id="form_arm_add_new_reg_form" class="arm_admin_form">
 		<table cellspacing="0">
 			<tr class="popup_wrapper_inner">
@@ -357,11 +357,11 @@ $setact = $arm_members_activity->$check_sorting();
 					<div class="arm_message arm_error_message arm_add_new_form_error">
 						<div class="arm_message_text"><?php _e('There is a error while adding form, Please try again.', 'ARMember');?></div>
 					</div>
-                    <div class="arm_registration_popup_inner_content_wrapper" style="min-height: 400px; position: relative;">
+                    <div class="arm_registration_popup_inner_content_wrapper arm_position_relative" style="min-height: 400px;">
 					<table class="arm_table_label_on_top">
 						<tr>
 							<th><label><?php _e('Form Name','ARMember');?><span class="required_star">*</span></label></th>
-							<td><input type="text" id="unique_form_name" name="arm_new_form[arm_form_label]" value="" required data-msg-required="<?php _e('Form name can not be left blank.', 'ARMember');?>" style="width: 422px;"></td>
+							<td><input type="text" id="unique_form_name" name="arm_new_form[arm_form_label]" value="" required data-msg-required="<?php _e('Form name can not be left blank.', 'ARMember');?>" class="arm_width_422"></td>
 						</tr>
 						<tr>
 							<th><label><?php _e('Form Fields','ARMember');?></label></th>
@@ -386,7 +386,7 @@ $setact = $arm_members_activity->$check_sorting();
                                                 <i class="armfa armfa-caret-down armfa-lg"></i>
                                             </dt>
                                             <dd>
-                                                <ul data-id="template_form_registration_val" style="<?php echo $add_form_select_style = (is_rtl()) ? 'margin-right: 35px! important;' : ''; ?> width: 362px;">
+                                                <ul data-id="template_form_registration_val" style="<?php echo $add_form_select_style = (is_rtl()) ? 'margin-right: 35px! important;' : ''; ?>">
                                                     <li data-value="" data-label="<?php _e('Select Template','ARMember'); ?>"><?php _e('Select Template','ARMember'); ?></li>
                                                     <?php
                                                         $registration_templates = $wpdb->get_results("SELECT * FROM ".$ARMember->tbl_arm_forms." WHERE arm_is_template ='1' AND arm_form_slug LIKE 'template-registration%' AND arm_form_type='template' ");
@@ -458,7 +458,7 @@ $setact = $arm_members_activity->$check_sorting();
 	</form>
 </div>
 <!--./******************** Add New Other Member Forms ********************/.-->
-<div class="arm_add_new_other_forms_wrapper popup_wrapper" style="width: 650px;">
+<div class="arm_add_new_other_forms_wrapper popup_wrapper" >
 	<form method="post" id="form_arm_add_new_other_member_form" class="arm_admin_form">
 		<table cellspacing="0">
 			<tr class="popup_wrapper_inner">
@@ -481,7 +481,7 @@ $setact = $arm_members_activity->$check_sorting();
                                 $first_template = $wpdb->get_row("SELECT * FROM `" . $ARMember->tbl_arm_forms . "` WHERE arm_is_template = 1 and arm_form_slug LIKE 'template-login%' GROUP BY arm_set_id ORDER BY arm_form_id ASC LIMIT 1 ");
                                 ?>
                                 <input type="hidden" name="arm_form_template" id="arm_form_template" value="<?php echo $first_template->arm_set_id; ?>" />
-                                <dl class="arm_selectbox column_level_dd">
+                                <dl class="arm_selectbox arm_selectbox_full_width column_level_dd">
                                     <dt>
                                         <span><?php _e('Default Set','ARMember'); ?></span>
                                         <input type="text" class="arm_autocomplete" />
@@ -536,7 +536,7 @@ $setact = $arm_members_activity->$check_sorting();
 	</form>
 </div>
 <!--./******************** Add New Profile Form *******************/. -->
-<div class="add_new_profile_form_wrapper popup_wrapper" style="width:750px">
+<div class="add_new_profile_form_wrapper popup_wrapper" >
 	<form method="post" id="arm_add_new_profile_form" class="arm_admin_form">
 		<table cellspacing="0">
 			<tr class="popup_wrapper_inner">
@@ -546,11 +546,11 @@ $setact = $arm_members_activity->$check_sorting();
 					<div class="arm_message arm_error_message arm_add_new_form_error">
 						<div class="arm_message_text"><?php esc_html_e('There is a error while adding form, Please try again.', 'ARMember');?></div>
 					</div>
-					<div class="arm_profile_popup_inner_content_wrapper" style="min-height: 400px; position: relative;">
+					<div class="arm_profile_popup_inner_content_wrapper arm_position_relative" style="min-height: 400px;">
 						<table class="arm_table_label_on_top">
 							<tr>
 								<th><label><?php esc_html_e('Form Name','ARMember');?><span class="required_star">*</span></label></th>
-								<td><input type="text" id="unique_profile_form_name" name="arm_new_profile_form[arm_form_label]" value="" required data-msg-required="<?php esc_html_e('Form name can not be left blank.', 'ARMember');?>" style="width: 422px;"></td>
+								<td><input type="text" id="unique_profile_form_name" name="arm_new_profile_form[arm_form_label]" value="" required data-msg-required="<?php esc_html_e('Form name can not be left blank.', 'ARMember');?>" class="arm_width_422"></td>
 							</tr>
 							<tr>
 								<th><label><?php esc_html_e('Form Fields','ARMember'); ?></label></th>
@@ -576,7 +576,7 @@ $setact = $arm_members_activity->$check_sorting();
 	                                                <i class="armfa armfa-caret-down armfa-lg"></i>
 	                                            </dt>
 	                                            <dd>
-	                                            	<ul data-id="template_form_edit_profile_val" style="<?php echo $add_form_select_style = (is_rtl()) ? 'margin-right: 35px! important;' : ''; ?> width: 362px;">
+	                                            	<ul data-id="template_form_edit_profile_val" style="<?php echo $add_form_select_style = (is_rtl()) ? 'margin-right: 35px! important;' : ''; ?>">
 	                                                    <li data-value="" data-label="<?php _e('Select Template','ARMember'); ?>"><?php _e('Select Template','ARMember'); ?></li>
 	                                                    <?php
 	                                                        $registration_templates = $wpdb->get_results("SELECT * FROM ".$ARMember->tbl_arm_forms." WHERE arm_is_template ='1' AND arm_form_slug LIKE 'template-registration%' AND arm_form_type='template' ");
@@ -736,3 +736,6 @@ jQuery(document).on('change','#select_arm_profile_field_metas', function(e){
 	}
 });
 </script>
+<?php
+	echo $ARMember->arm_get_need_help_html_content('member-manage-forms');
+?>

@@ -10,6 +10,7 @@ $arm_paypal_currency = $arm_payment_gateways->currency['paypal'];
 $arm_stripe_currency = $arm_payment_gateways->currency['stripe'];
 $arm_authorize_net_currency = $arm_payment_gateways->currency['authorize_net'];
 $arm_2checkout_currency = $arm_payment_gateways->currency['2checkout'];
+$arm_bank_transafer_currency = $arm_payment_gateways->currency['bank_transfer'];
 ?>
 <div class="arm_global_settings_main_wrapper">
 	<div class="page_sub_content" id="content_wrapper">
@@ -30,7 +31,7 @@ $arm_2checkout_currency = $arm_payment_gateways->currency['2checkout'];
 				$apiCallbackUrlInfo = '';
 				switch ($gateway_name) {
 					case 'paypal':
-						$titleTooltip = __('Click below links for more details about how to get API Credentials:', 'ARMember').'<br><a href="https://developer.paypal.com/docs/classic/lifecycle/ug_sandbox/" target="_blank">'.__('Sandbox API Detail', 'ARMember').'</a>, <a href="https://developer.paypal.com/docs/classic/api/apiCredentials/" target="_blank">'.__('Live API Detail', 'ARMember').'</a>';
+						$titleTooltip = __('Click below links for more details about how to get API Credentials:', 'ARMember').'<br><a href="https://developer.paypal.com/tools/sandbox/accounts/#create-a-business-sandbox-account" target="_blank">'.__('Sandbox API Detail', 'ARMember').'</a>, <a href="https://developer.paypal.com/docs/archive/paypal-here/sdk-dev/going-live/" target="_blank">'.__('Live API Detail', 'ARMember').'</a>';
 						break;
 					case 'stripe':
 						$titleTooltip = __('Your API keys are located in your', 'ARMember').' <a href="https://dashboard.stripe.com/account/apikeys" target="_blank">'.__('account settings', 'ARMember').'</a>. '.__('To get more details, please refer this', 'ARMember').' <a href="https://support.stripe.com/questions/where-do-i-find-my-api-keys" target="_blank">'.__('document', 'ARMember').'</a>';
@@ -275,7 +276,7 @@ $arm_2checkout_currency = $arm_payment_gateways->currency['2checkout'];
 										<span><?php esc_html_e('Remove','ARMember'); ?></span>
 									</div>
 									<div class="arm_stripe_popup_icon_selected_img <?php echo (empty($gateway_options['stripe_popup_icon']) ? "hidden_section" : ""); ?>"><img src="<?php echo (!empty($gateway_options['stripe_popup_icon']) ? $gateway_options['stripe_popup_icon'] : ""); ?>" class="<?php echo (empty($gateway_options['stripe_popup_icon']) ? "hidden_section" : ""); ?>" /></div>
-									<div style="font-size: 12px;margin-top:5px;">(<?php esc_html_e('Recommended logo size 70X70 px','ARMember'); ?>)</div>
+									<div class="arm_font_size_12 arm_margin_top_5" >(<?php esc_html_e('Recommended logo size 70X70 px','ARMember'); ?>)</div>
 								</div>
 							</td>
 						</tr>
@@ -349,9 +350,9 @@ $arm_2checkout_currency = $arm_payment_gateways->currency['2checkout'];
 							</td>
 						</tr>
 						<tr class="form-field">
-							<th class="arm-form-table-label"><label><?php _e('Publishable Key', 'ARMember');?> *</label></th>
+							<th class="arm-form-table-label"><label><?php _e('API Secret Key', 'ARMember');?> *</label></th>
 							<td class="arm-form-table-content">
-								<input class="arm_active_payment_<?php echo strtolower($gateway_name);?>" id="arm_2checkout_publishable_key" type="text" name="payment_gateway_settings[2checkout][publishable_key]" value="<?php echo (!empty($gateway_options['publishable_key']) ? $gateway_options['publishable_key'] : "" );?>" data-msg-required="<?php _e('Publishable Key can not be left blank.', 'ARMember');?>" <?php echo $readonly_field_attr;?>>
+								<input class="arm_active_payment_<?php echo strtolower($gateway_name);?>" id="arm_2checkout_api_secret_key" type="text" name="payment_gateway_settings[2checkout][api_secret_key]" value="<?php echo (!empty($gateway_options['api_secret_key']) ? $gateway_options['api_secret_key'] : "" );?>" data-msg-required="<?php _e('API Secret Key can not be left blank.', 'ARMember');?>" <?php echo $readonly_field_attr;?>>
 							</td>
 						</tr>
 						<tr class="form-field">
@@ -638,7 +639,7 @@ $arm_2checkout_currency = $arm_payment_gateways->currency['2checkout'];
 			</table>
 		<?php endforeach;?>
 			<div class="arm_submit_btn_container">
-				<button class="arm_save_btn arm_pay_gate_settings_btn" type="submit" name="arm_pay_gate_settings_btn"><?php _e('Save', 'ARMember') ?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" style="position:relative;top:8px;display:none;" width="24" height="24" />
+				<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_submit_btn_loader" style="display:none;" width="24" height="24" />&nbsp;<button class="arm_save_btn arm_pay_gate_settings_btn" type="submit" name="arm_pay_gate_settings_btn"><?php _e('Save', 'ARMember') ?></button>
 				<?php wp_nonce_field( 'arm_wp_nonce' );?>
 			</div>
 		</form>

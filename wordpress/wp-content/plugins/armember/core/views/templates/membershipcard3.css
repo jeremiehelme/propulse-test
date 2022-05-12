@@ -26,14 +26,13 @@
 }
 
 .membershipcard3 .arm_card_logo {
-	width: 100%;
 	height: 165px;
-	padding: 10px 0;
+	padding: 10px;
 	text-align: center;
 }
 
 .membershipcard3 .arm_card_logo img {
-	width: 90%;
+	width: 100%;
 	height: 100%;
 	margin: auto;
 }
@@ -85,6 +84,7 @@
 	vertical-align: middle;
 	text-align: left;
 	word-break: break-word;
+	float: left;
 }
 
 .membershipcard3 .arm_card_value {
@@ -94,6 +94,7 @@
 	word-break: break-word;
 	vertical-align: middle;
 	text-align: left;
+	float: left;
 }
 
 .popup_wrapper.arm_mobile_wrapper .membershipcard3 .arm_card_left {

@@ -50,8 +50,11 @@ if (!empty($responder_list_id) && !empty($api_key)) {
 				  					 'name' => $armfname,
 				  					 'fields' => array( 'last_name' => $armlname)
 									);
+        				do_action('arm_general_log_entry', 'mailerlite', 'subscriber parameters', 'armember', $arm_member_subscriber);
 						
 						$arm_addedSubscriber = $mailerlitegroupsApi->addSubscriber($responder_list_id, $arm_member_subscriber);
+
+				        do_action('arm_general_log_entry', 'mailerlite', 'subscriber add response', 'armember', $arm_addedSubscriber);
 
 					}
 					else
@@ -59,7 +62,10 @@ if (!empty($responder_list_id) && !empty($api_key)) {
 						
 						$arm_member_subscriberData = array( 'fields' => array( 'name' => $armfname, 'last_name' => $armlname ) );
 
+        				do_action('arm_general_log_entry', 'mailerlite', 'update subscriber parameters', 'armember', $arm_member_subscriberData);
+
 						$arm_updsubscriber = $mailerlitesubscribersApi->update($armemail, $arm_member_subscriberData);
+				        do_action('arm_general_log_entry', 'mailerlite', 'subscriber update response', 'armember', $arm_updsubscriber);
 					}
 			}
 			catch (Exception $e) 

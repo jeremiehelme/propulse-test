@@ -1,73 +1,67 @@
 <?php
-if (file_exists('../../../../../wp-load.php')) {
-    require_once( '../../../../../wp-load.php' );
-}
-
-
-$allowed_page_global = 0;
-$armuser_id = 0;
-if(is_user_logged_in())
-{
-    if (current_user_can('arm_manage_transactions')) 
+    $allowed_page_global = 0;
+    $armuser_id = 0;
+    if(is_user_logged_in())
     {
-       $allowed_page_global = 1;
+        if (current_user_can('arm_manage_transactions')) 
+        {
+           $allowed_page_global = 1;
+        }
+        else {
+
+            $armuser_id = get_current_user_id();
+        }
     }
     else {
-
-        $armuser_id = get_current_user_id();
+        exit;
     }
-}
-else {
-    exit;
-}
-?>
+    ?>
 
-        <style type="text/css">
-            body {
-                margin: 0;
-                padding: 0;
-                font: 12pt "Tahoma";
-            }
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            font: 12pt "Tahoma";
+        }
 
-            .page {
-                width: 700px;
-                min-height: 600px;
-                padding: 20px;
-                margin: 0 auto;
-                background: white;
-            }
-            
-
-            @page {
-                size: A4;
-                margin: 0;
-            }
-            @media print {
-                body {-webkit-print-color-adjust: exact;}
-                .page {
-                    margin: 0;
-                    border: initial;
-                    border-radius: initial;
-                    width: initial;
-                    min-height: initial;
-                    box-shadow: initial;
-                    background: initial;
-                    page-break-after: always;
-                }
-            }
-        </style>
-
-        <script type="text/javascript">
-            function arm_print_invoice_content() {
-                
-                window.print();
-            }
-        </script>
+        .page {
+            width: 700px;
+            min-height: 600px;
+            padding: 20px;
+            margin: 0 auto;
+            background: white;
+        }
         
-        <?php
-            $arm_invoice_tax_feature = get_option('arm_is_invoice_tax_feature', 0);
-            if($arm_invoice_tax_feature) {
-        ?>
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+        @media print {
+            body {-webkit-print-color-adjust: exact;}
+            .page {
+                margin: 0;
+                border: initial;
+                border-radius: initial;
+                width: initial;
+                min-height: initial;
+                box-shadow: initial;
+                background: initial;
+                page-break-after: always;
+            }
+        }
+    </style>
+
+    <script type="text/javascript">
+        function arm_print_invoice_content() {
+            window.print();
+        }
+    </script>
+
+    <?php
+        $arm_invoice_tax_feature = get_option('arm_is_invoice_tax_feature', 0);
+        if($arm_invoice_tax_feature) {
+    ?>
 
         <div class="arm_invoice_detail_popup arm_invoice_detail_popup_wrapper page">
 
@@ -107,7 +101,6 @@ else {
                                     'arm_amount' => $log_data->arm_amount,
                                     'arm_currency' => $log_data->arm_currency,
                                     'arm_extra_vars' => $log_data->arm_extra_vars,
-                                    'arm_response_text' => maybe_serialize((array) $log_data),
                                     'arm_coupon_code' => $log_data->arm_coupon_code,
                                     'arm_coupon_discount' => $log_data->arm_coupon_discount,
                                     'arm_coupon_discount_type' => $log_data->arm_coupon_discount_type,
@@ -236,10 +229,25 @@ else {
                                 {
                                     $payer_email = $log_detail['arm_payer_email'];
                                 }
-                                
-                                
+
+
+                                $date_format = $arm_global_settings->arm_get_wp_date_format();
+
+                                $historyRecords = $wpdb->get_row("SELECT * FROM ".$ARMember->tbl_arm_activity." WHERE arm_type = 'membership' AND arm_user_id={$log_detail['arm_user_id']} AND arm_action != 'recurring_subscription' AND arm_item_id = {$log_detail['arm_plan_id']} ORDER BY arm_activity_id DESC LIMIT 0,1", ARRAY_A);
+
+                                $historyContent = !empty($historyRecords['arm_content']) ? maybe_unserialize($historyRecords['arm_content']) : '';
+
+                                $arm_paid_date = !empty($historyRecords['arm_date_recorded']) ? strtotime($historyRecords['arm_date_recorded']) : '';
+
+                                $arm_start_plan_date = !empty($historyContent['start']) ? date_i18n($date_format, $historyContent['start']) : '';
+                                $arm_end_plan_date = !empty($historyContent['expire']) ? date_i18n($date_format, $historyContent['expire']) : __('Never', 'ARMember');
+
+                                $content = str_replace('{ARM_PLAN_START_DATE}', $arm_start_plan_date, $content);
+                                $content = str_replace('{ARM_PLAN_END_DATE}', $arm_end_plan_date, $content);
+
                                 $arm_used_coupon_code = (!empty($log_detail['arm_coupon_code'])) ? $log_detail['arm_coupon_code'] : '-';
-                                $content = str_replace('{ARM_INVOICE_USERNAME}', $user_info->user_login, $content);
+                                $user_info_user_login = !empty($user_info->user_login) ? $user_info->user_login : '';
+                                $content = str_replace('{ARM_INVOICE_USERNAME}', $user_info_user_login, $content);
                                 $content = str_replace('{ARM_INVOICE_USERFIRSTNAME}', $user_first_name, $content);
                                 $content = str_replace('{ARM_INVOICE_USERLASTNAME}', $user_last_name, $content);
                                 $content = str_replace('{ARM_INVOICE_SUBSCRIPTIONNAME}', $user_plan_name, $content);
@@ -261,10 +269,26 @@ else {
                                 $content = str_replace('{ARM_INVOICE_COUPONAMOUNT}', $arm_used_coupon_discount, $content);
                                 $content = str_replace('{ARM_INVOICE_TAXPERCENTAGE}', $arm_tax_percentage, $content);
                                 $content = str_replace('{ARM_INVOICE_TAXAMOUNT}', $arm_tax_amount, $content);
+                                $content = str_replace('{ARM_SUBSCRIPTION_START_DATE}', $arm_start_plan_date, $content);
+                                $content = str_replace('{ARM_SUBSCRIPTION_END_DATE}', $arm_end_plan_date, $content);
+
+                                $arm_subscription_amount = 0;
+                                if(!empty($log_detail['arm_amount']) && $log_detail['arm_amount']>0)
+                                {
+                                    $arm_tax_amount_check = !empty($extraVars['tax_amount']) ? $extraVars['tax_amount'] : 0;
+                                    $arm_amount_check = !empty($log_detail['arm_amount']) ? $log_detail['arm_amount'] : 0;
+                                    $arm_subscription_amount = $arm_amount_check-$arm_tax_amount_check;
+                                    if($arm_subscription_amount<0)
+                                    {
+                                        $arm_subscription_amount = 0;
+                                    }
+                                }
+                                $arm_subscription_amount = $arm_payment_gateways->arm_prepare_amount($t_currency, $arm_subscription_amount);
+                                $content = str_replace('{ARM_INVOICE_SUBSCRIPTIONAMOUNT}', $arm_subscription_amount, $content);
 
                                 $dbFormFields = $arm_member_forms->arm_get_db_form_fields(true);
                                 foreach ($dbFormFields as $meta_key => $field) {
-  
+
                                     $field_options = maybe_unserialize($field);
                                     $field_options = apply_filters('arm_change_field_options', $field_options);
                                     $exclude_keys = array (
@@ -273,7 +297,6 @@ else {
                                         'repeat_pass', 'repeat_email', 'social_fields', 'avatar', 'profile_cover', 'user_pass_', 'display_name', 'description',
                                     );
                                     $meta_key = isset($field_options['meta_key']) ? $field_options['meta_key'] : $field_options['id'];
-                                    //$label = isset($field_options['label']) ? $field_options['label'] : '';
                                     $type = isset($field_options['type']) ? $field_options['type'] : array();
                                        
                                     if (!in_array($meta_key, $exclude_keys) && !in_array($type, array('section', 'roles', 'html', 'hidden', 'submit', 'repeat_pass', 'repeat_email'))) {
@@ -299,6 +322,6 @@ else {
                 </div>
             </div>
         </div>
-        <?php
-        }
-        ?>
+    <?php
+    }
+?>

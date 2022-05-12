@@ -32,6 +32,7 @@ $arm_redirection_login_url = (isset($redirection_settings['login']['url']) && !e
 $arm_redirection_login_refferel = (isset($redirection_settings['login']['refferel']) && !empty($redirection_settings['login']['refferel'])) ? $redirection_settings['login']['refferel'] : '';
 $arm_redirection_login_conditional = (isset($redirection_settings['login']['conditional_redirect']) && !empty($redirection_settings['login']['conditional_redirect'])) ? $redirection_settings['login']['conditional_redirect'] : array();
 $arm_redirection_signup_conditional = (isset($redirection_settings['signup']['conditional_redirect']) && !empty($redirection_settings['signup']['conditional_redirect'])) ? $redirection_settings['signup']['conditional_redirect'] : array();
+$arm_redirection_signup_refferel = (isset($redirection_settings['signup']['refferel']) && !empty($redirection_settings['signup']['refferel'])) ? $redirection_settings['signup']['refferel'] : ARM_HOME_URL;
 
 $arm_redirection_edit_profile_conditional = (isset($redirection_settings['edit_profile']['conditional_redirect']) && !empty($redirection_settings['edit_profile']['conditional_redirect'])) ? $redirection_settings['edit_profile']['conditional_redirect'] : array();
 
@@ -93,40 +94,40 @@ if(!empty($arm_default_redirection_rules)){
 $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscription_plan_id, arm_subscription_plan_name');
 ?>
 <div class="arm_global_settings_main_wrapper">
-	<div class="page_sub_content">
-		
-		
-		<form  method="post" action="#" id="arm_redirection_settings" class="arm_admin_form">
+    <div class="page_sub_content">
+        
+        
+        <form  method="post" action="#" id="arm_redirection_settings" class="arm_admin_form">
                     <div class="page_sub_title"><?php _e('After Login Redirection Rules','ARMember'); ?></div>
                     <table class="form-table">
                         <tr>
                             <th class="arm-form-table-label"><?php _e('Select Redirection Type','ARMember');?></th>
-                            <td class="arm-form-table-content">						
-                                <label style="min-width: 100px;">
+                            <td class="arm-form-table-content">                     
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[login][main_type]" value="fixed" class="arm_redirection_settings_login_radio_type arm_iradio" <?php checked($arm_redirection_login_type_main, 'fixed'); ?>>
-                                        <?php _e('Fixed Redirection','ARMember');?>
+                                        <span><?php _e('Fixed Redirection','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[login][main_type]" value="conditional_redirect" class="arm_redirection_settings_login_radio_type arm_iradio" <?php checked($arm_redirection_login_type_main, 'conditional_redirect');?>>
-                                        <?php _e('Conditional Redirection','ARMember');?>
+                                        <span><?php _e('Conditional Redirection','ARMember');?></span>
                                 </label>
                             </td>
                         </tr>
                         <tr id="arm_redirection_login_setting_fixed" class="arm_redirection_setting_login <?php if(($arm_redirection_login_type != 'page' && $arm_redirection_login_type != 'url' && $arm_redirection_login_type != 'referral') || $arm_redirection_login_type_main != 'fixed') { echo 'hidden_section'; }?>">
                             <th class="arm-form-table-label"><?php _e('Redirect To','ARMember');?></th>
                             <td>
-                                <label style="min-width: 100px;margin-bottom: 10px">
+                                <label class="arm_margin_bottom_10 arm_min_width_100" >
                                         <input type="radio" name="arm_redirection_settings[login][type]" value="page" class="arm_redirection_settings_login_radio arm_iradio" <?php checked($arm_redirection_login_type, 'page');?>>
-                                        <?php _e('Specific Page','ARMember');?>
+                                        <span><?php _e('Specific Page','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;margin-bottom: 10px">
+                                <label  class="arm_margin_bottom_10 arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[login][type]" value="url" class="arm_redirection_settings_login_radio arm_iradio" <?php checked($arm_redirection_login_type, 'url');?>>
-                                       <?php _e('Specific URL','ARMember');?>
+                                       <span><?php _e('Specific URL','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;margin-bottom: 10px">
+                                <label  class="arm_margin_bottom_10 arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[login][type]" value="referral" class="arm_redirection_settings_login_radio arm_iradio" <?php checked($arm_redirection_login_type, 'referral');?>>
-                                        <?php _e('Referrer Page','ARMember');?><br>
-                                        <span class="arm_info_text" style="margin: 0 30px;position: absolute;font-size: 13px;"><?php _e('(Original page before login.)','ARMember');?></span>
+                                        <span><?php _e('Referrer Page','ARMember');?><br></span>
+                                        <span class="arm_info_text arm_position_absolute arm_font_size_13" style="margin: 0 30px;"><?php _e('(Original page before login.)','ARMember');?></span>
                                 </label>
                             </td>
                         </tr>
@@ -134,7 +135,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                             <th></th>
                             <td>
                                 <div class="arm_default_redirection_lbl">
-                                <span class="arm_info_text"><?php _e('Select Page', 'ARMember'); ?></span>
+                                <span class="arm_info_text_select_page"><?php _e('Select Page', 'ARMember'); ?></span>
                                 </div>
                                 <div class="arm_default_redirection_txt">
                                     <?php
@@ -178,7 +179,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                             <th></th>
                             <td>
                                 <div class="arm_default_redirection_lbl">
-                                    <span class="arm_info_text"><?php _e('Default Redirect URL', 'ARMember'); ?></span><br>
+                                    <span class="arm_info_text"><?php _e('Default Redirect URL', 'ARMember'); ?></span>
                                     <span class="arm_info_text" style="margin: 0 5px;"><?php _e('(If no referrer page.)', 'ARMember'); ?></span>
                                 </div>
                                 <div class="arm_default_redirection_txt">
@@ -198,7 +199,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                     <?php
                                         $default_redirect_url = (isset($arm_redirection_login_conditional['default']) && !empty($arm_redirection_login_conditional['default'])) ? $arm_redirection_login_conditional['default'] : ARM_HOME_URL;
                                     ?>
-                                    <ul class="arm_login_conditional_redirection_ul ui-sortable" style="margin-bottom: 20px;">
+                                    <ul class="arm_login_conditional_redirection_ul ui-sortable arm_margin_bottom_20" >
                                     <?php
                                     if(empty($arm_redirection_login_conditional)){
                                         $ckey = 1;
@@ -217,8 +218,8 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                             <td id="arm_condition_redirect_login_plan_td_0">
                                                     <span class="arm_rr_login_condition_lbl"><?php _e('Membership Plan', 'ARMember'); ?></span><br/>
                                                     <input type='hidden' id='arm_conditional_redirect_plan_id_0' name="arm_redirection_settings[login][conditional_redirect][0][plan_id]" value="<?php echo $plan_id; ?>" />
-                                                    <dl class="arm_selectbox column_level_dd">
-                                                        <dt class="arm_login_redirection_dt"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                    <dl class="arm_selectbox column_level_dd arm_width_170">
+                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                         <dd>
                                                             <ul data-id="arm_conditional_redirect_plan_id_0">
                                                                 <li data-label="<?php _e('Select Plan', 'ARMember'); ?>" data-value="0"><?php _e('Select Plan', 'ARMember'); ?></li>
@@ -245,8 +246,8 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                             <td width="290px" class="arm_login_redirection_action">
                                                 <span class="arm_rr_login_condition_lbl"><?php _e('Action', 'ARMember'); ?></span><br/>
                                                 <input type='hidden' id='arm_conditional_redirect_condition_0' class="arm_redirection_condition_input" name="arm_redirection_settings[login][conditional_redirect][0][condition]" value='<?php echo $condition; ?>' data-key='0' />
-                                                <dl class="arm_selectbox column_level_dd">
-                                                     <dt class="arm_login_redirection_dt"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                <dl class="arm_selectbox column_level_dd arm_width_170">
+                                                     <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                      <dd>
                                                          <ul data-id="arm_conditional_redirect_condition_0">
                                                             <li data-label="<?php _e('Any Condition', 'ARMember'); ?>" data-value=""><?php _e('Any Condition', 'ARMember'); ?></li>
@@ -263,8 +264,8 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                                 <div id="arm_redirection_expiration_days_0" class="arm_redirection_expiration_days <?php if($condition !='before_expire'){ echo 'hidden_section'; } ?>">
                                                 
                                                     <input type='hidden' id='arm_conditional_redirect_expire_0' name="arm_redirection_settings[login][conditional_redirect][0][expire]" value='0' />
-                                                    <dl class="arm_selectbox column_level_dd">
-                                                         <dt style="min-width: 30px;width: 30px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                    <dl class="arm_selectbox column_level_dd arm_width_60 arm_min_width_60">
+                                                         <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                          <dd>
                                                              <ul data-id="arm_conditional_redirect_expire_0">
                                                                  <?php 
@@ -333,8 +334,8 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                             <td id="arm_condition_redirect_login_plan_td_<?php echo $ckey; ?>">
                                                 <span class="arm_rr_login_condition_lbl"><?php _e('Membership Plan', 'ARMember'); ?></span><br/>
                                                 <input type='hidden' id='arm_conditional_redirect_plan_id_<?php echo $ckey; ?>' name="arm_redirection_settings[login][conditional_redirect][<?php echo $ckey; ?>][plan_id]" value='<?php echo $plan_id; ?>' />
-                                                <dl class="arm_selectbox column_level_dd">
-                                                    <dt class="arm_login_redirection_dt"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                <dl class="arm_selectbox column_level_dd arm_width_170">
+                                                    <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                     <dd>
                                                         <ul data-id="arm_conditional_redirect_plan_id_<?php echo $ckey; ?>">
                                                             <li data-label="<?php _e('Select Plan', 'ARMember'); ?>" data-value="0"><?php _e('Select Plan', 'ARMember'); ?></li>
@@ -360,8 +361,8 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                             <td width="290px" class="arm_login_redirection_action">
                                                 <span class="arm_rr_login_condition_lbl"><?php _e('Action', 'ARMember'); ?></span><br/>
                                                 <input type='hidden' id='arm_conditional_redirect_condition_<?php echo $ckey; ?>' class="arm_redirection_condition_input" name="arm_redirection_settings[login][conditional_redirect][<?php echo $ckey; ?>][condition]" value='<?php echo $condition; ?>' data-key="<?php echo $ckey;?> " />
-                                                <dl class="arm_selectbox column_level_dd">
-                                                    <dt class="arm_login_redirection_dt"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                <dl class="arm_selectbox column_level_dd arm_width_170">
+                                                    <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                     <dd>
                                                         <ul data-id="arm_conditional_redirect_condition_<?php echo $ckey; ?>">
                                                            <li data-label="<?php _e('Any Condition', 'ARMember'); ?>" data-value=""><?php _e('Any Condition', 'ARMember'); ?></li>
@@ -377,8 +378,8 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                                 
                                                 <div id="arm_redirection_expiration_days_<?php echo $ckey; ?>" class="arm_redirection_expiration_days <?php if($condition !='before_expire'){ echo 'hidden_section'; } ?>" >
                                                     <input type='hidden' id='arm_conditional_redirect_expire_<?php echo $ckey; ?>' name="arm_redirection_settings[login][conditional_redirect][<?php echo $ckey; ?>][expire]" value='<?php echo $expiration_days; ?>' />
-                                                    <dl class="arm_selectbox column_level_dd">
-                                                         <dt style="min-width: 30px;width: 30px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                    <dl class="arm_selectbox column_level_dd arm_width_60 arm_min_width_60">
+                                                         <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                          <dd>
                                                              <ul data-id="arm_conditional_redirect_expire_<?php echo $ckey; ?>">
                                                                  <?php 
@@ -459,14 +460,14 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                     <table class="form-table">
                         <tr>
                             <th class="arm-form-table-label"><?php _e('Select Redirection Type', 'ARMember');?></th>
-                            <td class="arm-form-table-content">						
-                                <label style="min-width: 100px;">
+                            <td class="arm-form-table-content">                     
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[signup][redirect_type]" value="common" class="arm_redirection_settings_signup_redirection_type arm_iradio" <?php checked($arm_redirection_signup_redirection_type, 'common');?>>
-                                        <?php _e('Fixed Redirection','ARMember');?>
+                                        <span><?php _e('Fixed Redirection','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[signup][redirect_type]" value="formwise" class="arm_redirection_settings_signup_redirection_type arm_iradio" <?php checked($arm_redirection_signup_redirection_type, 'formwise');?> >
-                                       <?php _e('Form wise redirection','ARMember');?>
+                                       <span><?php _e('Form wise redirection','ARMember');?></span>
                                 </label>
                                 
                             </td>
@@ -474,14 +475,19 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                         
                         <tr class="arm_redirection_signup_common_settings arm_redirection_settings_signup <?php if($arm_redirection_signup_redirection_type != 'common') { echo 'hidden_section'; } ?>">
                             <th class="arm-form-table-label"><?php _e('Default Redirect To','ARMember');?></th>
-                            <td class="arm-form-table-content">						
-                                <label style="min-width: 100px;">
+                            <td class="arm-form-table-content">                     
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[signup][type]" value="page" class="arm_redirection_settings_signup_radio arm_iradio" <?php checked($arm_redirection_signup_type, 'page');?>>
-                                        <?php _e('Specific Page','ARMember');?>
+                                        <span><?php _e('Specific Page','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[signup][type]" value="url" class="arm_redirection_settings_signup_radio arm_iradio" <?php checked($arm_redirection_signup_type, 'url');?> >
-                                       <?php _e('Specific URL','ARMember');?>
+                                       <span><?php _e('Specific URL','ARMember');?></span>
+                                </label>
+                                <label style="min-width: 100px;margin-bottom: 10px">
+                                        <input type="radio" name="arm_redirection_settings[signup][type]" value="referral" class="arm_redirection_settings_signup_radio arm_iradio" <?php checked($arm_redirection_signup_type, 'referral');?>>
+                                        <span><?php _e('Referrer Page','ARMember');?></span><br>
+                                        <span class="arm_info_text" style="margin: 0 30px;position: absolute;font-size: 13px;"><?php _e('(Original page before signup.)','ARMember');?></span>
                                 </label>
                                 
                             </td>
@@ -490,7 +496,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                             <th></th>
                             <td>
                                 <div class="arm_default_redirection_lbl">
-                                <span class="arm_info_text"><?php _e('Select Page', 'ARMember'); ?></span>
+                                <span class="arm_info_text_select_page"><?php _e('Select Page', 'ARMember'); ?></span>
                                 </div>
                                 <div class="arm_default_redirection_txt">
                                     <?php
@@ -528,13 +534,29 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                 </div>
                             </td>
                         </tr>
-                        
+
+                        <tr id="arm_redirection_signup_settings_referral" class="arm_redirection_signup_common_settings arm_redirection_settings_signup arm_signup_settings_common <?php if($arm_redirection_signup_type != 'referral' || $arm_redirection_signup_redirection_type != 'common') { echo 'hidden_section'; } ?>">
+                            <th></th>
+                            <td>
+                                <div class="arm_default_redirection_lbl">
+                                    <span class="arm_info_text"><?php _e('Default Redirect URL', 'ARMember'); ?></span>
+                                    <span class="arm_info_text" style="margin: 0 5px;"><?php _e('(If no referrer page.)', 'ARMember'); ?></span>
+                                </div>
+                                <div class="arm_default_redirection_txt">
+                                    <input type="text" name="arm_redirection_settings[signup][refferel]" value="<?php echo $arm_redirection_signup_refferel; ?>" data-msg-required="<?php _e('Please Enter URL.', 'ARMember');?>" class="arm_member_form_input arm_signup_redirection_referel"><br/>
+                                   <span class="arm_redirection_signup_referel_selection">
+                                                <?php  _e('Please enter URL.', 'ARMember'); ?>
+                                            </span>  
+                                    <span class="arm_info_text"><?php _e('Enter URL with http:// or https://.', 'ARMember'); ?></span>
+                                </div>
+                            </td>
+                        </tr>
                         
                         <tr  class="arm_redirection_signup_formwise_settings arm_redirection_settings_signup <?php if($arm_redirection_signup_redirection_type != 'formwise') { echo 'hidden_section'; } ?>">
                             <th></th>
                             <td>  
                                 <div class="arm_signup_conditional_redirection_main_div">
-                                    <ul class="arm_signup_conditional_redirection_ul" style="margin-bottom: 20px;">
+                                    <ul class="arm_signup_conditional_redirection_ul arm_margin_bottom_20" >
                                     <?php
                                     if(empty($arm_redirection_signup_conditional)){
                                         $ckey = 1;
@@ -547,7 +569,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                         <a class="arm_remove_signup_redirection_condition" href="javascript:void(0)" data-index="0"><img src='<?php echo MEMBERSHIP_IMAGES_URL; ?>/arm_close_icon.png' onmouseover="this.src='<?php echo MEMBERSHIP_IMAGES_URL; ?>/arm_close_icon_hover.png';" onmouseout="this.src='<?php echo MEMBERSHIP_IMAGES_URL; ?>/arm_close_icon.png';" /></a>
                                         <table>
                                         <tr>
-                                            <td width=135px"><?php _e('If SignUp form is', 'ARMember'); ?></td>
+                                            <td width="135px"><?php _e('If SignUp form is', 'ARMember'); ?></td>
                                             <td>
                                                     <input type='hidden' id='arm_conditional_redirect_form_id_0' name="arm_redirection_settings[signup][conditional_redirect][0][form_id]" class="arm_form_conditional_redirect" value="<?php echo $form_id; ?>" />
                                                     <dl class="arm_selectbox column_level_dd">
@@ -559,14 +581,14 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
 
                                                                     <li data-label="<?php _e('Select Form','ARMember');?>" data-value="0"><?php _e('Select Form', 'ARMember');?></li>
                                                                     <li data-label="<?php _e('All Forms','ARMember');?>" data-value="-2"><?php _e('All Forms', 'ARMember');?></li>
-														<?php if(!empty($arm_forms)): ?>
-															<?php foreach($arm_forms as $_form): ?>
+                                                        <?php if(!empty($arm_forms)): ?>
+                                                            <?php foreach($arm_forms as $_form): ?>
                                                                 <?php 
                                                                 $formTitle = strip_tags(stripslashes($_form['arm_form_label'])) . ' &nbsp;(ID: ' . $_form['arm_form_id'] . ')';
                                                                 ?>
-																<li class="arm_shortcode_form_id_li <?php echo $_form['arm_form_type'];?>" data-label="<?php echo $_form['arm_form_label'];?>" data-value="<?php echo $_form['arm_form_id'];?>"><?php echo $formTitle;?></li>
-															<?php endforeach;?>
-														<?php endif;?>
+                                                                <li class="arm_shortcode_form_id_li <?php echo $_form['arm_form_type'];?>" data-label="<?php echo $_form['arm_form_label'];?>" data-value="<?php echo $_form['arm_form_id'];?>"><?php echo $formTitle;?></li>
+                                                            <?php endforeach;?>
+                                                        <?php endif;?>
                                                             </ul>
                                                         </dd>
                                                     </dl>
@@ -628,14 +650,14 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
 
                                                                     <li data-label="<?php _e('Select Form','ARMember');?>" data-value="0"><?php _e('Select Form', 'ARMember');?></li>
                                                                     <li data-label="<?php _e('All Forms','ARMember');?>" data-value="-2"><?php _e('All Forms', 'ARMember');?></li>
-														<?php if(!empty($arm_forms)): ?>
-															<?php foreach($arm_forms as $_form): ?>
+                                                        <?php if(!empty($arm_forms)): ?>
+                                                            <?php foreach($arm_forms as $_form): ?>
                                                                 <?php 
                                                                 $formTitle = strip_tags(stripslashes($_form['arm_form_label'])) . ' &nbsp;(ID: ' . $_form['arm_form_id'] . ')';
                                                                 ?>
-																<li class="arm_shortcode_form_id_li <?php echo $_form['arm_form_type'];?>" data-label="<?php echo $formTitle;?>" data-value="<?php echo $_form['arm_form_id'];?>"><?php echo $formTitle;?></li>
-															<?php endforeach;?>
-														<?php endif;?>
+                                                                <li class="arm_shortcode_form_id_li <?php echo $_form['arm_form_type'];?>" data-label="<?php echo $formTitle;?>" data-value="<?php echo $_form['arm_form_id'];?>"><?php echo $formTitle;?></li>
+                                                            <?php endforeach;?>
+                                                        <?php endif;?>
                                                             </ul>
                                                         </dd>
                                                     </dl>
@@ -710,17 +732,17 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                             <th class="arm-form-table-label"><?php _e('Select Redirection Type', 'ARMember');?></th>
                             <td class="arm-form-table-content">                     
                                 
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[edit_profile][redirect_type]" value="common" class="arm_redirection_settings_edit_profile_redirection_type arm_iradio" <?php checked($arm_redirection_edit_profile_redirection_type, 'common');?>>
-                                        <?php _e('Fixed Redirection','ARMember');?>
+                                        <span><?php _e('Fixed Redirection','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[edit_profile][redirect_type]" value="formwise" class="arm_redirection_settings_edit_profile_redirection_type arm_iradio" <?php checked($arm_redirection_edit_profile_redirection_type, 'formwise');?> >
-                                       <?php _e('Form wise redirection','ARMember');?>
+                                       <span><?php _e('Form wise redirection','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[edit_profile][redirect_type]" value="message" class="arm_redirection_settings_edit_profile_redirection_type arm_iradio" <?php checked($arm_redirection_edit_profile_redirection_type, 'message');?>>
-                                        <?php _e('Success Message','ARMember');?>
+                                        <span><?php _e('Success Message','ARMember');?></span>
                                 </label>
                                 
                             </td>
@@ -730,13 +752,13 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                         <tr class="arm_redirection_edit_profile_common_settings arm_redirection_settings_edit_profile <?php if($arm_redirection_edit_profile_redirection_type != 'common') { echo 'hidden_section'; } ?>">
                             <th class="arm-form-table-label"><?php _e('Default Redirect To','ARMember');?></th>
                             <td class="arm-form-table-content">                     
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[edit_profile][type]" value="page" class="arm_redirection_settings_edit_profile_radio arm_iradio" <?php checked($arm_redirection_edit_profile_type, 'page');?>>
-                                        <?php _e('Specific Page','ARMember');?>
+                                        <span><?php _e('Specific Page','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[edit_profile][type]" value="url" class="arm_redirection_settings_edit_profile_radio arm_iradio" <?php checked($arm_redirection_edit_profile_type, 'url');?> >
-                                       <?php _e('Specific URL','ARMember');?>
+                                       <span><?php _e('Specific URL','ARMember');?></span>
                                 </label>
                                 
                             </td>
@@ -745,7 +767,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                             <th></th>
                             <td>
                                 <div class="arm_default_redirection_lbl">
-                                <span class="arm_info_text"><?php _e('Select Page', 'ARMember'); ?></span>
+                                <span class="arm_info_text_select_page"><?php _e('Select Page', 'ARMember'); ?></span>
                                 </div>
                                 <div class="arm_default_redirection_txt">
                                     <?php
@@ -789,7 +811,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                             <th></th>
                             <td>  
                                 <div class="arm_edit_profile_conditional_redirection_main_div">
-                                    <ul class="arm_edit_profile_conditional_redirection_ul" style="margin-bottom: 20px;">
+                                    <ul class="arm_edit_profile_conditional_redirection_ul arm_margin_bottom_20" >
                                     <?php
                                     if(empty($arm_redirection_edit_profile_conditional)){
                                         $ckey = 1;
@@ -963,18 +985,18 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                         
                         <tr>
                             <th class="arm-form-table-label"><?php _e('Redirection after Membership SignUp','ARMember');?></th>
-                            <td class="arm-form-table-content">						
-                                <label style="min-width: 100px;">
+                            <td class="arm-form-table-content">                     
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[setup_signup][type]" value="page" class="arm_redirection_settings_setup_signup_radio arm_iradio" <?php checked($arm_redirection_setup_signup_type, 'page');?>>
-                                        <?php _e('Specific Page','ARMember');?>
+                                        <span><?php _e('Specific Page','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[setup_signup][type]" value="url" class="arm_redirection_settings_setup_signup_radio arm_iradio" <?php checked($arm_redirection_setup_signup_type, 'url');?> >
-                                       <?php _e('Specific URL','ARMember');?>
+                                       <span><?php _e('Specific URL','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[setup_signup][type]" value="conditional_redirect" class="arm_redirection_settings_setup_signup_radio arm_iradio" <?php checked($arm_redirection_setup_signup_type, 'conditional_redirect');?> >
-                                       <?php _e('Conditional Redirect','ARMember');?>
+                                       <span><?php _e('Conditional Redirect','ARMember');?></span>
                                 </label>
                             </td>
                         </tr>
@@ -984,7 +1006,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                             <th></th>
                             <td>
                                 <div class="arm_default_redirection_lbl">
-                                <span class="arm_info_text"><?php _e('Select Page', 'ARMember'); ?></span>
+                                <span class="arm_info_text_select_page"><?php _e('Select Page', 'ARMember'); ?></span>
                                 </div>
                                 <div class="arm_default_redirection_txt">
                                     <?php
@@ -1020,7 +1042,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                     <span class="arm_info_text"><?php _e('Enter URL with http:// or https://.', 'ARMember'); ?></span><br/>
                                     <span class="arm_info_text"><?php _e('Use <strong>{ARMCURRENTUSERNAME}</strong> to add current user\'s usrename in url.', 'ARMember'); ?></span><br/>
                                     <span class="arm_info_text"><?php _e('Use <strong>{ARMCURRENTUSERID}</strong> to add current user\'s id in url.', 'ARMember'); ?></span>
-								</div>  
+                                </div>  
                             </td>
                         </tr>
                         
@@ -1028,7 +1050,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                             <th></th>
                             <td>  
                                 <div class="arm_setup_signup_conditional_redirection_main_div">
-                                    <ul class="arm_setup_signup_conditional_redirection_ul" style="margin-bottom: 20px;">
+                                    <ul class="arm_setup_signup_conditional_redirection_ul arm_margin_bottom_20" >
                                     <?php
                                     if(empty($arm_redirection_setup_signup_conditional_redirect)){
                                         $ckey = 1;
@@ -1180,26 +1202,26 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                      <table class="form-table">
                         <tr>
                             <th class="arm-form-table-label"><?php _e('Redirection upon Add/Change Membership', 'ARMember');?></th>
-                            <td class="arm-form-table-content">						
-                                <label style="min-width: 100px;">
+                            <td class="arm-form-table-content">                     
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[setup_change][type]" value="page" class="arm_redirection_settings_setup_change_radio arm_iradio" <?php checked($arm_redirection_setup_change_type, 'page');?>>
-                                        <?php _e('Specific Page','ARMember');?>
+                                        <span><?php _e('Specific Page','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[setup_change][type]" value="url" class="arm_redirection_settings_setup_change_radio arm_iradio" <?php checked($arm_redirection_setup_change_type, 'url');?> >
-                                       <?php _e('Specific URL','ARMember');?>
+                                       <span><?php _e('Specific URL','ARMember');?></span>
                                 </label>
                                 
                             </td>
                         </tr>
                         
                         
-                         <tr id="arm_redirection_settings_setup_change_page" class="arm_redirection_settings_setup_change <?php if($arm_redirection_setup_change_type != 'page') { echo 'hidden_section'; } ?>"">
+                         <tr id="arm_redirection_settings_setup_change_page" class="arm_redirection_settings_setup_change <?php if($arm_redirection_setup_change_type != 'page') { echo 'hidden_section'; } ?>">
                         
                             <th></th>
                             <td>
                                 <div class="arm_default_redirection_lbl">
-                                    <span class="arm_info_text"><?php _e('Select Page', 'ARMember'); ?></span>
+                                    <span class="arm_info_text_select_page"><?php _e('Select Page', 'ARMember'); ?></span>
                                 </div>
                                 <div class="arm_default_redirection_txt">
                                     <?php
@@ -1235,33 +1257,33 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                     <span class="arm_info_text"><?php _e('Enter URL with http:// or https://.', 'ARMember'); ?></span><br/>
                                     <span class="arm_info_text"><?php _e('Use <strong>{ARMCURRENTUSERNAME}</strong> to add current user\'s usrename in url.', 'ARMember'); ?></span><br/>
                                     <span class="arm_info_text"><?php _e('Use <strong>{ARMCURRENTUSERID}</strong> to add current user\'s id in url.', 'ARMember'); ?></span>
-								</div>	  
+                                </div>    
                             </td>
                         </tr>
                     </table>   
                     <table class="form-table">
                         <tr>
                             <th class="arm-form-table-label"><?php _e('Redirection upon Membership Renewal', 'ARMember');?></th>
-                            <td class="arm-form-table-content">						
-                                <label style="min-width: 100px;">
+                            <td class="arm-form-table-content">                     
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[setup_renew][type]" value="page" class="arm_redirection_settings_setup_renew_radio arm_iradio" <?php checked($arm_redirection_setup_renew_type, 'page');?>>
-                                        <?php _e('Specific Page','ARMember');?>
+                                        <span><?php _e('Specific Page','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[setup_renew][type]" value="url" class="arm_redirection_settings_setup_renew_radio arm_iradio" <?php checked($arm_redirection_setup_renew_type, 'url');?> >
-                                       <?php _e('Specific URL','ARMember');?>
+                                       <span><?php _e('Specific URL','ARMember');?></span>
                                 </label>
                                 
                             </td>
                         </tr>
                         
                         
-                         <tr id="arm_redirection_settings_setup_renew_page" class="arm_redirection_settings_setup_renew <?php if($arm_redirection_setup_renew_type != 'page') { echo 'hidden_section'; } ?>"">
+                         <tr id="arm_redirection_settings_setup_renew_page" class="arm_redirection_settings_setup_renew <?php if($arm_redirection_setup_renew_type != 'page') { echo 'hidden_section'; } ?>">
                         
                             <th></th>
                             <td>
                                 <div class="arm_default_redirection_lbl">
-                                    <span class="arm_info_text"><?php _e('Select Page', 'ARMember'); ?></span>
+                                    <span class="arm_info_text_select_page"><?php _e('Select Page', 'ARMember'); ?></span>
                                 </div>
                                 <div class="arm_default_redirection_txt">
                                     <?php
@@ -1299,7 +1321,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                     <span class="arm_info_text"><?php _e('Enter URL with http:// or https://.', 'ARMember'); ?></span><br/>
                                     <span class="arm_info_text"><?php _e('Use <strong>{ARMCURRENTUSERNAME}</strong> to add current user\'s usrename in url.', 'ARMember'); ?></span><br/>
                                     <span class="arm_info_text"><?php _e('Use <strong>{ARMCURRENTUSERID}</strong> to add current user\'s id in url.', 'ARMember'); ?></span>
-								</div>	  
+                                </div>    
                             </td>
                         </tr>
                     </table>   
@@ -1317,6 +1339,13 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                             </td>
                         </tr>
                     </table>   
+
+                    <?php 
+                        $arm_add_redirection_setting_option_content = "";
+                        $arm_add_redirection_setting_option_content = apply_filters('arm_add_redirection_setting_option', $arm_add_redirection_setting_option_content, $redirection_settings);
+                        echo $arm_add_redirection_setting_option_content;
+                    ?>
+                    
                     <?php  if($arm_pay_per_post_feature->isPayPerPostFeature){ ?>
                     <div class="arm_solid_divider"></div> 
                     <div class="page_sub_title"><?php _e('After Paid Post obtaining Redirection Rules','ARMember'); ?></div>
@@ -1324,13 +1353,13 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                         <tr>
                             <th class="arm-form-table-label"><?php _e('Redirection after Paid Post Purchase', 'ARMember');?></th>
                             <td class="arm-form-table-content"> 
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[setup_paid_post][type]" value="0" class="arm_redirection_settings_setup_paid_post_radio arm_iradio" <?php checked($arm_redirection_setup_paid_post_type, '0');?> >
-                                       <?php _e('Same page (Paid Post URL)','ARMember');?>
+                                       <span><?php _e('Same page (Paid Post URL)','ARMember');?></span>
                                 </label>                    
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[setup_paid_post][type]" value="1" class="arm_redirection_settings_setup_paid_post_radio arm_iradio" <?php checked($arm_redirection_setup_paid_post_type, '1');?>>
-                                        <?php _e('Specific Page','ARMember');?>
+                                        <span><?php _e('Specific Page','ARMember');?></span>
                                 </label>
                                 
                                 
@@ -1343,7 +1372,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                             <th></th>
                             <td>
                                 <div class="arm_default_redirection_lbl">
-                                    <span class="arm_info_text"><?php _e('Select Page', 'ARMember'); ?></span>
+                                    <span class="arm_info_text_select_page"><?php _e('Select Page', 'ARMember'); ?></span>
                                 </div>
                                 <div class="arm_default_redirection_txt">
                                     <?php
@@ -1379,24 +1408,24 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                     <table class="form-table">
                         <tr>
                             <th class="arm-form-table-label"><?php _e('Default Redirect To','ARMember');?></th>
-                            <td class="arm-form-table-content">						
-                                <label style="min-width: 100px;">
+                            <td class="arm-form-table-content">                     
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[social][type]" value="page" class="arm_redirection_settings_social_radio arm_iradio" <?php checked($arm_redirection_social_type, 'page');?>>
-                                        <?php _e('Specific Page','ARMember');?>
+                                        <span><?php _e('Specific Page','ARMember');?></span>
                                 </label>
-                                <label style="min-width: 100px;">
+                                <label class="arm_min_width_100">
                                         <input type="radio" name="arm_redirection_settings[social][type]" value="url" class="arm_redirection_settings_social_radio arm_iradio" <?php checked($arm_redirection_social_type, 'url');?> >
-                                       <?php _e('Specific URL','ARMember');?>
+                                       <span><?php _e('Specific URL','ARMember');?></span>
                                 </label>
                                 
                             </td>
                         </tr>
-                         <tr id="arm_redirection_social_settings_page" class="arm_redirection_settings_social <?php if($arm_redirection_social_type != 'page') { echo 'hidden_section'; } ?>"">
+                         <tr id="arm_redirection_social_settings_page" class="arm_redirection_settings_social <?php if($arm_redirection_social_type != 'page') { echo 'hidden_section'; } ?>">
                         
                             <th></th>
                             <td>
                                 <div class="arm_default_redirection_lbl">
-                                    <span class="arm_info_text"><?php _e('Select Page', 'ARMember'); ?></span>
+                                    <span class="arm_info_text_select_page"><?php _e('Select Page', 'ARMember'); ?></span>
                                 </div>
                                 <div class="arm_default_redirection_txt">
                                     <?php
@@ -1436,7 +1465,7 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                     <span class="arm_info_text"><?php _e('Enter URL with http:// or https://.', 'ARMember'); ?></span><br/>
                                     <span class="arm_info_text"><?php _e('Use <strong>{ARMCURRENTUSERNAME}</strong> to add current user\'s usrename in url.', 'ARMember'); ?></span><br/>
                                     <span class="arm_info_text"><?php _e('Use <strong>{ARMCURRENTUSERID}</strong> to add current user\'s id in url.', 'ARMember'); ?></span>
-							    </div>  
+                                </div>  
                             </td>
                         </tr>
                     </table>               
@@ -1453,8 +1482,8 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                     <th>
                                     <?php _e('For non logged in users', 'ARMember'); ?> <i class="arm_helptip_icon armfa armfa-question-circle" title="<?php _e("Set page for redirection in case when user is not loggedin & trying to access restricted page.", 'ARMember'); ?>"></i>
                                     </th>
-                                    <td style="vertical-align: top;padding-top: 15px;">
-                                            <input type="radio" name="arm_redirection_settings[default_access_rules][non_logged_in][type]" id="arm_redirect_restricted_home" value="home" <?php checked($arm_non_logged_in_type, 'home');?> class="arm_iradio arm_redirect_restricted_page_input"><label for="arm_redirect_restricted_home" style="min-width: 140px;"><?php _e('Home Page', 'ARMember');?></label>
+                                    <td class="arm_recstricted_page_post_redirection_input">
+                                            <input type="radio" name="arm_redirection_settings[default_access_rules][non_logged_in][type]" id="arm_redirect_restricted_home" value="home" <?php checked($arm_non_logged_in_type, 'home');?> class="arm_iradio arm_redirect_restricted_page_input"><label for="arm_redirect_restricted_home" class="arm_min_width_140"><?php _e('Home Page', 'ARMember');?></label>
                                             <input type="radio" name="arm_redirection_settings[default_access_rules][non_logged_in][type]" id="arm_redirect_restricted_specific" value="specific" <?php checked($arm_non_logged_in_type, 'specific');?> class="arm_iradio arm_redirect_restricted_page_input"><label for="arm_redirect_restricted_specific"><?php _e('Specific Page', 'ARMember');?></label>
                                             <div class="arm_redirection_access_rules_specific" style="<?php echo ($arm_non_logged_in_type == 'specific') ? '' : 'display:none';?>">
                                                     <?php 
@@ -1481,8 +1510,8 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                                     <th>
                                         <?php _e('For logged in users', 'ARMember'); ?> <i class="arm_helptip_icon armfa armfa-question-circle" title="<?php _e("Set page for redirection in case when user is loggedin & trying to access restricted page.", 'ARMember'); ?>"></i>
                                     </th>
-                                    <td style="vertical-align: top; padding-top: 15px;">
-                                        <input type="radio" name="arm_redirection_settings[default_access_rules][logged_in][type]" id="arm_redirect_logged_in_restricted_home" value="home" <?php checked($arm_logged_in_type, 'home'); ?> class="arm_iradio arm_redirect_logged_in_restricted_page_input"><label for="arm_redirect_logged_in_restricted_home" style="min-width: 140px;"><?php _e('Home Page', 'ARMember'); ?></label>
+                                    <td class="arm_recstricted_page_post_redirection_input">
+                                        <input type="radio" name="arm_redirection_settings[default_access_rules][logged_in][type]" id="arm_redirect_logged_in_restricted_home" value="home" <?php checked($arm_logged_in_type, 'home'); ?> class="arm_iradio arm_redirect_logged_in_restricted_page_input"><label for="arm_redirect_logged_in_restricted_home" class="arm_min_width_140"><?php _e('Home Page', 'ARMember'); ?></label>
                                         <input type="radio" name="arm_redirection_settings[default_access_rules][logged_in][type]" id="arm_redirect_logged_in_restricted_specific" value="specific" <?php checked($arm_logged_in_type, 'specific'); ?> class="arm_iradio arm_redirect_logged_in_restricted_page_input"><label for="arm_redirect_logged_in_restricted_specific"><?php _e('Specific Page', 'ARMember'); ?></label>
                                         <div class="arm_redirection_access_rules_logged_in_specific" style="<?php echo (@$arm_logged_in_type == 'specific') ? '' : 'display:none'; ?>">
                                             <?php
@@ -1539,8 +1568,8 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
                 <th>
                     <?php _e('For Restricted drip content', 'ARMember'); ?><i class="arm_helptip_icon armfa armfa-question-circle" title="<?php _e('Set page for redirection in case when user is to access restricted drip page.', 'ARMember'); ?>"></i>
                 </th>
-                <td style="vertical-align: top; padding-top: 15px;">
-                    <input type="radio" name="arm_redirection_settings[default_access_rules][drip][type]" id="arm_redirect_drip_restricted_home" value="home" <?php checked($arm_drip_type, 'home'); ?> class="arm_iradio arm_redirect_drip_page_input"><label for="arm_redirect_drip_restricted_home" style="min-width: 140px;"><?php _e('Home Page', 'ARMember'); ?></label>
+                <td class="arm_recstricted_page_post_redirection_input">
+                    <input type="radio" name="arm_redirection_settings[default_access_rules][drip][type]" id="arm_redirect_drip_restricted_home" value="home" <?php checked($arm_drip_type, 'home'); ?> class="arm_iradio arm_redirect_drip_page_input"><label for="arm_redirect_drip_restricted_home" class="arm_min_width_140" ><?php _e('Home Page', 'ARMember'); ?></label>
                     <input type="radio" name="arm_redirection_settings[default_access_rules][drip][type]" id="arm_redirect_drip_restricted_specific" value="specific" <?php checked($arm_drip_type, 'specific'); ?> class="arm_iradio arm_redirect_drip_page_input"><label for="arm_redirect_drip_restricted_specific"><?php _e('Specific Page', 'ARMember'); ?></label>
                     <div class="arm_redirection_access_rules_drip_specific" style="<?php echo (@$arm_drip_type == 'specific') ? '' : 'display:none'; ?>">
                         <?php
@@ -1569,13 +1598,13 @@ $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscr
 
            
                <div class="arm_submit_btn_container arm_redirection_submit_btn">
-				<button class="arm_save_btn arm_redirection_settings_btn" type="submit" id="arm_redirection_settings_btn" name="arm_redirection_settings_btn"><?php _e('Save', 'ARMember') ?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" style="position:relative;top:8px;display:none;" width="24" height="24" />
+                <img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_submit_btn_loader" style="display:none;" width="24" height="24" />&nbsp;<button class="arm_save_btn arm_redirection_settings_btn" type="submit" id="arm_redirection_settings_btn" name="arm_redirection_settings_btn"><?php _e('Save', 'ARMember') ?></button>
                     </div>
                     <?php wp_nonce_field( 'arm_wp_nonce' );?>
                 </form>
                     
                 
-	</div>
+    </div>
 </div>
 
 <div id="arm_all_pages" style="display:none;visibility: hidden;opacity: 0;">

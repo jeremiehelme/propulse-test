@@ -9,7 +9,7 @@ if( !class_exists('ARMLoginWidget') ){
 				__('ARMember Login Widget', 'ARMember'),
 				array('description' => __('Display currently logged in Member profile', 'ARMember'))
 			);
-			add_action('wp_enqueue_scripts',array(&$this,'scripts'));
+			add_action('wp_enqueue_scripts',array($this,'scripts'));
 		}
 
 		public function widget($args,$instance){

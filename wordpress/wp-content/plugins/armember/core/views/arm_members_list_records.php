@@ -101,7 +101,7 @@ if($is_multiple_membership_feature->isMultipleMembershipFeature){
     $arm_exclude_colvis='0 , 1';
     for( $i=0; $i < $total_grid_column; $i++ ) {
         //if( $i == 3 || $i == 4 || $i ==5 || $i ==7 || $i == 8 || $i == 9 ) {
-        if( $i>=3 &&  $i<=11 ) {
+        if( $i>=3 &&  $i<=12 ) {
             if($arm_pay_per_post_feature->isPayPerPostFeature && $i!=8){
                 continue;
             }
@@ -114,7 +114,7 @@ if($is_multiple_membership_feature->isMultipleMembershipFeature){
 else{
     
     for( $i=0; $i < $total_grid_column; $i++ ) {
-        if( $i>=2 &&  $i<=12 ) {
+        if( $i>=2 &&  $i<=13 ) {
             if($arm_pay_per_post_feature->isPayPerPostFeature && $i!=7){
                 continue;
             }
@@ -164,6 +164,7 @@ else{
     } 
 
     function show_grid_loader() {
+        jQuery(".arm_hide_datatable").css('visibility', 'hidden');
         jQuery('.arm_loading_grid').show();
     }
     jQuery(document).ready(function () {
@@ -171,7 +172,8 @@ else{
         jQuery('#armmanagesearch_new').bind('keyup', function (e) {
        
             e.stopPropagation();
-            if (e.keyCode == 13) {
+	    var arm_check_disable = jQuery('#arm_member_grid_filter_btn').attr('disabled');
+            if (e.keyCode == 13 && arm_check_disable!='disabled') {
                 arm_load_membership_grid_after_filtered();
                 return false;
             }
@@ -187,7 +189,7 @@ else{
         var __ARM_Showing_empty = '<?php echo addslashes(__('Showing 0 to 0 of 0 members','ARMember')); ?>';
         var __ARM_to = '<?php echo addslashes(__('to','ARMember')); ?>';
         var __ARM_of = '<?php echo addslashes(__('of','ARMember')); ?>';
-        var __ARM_MEMBERS = ' <?php _e('members','ARMember'); ?>';
+        var __ARM_MEMBERS = ' <?php echo addslashes(__('members','ARMember')); ?>';
         var __ARM_Show = '<?php echo addslashes(__('Show','ARMember')); ?> ';
         var __ARM_NO_FOUND = '<?php echo addslashes(__('No any member found.','ARMember')); ?>';
         var __ARM_NO_MATCHING = '<?php echo addslashes(__('No matching records found.','ARMember')); ?>';
@@ -229,7 +231,7 @@ else{
                 "extend":"colvis",
                 "columns":":not(.noVis)",
                 "className":"ColVis_Button TableTools_Button ui-button ui-state-default ColVis_MasterButton",
-                "text":"<span class=\"armshowhideicon\" style=\"background-image: url(<?php echo MEMBERSHIP_IMAGES_URL; ?>/show_hide_icon.png);background-repeat: no-repeat;background-position: 8px center;padding: 0 10px 0 30px;background-color: #FFF;\">Show / Hide columns</span>",
+                "text":"<span class=\"armshowhideicon\" style=\"background-image: url(<?php echo MEMBERSHIP_IMAGES_URL; ?>/show_hide_icon.png);background-repeat: no-repeat;background-position: 0 center;padding: 0 0 0 30px;\">Show / Hide columns</span>",
             }],
             "bProcessing": false,
             "bServerSide": true,
@@ -298,6 +300,7 @@ else{
             
             "fnDrawCallback": function (oSettings) {
                 jQuery('.arm_loading_grid').hide();
+                arm_show_data();
                 jQuery("#cb-select-all-1").prop("checked", false);
                 arm_selectbox_init();
                 jQuery('#arm_filter_wrapper').hide();
@@ -333,23 +336,50 @@ else{
     <div class="arm_datatable_filters_options">
         <div class='sltstandard'>
             <input type='hidden' id='arm_manage_bulk_action1' name="action1" value="-1" />
-            <dl class="arm_selectbox">
-                <dt style="width: 150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+            <dl class="arm_selectbox arm_width_250">
+                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                 <dd>
                     <ul data-id="arm_manage_bulk_action1">
                         <li data-label="<?php _e('Bulk Actions', 'ARMember'); ?>" data-value="-1"><?php _e('Bulk Actions', 'ARMember'); ?></li>
                         <li data-label="<?php _e('Delete', 'ARMember'); ?>" data-value="delete_member"><?php _e('Delete', 'ARMember'); ?></li>
-                        <?php 
-                        if(!$is_multiple_membership_feature->isMultipleMembershipFeature){
+                        <ol><?php _e('Change Status To','ARMember');?></ol>
 
-                         if (!empty($all_plans)){ ?>
-                          <ol><?php _e('Change Plan To', 'ARMember'); ?></ol>
-                          <?php foreach ($all_plans as $plan): ?>
-                          <?php if ($plan['arm_subscription_plan_status'] == 1){ ?>
-                          <li data-label="<?php echo stripslashes(esc_attr($plan['arm_subscription_plan_name'])); ?>" data-value="<?php echo $plan['arm_subscription_plan_id']; ?>"><?php echo stripslashes($plan['arm_subscription_plan_name']); ?></li>
-                          <?php } ?>
-                          <?php endforeach; ?>
-                          <?php }}  ?>
+                    <?php 
+                        foreach($armPrimaryStatus as $armPrimaryStatus_key => $armPrimaryStatus_value)
+                        { 
+                    ?>
+                            <li data-label="<?php echo $armPrimaryStatus_value.' '. __('User', 'ARMember'); ?>" data-value="arm_user_status-<?php echo $armPrimaryStatus_key ?>"><?php echo $armPrimaryStatus_value ?> <?php _e('User', 'ARMember'); ?></li>
+                    <?php 
+                        }
+
+                        if(!$is_multiple_membership_feature->isMultipleMembershipFeature)
+                        {
+                    ?>
+                            <ol><?php _e('Change Plan To', 'ARMember'); ?></ol>
+                    <?php
+                        }
+                        else {
+                    ?>
+                            <ol><?php _e('Add Plan To', 'ARMember'); ?></ol>
+                    <?php
+                        }
+
+                        if (!empty($all_plans))
+                        { 
+                    ?>
+                    <?php 
+                            foreach ($all_plans as $plan): 
+                                if ($plan['arm_subscription_plan_status'] == 1)
+                                { 
+                    ?>
+                                    <li data-label="<?php echo stripslashes(esc_attr($plan['arm_subscription_plan_name'])); ?>" data-value="<?php echo $plan['arm_subscription_plan_id']; ?>"><?php echo stripslashes($plan['arm_subscription_plan_name']); ?></li>
+                    <?php 
+                                } 
+                            endforeach; 
+                    ?>
+                    <?php 
+                            } 
+                    ?>
                     </ul>
                 </dd>
             </dl>
@@ -362,21 +392,46 @@ else{
         <div class="arm_datatable_filters_options">
             <div class='sltstandard'>
                 <input type='hidden' id='arm_manage_bulk_action1' name="action1" value="-1" />
-                <dl class="arm_selectbox">
-                    <dt style="width: 150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                <dl class="arm_selectbox arm_width_250">
+                    <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                     <dd>
                         <ul data-id="arm_manage_bulk_action1">
                             <li data-label="<?php _e('Bulk Actions', 'ARMember'); ?>" data-value="-1"><?php _e('Bulk Actions', 'ARMember'); ?></li>
                             <li data-label="<?php _e('Delete', 'ARMember'); ?>" data-value="delete_member"><?php _e('Delete', 'ARMember'); ?></li>
-                            <?php
-                            if(!$is_multiple_membership_feature->isMultipleMembershipFeature){
-                            if (!empty($all_plans)) { ?>
-                              <ol><?php _e('Change Plan To','ARMember');?></ol>
-                              <?php foreach( $all_plans as $plan ) { ?>
-                              <?php if ( $plan['arm_subscription_plan_status']==1 ) {?>
-                              <li data-label="<?php echo stripslashes(esc_attr($plan['arm_subscription_plan_name']));?>" data-value="<?php echo $plan['arm_subscription_plan_id'];?>"><?php echo stripslashes($plan['arm_subscription_plan_name']);?></li>
-                              
-                              <?php } } } } ?>
+                            <ol><?php _e('Change Status To','ARMember');?></ol>
+
+                        <?php 
+                            foreach($armPrimaryStatus as $armPrimaryStatus_key => $armPrimaryStatus_value)
+                            { 
+                        ?>
+                                <li data-label="<?php echo $armPrimaryStatus_value.' '. __('User', 'ARMember'); ?>" data-value="arm_user_status-<?php echo $armPrimaryStatus_key ?>"><?php echo $armPrimaryStatus_value ?> <?php _e('User', 'ARMember'); ?></li>
+                        <?php 
+                            }
+
+                            if(!$is_multiple_membership_feature->isMultipleMembershipFeature)
+                            {
+                        ?>
+                                <ol><?php _e('Change Plan To','ARMember');?></ol>
+                        <?php 
+                            }
+                            else {
+                        ?>
+                                <ol><?php _e('Add Plan To','ARMember');?></ol>
+                        <?php
+                            }
+                            if (!empty($all_plans)) 
+                            {
+                                foreach( $all_plans as $plan ) 
+                                { 
+                                    if ( $plan['arm_subscription_plan_status']==1 ) 
+                                    {
+                        ?>
+                                        <li data-label="<?php echo stripslashes(esc_attr($plan['arm_subscription_plan_name']));?>" data-value="<?php echo $plan['arm_subscription_plan_id'];?>"><?php echo stripslashes($plan['arm_subscription_plan_name']);?></li>
+                    <?php 
+                                    } 
+                                } 
+                            }
+                        ?>
                         </ul>
                     </dd>
                 </dl>
@@ -389,16 +444,15 @@ else{
         <input type="hidden" name="armaction" value="list" />
         <div class="arm_datatable_filters">
             <div class="arm_dt_filter_block arm_datatable_searchbox">
-                <label><input type="text" placeholder="<?php _e('Search', 'ARMember'); ?>" id="armmanagesearch_new" value="<?php echo $filter_search; ?>" class="arm_mng_mbrs_srch_inpt" tabindex="-1"></label>
+                <label><input type="text" placeholder="<?php _e('Search Member', 'ARMember'); ?>" id="armmanagesearch_new" value="<?php echo $filter_search; ?>" class="arm_mng_mbrs_srch_inpt" tabindex="-1"></label>
                 <!--./====================Begin Filter By Plan Box====================/.-->
                 <?php 
                     $arm_formfields = $user_meta_keys;
                     if (!empty($arm_formfields)) { ?>
-                        <div class="arm_filter_status_box arm_datatable_filter_item">
-                            <span class="arm_manage_filter_label"><?php _e('Search By Field', 'ARMember') ?></span>
+                        <div class="arm_filter_status_box arm_datatable_filter_item">                            
                             <input type="hidden" id="arm_meta_field_filter" class="arm_meta_field_filter" value="0" />
-                            <dl class="arm_selectbox">
-                                <dt style="width: 130px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                            <dl class="arm_selectbox arm_width_190">
+                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                 <dd>
                                     <ul data-id="arm_meta_field_filter" data-placeholder="<?php _e('Select field', 'ARMember'); ?>">
                                         <li data-label="<?php _e('Select field', 'ARMember'); ?>" data-value="0"><?php _e('Select field', 'ARMember'); ?></li>
@@ -423,11 +477,10 @@ else{
                     <?php }    
                 ?>
                 <?php if (!empty($all_plans)): ?>
-                    <div class="arm_filter_plans_box arm_datatable_filter_item">
-                        <span class="arm_manage_filter_label"><?php _e('Membership Plans', 'ARMember') ?></span>
+                    <div class="arm_filter_plans_box arm_datatable_filter_item">                        
                         <input type="hidden" id="arm_subs_filter" class="arm_subs_filter" value="<?php echo $filter_plan_id; ?>" />
-                        <dl class="arm_multiple_selectbox">
-                            <dt style="width: 165px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                        <dl class="arm_multiple_selectbox arm_width_190">
+                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                             <dd>
                                 <ul data-id="arm_subs_filter" data-placeholder="<?php _e('Select Plans', 'ARMember'); ?>">
                                     <?php foreach ($all_plans as $plan): ?>
@@ -454,11 +507,10 @@ else{
                     </div>
                     */
                     ?>
-                    <div class="arm_filter_status_box arm_datatable_filter_item">
-                        <span class="arm_manage_filter_label"><?php _e('Status', 'ARMember') ?></span>
+                    <div class="arm_filter_status_box arm_datatable_filter_item">                        
                         <input type="hidden" id="arm_status_filter" class="arm_status_filter" value="<?php echo $filter_member_status; ?>" />
-                        <dl class="arm_selectbox">
-                            <dt style="width: 130px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                        <dl class="arm_selectbox arm_width_190">
+                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                             <dd>
                                 <ul data-id="arm_status_filter" data-placeholder="<?php _e('Select Status', 'ARMember'); ?>">
                                     <li data-label="<?php _e('Select Status', 'ARMember'); ?>" data-value="0"><?php _e('Select Status', 'ARMember'); ?></li>
@@ -483,11 +535,10 @@ else{
                 <?php 
                     if($is_multiple_membership_feature->isMultipleMembershipFeature) {
                 ?>
-                        <div class="arm_datatable_filter_item arm_filter_membership_type_label">
-                            <span class="arm_manage_filter_label"><?php _e('Membership Type', 'ARMember') ?></span>
+                        <div class="arm_datatable_filter_item arm_filter_membership_type_label">                            
                             <input type="hidden" id="arm_filter_membership_type" class="arm_filter_membership_type" value="0" />
-                            <dl class="arm_selectbox">
-                                <dt style="width: 150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                            <dl class="arm_selectbox arm_width_190">
+                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                 <dd>
                                     <ul data-id="arm_filter_membership_type" data-placeholder="<?php _e('All Members', 'ARMember'); ?>">
                                         <li data-label="<?php _e('All Members', 'ARMember'); ?>" data-value="0"><?php _e('All Members', 'ARMember'); ?></li>
@@ -517,13 +568,13 @@ else{
             <div class="response_messages"></div>
             <?php do_action('arm_before_listing_members'); ?>
             <div class="armclear"></div>
-            <table cellpadding="0" cellspacing="0" border="0" class="display" id="armember_datatable">
+            <table cellpadding="0" cellspacing="0" border="0" class="display arm_hide_datatable" id="armember_datatable">
                 <thead>
                     <tr>
                     <?php if ($is_multiple_membership_feature->isMultipleMembershipFeature) { ?>
                     <th></th>
                     <?php } ?>
-                        <th class="center cb-select-all-th" style="max-width:60px;text-align:center;"><input id="cb-select-all-1" type="checkbox" class="chkstanard"></th>
+                        <th class="cb-select-all-th arm_max_width_60"><input id="cb-select-all-1" type="checkbox" class="chkstanard"></th>
                         <?php if (!empty($grid_columns)): ?>
                             <?php foreach ($grid_columns as $key => $title): ?>
                                 <th data-key="<?php echo $key; ?>" class="arm_grid_th_<?php echo $key; ?>" ><?php echo stripslashes_deep($title); ?></th>

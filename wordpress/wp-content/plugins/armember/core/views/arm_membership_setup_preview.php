@@ -5,7 +5,7 @@ global $ARMember, $arm_ajaxurl, $arm_membership_setup;
 $arm_transient_uniq_id = $_REQUEST['_wpnonce'];
 
 $setupData = get_transient('arm_preview_transient_'.$arm_transient_uniq_id);
-$ARMember->arm_write_response(current_time("mysql")." Transient Data => ".maybe_serialize($setupData));
+
 $setupData = !empty($setupData) ? maybe_unserialize($setupData) : '';
 $setupData = !empty($setupData) ? $setupData['setup_data'] : '';
 

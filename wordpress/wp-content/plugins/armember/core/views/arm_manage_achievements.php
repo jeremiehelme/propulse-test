@@ -53,6 +53,10 @@ function arm_load_achievements_list_grid() {
             { "sWidth": '35%', "aTargets": [2] }
 		],
 		"oColVis": {"aiExclude": [0]},
+        "language":{
+            "searchPlaceholder": "Search",
+            "search":"",
+        },
         "fnDrawCallback":function(){
             if (jQuery.isFunction(jQuery().tipso)) {
                 jQuery('.armhelptip').each(function () {
@@ -74,11 +78,11 @@ function arm_load_achievements_list_grid() {
 
 // ]]>
 </script>
-<div class="arm_global_settings_main_wrapper">
-    <div class="page_sub_content">
-        <div class="arm_add_new_item_box" style="margin: 0 0 20px 0;">			
-            <a class="greensavebtn arm_add_achievements_btn" href="javascript:void(0);" style="margin-right:20px;"><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add New Achievement', 'ARMember') ?></span></a>
-        </div>
+<div class="arm_global_settings_main_wrapper arm_margin_0">
+    <div class="page_sub_content arm_padding_0">
+        <?php /* <div class="arm_add_new_item_box arm_margin_bottom_20" >			
+            <a class="greensavebtn arm_add_achievements_btn arm_margin_right_20" href="javascript:void(0);" ><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add New Achievement', 'ARMember') ?></span></a>
+        </div> */ ?>
         <form method="GET" id="achievements_list_form" class="data_grid_list">
             <input type="hidden" name="page" value="<?php echo $_GET['page'] ?>" />
             <input type="hidden" name="armaction" value="list" />
@@ -88,8 +92,8 @@ function arm_load_achievements_list_grid() {
                     <thead>
                         <tr>
                             <th><?php _e('Achievement Type', 'ARMember'); ?></th>
-                            <th class="center" ><?php _e('Badge', 'ARMember'); ?></th>
-                            <th style="text-align: left;padding-left: 10px;"><?php _e('Required', 'ARMember'); ?></th>
+                            <th class="center arm_text_align_center" ><?php _e('Badge', 'ARMember'); ?></th>
+                            <th class="arm_text_align_left arm_padding_left_10"><?php _e('Required', 'ARMember'); ?></th>
                             <?php /* ?><th style="text-align: left;padding-left: 10px;"><?php _e('Badge Title', 'ARMember'); ?></th><?php */?>
                             <th class="armGridActionTD"></th>
                         </tr>
@@ -259,7 +263,7 @@ function arm_load_achievements_list_grid() {
     </div>
 </div>
 <!--./******************** Add New Achievement Form ********************/.-->
-<div class="arm_add_achievements_wrapper popup_wrapper" style="width: 720px;margin-top: 40px;">
+<div class="arm_add_achievements_wrapper popup_wrapper">
 	<form method="post" action="#" id="arm_add_achievements_wrapper_frm" class="arm_admin_form arm_add_achievements_wrapper_frm">
 		<table cellspacing="0">
 			<tr class="popup_wrapper_inner">	
@@ -271,7 +275,7 @@ function arm_load_achievements_list_grid() {
                             <th><?php _e('How user will get this badge?','ARMember'); ?></th>
                             <td>
                                 <input type="hidden" name="arm_achievement_type" value="defaultbadge" id="arm_add_achievement_type" class="arm_achievement_type_change_input"/>
-                                <dl class="arm_selectbox arm_subscription_plan_form_dropdown" style="margin-right:0px;">
+                                <dl class="arm_selectbox arm_subscription_plan_form_dropdown arm_margin_right_0 arm_width_100_pct">
                                     <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                     <dd>
                                         <ul data-id="arm_add_achievement_type">
@@ -290,7 +294,7 @@ function arm_load_achievements_list_grid() {
                             <td>
                                 <input type="hidden" id="arm_add_achieve_roles" name="arm_achievement_options[roles]" value="" data-msg-required="<?php _e('Please select role.', 'ARMember');?>"/>
                                 <?php if (!empty($user_roles)): ?>
-                                <dl class="arm_selectbox"><?php /*arm_multiple_selectbox*/?>
+                                <dl class="arm_selectbox arm_width_100_pct"><?php /*arm_multiple_selectbox*/?>
                                     <dt><span>Please select role</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                     <dd>
                                         <ul data-id="arm_add_achieve_roles" data-placeholder="<?php _e('Select Roles', 'ARMember');?>">
@@ -310,7 +314,7 @@ function arm_load_achievements_list_grid() {
                             <td>
                                 <input type="hidden" id="arm_add_achieve_plans" name="arm_achievement_options[plans]" value="" data-msg-required="<?php _e('Please select plan.', 'ARMember');?>"/>
                                 <?php if (!empty($all_plans)): ?>
-                                <dl class="arm_selectbox">
+                                <dl class="arm_selectbox arm_width_100_pct">
                                     <dt><span>Please select plan</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                     <dd>
                                         <ul data-id="arm_add_achieve_plans" data-placeholder="<?php _e('Select Plans', 'ARMember');?>">
@@ -329,8 +333,8 @@ function arm_load_achievements_list_grid() {
                             <th><?php _e('Setup Achievement','ARMember'); ?></th>
                             <td>
                                 <input type="hidden" id="arm_add_achieve_require" name="arm_achievement_options[require]" value="post"/>
-                                <dl class="arm_selectbox column_level_dd">
-                                    <dt style="width: 290px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                <dl class="arm_selectbox column_level_dd arm_width_100_pct">
+                                    <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                     <dd>
                                         <ul data-id="arm_add_achieve_require">
                                         <?php foreach($achieve_types as $type => $label): 
@@ -348,11 +352,11 @@ function arm_load_achievements_list_grid() {
                                 <div class="arm_achievement_has_complete ">
                                 <span><?php _e('User has completed', 'ARMember');?>
                                 </span>
-                                <input type="text" id="arm_add_achieve" name="arm_achieve_num[]" class="arm_achieve_num" onkeypress="javascript:return isNumber (event);"  value="" data-msg-required="<?php _e('Please enter number', 'ARMember');?>" style="min-width: 50px;width: 50px;text-align: center;">
+                                <input type="text" id="arm_add_achieve" name="arm_achieve_num[]" class="arm_achieve_num arm_width_50 arm_min_width_50 arm_text_align_center arm_padding_left_0" onkeypress="javascript:return isNumber (event);"  value="" data-msg-required="<?php _e('Please enter number', 'ARMember');?>" >
 
                                 <input type="hidden" id="arm_require_achive_badges_id" name="arm_require_achive_badges_id[]" class="arm_achivement_badge_icon" value=""/>
                                 <dl class="arm_selectbox arm_achievement_badge_select arm_badge_select column_level_dd" id="arm_achievement_badge_select">
-                                    <dt style="width: 190px;"><span>Please Select Badge Icon</span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                    <dt><span>Please Select Badge Icon</span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                     <dd>
                                         <ul data-id="arm_require_achive_badges_id">
                                         <?php 
@@ -366,7 +370,7 @@ function arm_load_achievements_list_grid() {
                                                 }else{
                                                     $badge->arm_badges_icon = $badge->arm_badges_icon;
                                                 }
-                                                echo '<li data-value="'.$badge->arm_badges_id.'" ><img src="' . ($badge->arm_badges_icon) . '" alt="" align="middle" class="arm_badge_icon" style="'.$badgeIconStyle.'" /><span class="arm_badge_title">'.$badge->arm_badges_name.'</span></li>';
+                                                echo '<li data-value="'.$badge->arm_badges_id.'" ><img src="' . ($badge->arm_badges_icon) . '" alt="" align="middle" class="arm_badge_icon arm_padding_top_5" style="'.$badgeIconStyle.'" /><span class="arm_badge_title">'.$badge->arm_badges_name.'</span></li>';
                                                 
                                                 }}
                                         ?>
@@ -387,8 +391,8 @@ function arm_load_achievements_list_grid() {
 							<th><?php _e('Select Badge Icon','ARMember'); ?></th>
 							<td>
                                 <input type="hidden" id="arm_badges_id" name="arm_badges_id" value=""/>
-                                <dl class="arm_selectbox arm_achievement_badge_select arm_badge_select column_level_dd">
-                                    <dt style="width: 290px;"><span>Please Select Badge Icon</span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                <dl class="arm_selectbox arm_achievement_badge_select arm_badge_select column_level_dd arm_width_100_pct">
+                                    <dt><span>Please Select Badge Icon</span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                     <dd>
                                         <ul data-id="arm_badges_id">
                                         <?php 
@@ -402,7 +406,7 @@ function arm_load_achievements_list_grid() {
                                                 }else{
                                                     $badge->arm_badges_icon = $badge->arm_badges_icon;
                                                 }
-                                                echo '<li data-value="'.$badge->arm_badges_id.'" ><img src="' . ($badge->arm_badges_icon) . '" alt="" align="middle" class="arm_badge_icon" style="'.$badgeIconStyle.'" /><span class="arm_badge_title">'.$badge->arm_badges_name.'</span></li>';
+                                                echo '<li data-value="'.$badge->arm_badges_id.'" ><img src="' . ($badge->arm_badges_icon) . '" alt="" align="middle" class="arm_badge_icon arm_padding_top_5" style="'.$badgeIconStyle.'" /><span class="arm_badge_title">'.$badge->arm_badges_name.'</span></li>';
                                                 }}
                                         ?>
                                         </ul>
@@ -414,7 +418,7 @@ function arm_load_achievements_list_grid() {
                         <tr class="arm_badge_tootip_require_options arm_badge_achieve_options" >
                             <th><?php _e('Tooltip Title','ARMember'); ?></th>
                             <td>
-                                <input type="text" id="arm_badges_tooltip" name="arm_badges_tooltip" class="arm_badges_tooltip" value=""/>
+                                <input type="text" id="arm_badges_tooltip" name="arm_badges_tooltip" class="arm_badges_tooltip arm_width_100_pct arm_max_width_100_pct" value=""/>
                             </td>
                         </tr>
 						
@@ -425,7 +429,7 @@ function arm_load_achievements_list_grid() {
 				<td class="popup_content_btn popup_footer">
 					<div class="popup_content_btn_wrapper">
                         <input type="hidden" name="b_action" value="add"/>
-						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_loader_img" style="position: relative;top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" width="20" height="20" />
+						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_loader_img arm_submit_btn_loader" style="top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" width="20" height="20" />
 						<button class="arm_save_btn arm_button_manage_achievements" type="submit" data-type="add"><?php _e('Save', 'ARMember') ?></button>
 						<button class="arm_cancel_btn add_new_achievements_close_btn" type="button"><?php _e('Cancel','ARMember');?></button>
 					</div>
@@ -437,7 +441,7 @@ function arm_load_achievements_list_grid() {
 	</form>
 </div>
 <!--./******************** Edit Achievement Form ********************/.-->
-<div class="arm_edit_achievements_wrapper popup_wrapper" style="width: 720px;margin-top: 40px;">
+<div class="arm_edit_achievements_wrapper popup_wrapper" >
 	<form method="post" action="#" id="arm_edit_achievements_wrapper_frm" class="arm_admin_form arm_edit_achievements_wrapper_frm">
 		<table cellspacing="0">
 			<tr class="popup_wrapper_inner">	
@@ -446,10 +450,10 @@ function arm_load_achievements_list_grid() {
 				<td class="popup_content_text">
 					<table class="arm_table_label_on_top">
                         <tr>
-							<th><?php _e('How user will get this badge?','ARMember'); ?></th>
-							<td>
-								<input type="hidden" name="arm_achievement_type" value="defaultbadge" id="arm_edit_achievement_type" class="arm_achievement_type_change_input"/>
-                                <dl class="arm_selectbox arm_subscription_plan_form_dropdown" style="margin-right:0px;">
+                            <th><?php _e('How user will get this badge?','ARMember'); ?></th>
+                            <td>
+                                <input type="hidden" name="arm_achievement_type" value="defaultbadge" id="arm_edit_achievement_type" class="arm_achievement_type_change_input"/>
+                                <dl class="arm_selectbox arm_subscription_plan_form_dropdown arm_margin_right_0 arm_width_100_pct" >
                                     <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                     <dd>
                                         <ul data-id="arm_edit_achievement_type">
@@ -468,7 +472,7 @@ function arm_load_achievements_list_grid() {
 							<td>
                                 <input type="hidden" id="arm_edit_achieve_roles" name="arm_achievement_options[roles]" value="" data-msg-required="<?php _e('Please select role.', 'ARMember');?>"/>
                                 <?php if (!empty($user_roles)): ?>
-                                <dl class="arm_selectbox">
+                                <dl class="arm_selectbox arm_width_100_pct">
                                     <dt><span>Please select role</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                     <dd>
                                         <ul data-id="arm_edit_achieve_roles" data-placeholder="<?php _e('Select Roles', 'ARMember');?>">
@@ -488,7 +492,7 @@ function arm_load_achievements_list_grid() {
 							<td>
                                 <input type="hidden" id="arm_edit_achieve_plans" name="arm_achievement_options[plans]" value="" data-msg-required="<?php _e('Please select plan.', 'ARMember');?>"/>
                                 <?php if (!empty($all_plans)): ?>
-                                <dl class="arm_selectbox">
+                                <dl class="arm_selectbox arm_width_100_pct">
                                     <dt><span>Please select plan</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                     <dd>
                                         <ul data-id="arm_edit_achieve_plans" data-placeholder="<?php _e('Select Plans', 'ARMember');?>">
@@ -507,8 +511,8 @@ function arm_load_achievements_list_grid() {
 							<th><?php _e('Setup Achievement','ARMember'); ?></th>
                             <td>
                                 <input type="hidden" id="arm_edit_achieve_require" name="arm_achievement_options[require]" value="post"/>
-                                <dl class="arm_selectbox column_level_dd">
-                                    <dt style="width: 290px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                <dl class="arm_selectbox column_level_dd arm_width_100_pct">
+                                    <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                     <dd>
                                         <ul data-id="arm_edit_achieve_require">
                                         <?php foreach($achieve_types as $type => $label): ?>
@@ -525,7 +529,7 @@ function arm_load_achievements_list_grid() {
                         <tr class="arm_badge_tootip_require_options arm_badge_achieve_options" >
                             <th><?php _e('Tooltip Title','ARMember'); ?></th>
                             <td>
-                                <input type="text" id="arm_badges_tooltip" name="arm_badges_tooltip" class="arm_badges_tooltip" value=""/>
+                                <input type="text" id="arm_badges_tooltip" name="arm_badges_tooltip" class="arm_badges_tooltip arm_width_100_pct arm_max_width_100_pct" value=""/>
                             </td>
                         </tr>
 					</table>
@@ -536,7 +540,7 @@ function arm_load_achievements_list_grid() {
                         <input type="hidden" name="b_action" value="update"/>
                         <input type="hidden" id="arm_parent_badge_id" name="arm_badges_id" value="0"/>
                         <input type="hidden" id="arm_edit_badge_id" name="edit_badge_id" value="0"/>
-						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_loader_img" style="position: relative;top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" width="20" height="20" />
+						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_loader_img arm_submit_btn_loader" style="top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" width="20" height="20" />
 						<button class="arm_save_btn arm_button_manage_achievements" type="submit" data-type="edit"><?php _e('Save', 'ARMember') ?></button>
 						<button class="arm_cancel_btn add_edit_achievements_close_btn" type="button"><?php _e('Cancel','ARMember');?></button>
 					</div>

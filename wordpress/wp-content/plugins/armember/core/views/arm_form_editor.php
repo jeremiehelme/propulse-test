@@ -176,18 +176,18 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                 <?php
                                     if( $isEditProfile ){
                                 ?>
-                                    <span class="armCopyText" style="font-size:16px;">[arm_profile_detail id="<?php echo $form_detail['arm_form_id']; ?>"]</span>
-                                    <span class="arm_click_to_copy_text" data-code="[arm_profile_detail id='<?php echo $form_detail['arm_form_id']; ?>']" style="font-size:16px;"><?php _e('Click to Copy', 'ARMember') ?></span>
-                                    <span class="arm_copied_text" style="font-size:16px;">
+                                    <span class="armCopyText arm_font_size_16">[arm_profile_detail id="<?php echo $form_detail['arm_form_id']; ?>"]</span>
+                                    <span class="arm_click_to_copy_text arm_font_size_16" data-code="[arm_profile_detail id='<?php echo $form_detail['arm_form_id']; ?>']" ><?php _e('Click to Copy', 'ARMember') ?></span>
+                                    <span class="arm_copied_text arm_font_size_16">
                                         <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/copied_ok.png' ?>" />
                                         <?php _e('Code Copied', 'ARMember') ?>
                                     </span>    
                                 <?php
                                     } else {
                                 ?>
-                                <span class="armCopyText" style="font-size:16px;">[arm_form id="<?php echo $form_detail['arm_form_id']; ?>"]</span>
-                                <span class="arm_click_to_copy_text" data-code="[arm_form id='<?php echo $form_detail['arm_form_id']; ?>']" style="font-size:16px;"><?php _e('Click to Copy', 'ARMember') ?></span>
-                                <span class="arm_copied_text" style="font-size:16px;">
+                                <span class="armCopyText arm_font_size_16">[arm_form id="<?php echo $form_detail['arm_form_id']; ?>"]</span>
+                                <span class="arm_click_to_copy_text arm_font_size_16" data-code="[arm_form id='<?php echo $form_detail['arm_form_id']; ?>']" ><?php _e('Click to Copy', 'ARMember') ?></span>
+                                <span class="arm_copied_text arm_font_size_16">
                                     <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/copied_ok.png' ?>" />
                                     <?php _e('Code Copied', 'ARMember') ?>
                                 </span>
@@ -306,7 +306,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                 </li>
                                                 <li class="frmfieldtypebutton">
                                                     <div class="arm_new_field">
-                                                        <a href="javascript:void(0);" id="section"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/roles_icon.png" alt="<?php _e('Divider', 'ARMember'); ?>" /><?php _e('Divider', 'ARMember'); ?></a>
+                                                        <a href="javascript:void(0);" id="section"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/divider_icon.png" alt="<?php _e('Divider', 'ARMember'); ?>" /><?php _e('Divider', 'ARMember'); ?></a>
                                                     </div>
                                                 </li>
                                             </ul>
@@ -327,7 +327,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                 </li>
                                                 <li class="frmfieldtypebutton arm_form_preset_fields" data-field_key="profile_cover">
                                                     <div class="arm_new_field">
-                                                        <a href="javascript:void(0);" id="profile_cover"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/avatar_icon.png" alt="<?php _e('Profile Cover','ARMember'); ?>" /><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/avatar_icon_disabled.png" class="arm_disabled_img" alt="<?php _e('Profile Cover','ARMember'); ?>" /><?php _e( 'Profile Cover', 'ARMember'); ?></a>
+                                                        <a href="javascript:void(0);" id="profile_cover"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/cover_avatar_icon.png" alt="<?php _e('Profile Cover','ARMember'); ?>" /><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/cover_avatar_icon_disabled.png" class="arm_disabled_img" alt="<?php _e('Profile Cover','ARMember'); ?>" /><?php _e( 'Profile Cover', 'ARMember'); ?></a>
                                                     </div>
                                                 </li>
                                             </ul>
@@ -385,16 +385,19 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                         $so = isset($formSocialNetworksSettings[$sk]) ? $formSocialNetworksSettings[$sk] : $so;
                                         $icon_url = '';
                                         $icons = $arm_social_feature->arm_get_social_network_icons($sk);
-                                        if (isset($so['icon'])) {
-                                            if (isset($icons[$so['icon']]) && $icons[$so['icon']] != '') {
-                                                $icon_url = $icons[$so['icon']];
+                                        if(is_array($icons) && !empty($icons))
+                                        {
+                                            if (isset($so['icon'])) {
+                                                if (isset($icons[$so['icon']]) && $icons[$so['icon']] != '') {
+                                                    $icon_url = $icons[$so['icon']];
+                                                } else {
+                                                    $icon = array_slice($icons, 0, 1);
+                                                    $icon_url = array_shift($icon);
+                                                }
                                             } else {
                                                 $icon = array_slice($icons, 0, 1);
                                                 $icon_url = array_shift($icon);
                                             }
-                                        } else {
-                                            $icon = array_slice($icons, 0, 1);
-                                            $icon_url = array_shift($icon);
                                         }
                                         $so['label'] = isset($so['label']) ? $so['label'] : $sk;
                                         $socialLoginBtns .= '<div class="arm_social_link_container arm_social_link_container_' . $sk . '">';
@@ -452,7 +455,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                     ?>
                                     <?php if ($oformarmtype == 'login' && $arm_social_feature->isSocialLoginFeature) { ?>
                                         <ul class="arm_form_wrapper_container arm_no_sortable arm_set_editor_ul arm_form_wrapper_container_<?php echo $oformid; ?> arm_login_links_wrapper arm_form_field_container_armsocialicons arm_socialicons_top <?php echo ($enable_social_login != '1') ? 'hidden_section' : ''; ?> <?php echo ($social_btn_position != 'top') ? 'hidden_section2' : ''; ?>" data-form_id="<?php echo $oformid; ?>">
-                                            <li style="width:100%;">
+                                            <li class='arm_width_100_pct'>
                                                 <div class="arm_social_login_btns_wrapper <?php echo 'arm_' . $social_btn_type; ?> <?php echo 'arm_align_' . $social_btn_align; ?>"><?php echo $socialLoginBtns; ?></div>
                                                 <div class="arm_social_btn_separator_wrapper <?php echo ($enable_social_btn_separator != '1') ? 'hidden_section' : ''; ?>">
                                                     <?php echo $social_btn_separator; ?></div>
@@ -531,7 +534,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                 $armForm = new ARM_Form('id', $oformid);
                                                 if ($oformarmtype == 'forgot_password') {
                                                     ?>
-                                                <li style="margin: 0">
+                                                <li class="arm_margin_0">
                                                     <div class="arm_forgot_password_description" style="<?php echo (empty($oform['arm_form_settings']['description'])) ? 'display:none;' : ''; ?>"><?php echo stripslashes($oform['arm_form_settings']['description']); ?></div>
                                                 </li>
                                                 <?php
@@ -608,13 +611,13 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
 
                                         <ul class="arm_form_wrapper_container arm_no_sortable arm_set_editor_ul arm_form_wrapper_container_<?php echo $oformid; ?> arm_login_links_wrapper" data-form_id="<?php echo $oformid; ?>" id="arm_form_editor_all_login_options">
                                             <?php if ($arm_social_feature->isSocialLoginFeature) { ?>
-                                                <li class="arm_form_field_container_armsocialicons arm_socialicons_bottom <?php echo ($enable_social_login != '1') ? 'hidden_section' : ''; ?> <?php echo ($social_btn_position != 'bottom') ? 'hidden_section2' : ''; ?>" style="width:100%;">
+                                                <li class="arm_form_field_container_armsocialicons arm_width_100_pct arm_socialicons_bottom <?php echo ($enable_social_login != '1') ? 'hidden_section' : ''; ?> <?php echo ($social_btn_position != 'bottom') ? 'hidden_section2' : ''; ?>" >
                                                     <div class="arm_social_btn_separator_wrapper <?php echo ($enable_social_btn_separator != '1') ? 'hidden_section' : ''; ?> <?php echo ($social_btn_position != 'bottom') ? 'hidden_section2' : ''; ?>">
                                                         <?php echo $social_btn_separator; ?></div>
                                                     <div class="arm_social_login_btns_wrapper <?php echo 'arm_' . $social_btn_type; ?> <?php echo 'arm_align_' . $social_btn_align; ?>"><?php echo $socialLoginBtns; ?></div>
                                                 </li>
                                             <?php } ?>
-                                            <li class="arm_form_field_container_armbothlink" style="width:100%;<?php echo ($show_reg_link != '1' && $show_fp_link != '1') ? 'display:none;' : ''; ?>">
+                                            <li class="arm_form_field_container_armbothlink arm_width_100_pct" style="<?php echo ($show_reg_link != '1' && $show_fp_link != '1') ? 'display:none;' : ''; ?>">
                                                 <span class="arm_registration_link arm_form_field_container_armregister <?php echo ($show_reg_link != '1') ? 'hidden_section' : ''; ?>" id="arm_form_field_container_armregister"><?php echo $registration_link_label; ?></span>
                                             </li>
                                         </ul>
@@ -636,7 +639,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                             <li class="current"><a href="#tabsetting-1"><?php _e('Basic Options', 'ARMember'); ?></a></li>
                             <li><a href="#tabsetting-2"><?php _e('Advanced Options', 'ARMember'); ?></a></li>
                         </ul>
-                        <div class="tab arm_form_settings_styles_container" id="arm_form_settings_styles_container" style="width: 100%;">
+                        <div class="tab arm_form_settings_styles_container arm_width_100_pct" id="arm_form_settings_styles_container" >
                             <div id="tabsetting-1" class="arm-tab-content">
                                 <div class="arm_right_section_heading style_setting_main_heading"><?php _e('Styling & Formatting', 'ARMember'); ?></div>
                                 <div class="arm_right_section_body">
@@ -644,10 +647,10 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                         <input type="hidden" class="arm_switch_radio" name="arm_form_settings[display_direction]" value="vertical">
 
                                         <tr class="arm_form_style_options">
-                                            <td style="width: 100px;"><label class="arm_form_opt_label"><?php _e('Form Width', 'ARMember'); ?></label></td>
+                                            <td class="arm_width_100"><label class="arm_form_opt_label"><?php _e('Form Width', 'ARMember'); ?></label></td>
                                             <td>
                                                 <div class="arm_right">
-                                                    <input type="text" id="arm_form_width1" class="arm_form_width arm_form_setting_input armMappedTextbox" data-id="arm_form_width" value="<?php echo!empty($form_settings['style']['form_width']) ? $form_settings['style']['form_width'] : '600'; ?>" style="width:152px;" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
+                                                    <input type="text" id="arm_form_width1" class="arm_form_width arm_form_setting_input armMappedTextbox arm_width_130" data-id="arm_form_width" value="<?php echo!empty($form_settings['style']['form_width']) ? $form_settings['style']['form_width'] : '600'; ?>" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
                                                 </div>
                                             </td>
                                         </tr>
@@ -656,8 +659,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                             <td>
                                                 <div class="arm_right">
                                                     <input type='hidden' id="arm_manage_form_layout" class="arm_manage_form_layout armMappedTextbox" data-id="arm_manage_form_layout1" value="<?php echo $formLayout; ?>" data-old_value="<?php echo $formLayout; ?>"/>
-                                                    <dl class="arm_selectbox column_level_dd">
-                                                        <dt style="width:160px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                    <dl class="arm_selectbox column_level_dd arm_width_160">
+                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                         <dd>
                                                             <ul data-id="arm_manage_form_layout">
                                                                 <li data-label="<?php _e('Standard Style', 'ARMember'); ?>" data-value="iconic"><?php _e('Standard Style', 'ARMember'); ?></li>
@@ -673,7 +676,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                             <td colspan="2"><label class="arm_form_opt_label"><?php _e('Color Scheme', 'ARMember'); ?></label></td>
                                         </tr>
                                         <tr class="arm_form_style_color_schemes">
-                                            <td colspan="2" style="position: relative;">
+                                            <td colspan="2">
                                                 <div class="c_schemes">
                                                     <?php foreach ($formColorSchemes as $color => $color_opt) { ?>
                                                         <label class="arm_color_scheme_block arm_color_scheme_block_<?php echo $color; ?> <?php echo ($form_settings['style']['color_scheme'] == $color) ? 'arm_color_box_active' : ''; ?>" style="<?php echo ($color == 'custom') ? 'display:none;' : '' ?>background-color:<?php echo isset($color_opt['main_color']) ? $color_opt['main_color'] : ''; ?>;">
@@ -707,7 +710,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                 <tr>
                                                     <td colspan="2">
                                                         <label class="arm_form_opt_label" for="arm_recaptcha_v3_status"><?php _e('Enable Google reCAPTCHA', 'ARMember'); ?></label>
-                                                        <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                                        <div class="armswitch arm_global_setting_switch arm_vertical_align_middle">
                                                             <input type="checkbox" id="arm_recaptcha_v3_status" <?php checked($arm_recaptcha_v3_status, '1'); ?> value="1" class="armswitch_input" name="arm_form_settings[arm_recaptcha_v3_status]"/>
                                                             <label for="arm_recaptcha_v3_status" class="armswitch_label"></label>
                                                             <input type="hidden" name="arm_recaptcha_key_status" id="arm_recaptcha_key_status" value="<?php echo $arm_recaptcha_key_status;?>">
@@ -724,13 +727,13 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                     {
                                 ?>
                                         <div class="arm_right_section_heading"><?php _e('Register Form Options', 'ARMember'); ?></div>
-                                        <div class="arm_right_section_body arm_form_redirection_options" style="padding-bottom: 15px;">
+                                        <div class="arm_right_section_body arm_form_redirection_options arm_padding_bottom_15">
                                             <table class="arm_form_settings_style_block">
                                             <?php $show_login_link = (isset($form_settings['show_login_link'])) ? $form_settings['show_login_link'] : 0; ?>
                                                 <tr>
                                                     <td colspan="2">
                                                         <label class="arm_form_opt_label" for="show_login_link"><?php _e('Display Login Link?', 'ARMember'); ?></label>
-                                                        <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                                        <div class="armswitch arm_global_setting_switch arm_vertical_align_middle">
                                                             <input type="checkbox" id="show_login_link" <?php checked($show_login_link, '1'); ?> value="1" class="armswitch_input" name="arm_form_settings[show_login_link]"/>
                                                             <label for="show_login_link" class="armswitch_label"></label>
                                                         </div>
@@ -776,7 +779,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                                 <input type="hidden" id="login_link_type_modal_form_type" name="arm_form_settings[login_link_type_modal_form_type]" value="<?php echo $login_link_type_modal_form_type; ?>"/>
 
                                                                 <input type="hidden" id="login_link_type_modal_form" name="arm_form_settings[login_link_type_modal]" value="<?php echo $login_link_type_modal; ?>"/>
-                                                                <dl class="arm_selectbox column_level_dd">
+                                                                <dl class="arm_selectbox column_level_dd arm_width_250 arm_margin_top_5">
                                                                     <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                     <dd>
                                                                         <ul data-id="login_link_type_modal_form">
@@ -823,14 +826,14 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                 <?php } else { ?>
                                     <div class="arm_right_section_heading"><?php _e('Login Form Options', 'ARMember'); ?></div>
                                 <?php } ?>
-                                <div class="arm_right_section_body arm_form_redirection_options" style="padding-bottom: 15px;">
+                                <div class="arm_right_section_body arm_form_redirection_options arm_padding_bottom_15">
                                     <table class="arm_form_settings_style_block">
                                         <?php if (!$isRegister && !$isEditProfile) { ?>
                                             <?php $show_rememberme = (isset($form_settings['show_rememberme'])) ? $form_settings['show_rememberme'] : 0; ?>
                                             <tr>
                                                 <td colspan="2">
                                                     <label class="arm_form_opt_label" for="show_rememberme"><?php _e('Remember Me Checkbox', 'ARMember'); ?></label>
-                                                    <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                                    <div class="armswitch arm_global_setting_switch arm_vertical_align_middle">
                                                         <input type="checkbox" id="show_rememberme" <?php checked($show_rememberme, '1'); ?> value="1" class="armswitch_input arm_show_rememberme_chk" name="arm_form_settings[show_rememberme]"/>
                                                         <label for="show_rememberme" class="armswitch_label"></label>
                                                     </div>
@@ -840,7 +843,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                             <tr>
                                                 <td colspan="2">
                                                     <label class="arm_form_opt_label" for="show_registration_link"><?php _e('Display Registration Link?', 'ARMember'); ?></label>
-                                                    <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                                    <div class="armswitch arm_global_setting_switch arm_vertical_align_middle">
                                                         <input type="checkbox" id="show_registration_link" <?php checked($show_registration_link, '1'); ?> value="1" class="armswitch_input" name="arm_form_settings[show_registration_link]"/>
                                                         <label for="show_registration_link" class="armswitch_label"></label>
                                                     </div>
@@ -920,7 +923,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                             <tr>
                                                 <td colspan="2">
                                                     <label class="arm_form_opt_label" for="show_forgot_password_link"><?php _e('Display Forgot Password Link?', 'ARMember'); ?></label>
-                                                    <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                                    <div class="armswitch arm_global_setting_switch arm_vertical_align_middle">
                                                         <input type="checkbox" id="show_forgot_password_link" <?php checked($show_forgot_password_link, '1'); ?> value="1" class="armswitch_input" name="arm_form_settings[show_forgot_password_link]"/>
                                                         <label for="show_forgot_password_link" class="armswitch_label"></label>
                                                     </div>
@@ -977,7 +980,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                             <tr>
                                                 <td colspan="2">
                                                     <label class="arm_form_opt_label" for="arm_auto_login_btn"><?php _e('Automatic login on signup', 'ARMember'); ?></label>
-                                                    <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                                    <div class="armswitch arm_global_setting_switch arm_vertical_align_middle">
                                                         <input type="checkbox" id="arm_auto_login_btn" <?php checked($auto_login, '1'); ?> value="1" class="armswitch_input" name="arm_form_settings[auto_login]"/>
                                                         <label for="arm_auto_login_btn" class="armswitch_label"></label>
                                                     </div>
@@ -1004,7 +1007,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                 ?>
                                                 <td colspan="2">
                                                     <label class="arm_form_opt_label" for="arm_view_profile_link"><?php _e('Display view profile link', 'ARMember'); ?></label>
-                                                    <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                                    <div class="armswitch arm_global_setting_switch arm_vertical_align_middle">
                                                         <input type="checkbox" id="arm_view_profile_link" <?php checked( $view_profile, '1'); ?> value="1" class="armswitch_input" name="arm_form_settings[view_profile_link]" />
                                                         <label for="arm_view_profile_link" class="armswitch_label"></label>
                                                     </div>
@@ -1025,12 +1028,12 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
 
 
                                 <div class="arm_right_section_heading"><?php _e('Hidden Fields', 'ARMember'); ?></div>
-                                <div class="arm_right_section_body" style="padding-bottom: 15px;">
+                                <div class="arm_right_section_body arm_padding_bottom_15">
                                     <table class="arm_form_settings_style_block arm_tbl_label_left_input_right">
                                         <tr>
                                             <td colspan="3">
                                                 <label class="arm_form_opt_label" for="arm_enable_hidden_field"><?php _e('Enable Hidden Fields?', 'ARMember'); ?></label>
-                                                <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                                <div class="armswitch arm_global_setting_switch arm_vertical_align_middle">
                                                     <input type="checkbox" id="arm_enable_hidden_field" <?php checked($form_settings['is_hidden_fields'], '1'); ?> value="1" class="armswitch_input armIgnore" name="arm_form_settings[is_hidden_fields]"/>
                                                     <label for="arm_enable_hidden_field" class="armswitch_label"></label>
                                                 </div>
@@ -1082,12 +1085,12 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                 <?php if (!$isRegister && !$isEditProfile) { ?>
                                     <?php if ($arm_social_feature->isSocialLoginFeature) { ?>
                                         <div class="arm_right_section_heading arm_form_special_section_heading"><?php _e('Social Connect Options', 'ARMember'); ?></div>
-                                        <div class="arm_right_section_body arm_form_special_section_body arm_social_connect_options" style="padding-bottom: 15px;">
+                                        <div class="arm_right_section_body arm_form_special_section_body arm_social_connect_options arm_padding_bottom_15">
                                             <table class="arm_form_settings_style_block arm_tbl_label_left_input_right">
                                                 <tr>
                                                     <td colspan="2">
                                                         <label class="arm_form_opt_label" for="enable_social_login"><?php _e('Enable Social Login?', 'ARMember'); ?></label>
-                                                        <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;margin-right: 10px;">
+                                                        <div class="armswitch arm_global_setting_switch arm_vertical_align_middle arm_margin_right_10" >
                                                             <input type="checkbox" id="enable_social_login" <?php checked($enable_social_login, '1'); ?> value="1" class="armswitch_input" name="arm_form_settings[enable_social_login]" data-configure="<?php echo (!empty($activeSocialNetworks)) ? '1' : '0'; ?>" data-configure_warning="<?php _e('Please configure one of social network and then try to ON this setting.', 'ARMember'); ?>"/>
                                                             <label for="enable_social_login" class="armswitch_label"></label>
                                                         </div>
@@ -1145,7 +1148,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                     <td><label class="arm_form_opt_label"><?php _e('Separator', 'ARMember'); ?></label></td>
                                                     <td>
                                                         <div class="arm_right">
-                                                            <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                                            <div class="armswitch arm_global_setting_switch arm_vertical_align_middle">
                                                                 <input type="checkbox" id="enable_social_btn_separator" <?php checked($enable_social_btn_separator, '1'); ?> value="1" class="armswitch_input"name="arm_form_settings[style][enable_social_btn_separator]"/>
                                                                 <label for="enable_social_btn_separator" class="armswitch_label"></label>
                                                             </div>
@@ -1180,7 +1183,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                 <tr>
                                                     <td colspan="2">
                                                         <label class="arm_form_opt_label" for="arm_show_captcha_field"><?php _e('Enable Google Recaptcha', 'ARMember'); ?></label>
-                                                        <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                                        <div class="armswitch arm_global_setting_switch arm_vertical_align_middle">
                                                             <input type="checkbox" id="arm_show_captcha_field" <?php checked($arm_show_other_form_captcha_field, '1'); ?> value="1" class="armswitch_input" name="arm_form_settings[show_other_form_captcha_field]"/>
                                                             <label for="arm_show_captcha_field" class="armswitch_label"></label>
                                                             <input type="hidden" name="arm_recaptcha_key_status" id="arm_recaptcha_key_status" value="<?php echo $arm_recaptcha_key_status;?>">
@@ -1193,7 +1196,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                     </div>
 
                                     <div class="arm_right_section_heading"><?php _e('Messages', 'ARMember'); ?></div>
-                                    <div class="arm_right_section_body arm_form_redirection_options" style="padding-bottom: 15px;">
+                                    <div class="arm_right_section_body arm_form_redirection_options arm_padding_bottom_15">
                                         <table class="arm_form_settings_style_block">
                                             <tr>
                                                 <td colspan="2">
@@ -1205,7 +1208,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                     <div class="arm_form_opt_input">
                                                         <label class="arm_form_opt_label"><?php _e('Form Description', 'ARMember'); ?>:</label>
 
-                                                        <input type="text" name="arm_form_settings[forgot_password][description]" style="max-width:auto" value="<?php echo $forgotgePassDesc; ?>" id="arm_forgot_password_description_input" class="arm_forgot_password_description_input form_submit_action_input">
+                                                        <?php /*<input type="text" name="arm_form_settings[forgot_password][description]" style="max-width:auto" value="<?php echo addslashes($forgotgePassDesc); ?>" id="arm_forgot_password_description_input" class="arm_forgot_password_description_input form_submit_action_input">*/?>
+                                                        <textarea name="arm_form_settings[forgot_password][description]" id="arm_forgot_password_description_input" class="arm_forgot_password_description_input form_submit_action_input" rows="2" cols="35"><?php echo $forgotgePassDesc; ?></textarea>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -1226,7 +1230,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                 <td colspan="2">
                                                     <div class="arm_form_opt_input">
                                                         <label class="arm_form_opt_label"><?php _e('Display message after form submit', 'ARMember'); ?>:</label>
-                                                        <input type="text" name="arm_form_settings[change_password][message]" style="max-width:auto" value="<?php echo $changePassMsg; ?>" id="form_submit_action_message_cp" class="form_submit_action_input">
+                                                        <input type="text" name="arm_form_settings[change_password][message]" value="<?php echo $changePassMsg; ?>" id="form_submit_action_message_cp" class="form_submit_action_input">
                                                     </div>
                                                 </td>
                                             </tr>
@@ -1245,7 +1249,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                     <div class="arm_opt_ins_cl_wrapper">
                                         <div class="arm_opt_ins_cl_switch">
                                             <label class="arm_form_opt_label" for="arm_opt_ins_cl_mode"><?php _e('Conditional Subscription', 'ARMember'); ?></label>
-                                            <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                            <div class="armswitch arm_global_setting_switch arm_vertical_align_middle" >
                                                 <input type="checkbox" id="arm_opt_ins_cl_mode" <?php checked($arm_opt_ins_cl_mode, '1'); ?> value="1" class="armswitch_input" name="arm_form_settings[arm_opt_ins_cl_mode]"/>
                                                 <label for="arm_opt_ins_cl_mode" class="armswitch_label"></label>
                                             </div>
@@ -1286,7 +1290,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                             <input type="text" id="arm_opt_ins_cl_val" name="arm_form_settings[arm_opt_ins_cl_val]" class="arm_opt_ins_cl_val_txt" data-id="arm_form_width1" value="<?php echo $arm_opt_ins_cl_val ?>" />
                                         </div>
                                     </div>
-                                    <div class="arm_right_section_body arm_form_special_section_body arm_email_tools" style="padding-bottom: 15px;">
+                                    <div class="arm_right_section_body arm_form_special_section_body arm_email_tools arm_padding_bottom_15">
                                         <?php foreach ($email_tools as $etool => $etsetting) { ?>
                                             <?php
                                             $etoolName = '';
@@ -1309,6 +1313,9 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                             if ($etool == 'mailerlite') {
                                                 $etoolName = __('Mailer Lite', 'ARMember');
                                             }
+                                            if ($etool == 'sendinblue') {
+                                                $etoolName = __('Send In Blue', 'ARMember');
+                                            }
                                             
                                             $et_list_id = (isset($etsetting['list_id'])) ? $etsetting['list_id'] : '';
                                             $lists = (isset($etsetting['list'])) ? $etsetting['list'] : array();
@@ -1321,7 +1328,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                             <?php if (isset($etsetting['status']) && $etsetting['status'] == '1') { ?>
                                                 <div class="arm_etool_options_container">
                                                     <label>
-                                                        <input type="checkbox" id="arm_etool_option_<?php echo $etool ?>" name="arm_form_settings[email][<?php echo $etool ?>][status]" value="1" class="arm_icheckbox arm_form_email_tool_radio" data-type="<?php echo $etool; ?>" <?php checked($fetStatus, '1'); ?>><span><?php echo $etoolName; ?></span>
+                                                        <input type="checkbox" id="arm_etool_option_<?php echo $etool ?>" name="arm_form_settings[email][<?php echo $etool ?>][status]" value="1" class="arm_icheckbox arm_form_email_tool_radio" data-type="<?php echo $etool; ?>" <?php checked($fetStatus, '1'); ?>><label for="arm_etool_option_<?php echo $etool ?>"><?php echo $etoolName; ?></label>
                                                     </label>
                                                     <?php
                                                     $hide_section = true;
@@ -1330,10 +1337,10 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                         ?>
 
                                                         <div class="arm_etool_list_container <?php echo ($fetStatus != 1) ? 'hidden_section' : ''; ?>">
-                                                            <span><?php _e('List Name', 'ARMember'); ?>:&nbsp;&nbsp;</span>
+                                                            <span><?php _e('List Name', 'ARMember'); ?>&nbsp;&nbsp;</span>
                                                             <input type="hidden" id="<?php echo $etool ?>_list_name" name="arm_form_settings[email][<?php echo $etool ?>][list_id]" value="<?php echo $list_id; ?>"/>
-                                                            <dl class="arm_selectbox column_level_dd">
-                                                                <dt style="width:150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                            <dl class="arm_selectbox column_level_dd arm_width_150">
+                                                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                 <dd>
                                                                     <ul data-id="<?php echo $etool ?>_list_name" id="arm_<?php echo $etool ?>_list">
                                                                         <?php
@@ -1376,13 +1383,13 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                 ?>
                                                 <div class="arm_etool_options_container">
                                                     <label>
-                                                        <input type="checkbox" id="arm_etool_option_mymail" name="arm_form_settings[email][mymail][status]" value="1" class="arm_icheckbox arm_form_email_tool_radio" data-type="mymail" <?php checked($mymailStatus, '1'); ?>><span><?php echo $mail_title; ?></span>
+                                                        <input type="checkbox" id="arm_etool_option_mymail" name="arm_form_settings[email][mymail][status]" value="1" class="arm_icheckbox arm_form_email_tool_radio" data-type="mymail" <?php checked($mymailStatus, '1'); ?>><label for="arm_etool_option_mymail"><?php echo $mail_title; ?></label>
                                                     </label>
                                                     <div class="arm_etool_list_container <?php echo ($mymailStatus != 1) ? 'hidden_section' : ''; ?>">
-                                                        <span><?php _e('List Name', 'ARMember'); ?>:&nbsp;&nbsp;</span>
+                                                        <span><?php _e('List Name', 'ARMember'); ?>&nbsp;&nbsp;</span>
                                                         <input type="hidden" id="mymail_list_name" name="arm_form_settings[email][mymail][list_id]" value="<?php echo $mymail_list_id; ?>"/>
-                                                        <dl class="arm_selectbox column_level_dd">
-                                                            <dt style="width:150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                        <dl class="arm_selectbox column_level_dd arm_width_150">
+                                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                             <dd>
                                                                 <ul data-id="mymail_list_name" id="arm_mymail_list">
                                                                     <li data-label="<?php _e('Select List Name', 'ARMember'); ?>" data-value=""><?php _e('Select List Name', 'ARMember'); ?></li>
@@ -1419,8 +1426,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td colspan="2">
                                                                 <div class="arm_right">
                                                                     <input type="hidden" id="arm_manage_form_layout1" name="arm_form_settings[style][form_layout]" class="arm_manage_form_layout armMappedTextbox" data-id="arm_manage_form_layout" value="<?php echo $formLayout; ?>" data-old_value="<?php echo $formLayout; ?>"/>
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:160px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_160">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_manage_form_layout1">
                                                                                 <li data-label="<?php _e('Standard Style', 'ARMember'); ?>" data-value="iconic"><?php _e('Standard Style', 'ARMember'); ?></li>
@@ -1436,23 +1443,23 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td><?php _e('Form Width', 'ARMember'); ?></td>
                                                             <td colspan="2">
                                                                 <div class="arm_right">
-                                                                    <input type="text" id="arm_form_width" name="arm_form_settings[style][form_width]" class="arm_form_width arm_form_setting_input armMappedTextbox" data-id="arm_form_width1" value="<?php echo!empty($form_settings['style']['form_width']) ? $form_settings['style']['form_width'] : '600'; ?>" style="width:150px;" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
+                                                                    <input type="text" id="arm_form_width" name="arm_form_settings[style][form_width]" class="arm_form_width arm_form_setting_input armMappedTextbox arm_width_130" data-id="arm_form_width1" value="<?php echo!empty($form_settings['style']['form_width']) ? $form_settings['style']['form_width'] : '600'; ?>" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
                                                                     <input type='hidden' id="arm_form_width_type" name="arm_form_settings[style][form_width_type]" class="arm_form_width_type" value="px" />
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td style="vertical-align:top;padding-top: 7px;"><?php _e('Border', 'ARMember'); ?></td>
+                                                            <td class="arm_form_editor_field_label"><?php _e('Border', 'ARMember'); ?></td>
                                                             <td>
                                                                 <div class="arm_right">
-                                                                    <input type='text' id="arm_form_border_width" name="arm_form_settings[style][form_border_width]" style="width:80px;" class="arm_form_width arm_form_setting_input" value="<?php echo isset($form_settings['style']['form_border_width']) ? $form_settings['style']['form_border_width'] : '0'; ?>" onkeydown="javascript:return checkNumber(event)" />
+                                                                    <input type='text' id="arm_form_border_width" name="arm_form_settings[style][form_border_width]" class="arm_form_width arm_form_setting_input arm_width_80" value="<?php echo isset($form_settings['style']['form_border_width']) ? $form_settings['style']['form_border_width'] : '0'; ?>" onkeydown="javascript:return checkNumber(event)" />
 
                                                                     <br />Width (px)
                                                                 </div>
                                                             </td>
                                                             <td>
                                                                 <div class="arm_right">
-                                                                    <input type='text' id="arm_form_border_radius" name="arm_form_settings[style][form_border_radius]" style="width:80px;" class="arm_form_width arm_form_setting_input" value="<?php echo isset($form_settings['style']['form_border_radius']) ? $form_settings['style']['form_border_radius'] : '8'; ?>" onkeydown="javascript:return checkNumber(event)" />
+                                                                    <input type='text' id="arm_form_border_radius" name="arm_form_settings[style][form_border_radius]" class="arm_form_width arm_form_setting_input arm_width_80" value="<?php echo isset($form_settings['style']['form_border_radius']) ? $form_settings['style']['form_border_radius'] : '8'; ?>" onkeydown="javascript:return checkNumber(event)" />
 
                                                                     <br />Radius (px)
                                                                 </div>
@@ -1463,8 +1470,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td colspan="2">
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_form_border_style" name="arm_form_settings[style][form_border_style]" class="arm_form_border_style" value="<?php echo!empty($form_settings['style']['form_border_style']) ? $form_settings['style']['form_border_style'] : 'solid'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_150">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_form_border_style">
                                                                                 <li data-label="Solid" data-value="solid">Solid</li>
@@ -1478,7 +1485,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             </td>                                            
                                                         </tr>
                                                         <tr>
-                                                            <td style="vertical-align: top;padding-top: 7px;"><?php _e('Form Padding', 'ARMember'); ?></td>
+                                                            <td class="arm_form_editor_field_label"><?php _e('Form Padding', 'ARMember'); ?></td>
                                                             <td colspan="2">
                                                                 <div class="arm_button_margin_inputs_container arm_right">
                                                                     <?php
@@ -1508,7 +1515,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                         </tr>
 
                                                         <tr>
-                                                            <td style="vertical-align: top;"><?php _e('Background', 'ARMember'); ?></td>
+                                                            <td class="arm_vertical_align_top"><?php _e('Background', 'ARMember'); ?></td>
                                                             <td colspan="2">
                                                                 <div class="arm_right">
                                                                     <?php
@@ -1540,8 +1547,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td colspan="2">
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_form_opacity" name="arm_form_settings[style][form_opacity]" class="arm_form_opacity" value="<?php echo!empty($form_settings['style']['form_opacity']) ? $form_settings['style']['form_opacity'] : '1'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:60px;min-width:50px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_80 arm_min_width_50">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_form_opacity">
                                                                                 <li data-label="1.0" data-value="1">1.0</li>
@@ -1568,7 +1575,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td><?php _e('Hide Title', 'ARMember'); ?></td>
                                                             <td colspan="2">
                                                                 <div class="arm_right">
-                                                                    <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                                                    <div class="armswitch arm_global_setting_switch arm_vertical_align_middle" >
                                                                         <input type="checkbox" id="arm_hide_form_title" <?php checked($form_settings['hide_title'], '1'); ?> value="1" class="armswitch_input armIgnore" name="arm_form_settings[hide_title]"/>
                                                                         <label for="arm_hide_form_title" class="armswitch_label"></label>
                                                                     </div>
@@ -1580,8 +1587,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td colspan="2">
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_form_title_font_family" name="arm_form_settings[style][form_title_font_family]" class="arm_form_title_font_family" value="<?php echo!empty($form_settings['style']['form_title_font_family']) ? $form_settings['style']['form_title_font_family'] : 'Helvetica'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_150">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_form_title_font_family">
                                                                                 <?php echo $arm_member_forms->arm_fonts_list(); ?>
@@ -1596,8 +1603,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td colspan="2">
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_form_title_font_size" name="arm_form_settings[style][form_title_font_size]" class="arm_form_title_font_size" value="<?php echo isset($form_settings['style']['form_title_font_size']) ? $form_settings['style']['form_title_font_size'] : '26'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:120px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_120">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_form_title_font_size">
                                                                                 <?php
@@ -1681,7 +1688,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td></td>
                                                         </tr>
                                                         <tr class="arm_registration_link_options <?php echo ($show_registration_link != '1') ? 'hidden_section' : ''; ?>">
-                                                            <td style="vertical-align: top;padding-top: 7px;"><?php _e('Registration Link Margin', 'ARMember'); ?></td>
+                                                            <td class="arm_form_editor_field_label"><?php _e('Registration Link Margin', 'ARMember'); ?></td>
                                                             <td colspan="2">
                                                                 <?php
                                                                 $registration_link_margin = (isset($form_settings['registration_link_margin'])) ? $form_settings['registration_link_margin'] : array();
@@ -1712,7 +1719,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             </td>
                                                         </tr>
                                                         <tr class="arm_forgot_password_link_options <?php echo ($show_forgot_password_link != '1') ? 'hidden_section' : ''; ?>">
-                                                            <td style="vertical-align: top;padding-top: 7px;"><?php _e('Forgot Password Link Margin', 'ARMember'); ?></td>
+                                                            <td class="arm_form_editor_field_label"><?php _e('Forgot Password Link Margin', 'ARMember'); ?></td>
                                                             <td colspan="2">
                                                                 <?php
                                                                 $forgot_password_link_margin = (isset($form_settings['forgot_password_link_margin'])) ? $form_settings['forgot_password_link_margin'] : array();
@@ -1973,7 +1980,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td><?php _e('Field Width', 'ARMember'); ?></td>
                                                             <td colspan="2">
                                                                 <div class="arm_right">
-                                                                    <input type="text" id="arm_field_width" name="arm_form_settings[style][field_width]" class="arm_field_width arm_form_setting_input" value="<?php echo!empty($form_settings['style']['field_width']) ? $form_settings['style']['field_width'] : '100'; ?>" style="width:140px;" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(%)&nbsp;</span>
+                                                                    <input type="text" id="arm_field_width" name="arm_form_settings[style][field_width]" class="arm_field_width arm_form_setting_input arm_width_140" value="<?php echo!empty($form_settings['style']['field_width']) ? $form_settings['style']['field_width'] : '100'; ?>" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(%)&nbsp;</span>
                                                                     <input type='hidden' id="arm_field_width_type" name="arm_form_settings[style][field_width_type]" class="arm_field_width_type" value="%" />
                                                                 </div>
                                                             </td>
@@ -1982,7 +1989,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td><?php _e('Field Height', 'ARMember'); ?></td>
                                                             <td colspan="2">
                                                                 <div class="arm_right">
-                                                                    <input type="text" id="arm_field_height" name="arm_form_settings[style][field_height]" class="arm_field_height arm_form_setting_input" value="<?php echo isset($form_settings['style']['field_height']) ? $form_settings['style']['field_height'] : '33'; ?>" style="width:140px;" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
+                                                                    <input type="text" id="arm_field_height" name="arm_form_settings[style][field_height]" class="arm_field_height arm_form_setting_input arm_width_140" value="<?php echo isset($form_settings['style']['field_height']) ? $form_settings['style']['field_height'] : '33'; ?>"  onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -1990,21 +1997,21 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td><?php _e('Field Spacing', 'ARMember'); ?></td>
                                                             <td colspan="2">
                                                                 <div class="arm_right">
-                                                                    <input type="text" id="arm_field_spacing" name="arm_form_settings[style][field_spacing]" class="arm_field_spacing arm_form_setting_input" value="<?php echo isset($form_settings['style']['field_spacing']) ? $form_settings['style']['field_spacing'] : '10'; ?>" style="width:140px;" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
+                                                                    <input type="text" id="arm_field_spacing" name="arm_form_settings[style][field_spacing]" class="arm_field_spacing arm_form_setting_input arm_width_140" value="<?php echo isset($form_settings['style']['field_spacing']) ? $form_settings['style']['field_spacing'] : '10'; ?>" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                         <tr>
-                                                            <td style="vertical-align:top;"><?php _e('Border', 'ARMember'); ?></td>
+                                                            <td class="arm_vertical_align_top"><?php _e('Border', 'ARMember'); ?></td>
                                                             <td>
                                                                 <div class="arm_right">
-                                                                    <input type='text' id="arm_field_border_width" name="arm_form_settings[style][field_border_width]" style="width:70px;" class="arm_field_border_width arm_form_setting_input" value="<?php echo isset($form_settings['style']['field_border_width']) ? $form_settings['style']['field_border_width'] : '1'; ?>" onkeydown="javascript:return checkNumber(event)" />
+                                                                    <input type='text' id="arm_field_border_width" name="arm_form_settings[style][field_border_width]" class="arm_field_border_width arm_form_setting_input arm_width_80" value="<?php echo isset($form_settings['style']['field_border_width']) ? $form_settings['style']['field_border_width'] : '1'; ?>" onkeydown="javascript:return checkNumber(event)" />
                                                                     <br />Width (px)
                                                                 </div>
                                                             </td>
                                                             <td>
                                                                 <div class="arm_right">
-                                                                    <input type='text' id="arm_field_border_radius" name="arm_form_settings[style][field_border_radius]" class="arm_field_border_radius arm_form_setting_input" value="<?php echo isset($form_settings['style']['field_border_radius']) ? $form_settings['style']['field_border_radius'] : '3'; ?>" onkeydown="javascript:return checkNumber(event)" style="width:70px;" />
+                                                                    <input type='text' id="arm_field_border_radius" name="arm_form_settings[style][field_border_radius]" class="arm_field_border_radius arm_form_setting_input arm_width_80" value="<?php echo isset($form_settings['style']['field_border_radius']) ? $form_settings['style']['field_border_radius'] : '3'; ?>" onkeydown="javascript:return checkNumber(event)" />
 
                                                                     <br />Radius (px)
                                                                 </div>
@@ -2015,8 +2022,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td colspan="2">
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_field_border_style" name="arm_form_settings[style][field_border_style]" class="arm_field_border_style" value="<?php echo!empty($form_settings['style']['field_border_style']) ? $form_settings['style']['field_border_style'] : 'solid'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:145px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_140">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_field_border_style">
                                                                                 <li data-label="Solid" data-value="solid">Solid</li>
@@ -2052,8 +2059,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td colspan="2">
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_field_font_family" name="arm_form_settings[style][field_font_family]" class="arm_field_font_family" value="<?php echo!empty($form_settings['style']['field_font_family']) ? $form_settings['style']['field_font_family'] : 'Helvetica'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_150">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_field_font_family">
                                                                                 <?php echo $arm_member_forms->arm_fonts_list(); ?>
@@ -2068,8 +2075,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td colspan="2">
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_field_font_size" name="arm_form_settings[style][field_font_size]" class="arm_field_font_size" value="<?php echo isset($form_settings['style']['field_font_size']) ? $form_settings['style']['field_font_size'] : '14'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:120px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_120">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_field_font_size">
                                                                                 <?php
@@ -2182,8 +2189,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                                         
                                                                         ?>
                                                                         <input type='hidden' id="arm_calendar_date_format" name="arm_form_settings[date_format]" class="arm_calendar_date_format armIgnore" value="<?php echo $formDateFormat; ?>" />
-                                                                        <dl class="arm_selectbox column_level_dd">
-                                                                            <dt style="width:150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                        <dl class="arm_selectbox column_level_dd arm_width_150">
+                                                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                             <dd>
                                                                                 <ul data-id="arm_calendar_date_format"><?php
                                                                                     foreach ($dateFormatOpts as $df) {
@@ -2219,7 +2226,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td><?php _e('Label Width', 'ARMember'); ?></td>
                                                             <td>
                                                                 <div class="arm_right">
-                                                                    <input type="text" id="arm_label_width" name="arm_form_settings[style][label_width]" class="arm_label_width arm_form_setting_input" value="<?php echo!empty($form_settings['style']['label_width']) ? $form_settings['style']['label_width'] : '150'; ?>" style="width:135px;" onkeydown="javascript:return checkNumber(event)"/>&nbsp;(px)
+                                                                    <input type="text" id="arm_label_width" name="arm_form_settings[style][label_width]" class="arm_label_width arm_form_setting_input arm_width_140" value="<?php echo!empty($form_settings['style']['label_width']) ? $form_settings['style']['label_width'] : '150'; ?>" onkeydown="javascript:return checkNumber(event)"/>&nbsp;(px)
                                                                     <input type='hidden' id="arm_label_width_type" name="arm_form_settings[style][label_width_type]" class="arm_label_width_type" value="px" />
                                                                 </div>
                                                             </td>
@@ -2274,8 +2281,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td>
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_label_font_family" name="arm_form_settings[style][label_font_family]" class="arm_label_font_family" value="<?php echo!empty($form_settings['style']['label_font_family']) ? $form_settings['style']['label_font_family'] : 'Helvetica'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_150">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_label_font_family">
                                                                                 <?php echo $arm_member_forms->arm_fonts_list(); ?>
@@ -2290,8 +2297,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td>
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_label_font_size" name="arm_form_settings[style][label_font_size]" class="arm_label_font_size" value="<?php echo!empty($form_settings['style']['label_font_size']) ? $form_settings['style']['label_font_size'] : '16'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:120px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_120">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_label_font_size">
                                                                                 <?php
@@ -2311,8 +2318,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td>
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_description_font_size" name="arm_form_settings[style][description_font_size]" class="arm_description_font_size" value="<?php echo!empty($form_settings['style']['description_font_size']) ? $form_settings['style']['description_font_size'] : '16'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:120px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_120">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_description_font_size">
                                                                                 <?php
@@ -2357,7 +2364,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td><?php _e('Width', 'ARMember'); ?></td>
                                                             <td>
                                                                 <div class="arm_right">
-                                                                    <input type="text" id="arm_button_width" name="arm_form_settings[style][button_width]" class="arm_button_width arm_form_setting_input" value="<?php echo!empty($form_settings['style']['button_width']) ? $form_settings['style']['button_width'] : '150'; ?>" style="width:140px;" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
+                                                                    <input type="text" id="arm_button_width" name="arm_form_settings[style][button_width]" class="arm_button_width arm_form_setting_input arm_width_140" value="<?php echo!empty($form_settings['style']['button_width']) ? $form_settings['style']['button_width'] : '150'; ?>" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
                                                                     <input type='hidden' id="arm_button_width_type" name="arm_form_settings[style][button_width_type]" class="arm_button_width_type" value="<?php echo!empty($form_settings['style']['button_width_type']) ? $form_settings['style']['button_width_type'] : 'px'; ?>" />
                                                                 </div>
                                                             </td>
@@ -2366,7 +2373,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td><?php _e('Height', 'ARMember'); ?></td>
                                                             <td>
                                                                 <div class="arm_right">
-                                                                    <input type="text" id="arm_button_height" name="arm_form_settings[style][button_height]" class="arm_button_height arm_form_setting_input" value="<?php echo!empty($form_settings['style']['button_height']) ? $form_settings['style']['button_height'] : '35'; ?>" style="width:140px;" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
+                                                                    <input type="text" id="arm_button_height" name="arm_form_settings[style][button_height]" class="arm_button_height arm_form_setting_input arm_width_140" value="<?php echo!empty($form_settings['style']['button_height']) ? $form_settings['style']['button_height'] : '35'; ?>" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
                                                                     <input type='hidden' id="arm_button_height_type" name="arm_form_settings[style][button_height_type]" class="arm_button_height_type" value="<?php echo!empty($form_settings['style']['button_height_type']) ? $form_settings['style']['button_height_type'] : 'px'; ?>" />
                                                                 </div>
                                                             </td>
@@ -2375,7 +2382,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td><?php _e('Border Radius', 'ARMember'); ?></td>
                                                             <td>
                                                                 <div class="arm_right">
-                                                                    <input type="text" id="arm_button_border_radius" name="arm_form_settings[style][button_border_radius]" class="arm_button_border_radius arm_form_setting_input" value="<?php echo isset($form_settings['style']['button_border_radius']) ? $form_settings['style']['button_border_radius'] : '4'; ?>" style="width:140px;" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
+                                                                    <input type="text" id="arm_button_border_radius" name="arm_form_settings[style][button_border_radius]" class="arm_button_border_radius arm_form_setting_input arm_width_140" value="<?php echo isset($form_settings['style']['button_border_radius']) ? $form_settings['style']['button_border_radius'] : '4'; ?>" onkeydown="javascript:return checkNumber(event)"/><span>&nbsp;(px)</span>
                                                                 </div>
                                                             </td>
                                                         </tr>
@@ -2384,8 +2391,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td>
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_button_style" name="arm_form_settings[style][button_style]" class="arm_button_style" value="<?php echo!empty($form_settings['style']['button_style']) ? $form_settings['style']['button_style'] : 'flat'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_150">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_button_style">
                                                                                 <li data-value="flat" data-label="<?php _e('Flat', 'ARMember'); ?>"><?php _e('Flat', 'ARMember'); ?></li>
@@ -2407,8 +2414,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td>
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_button_font_family" name="arm_form_settings[style][button_font_family]" class="arm_button_font_family" value="<?php echo!empty($form_settings['style']['button_font_family']) ? $form_settings['style']['button_font_family'] : 'Helvetica'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_150">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_button_font_family">
                                                                                 <?php echo $arm_member_forms->arm_fonts_list(); ?>
@@ -2423,8 +2430,8 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                             <td>
                                                                 <div class="arm_right">
                                                                     <input type='hidden' id="arm_button_font_size" name="arm_form_settings[style][button_font_size]" class="arm_button_font_size" value="<?php echo!empty($form_settings['style']['button_font_size']) ? $form_settings['style']['button_font_size'] : '16'; ?>" />
-                                                                    <dl class="arm_selectbox column_level_dd">
-                                                                        <dt style="width:130px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                    <dl class="arm_selectbox column_level_dd arm_width_130">
+                                                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                         <dd>
                                                                             <ul data-id="arm_button_font_size">
                                                                                 <?php
@@ -2509,7 +2516,7 @@ if(!empty($_REQUEST['is_clone']) && $_REQUEST['is_clone'] == 1) {
                                                 <a href="javascript:void(0)" class="arm_accordion_header"><?php _e('Custom Css', 'ARMember'); ?>:<i></i></a>
                                                 <div id="six" class="arm_accordion">
                                                     <div class="arm_form_settings_style_block arm_form_custom_css_wrapper">
-                                                        <textarea name="arm_form_settings[custom_css]" col="40" row="10"><?php echo isset($form_settings['custom_css']) ? $form_settings['custom_css'] : ''; ?></textarea>
+                                                        <textarea name="arm_form_settings[custom_css]" col="40" row="10"><?php echo isset($form_settings['custom_css']) ? stripslashes_deep($form_settings['custom_css']) : ''; ?></textarea>
                                                     </div>
                                                     <div class="arm_form_settings_custom_style_block">
                                                         <span class="arm_section_custom_css_eg">(e.g.)&nbsp;&nbsp; .arm_form_field_submit_button{color:#000000;}</span>
@@ -2557,7 +2564,7 @@ if (!empty($socialFieldsOptions)) {
 }
 $activeSPF = (!empty($activeSPF)) ? $activeSPF : array();
 ?>
-<div class="popup_wrapper arm_social_profile_fields_popup_wrapper" style="width: 600px;margin-top: 40px;">
+<div class="popup_wrapper arm_social_profile_fields_popup_wrapper">
     <table cellspacing="0">
         <tr class="popup_wrapper_inner">	
             <td class="popup_close_btn arm_popup_close_btn arm_social_profile_fields_close_btn"></td>
@@ -2827,3 +2834,6 @@ if ((!$isRegister && !$isEditProfile)) {
         jQuery('#arm_color_scheme_container').trigger('click');
     });
 </script>
+<?php
+    //echo $ARMember->arm_get_need_help_html_content('member-forms-editor');
+?>

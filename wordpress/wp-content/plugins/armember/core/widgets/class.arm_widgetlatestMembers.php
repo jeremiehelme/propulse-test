@@ -10,7 +10,7 @@ if(!class_exists('ARMwidgetlatestMembers'))
 				__('ARMember Latest Members', 'ARMember'),
 				array('description' => __('Display Recently Registerd  Members', 'ARMember'))
 			);
-			add_action('wp_enqueue_scripts', array(&$this, 'scripts'));
+			add_action('wp_enqueue_scripts', array($this, 'scripts'));
 		}
 		public function widget($args, $instance)
 		{

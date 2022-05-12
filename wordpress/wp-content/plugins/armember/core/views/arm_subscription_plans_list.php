@@ -44,9 +44,16 @@ function arm_load_plan_list_grid(){
 		],
 		"language":{
 		    "searchPlaceholder": "Search",
-		    "search":"Search:",
+		    "search":"",
 		},
+		"fnPreDrawCallback": function () {
+            jQuery('.arm_loading_grid').show();
+        },
 		"fnDrawCallback":function(){
+			setTimeout(function(){
+				jQuery('.arm_loading_grid').hide();
+				arm_show_data();
+			}, 1000);
 			if (jQuery.isFunction(jQuery().tipso)) {
                 jQuery('.armhelptip').each(function () {
                     jQuery(this).tipso({
@@ -79,35 +86,35 @@ global $check_sorting;
 $setact = $arm_members_activity->$check_sorting();
 ?>
 <div class="wrap arm_page arm_subscription_plans_main_wrapper">
-	<div class="content_wrapper arm_subscription_plans_content" id="content_wrapper">
-		<div class="page_title">
-			<?php _e('Manage Membership plans','ARMember');?>
-            <?php
+	<?php
     if ($setact != 1) {
         $admin_css_url = admin_url('admin.php?page=arm_manage_license');
         ?>
-
-        <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
     <?php } ?>
+	<div class="content_wrapper arm_subscription_plans_content" id="content_wrapper">
+		<div class="page_title">
+			<?php _e('Manage Membership plans','ARMember');?>
 			<div class="arm_add_new_item_box">
 				<a class="greensavebtn" href="<?php echo admin_url('admin.php?page='.$arm_slugs->manage_plans.'&action=new');?>"><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add New Plan', 'ARMember') ?></span></a>
 			</div>
 			<div class="armclear"></div>
 		</div>
 		<div class="armclear"></div>
-		<div class="arm_subscription_plans_list" style="position:relative;top:10px;">
+		<div class="arm_subscription_plans_list">
 			<form method="GET" id="subscription_plans_list_form" class="data_grid_list" onsubmit="return apply_bulk_action_subscription_plans_list();">
 				<input type="hidden" name="page" value="<?php echo $arm_slugs->manage_plans;?>" />
 				<input type="hidden" name="armaction" value="list" />
 			    <div id="armmainformnewlist">
-					<table cellpadding="0" cellspacing="0" border="0" class="display arm_on_display" id="armember_datatable">
+			    	<div class="arm_loading_grid" style="display: none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/loader.gif" alt="Loading.."></div>
+					<table cellpadding="0" cellspacing="0" border="0" class="display arm_on_display" id="armember_datatable" style="visibility: hidden;">
 						<thead>
 							<tr>
-								<th style="min-width:50px"><?php _e('Plan ID','ARMember');?></th>
-								<th style="min-width:200px"><?php _e('Plan Name','ARMember');?></th>
+								<th class="arm_min_width_50"><?php _e('Plan ID','ARMember');?></th>
+								<th class="arm_min_width_200"><?php _e('Plan Name','ARMember');?></th>
 								<th style=""><?php _e('Plan Type','ARMember');?></th>
-								<th style="width:100px"><?php _e('Members','ARMember');?></th>
-                                <th style="width:120px"><?php _e('Wp Role','ARMember');?></th>							
+								<th class="arm_width_100"><?php _e('Members','ARMember');?></th>
+                                <th class="arm_width_120"><?php _e('Wp Role','ARMember');?></th>							
 								<th class="armGridActionTD"></th>
 							</tr>
 						</thead>
@@ -115,30 +122,46 @@ $setact = $arm_members_activity->$check_sorting();
 						<?php 
 						$form_result = $arm_subscription_plans->arm_get_all_subscription_plans();
 						if (!empty($form_result)) {
-                                                   $arm_user_query = $wpdb->get_results($wpdb->prepare("SELECT `user_id`, `meta_value` FROM `".$wpdb->usermeta."` WHERE `meta_key` = %s",'arm_user_plan_ids'));
-                                                   $arm_user_array = array(); 
-                                                   if(!empty($arm_user_query)){
-                                                        foreach($arm_user_query as $arm_user){
-                                                        	$user_meta=get_userdata($arm_user->user_id);
-															$user_roles=$user_meta->roles;
-															if(!in_array('administrator', $user_roles)) {
-                                                            	$arm_user_array[$arm_user->user_id] = maybe_unserialize($arm_user->meta_value);
-                                                        	}
-                                                        }
-                                                    }
+							$arm_is_multisite = is_multisite();
+							$arm_current_blog_id = !empty($arm_is_multisite) ? get_current_blog_id() : 0;
+										
+                           $arm_user_query = $wpdb->get_results($wpdb->prepare("SELECT `user_id`, `meta_value` FROM `".$wpdb->usermeta."` WHERE `meta_key` = %s",'arm_user_plan_ids'));
+                           $arm_user_array = array(); 
+                           if(!empty($arm_user_query)){
+                                foreach($arm_user_query as $arm_user){
+                                	$user_meta=get_userdata($arm_user->user_id);
+									$user_roles=$user_meta->roles;
+									if(!in_array('administrator', $user_roles)) {
+
+										if ($arm_is_multisite) {
+											if(is_user_member_of_blog($arm_user->user_id, $arm_current_blog_id))
+											{
+												$arm_user_array[$arm_user->user_id] = maybe_unserialize($arm_user->meta_value);
+											}
+											else
+											{
+												continue;
+											}
+										}
+										else {
+                                    		$arm_user_array[$arm_user->user_id] = maybe_unserialize($arm_user->meta_value);
+                                    	}
+                                	}
+                                }
+                            }
                                                     
 							foreach($form_result as $planData) {
 								$planObj = new ARM_Plan();
 								$planObj->init((object) $planData);
 								$planID = $planData['arm_subscription_plan_id'];
-                                                                $total_users = 0;
-                                                                if(!empty($arm_user_array)){
-                                                                    foreach($arm_user_array as $arm_user_id => $arm_user_plans){
-                                                                        if(in_array($planID, $arm_user_plans)){
-                                                                            $total_users++;
-                                                                        }
-                                                                    }
-                                                                }
+                                $total_users = 0;
+                                if(!empty($arm_user_array)){
+                                    foreach($arm_user_array as $arm_user_id => $arm_user_plans){
+                                        if(!empty($arm_user_plans) && in_array($planID, $arm_user_plans)){
+                                            $total_users++;
+                                        }
+                                    }
+                                }
                                                                 
                                                                 
                                                                 
@@ -241,17 +264,20 @@ var ARM_IMAGE_URL = "<?php echo MEMBERSHIP_IMAGES_URL; ?>";
 // ]]>
 </script>
 
-<div class="arm_plan_cycle_detail_popup popup_wrapper arm_import_user_list_detail_popup_wrapper <?php echo (is_rtl()) ? 'arm_page_rtl' : ''; ?>" style="width:850px; min-height: 200px;">    
+<div class="arm_plan_cycle_detail_popup popup_wrapper arm_import_user_list_detail_popup_wrapper <?php echo (is_rtl()) ? 'arm_page_rtl' : ''; ?>" >    
     <div>
         <div class="popup_header">
             <span class="popup_close_btn arm_popup_close_btn arm_plan_cycle_detail_close_btn"></span>
             <input type="hidden" id="arm_edit_plan_user_id" />
             <span class="add_rule_content"><?php _e('Plans Cycles', 'ARMember'); ?> <span class="arm_plan_name"></span></span>
         </div>
-        <div class="popup_content_text arm_plan_cycle_text" style="text-align:center;">
-        	<div style="width: 100%; margin: 45px auto;">	<img src="<?php echo MEMBERSHIP_IMAGES_URL."/arm_loader.gif"; ?>"></div>
+        <div class="popup_content_text arm_plan_cycle_text arm_text_align_center" >
+        	<div class="arm_width_100_pct" style="margin: 45px auto;">	<img src="<?php echo MEMBERSHIP_IMAGES_URL."/arm_loader.gif"; ?>"></div>
         </div>
         <div class="armclear"></div>
     </div>
 
 </div>
+<?php
+    echo $ARMember->arm_get_need_help_html_content('membership-plans-list');
+?>

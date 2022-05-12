@@ -5,34 +5,34 @@ if (!class_exists('ARM_members_directory')) {
 
         function __construct() {
             global $wpdb, $ARMember, $arm_slugs;
-            add_action('wp_ajax_arm_set_default_template', array(&$this, 'arm_set_default_template_func'));
-            add_action('wp_ajax_arm_add_template', array(&$this, 'arm_add_template_func'));
-            add_action('wp_ajax_arm_update_template_options', array(&$this, 'arm_update_template_options_func'));
-            add_action('wp_ajax_arm_delete_template', array(&$this, 'arm_delete_template_func'));
-            add_action('wp_ajax_arm_template_preview', array(&$this, 'arm_template_preview_func'));
-            add_action('wp_ajax_arm_template_edit_popup', array(&$this, 'arm_template_edit_popup_func'));
-            add_action('wp_ajax_arm_save_profile_template', array(&$this, 'arm_save_profile_template_func'));
-            add_action('wp_ajax_arm_ajax_generate_profile_styles', array(&$this, 'arm_template_style'));
-            add_action('wp_ajax_arm_load_profile_template_preview', array(&$this, 'arm_load_profile_template_preview_func'));
+            add_action('wp_ajax_arm_set_default_template', array($this, 'arm_set_default_template_func'));
+            add_action('wp_ajax_arm_add_template', array($this, 'arm_add_template_func'));
+            add_action('wp_ajax_arm_update_template_options', array($this, 'arm_update_template_options_func'));
+            add_action('wp_ajax_arm_delete_template', array($this, 'arm_delete_template_func'));
+            add_action('wp_ajax_arm_template_preview', array($this, 'arm_template_preview_func'));
+            add_action('wp_ajax_arm_template_edit_popup', array($this, 'arm_template_edit_popup_func'));
+            add_action('wp_ajax_arm_save_profile_template', array($this, 'arm_save_profile_template_func'));
+            add_action('wp_ajax_arm_ajax_generate_profile_styles', array($this, 'arm_template_style'));
+            add_action('wp_ajax_arm_load_profile_template_preview', array($this, 'arm_load_profile_template_preview_func'));
 
             /* update user meta while uploading cover and avatar from profile page */
-            add_action('wp_ajax_arm_update_user_meta', array(&$this, 'arm_update_user_meta'));
-            add_action('wp_ajax_nopriv_arm_update_user_meta', array(&$this, 'arm_update_user_meta'));
+            add_action('wp_ajax_arm_update_user_meta', array($this, 'arm_update_user_meta'));
+            add_action('wp_ajax_nopriv_arm_update_user_meta', array($this, 'arm_update_user_meta'));
 
-            add_action('wp_ajax_arm_change_profile_template',array(&$this,'arm_change_profile_template'));
+            add_action('wp_ajax_arm_change_profile_template',array($this,'arm_change_profile_template'));
 
-            add_filter( 'tiny_mce_before_init', array(&$this,'arm_tinymce_plugin') );
-            add_action('wp_ajax_arm_membership_card_preview', array(&$this, 'arm_membership_card_preview_func'));
+            add_filter( 'tiny_mce_before_init', array($this,'arm_tinymce_plugin') );
+            add_action('wp_ajax_arm_membership_card_preview', array($this, 'arm_membership_card_preview_func'));
 
-            add_action('wp_ajax_arm_membership_all_card_preview', array(&$this, 'arm_membership_all_card_preview_func'));
+            add_action('wp_ajax_arm_membership_all_card_preview', array($this, 'arm_membership_all_card_preview_func'));
 
-            add_action('wp_ajax_arm_add_membership_card_template', array(&$this, 'arm_add_membership_card_template_func'));
+            add_action('wp_ajax_arm_add_membership_card_template', array($this, 'arm_add_membership_card_template_func'));
 
-            add_action('wp_ajax_arm_membership_card_template_edit_popup', array(&$this, 'arm_membership_card_template_edit_popup_func'));
+            add_action('wp_ajax_arm_membership_card_template_edit_popup', array($this, 'arm_membership_card_template_edit_popup_func'));
 
-            add_action('wp_ajax_arm_edit_membership_card', array(&$this, 'arm_edit_membership_card_func'));
+            add_action('wp_ajax_arm_edit_membership_card', array($this, 'arm_edit_membership_card_func'));
 
-            add_shortcode('arm_membership_card', array(&$this, 'arm_membership_card_func'));
+            add_shortcode('arm_membership_card', array($this, 'arm_membership_card_func'));
         }
 
         function arm_tinymce_plugin($init){
@@ -46,7 +46,7 @@ if (!class_exists('ARM_members_directory')) {
         function arm_save_profile_template_func() {
             global $wpdb,$ARMember, $arm_capabilities_global;
             $ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_member_templates'], '1');
-            $arm_title = "";
+            $arm_title = !empty($_POST['arm_profile_template_name']) ? $_POST['arm_profile_template_name'] : '';
             $arm_slug = isset($_POST['arm_profile_template']) ? $_POST['arm_profile_template'] : 'profiletemplate1';
             $arm_type = "profile";
             $arm_subscription_plans = isset($_POST['template_options']['plans']) ? implode(',',$_POST['template_options']['plans']) : '';
@@ -73,8 +73,8 @@ if (!class_exists('ARM_members_directory')) {
                               <div class="arm_user_avatar">{ARM_Profile_Avatar_Image}</div>
                               <div class="arm_profile_separator"></div>
                               <div class="arm_profile_header_info"> <span class="arm_profile_name_link">{ARM_Profile_User_Name}</span>
-                                {ARM_Profile_Badges}
                                 <span class="arm_user_last_active_text">{ARM_Profile_Join_Date}</span>
+                                {ARM_Profile_Badges}
                                 <div class="social_profile_fields">
                                   {ARM_Profile_Social_Icons}
                                 </div>
@@ -84,19 +84,20 @@ if (!class_exists('ARM_members_directory')) {
                           </div>
                           <div class="armclear"></div>
                           {ARM_PROFILE_FIELDS_BEFORE_CONTENT}
+                          <span class="arm_profile_detail_text">{ARM_Personal_Detail_Text}</span>
                           <div class="arm_profile_field_before_content_wrapper">'.$arm_before_profile_field.'</div>
                           <div class="arm_profile_tab_detail" data-tab="general">
                             <div class="arm_general_info_container">
-                              <table class="arm_profile_detail_tbl">
-                                <tbody>';
+                            <div class="arm_profile_detail_tbl">
+                                <div class="arm_profile_detail_body">';
                                   foreach($options['profile_fields'] as $k => $value ){
-                                    $arm_template_html .= "<tr>";
-                                        $arm_template_html .= "<td>".stripslashes_deep($options['label'][$k])."</td>";
-                                        $arm_template_html .= "<td>[arm_usermeta meta='".$k."']</td>";
-                                    $arm_template_html .= "</tr>";
+                                    $arm_template_html .= "<div class='arm_profile_detail_row'>";
+                                        $arm_template_html .= "<div class='arm_profile_detail_data'>".stripslashes_deep($options['label'][$k])."</div>";
+                                        $arm_template_html .= "<div class='arm_profile_detail_data arm_data_value'>[arm_usermeta meta='".$k."']</div>";
+                                    $arm_template_html .= "</div>";
                                   }
-                $arm_template_html .= '</tbody>
-                              </table>
+                                $arm_template_html .= '</div>
+                              </div>
                             </div>
                           </div>
                           <div class="arm_profile_field_after_content_wrapper">'.$arm_after_profile_field.'</div>
@@ -109,47 +110,49 @@ if (!class_exists('ARM_members_directory')) {
                         <div class="arm_profile_picture_block armCoverPhoto" style="{ARM_Profile_Cover_Image}">
                             <div class="arm_profile_picture_block_inner">
                                 <div class="armclear"></div>
-                                <div class="arm_profile_header_info arm_profile_header_bottom_box">
-                                    <span class="arm_profile_name_link">
-                                        {ARM_Profile_User_Name}
-                                    </span>
-                                    {ARM_Profile_Badges}
-                                </div>
-                                <span class="arm_user_last_active_text">{ARM_Profile_Join_Date}</span>
-                                <div class="armclear"></div>
-                                <div class="arm_user_social_icons_all social_profile_fields arm_mobile">
-                                    {ARM_Profile_Social_Icons_Mobile}
-                                </div>
+                                
                                 <div class="arm_profile_header_top_box">
-                                    <div class="arm_user_social_icons_left arm_desktop">
-                                        
-                                            {ARM_Profile_Social_Icons_Left}
+                                    <div class="arm_user_badge_icons_left arm_desktop">
+                                        {ARM_Profile_Badges}
                                     </div>
                                     <div class="arm_user_avatar">
                                         {ARM_Profile_Avatar_Image}
                                     </div>
                                     <div class="arm_user_social_icons_right arm_desktop">
-                                            {ARM_Profile_Social_Icons_Right}
+                                        {ARM_Profile_Social_Icons_Temp2}
                                     </div>
                                 </div>
                             </div>
                             {ARM_Cover_Upload_Button}
                         </div>
+                        <div class="arm_profile_header_info arm_profile_header_bottom_box">
+                            <p class="arm_profile_name_link">
+                                {ARM_Profile_User_Name}
+                            </p>
+                            <span class="arm_user_last_active_text">{ARM_Profile_Join_Date}</span>
+                            <div class="arm_user_badge_icons_all arm_mobile">
+                                {ARM_Profile_Badges}
+                            </div>
+                            <div class="arm_user_social_icons_all social_profile_fields arm_mobile">
+                                    {ARM_Profile_Social_Icons_Mobile}
+                            </div>
+                        </div>
                         <div class="arm_profile_defail_container arm_profile_tabs_container">
                             {ARM_PROFILE_FIELDS_BEFORE_CONTENT}
+                            <span class="arm_profile_detail_text">{ARM_Personal_Detail_Text}</span>
                             <div class="arm_profile_field_before_content_wrapper">'.$arm_before_profile_field.'</div>
                             <div class="arm_profile_tab_detail" data-tab="general">
                                 <div class="arm_general_info_container">
-                                    <table class="arm_profile_detail_tbl">
-                                        <tbody>';
+                                    <div class="arm_profile_detail_tbl">
+                                        <div class="arm_profile_detail_body">';
                                         foreach($options['profile_fields'] as $k => $value ){
-                                            $arm_template_html .= "<tr>";
-                                                $arm_template_html .= "<td>".stripslashes_deep($options['label'][$k])."</td>";
-                                                $arm_template_html .= "<td>[arm_usermeta meta='".$k."']</td>";
-                                            $arm_template_html .= "</tr>";
+                                            $arm_template_html .= "<div class='arm_profile_detail_row'>";
+                                                $arm_template_html .= "<div class='arm_profile_detail_data'>".stripslashes_deep($options['label'][$k])."</div>";
+                                                $arm_template_html .= "<div class='arm_profile_detail_data arm_data_value'>[arm_usermeta meta='".$k."']</div>";
+                                            $arm_template_html .= "</div>";
                                           }
-                                      $arm_template_html .= '</tbody>
-                                    </table>
+                                      $arm_template_html .= '</div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="arm_profile_field_after_content_wrapper">'.$arm_after_profile_field.'</div>
@@ -161,38 +164,39 @@ if (!class_exists('ARM_members_directory')) {
                         <div class="arm_profile_picture_block armCoverPhoto" style="{ARM_Profile_Cover_Image}">
                             <div class="arm_profile_picture_block_inner">
                                 <div class="arm_profile_header_info">
-                                    <span class="arm_profile_name_link">{ARM_Profile_User_Name}</span>
-                                    
+                                    <div class="arm_user_avatar">
+                                        {ARM_Profile_Avatar_Image}
+                                    </div>
+                                    {ARM_Cover_Upload_Button}
+                                    <div class="arm_profile_header_info_left">
+                                        <span class="arm_profile_name_link">{ARM_Profile_User_Name}</span>
                                         {ARM_Profile_Badges}
-                                    
-                                    <div class="armclear"></div>
+                                        <div class="armclear"></div>
                                         <span class="arm_user_last_active_text">{ARM_Profile_Join_Date}</span>
                                     </div>
-                                    <div class="social_profile_fields">
+                                    <div class="social_profile_fields arm_profile_header_info_right">
                                         {ARM_Profile_Social_Icons}
                                     </div>
                                     <div class="armclear"></div>
+                                    </div>
                                 </div>
-                                <div class="arm_user_avatar">
-                                    {ARM_Profile_Avatar_Image}
-                                </div>
-                                {ARM_Cover_Upload_Button}
                             </div>
                             <div class="arm_profile_defail_container arm_profile_tabs_container">
                                 {ARM_PROFILE_FIELDS_BEFORE_CONTENT}
+                                <span class="arm_profile_detail_text">{ARM_Personal_Detail_Text}</span>
                                 <div class="arm_profile_field_before_content_wrapper">'.$arm_before_profile_field.'</div>
                                 <div class="arm_profile_tab_detail" data-tab="general">
                                     <div class="arm_general_info_container">
-                                        <table class="arm_profile_detail_tbl">
-                                            <tbody>';
+                                        <div class="arm_profile_detail_tbl">
+                                            <div class="arm_profile_detail_body">';
                                             foreach($options['profile_fields'] as $k => $value ){
-                                                $arm_template_html .= "<tr>";
-                                                    $arm_template_html .= "<td>".stripslashes_deep($options['label'][$k])."</td>";
-                                                    $arm_template_html .= "<td>[arm_usermeta meta='".$k."']</td>";
-                                                $arm_template_html .= "</tr>";
+                                                $arm_template_html .= "<div class='arm_profile_detail_row'>";
+                                                    $arm_template_html .= "<div class='arm_profile_detail_data'>".stripslashes_deep($options['label'][$k])."</div>";
+                                                    $arm_template_html .= "<div class='arm_profile_detail_data arm_data_value'>[arm_usermeta meta='".$k."']</div>";
+                                                $arm_template_html .= "</div>";
                                             }
-                                      $arm_template_html .= '</tbody>
-                                        </table>
+                                      $arm_template_html .= '</div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="arm_profile_field_after_content_wrapper">'.$arm_after_profile_field.'</div>
@@ -224,26 +228,74 @@ if (!class_exists('ARM_members_directory')) {
                             </div>
                             <div class="armclear"></div>
                             {ARM_PROFILE_FIELDS_BEFORE_CONTENT}
+                            <span class="arm_profile_detail_text">{ARM_Personal_Detail_Text}</span>
                             <div class="arm_profile_field_before_content_wrapper">'.$arm_before_profile_field.'</div>
                             <div class="arm_profile_tab_detail" data-tab="general">
                                 <div class="arm_general_info_container">
-                                    <table class="arm_profile_detail_tbl">
-                                        <tbody>';
+                                    <div class="arm_profile_detail_tbl">
+                                        <div class="arm_profile_detail_body">';
                                         foreach($options['profile_fields'] as $k => $value ){
-                                            $arm_template_html .= "<tr>";
-                                                $arm_template_html .= "<td>".stripslashes_deep($options['label'][$k])."</td>";
-                                                $arm_template_html .= "<td>[arm_usermeta meta='".$k."']</td>";
-                                            $arm_template_html .= "</tr>";
+                                            $arm_template_html .= "<div class='arm_profile_detail_row'>";
+                                                $arm_template_html .= "<div class='arm_profile_detail_data'>".stripslashes_deep($options['label'][$k])."</div>";
+                                                $arm_template_html .= "<div class='arm_profile_detail_data arm_data_value'>[arm_usermeta meta='".$k."']</div>";
+                                            $arm_template_html .= "</div>";
                                         }
-                                      $arm_template_html .= '</tbody>
-                                    </table>
+                                      $arm_template_html .= '</div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="arm_profile_field_before_content_wrapper">'.$arm_after_profile_field.'</div>
                             {ARM_PROFILE_FIELDS_AFTER_CONTENT}
                         </div>
                     </div><div class="armclear"></div>';
-            } else {
+            } 
+            else if($arm_slug == 'profiletemplate5') {
+                $arm_template_html = '<div class="arm_profile_detail_wrapper">
+                        <div class="arm_profile_picture_block armCoverPhoto" style="{ARM_Profile_Cover_Image}">
+                            <div class="arm_user_avatar">
+                                {ARM_Profile_Avatar_Image}
+                            </div>
+                            {ARM_Cover_Upload_Button}
+                        </div>
+                            <div class="arm_profile_picture_block_inner">
+                                <div class="arm_profile_header_info">
+                                    <div class="arm_profile_header_info_left">
+                                        <span class="arm_profile_name_link">{ARM_Profile_User_Name}</span>
+                                        {ARM_Profile_Badges}
+                                        <div class="armclear"></div>
+                                        <span class="arm_user_last_active_text">{ARM_Profile_Join_Date}</span>
+                                    </div>
+                                    <div class="social_profile_fields arm_profile_header_info_right">
+                                        {ARM_Profile_Social_Icons}
+                                    </div>
+                                    <div class="armclear"></div>
+                                </div>
+                            </div>
+                        {ARM_PROFILE_FIELDS_BEFORE_CONTENT}
+                        <div class="arm_profile_field_before_content_wrapper">'.$arm_before_profile_field.'</div>
+                        <div class="arm_profile_defail_container arm_profile_tabs_container">
+                            <div class="arm_profile_tab_detail" data-tab="general">
+                                <div class="arm_general_info_container">
+                                    <span class="arm_profile_detail_text">{ARM_Personal_Detail_Text}</span>            
+                                    <div class="arm_profile_detail_tbl">
+                                        <div class="arm_profile_detail_body">';
+                                            foreach($options['profile_fields'] as $k => $value ){
+                                                $arm_template_html .= "<div class='arm_profile_detail_row'>";
+                                                    $arm_template_html .= "<div class='arm_profile_detail_data'>".stripslashes_deep($options['label'][$k])."</div>";
+                                                    $arm_template_html .= "<div class='arm_profile_detail_data arm_data_value'>[arm_usermeta meta='".$k."']</div>";
+                                                $arm_template_html .= "</div>";
+                                            }
+                                        $arm_template_html .= '</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="arm_profile_field_after_content_wrapper">'.$arm_after_profile_field.'</div>
+                            {ARM_PROFILE_FIELDS_AFTER_CONTENT}
+                        </div>
+                    </div>
+                    <div class="armclear"></div>';
+            }
+            else {
                 $arm_template_html = apply_filters('arm_add_template_html_outside',$arm_template_html,$options,$arm_before_profile_field,$arm_after_profile_field);
             }
             $options = arm_array_map($options);
@@ -263,7 +315,9 @@ if (!class_exists('ARM_members_directory')) {
             );
             $default_data = $arguments;
             $default_data['arm_options'] = maybe_unserialize($options);
-            if( $_POST['arf_profile_action'] == 'add_profile' ){
+
+            $arm_new_profile_update = isset($_POST['arm_new_profile_update']) ? $_POST['arm_new_profile_update'] : 'no';
+            if( $_POST['arf_profile_action'] == 'add_profile' || $_POST['arf_profile_action'] == 'duplicate_profile' ){
                 if( $wpdb->insert($ARMember->tbl_arm_member_templates,$arguments) ){
                     echo json_encode(array('type' => 'success','id' => $wpdb->insert_id, 'message' => __('Template Saved Successfully','ARMember'), 'default_data' => $default_data));
                 } else {
@@ -272,14 +326,23 @@ if (!class_exists('ARM_members_directory')) {
             } else if( $_POST['arf_profile_action'] == 'edit_profile' ) {
                 $id = isset($_POST['template_id'] ) ? intval($_POST['template_id']) : 0;
                 if( $id > 0 && $wpdb->update($ARMember->tbl_arm_member_templates,$arguments,array('arm_id' => $id) ) ){
-                    echo json_encode(array('type' => 'success','id' => $id, 'message' => __('Template Updated Successfully','ARMember'), 'default_data' => $default_data));
+                    if($arm_new_profile_update != 'yes')
+                    {
+                        echo json_encode(array('type' => 'success','id' => $id, 'message' => __('Template Updated Successfully','ARMember'), 'default_data' => $default_data));
+                    }
                 } else {
-                    echo json_encode(array('type' => 'error', 'message' => __('There is an error while updating template, please try again','ARMember')));    
+                    if($arm_new_profile_update != 'yes')
+                    {
+                        echo json_encode(array('type' => 'error', 'message' => __('There is an error while updating template, please try again','ARMember')));    
+                    }
                 }
             } else {
                 echo json_encode(array('type' => 'error', 'message' => __('There is an error while saving template, please try again','ARMember')));
             }
-            die;
+            if($arm_new_profile_update != 'yes')
+            {
+                die;
+            }
         }
 
         function arm_load_profile_template_preview_func() {
@@ -326,9 +389,6 @@ if (!class_exists('ARM_members_directory')) {
                     
                     
                 );
-                
-                
-            
                 
                 $edit_profile_link = admin_url('admin.php?page=' . $arm_slugs->profiles_directories . '&action=add_profile&' . http_build_query($arm_url_array)); 
                 $response = array('type' => 'success', 'url' => $edit_profile_link);
@@ -412,15 +472,18 @@ if (!class_exists('ARM_members_directory')) {
             $response = array('type' => 'error', 'message' => __('There is a error while adding template, please try again.', 'ARMember'));
             if (isset($_POST['action']) && $_POST['action'] == 'arm_add_template') {
              $templateType = isset($_POST['temp_type']) ? $_POST['temp_type'] : '';
-             
-             
-             
+                $arm_template_title = '';
+                if($templateType == "profile"){
+                    $arm_template_title = !empty($_POST['arm_profile_template_name']) ? $_POST['arm_profile_template_name'] : '';
+                } else if($templateType == "directory"){
+                    $arm_template_title = !empty($_POST['arm_directory_template_name']) ? $_POST['arm_directory_template_name'] : '';
+                }
                 $temp_options = isset($_POST['template_options']) ? $_POST['template_options'] : array();
                 $slug = isset($_POST['slug']) ? $_POST['slug'] : (isset($temp_options[$templateType]) ? $temp_options[$templateType] : '');
                 unset($temp_options['profile']);
                 unset($temp_options['directory']);
                 $newTempArg = array(
-                    'arm_title' => '',
+                    'arm_title' => $arm_template_title,
                     'arm_slug' => $slug,
                     'arm_type' => $templateType,
                     'arm_options' => maybe_serialize($temp_options),
@@ -480,6 +543,7 @@ if (!class_exists('ARM_members_directory')) {
                 if (isset($_POST['profile_slug']) && !empty($_POST['profile_slug'])) {
                     $templateData['arm_slug'] = $_POST['profile_slug'];
                 }
+                $templateData['arm_title'] = !empty($_POST['arm_directory_template_name']) ? $_POST['arm_directory_template_name'] : '';
                 
                 $update_temp = $wpdb->update($ARMember->tbl_arm_member_templates, $templateData, array('arm_id' => $temp_id));
                 if ($update_temp !== false) {
@@ -518,7 +582,7 @@ if (!class_exists('ARM_members_directory')) {
                     'profile_cover' => '', 'cover_upload_btn' => '', 'avatar' => '', 'profile_picture' => '',
                     'arm_last_login_date' => '', 'arm_last_login_ip' => '', 'last_activity' => '',
                     'arm_user_plan_ids' => '', 'subscription' => '', 'membership' => '', 'subscription_detail' => '', 'transactions' => '',
-                    'user_link' => '', 'profile_link' => '', 'home_url' => '', 'website' => '', 'arm_facebook_id' => '', 'arm_linkedin_id' => '',
+                    'user_link' => '', 'profile_link' => '', 'home_url' => '', 'website' => '', 'arm_facebook_id' => '', 'arm_linkedin_id' => '','arm_tumblr_id' => '',
                     'arm_twitter_id' => '', 'arm_pinterest_id' => '', 'arm_instagram_id' => '', 'arm_vk_id' => '',
                     'rich_editing' => '', 'comment_shortcuts' => '', 'use_ssl' => '', 'social_profile_fields' => ''
                 );
@@ -845,7 +909,7 @@ if (!class_exists('ARM_members_directory')) {
             $template = '';
             
            $user = array_shift($user_detail);
-           $user_id = $user['ID'];
+           $user_id = !empty($user['ID']) ? $user['ID'] : '';
             if (!empty($user)) {
                 if( !wp_script_is('arm_file_upload_js','enqueued')){
                     wp_enqueue_script('arm_file_upload_js');
@@ -864,12 +928,14 @@ if (!class_exists('ARM_members_directory')) {
                 $hide_empty_profile_fields = isset($tempopt['hide_empty_profile_fields']) ? $tempopt['hide_empty_profile_fields'] : 0;
                 $common_messages = $arm_global_settings->arm_get_all_common_message_settings();
                 $arm_member_since_label = (isset($common_messages['arm_profile_member_since']) && $common_messages['arm_profile_member_since'] != '' ) ? $common_messages['arm_profile_member_since'] : __('Member Since', 'ARMember');
+                
+                $arm_personal_detail_text = (isset($common_messages['arm_profile_member_personal_detail'])) ? $common_messages['arm_profile_member_personal_detail'] : __('Personal Details', 'ARMember');
+
                 $profileTabTxt =  __('Profile', 'ARMember');                
                     
-                    $fileContent = '';
+                    $fileContent = $social_fields = '';
                                         
                                         $slected_social_profiles = isset($tempopt['arm_social_fields']) ? $tempopt['arm_social_fields'] : array();
-                                        $social_fields = '';
                                         if (!empty($slected_social_profiles)) {
                                             foreach ($slected_social_profiles as $skey) {
                                                 if (isset($args['is_preview']) && $args['is_preview'] == 1) {
@@ -904,24 +970,19 @@ if (!class_exists('ARM_members_directory')) {
                                                 }
                                             }
                                         }
-                                        $mobile_device_social_fields = '';
+
+                                        $socialfields = $mobile_device_social_fields = '';
                                         if (!empty($social_fields_arr)) {
                                             $mobile_device_social_fields = implode('', $social_fields_arr);
-                                            $social_fields_chunked = array_chunk($social_fields_arr, ceil(count($social_fields_arr) / 2));
-                                            $socialfields = array();
-                                            $n = 0;
-                                            foreach ($social_fields_chunked as $key => $sfields) {
-                                                $socialfields[$n] = '';
-                                                $socialfields[$n] .= '<div class="social_profile_fields">';
-                                                foreach ($sfields as $key => $value) {
-                                                    $socialfields[$n] .= $value;
-                                                }
-                                                $socialfields[$n] .= "</div>";
-                                                $n++;
+                                            $socialfields .= '<div class="social_profile_fields">';
+                                            foreach ($social_fields_arr as $key => $sfields) {
+                                               $socialfields .= $sfields;
                                             }
+                                            $socialfields .= "</div>";
                                         }
-                                        $socialfields_left = isset($socialfields) && !empty($socialfields[0]) ? $socialfields[0] : '';
-                                        $socialfields_right = isset($socialfields) && !empty($socialfields[1]) ? $socialfields[1] : '';
+                                        
+                                        //$socialfields_left = isset($socialfields) && !empty($socialfields[0]) ? $socialfields[0] : '';
+                                        //$socialfields_right = isset($socialfields) && !empty($socialfields[1]) ? $socialfields[1] : '';
                                         
                                         $arm_user_join_date = '';
                                         if (isset($tempopt['show_joining']) && $tempopt['show_joining'] == true) {
@@ -961,24 +1022,34 @@ if (!class_exists('ARM_members_directory')) {
                                         }
 
                                         $profile_link_name  ='<a href="' . $user['user_link'] . '">' . $user['full_name'] . '</a>';
-                                        $arm_template_html = str_replace('{ARM_Profile_Cover_Image}',$arm_cover_image , $arm_template_html);
+                                        $arm_template_html = str_replace('{ARM_Profile_Cover_Image}',$arm_cover_image ,     $arm_template_html);
                                         $arm_template_html = str_replace('{ARM_Profile_User_Name}', $profile_link_name, $arm_template_html);
                                         $arm_template_html = str_replace('{ARM_Profile_Avatar_Image}', $user['avatar'], $arm_template_html);
                                         $arm_template_html = str_replace('{ARM_Profile_Badges}', $user['arm_badges_detail'], $arm_template_html);
                                         $arm_template_html = str_replace('{ARM_Profile_Join_Date}', $arm_user_join_date, $arm_template_html);
                                         $arm_template_html = str_replace('{ARM_Profile_Social_Icons}', $social_fields, $arm_template_html);
+                                        $arm_template_html = str_replace('{ARM_Profile_Social_Icons_Temp2}', $socialfields, $arm_template_html);
                                         $arm_template_html = str_replace('{ARM_Cover_Upload_Button}', $user['cover_upload_btn'] ,$arm_template_html);
                                         $arm_template_html = str_replace('{ARM_Profile_Social_Icons_Mobile}', $mobile_device_social_fields ,$arm_template_html);
-                                        $arm_template_html = str_replace('{ARM_Profile_Social_Icons_Left}', $socialfields_left ,$arm_template_html);
-                                        $arm_template_html = str_replace('{ARM_Profile_Social_Icons_Right}', $socialfields_right ,$arm_template_html);
+                                        //$arm_template_html = str_replace('{ARM_Profile_Social_Icons_Left}', $socialfields_left ,$arm_template_html);
+                                        //$arm_template_html = str_replace('{ARM_Profile_Social_Icons_Right}', $socialfields_right ,$arm_template_html);
 
+                                        $arm_template_html = str_replace('{ARM_Personal_Detail_Text}',$arm_personal_detail_text , $arm_template_html);
 
                                         $arm_arguments = func_get_args();
                                         $arm_profile_before_content = apply_filters('arm_profile_content_before_fields_outside','',$arm_arguments,$user);
                                         $arm_profile_after_content = apply_filters('arm_profile_content_after_fields_outside','',$arm_arguments,$user);
-
+                                        
                                         $arm_template_html = str_replace('{ARM_PROFILE_FIELDS_BEFORE_CONTENT}',$arm_profile_before_content,$arm_template_html);
                                         $arm_template_html = str_replace('{ARM_PROFILE_FIELDS_AFTER_CONTENT}',$arm_profile_after_content,$arm_template_html);
+                                        if(empty($arm_profile_before_content))
+                                        {    
+                                            $arm_template_html = str_replace('<div class="arm_profile_field_before_content_wrapper"></div>', '', $arm_template_html);
+                                        }
+                                        if(empty($arm_profile_after_content))
+                                        {    
+                                            $arm_template_html = str_replace('<div class="arm_profile_field_after_content_wrapper"></div>', '', $arm_template_html);
+                                        }
 
                                        $template .= $arm_template_html;
                 $template = preg_replace('|{(\w+)}|', '', $template);
@@ -1015,6 +1086,7 @@ if (!class_exists('ARM_members_directory')) {
             $user_limit = " LIMIT {$offset},{$per_page} ";
 
             $searchStr = isset($opts['search']) ? esc_attr($opts['search']) : '';
+            $arm_default_directory_field_list = !empty($_REQUEST['arm_directory_field_list']) ? $_REQUEST['arm_directory_field_list'] : array();
             if($opts['pagination'] == "numeric")
             {
                 if(!empty($_REQUEST['arm_directory_field_list']))
@@ -1173,7 +1245,12 @@ if (!class_exists('ARM_members_directory')) {
                             $i++;
                             if($i == 1)
                             {
-                                 $user_search .= $serach_operator ." (um.meta_key = '{$key}' AND um.meta_value LIKE '%{$searchStr}%')";
+
+                                if(empty($arm_default_directory_field_list[$key]) && !empty($searchStr)){
+                                    $user_search .= $serach_operator." ( u.display_name LIKE '%{$searchStr}%' OR (um.meta_key = 'first_name' AND um.meta_value LIKE '%{$searchStr}%') OR (um.meta_key = 'last_name' AND um.meta_value LIKE '%{$searchStr}%') )";
+                                }else{
+                                    $user_search .= $serach_operator ." (um.meta_key = '{$key}' AND um.meta_value LIKE '%{$searchStr}%')";
+                                }
                             }
                             else
                             {
@@ -1465,7 +1542,7 @@ if (!class_exists('ARM_members_directory')) {
                     if (!empty($tempDetails)) {
                         $tempType = isset($tempDetails['arm_type']) ? $tempDetails['arm_type'] : 'directory';
                         $tempOptions = $tempDetails['arm_options'];
-                        $popup = '<div class="arm_pdtemp_edit_popup_wrapper popup_wrapper" style="width: 750px;">';
+                        $popup = '<div class="arm_pdtemp_edit_popup_wrapper popup_wrapper">';
                         $popup .= '<form action="#" method="post" onsubmit="return false;" class="arm_template_edit_form arm_admin_form" id="arm_template_edit_form" data-temp_id="'.$temp_id.'">';
                             if($tempType == 'directory')
                                                         {
@@ -1508,9 +1585,10 @@ if (!class_exists('ARM_members_directory')) {
         function arm_template_options($tempID = 0, $tempType = 'directory', $tempDetails = array())
         {
             global $wpdb, $ARMember, $arm_member_forms, $arm_subscription_plans,$arm_buddypress_feature;
-                        if (!function_exists('is_plugin_active')) {
-                            include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-                        }                        
+            if (!function_exists('is_plugin_active')) {
+                include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+            }
+            $template_name = $tempDetails['arm_title'];
             $tempOptions = $tempDetails['arm_options'];
             $tempSlug = $tempDetails['arm_slug'];
             $tempOptions = shortcode_atts(array(
@@ -1591,8 +1669,17 @@ if (!class_exists('ARM_members_directory')) {
                 );
             }
             $tempOptHtml = '';
+            $temp_unique_id = '_'.$tempID;
             $tempOptHtml .= '<div class="arm_temp_option_wrapper">';
                 $tempOptHtml .= '<table class="arm_table_label_on_top">';
+                    $tempOptHtml .= '<tr class="arm_directory_template_name_div arm_form_fields_wrapper">';
+                    $tempOptHtml .= '<th>';
+                    $tempOptHtml .= '<label>'.__('Directory Template Name', 'ARMember').'</label>';
+                    $tempOptHtml .= '</th>';
+                    $tempOptHtml .= '<td>';
+                    $tempOptHtml .= '<input type="text" name="arm_directory_template_name" class="arm_form_input_box arm_width_100_pct" value="'.$template_name.'">';
+                    $tempOptHtml .= '</td>';
+                    $tempOptHtml .= '</tr>';
                     if ($tempType == 'profile')
                     {
                         $tempOptHtml .= '<tr>';
@@ -1621,7 +1708,7 @@ if (!class_exists('ARM_members_directory')) {
                                         $tempOptions['show_admin_users'] = (isset($tempOptions['show_admin_users']) && $tempOptions['show_admin_users'] == 1) ? $tempOptions['show_admin_users'] : 0;
                                         $tempOptHtml .= '<tr>';
                         $tempOptHtml .= '<td colspan="2">';
-                        $tempOptHtml .= '<div class="arm_temp_switch_wrapper" style="width: auto;margin: 5px 0;">';
+                        $tempOptHtml .= '<div class="arm_temp_switch_wrapper arm_temp_switch_style">';
                         $tempOptHtml .= '<div class="armswitch arm_global_setting_switch"><input type="checkbox" id="arm_template_show_admin_users" value="1" class="armswitch_input" name="template_options[show_admin_users]" '.checked($tempOptions['show_admin_users'], 1, false).'/><label for="arm_template_show_admin_users" class="armswitch_label"></label></div>';
                         $tempOptHtml .= '</div>';
                         $tempOptHtml .= '<label for="arm_template_show_admin_users" class="arm_temp_form_label">' . __('Display Administrator Users?', 'ARMember') . '</label>';
@@ -1630,7 +1717,7 @@ if (!class_exists('ARM_members_directory')) {
                                        
                     $tempOptHtml .= '<tr>';
                         $tempOptHtml .= '<td colspan="2">';
-                        $tempOptHtml .= '<div class="arm_temp_switch_wrapper" style="width: auto;margin: 5px 0;">';
+                        $tempOptHtml .= '<div class="arm_temp_switch_wrapper arm_temp_switch_style">';
                         $tempOptHtml .= '<div class="armswitch arm_global_setting_switch"><input type="checkbox" id="arm_template_show_badges" value="1" class="armswitch_input" name="template_options[show_badges]" '.checked($tempOptions['show_badges'], 1, false).'/><label for="arm_template_show_badges" class="armswitch_label"></label></div>';
                         $tempOptHtml .= '</div>';
                         $tempOptHtml .= '<label for="arm_template_show_badges" class="arm_temp_form_label">' . __('Display Member Badges?', 'ARMember') . '</label>';
@@ -1639,44 +1726,44 @@ if (!class_exists('ARM_members_directory')) {
                                         
                     if ($tempType == 'directory')
                     {
-                                            $tempOptHtml .= '<tr>';
+                        $tempOptHtml .= '<tr>';
                         $tempOptHtml .= '<td colspan="2">';
-                        $tempOptHtml .= '<div class="arm_temp_switch_wrapper" style="width: auto;margin: 5px 0;">';
-                        $tempOptHtml .= '<div class="armswitch arm_global_setting_switch"><input type="checkbox" id="arm_template_redirect_to_author" value="1" class="armswitch_input" name="template_options[redirect_to_author]" '.checked($tempOptions['redirect_to_author'], 1, false).'/><label for="arm_template_redirect_to_author" class="armswitch_label"></label></div>';
-                        $tempOptHtml .= '</div>';
-                        $tempOptHtml .= '<label for="arm_template_redirect_to_author" class="arm_temp_form_label">' . __('Redirect To Author Archive Page', 'ARMember') . '</label>';
-                                                $tempOptHtml .= '<div class="armclear" style="height: 1px;"></div>';
-                                                $tempOptHtml .= '<span class="arm_info_text" style="width:450px;">( '.__("If Author have no any post than user will be redirect to ARMember Profile Page", 'ARMember').' )</span>';
+                            $tempOptHtml .= '<div class="arm_temp_switch_wrapper arm_temp_switch_style">';
+                            $tempOptHtml .= '<div class="armswitch arm_global_setting_switch"><input type="checkbox" id="arm_template_redirect_to_author" value="1" class="armswitch_input" name="template_options[redirect_to_author]" '.checked($tempOptions['redirect_to_author'], 1, false).'/><label for="arm_template_redirect_to_author" class="armswitch_label"></label></div>';
+                            $tempOptHtml .= '</div>';
+                            $tempOptHtml .= '<label for="arm_template_redirect_to_author" class="arm_temp_form_label">' . __('Redirect To Author Archive Page', 'ARMember') . '</label>';
+                            $tempOptHtml .= '<div class="armclear arm_height_1"></div>';
+                            $tempOptHtml .= '<span class="arm_info_text arm_width_450">( '.__("If Author have no any post than user will be redirect to ARMember Profile Page", 'ARMember').' )</span>';
                         $tempOptHtml .= '</td>';
-                                            $tempOptHtml .= '</tr>';
+                        $tempOptHtml .= '</tr>';
                                             
-                                            if (file_exists(WP_PLUGIN_DIR . "/buddypress/bp-loader.php")) {
-                                                if (is_plugin_active('buddypress/bp-loader.php')) {
-                                                    if($arm_buddypress_feature->isBuddypressFeature){
-                                                        $tempOptHtml .= '<tr>';
-                                                                $tempOptHtml .= '<td colspan="2">';
-                                                                $tempOptHtml .= '<div class="arm_temp_switch_wrapper" style="width: auto;margin: 5px 0;">';
-                                                                $tempOptHtml .= '<div class="armswitch arm_global_setting_switch"><input type="checkbox" id="arm_template_redirect_to_buddypress_profile" value="1" class="armswitch_input" name="template_options[redirect_to_buddypress_profile]" '.checked($tempOptions['redirect_to_buddypress_profile'], 1, false).'/><label for="arm_template_redirect_to_buddypress_profile" class="armswitch_label"></label></div>';
-                                                                $tempOptHtml .= '</div>';
-                                                                $tempOptHtml .= '<label for="arm_template_redirect_to_buddypress_profile" class="arm_temp_form_label">' . __('Redirect to BuddyPress Profile', 'ARMember') . '</label>';
-                                                                $tempOptHtml .= '</td>';
-                                                        $tempOptHtml .= '</tr>';  
-                                                    }
-                                                }
-                                            }                                            
-                                        }
+                        if (file_exists(WP_PLUGIN_DIR . "/buddypress/bp-loader.php")) {
+                            if (is_plugin_active('buddypress/bp-loader.php')) {
+                                if($arm_buddypress_feature->isBuddypressFeature){
+                                    $tempOptHtml .= '<tr>';
+                                            $tempOptHtml .= '<td colspan="2">';
+                                            $tempOptHtml .= '<div class="arm_temp_switch_wrapper arm_temp_switch_style">';
+                                            $tempOptHtml .= '<div class="armswitch arm_global_setting_switch"><input type="checkbox" id="arm_template_redirect_to_buddypress_profile" value="1" class="armswitch_input" name="template_options[redirect_to_buddypress_profile]" '.checked($tempOptions['redirect_to_buddypress_profile'], 1, false).'/><label for="arm_template_redirect_to_buddypress_profile" class="armswitch_label"></label></div>';
+                                            $tempOptHtml .= '</div>';
+                                            $tempOptHtml .= '<label for="arm_template_redirect_to_buddypress_profile" class="arm_temp_form_label">' . __('Redirect to BuddyPress Profile', 'ARMember') . '</label>';
+                                            $tempOptHtml .= '</td>';
+                                    $tempOptHtml .= '</tr>';  
+                                }
+                            }
+                        }
+                    }
                                         
                     if ($tempType == 'profile')
                     {
                                             
-                                             $tempOptHtml .= '<tr>';
+                        $tempOptHtml .= '<tr>';
                         $tempOptHtml .= '<td colspan="2">';
-                        $tempOptHtml .= '<div class="arm_temp_switch_wrapper" style="width: auto;margin: 5px 0;">';
+                        $tempOptHtml .= '<div class="arm_temp_switch_wrapper arm_temp_switch_style">';
                         $tempOptHtml .= '<div class="armswitch arm_global_setting_switch"><input type="checkbox" id="arm_template_hide_empty_profile_fields" value="1" class="armswitch_input" name="template_options[hide_empty_profile_fields]" '.checked($tempOptions['hide_empty_profile_fields'], 1, false).'/><label for="arm_template_hide_empty_profile_fields" class="armswitch_label"></label></div>';
                         $tempOptHtml .= '</div>';
                         $tempOptHtml .= '<label for="arm_template_hide_empty_profile_fields" class="arm_temp_form_label">' . __('Hide empty profile fields?', 'ARMember') . '</label>';
                         $tempOptHtml .= '</td>';
-                    $tempOptHtml .= '</tr>';
+                        $tempOptHtml .= '</tr>';
                         $tempOptHtml .= '<tr>';
                             $tempOptHtml .= '<th>' . __('Profile Fields', 'ARMember') . '</th>';
                             $tempOptHtml .= '<td>';
@@ -1711,7 +1798,7 @@ if (!class_exists('ARM_members_directory')) {
                                         $tempOptHtml .= '<input type="checkbox" value="'.$fieldMetaKey.'" class="arm_icheckbox" name="template_options[profile_fields]['.$fieldMetaKey.']" id="arm_profile_temp_field_input_'.$fieldMetaKey.'" '.$fchecked.' '.$fdisabled.'/>';
                                         $tempOptHtml .= '';
                                         $tempOptHtml .= '<input type="hidden" name="template_options[labels]['.$fieldMetaKey.']" id="arm_profile_firld_label_'.$fieldMetaKey.'" value="'.$field_label.'" />';
-                                        $tempOptHtml .= '<label class="arm_profile_temp_field_input" data-id="arm_profile_firld_label_'.$fieldMetaKey.'" style="margin-left: 5px;">'.$field_label.'</label>';
+                                        $tempOptHtml .= '<label class="arm_profile_temp_field_input arm_margin_left_5" data-id="arm_profile_firld_label_'.$fieldMetaKey.'">'.$field_label.'</label>';
                                         $tempOptHtml .= '<div class="arm_list_sortable_icon"></div>';
                                         $tempOptHtml .= '</li>';
                                     }
@@ -1724,7 +1811,7 @@ if (!class_exists('ARM_members_directory')) {
                 $tempOptHtml .= '<tr>';
                 $tempOptHtml .= '<th>' . __('Select Membership Plans', 'ARMember') . '</th>';
                 $tempOptHtml .= '<td>';
-                $tempOptHtml .= '<div style="width: auto;margin: 5px 0;">';
+                $tempOptHtml .= '<div class="arm_temp_switch_style">';
                 $subs_data = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscription_plan_id, arm_subscription_plan_name');
                 $tempPlans = isset($tempOptions['plans']) ? $tempOptions['plans'] : array();
                 $tempOptHtml .= '<select id="arm_template_plans" class="arm_chosen_selectbox arm_template_plans_select" name="template_options[plans][]" data-placeholder="' . __('Select Plan(s)..', 'ARMember') . '" multiple="multiple">';
@@ -1743,16 +1830,16 @@ if (!class_exists('ARM_members_directory')) {
                         $tempOptHtml .= '<tr>';
                         $tempOptHtml .= '<th>' . __('No. Of Members Per Page', 'ARMember') . '</th>';
                             $tempOptHtml .= '<td>';
-                            $tempOptHtml .= '<div style="width: auto;margin: 5px 0;">';
+                            $tempOptHtml .= '<div class="arm_temp_switch_style">';
                                 $tempOptions['per_page_users'] = isset($tempOptions['per_page_users']) ? $tempOptions['per_page_users'] : 10;
-                                $tempOptHtml .= '<input type="TEXT" name="template_options[per_page_users]" value="'.$tempOptions['per_page_users'].'" id="arm_temp_per_page_users" onkeydown="javascript:return checkNumber(event)" style="width:70px;">';
+                                $tempOptHtml .= '<input type="TEXT" name="template_options[per_page_users]" value="'.$tempOptions['per_page_users'].'" id="arm_temp_per_page_users" onkeydown="javascript:return checkNumber(event)" class="arm_width_70">';
                             $tempOptHtml .= '</div>';
                             $tempOptHtml .= '</td>';
                         $tempOptHtml .= '</tr>';
                         $tempOptHtml .= '<tr>';
                         $tempOptHtml .= '<th>' . __('Pagination Style', 'ARMember') . '</th>';
                             $tempOptHtml .= '<td>';
-                            $tempOptHtml .= '<div style="width: auto;margin: 5px 0;">';
+                            $tempOptHtml .= '<div class="arm_temp_switch_style">';
                                 $tempOptions['pagination'] = isset($tempOptions['pagination']) ? $tempOptions['pagination'] : 'numeric';
                                 $tempOptHtml .= '<input type="radio" name="template_options[pagination]" value="numeric" id="arm_template_pagination_numeric" class="arm_iradio" ' . ($tempOptions['pagination'] == 'numeric' ? 'checked="checked"' : '') . '><label for="arm_template_pagination_numeric" class="arm_temp_form_label">' . __('Numeric', 'ARMember') . '</label>';
                                 $tempOptHtml .= '<input type="radio" name="template_options[pagination]" value="infinite" id="arm_template_pagination_infinite" class="arm_iradio" ' . ($tempOptions['pagination'] == 'infinite' ? 'checked="checked"' : '') . '><label for="arm_template_pagination_infinite" class="arm_temp_form_label">' . __('Load More Link', 'ARMember') . '</label>';
@@ -1782,12 +1869,12 @@ if (!class_exists('ARM_members_directory')) {
                         $tempOptHtml .= '<tr class="arm_search_type_div">';
                         $tempOptHtml .= '<th>'.__('Search Type', 'ARMember').'</th>';
                         $tempOptHtml .= '<td>';
-                        $tempOptHtml .= '<div style="width: auto;margin: 5px 0;" >';
+                        $tempOptHtml .= '<div class="arm_temp_switch_style">';
                         $tempOptions['search_type'] = isset($tempOptions['search_type']) ? $tempOptions['search_type'] : '0';
 
-                        $tempOptHtml .= '<input type="radio" name="template_options[search_type]" value="0" id="arm_template_search_type_single_search" class="arm_template_search_type_single_search arm_iradio" ' . ($tempOptions['search_type'] == '0' ? 'checked="checked"' : '') . '><label for="arm_template_search_type_single_search" class="arm_temp_form_label">' . __('Single Search Field', 'ARMember') . '</label>';
+                        $tempOptHtml .= '<input type="radio" name="template_options[search_type]" value="0" id="arm_template_search_type_single_search'.$temp_unique_id.'" class="arm_template_search_type_single_search arm_iradio" ' . ($tempOptions['search_type'] == '0' ? 'checked="checked"' : '') . '><label for="arm_template_search_type_single_search'.$temp_unique_id.'" class="arm_temp_form_label">' . __('Single Search Field', 'ARMember') . '</label>';
 
-                        $tempOptHtml .= '<input type="radio" name="template_options[search_type]" value="1" id="arm_template_search_type_multi_search" class="arm_template_search_type_multi_search arm_iradio" ' . ($tempOptions['search_type'] == '1' ? 'checked="checked"' : '') . '><label for="arm_template_search_type_multi_search" class="arm_temp_form_label">' . __('Multi Search Field', 'ARMember') . '</label>';
+                        $tempOptHtml .= '<input type="radio" name="template_options[search_type]" value="1" id="arm_template_search_type_multi_search'.$temp_unique_id.'" class="arm_template_search_type_multi_search arm_iradio" ' . ($tempOptions['search_type'] == '1' ? 'checked="checked"' : '') . '><label for="arm_template_search_type_multi_search'.$temp_unique_id.'" class="arm_temp_form_label">' . __('Multi Search Field', 'ARMember') . '</label>';
                         $tempOptHtml .= '</div>';
                         $tempOptHtml .= '</td>';
                         $tempOptHtml .= '</tr>';
@@ -1870,10 +1957,10 @@ if (!class_exists('ARM_members_directory')) {
                                     $fchecked = 'checked="checked"';
                                 }
                                 $tempOptHtml .= '<li class="arm_profile_fields_li">';
-                                $tempOptHtml .= '<input type="checkbox" value="'.$fieldMetaKey.'" class="arm_icheckbox" name="template_options[display_member_fields]['.$fieldMetaKey.']" id="arm_display_member_field_edit_'.$fieldMetaKey.'_status" '.$fchecked.' '.$fdisabled.'/>';
+                                $tempOptHtml .= '<input type="checkbox" value="'.$fieldMetaKey.'" class="arm_icheckbox" name="template_options[display_member_fields]['.$fieldMetaKey.']" id="arm_display_member_field_edit_'.$fieldMetaKey.'_status'.$temp_unique_id.'" '.$fchecked.' '.$fdisabled.'/>';
                                 $tempOptHtml .= '';
                                 
-                                if(in_array($fieldMetaKey, array('arm_show_joining_date', 'arm_membership_plan', 'arm_membership_plan_expiry_date')))
+                                if(in_array($fieldMetaKey, array('arm_display_user_id', 'arm_show_joining_date', 'arm_membership_plan', 'arm_membership_plan_expiry_date')))
                                 {
                                     $arm_display_member_fields_label = !(empty($tempOptions['display_member_fields_label'][$fieldMetaKey])) ? stripslashes_deep($tempOptions['display_member_fields_label'][$fieldMetaKey]) : stripslashes_deep($fieldOpt['label']);
                                     $tempOptHtml .= '<span class="arm_display_member_fields_label ">';
@@ -1885,7 +1972,7 @@ if (!class_exists('ARM_members_directory')) {
                                 }
                                 else
                                 {
-                                    $tempOptHtml .= '<label class="arm_display_members_fields_label" for="arm_display_member_field_edit_'.$fieldMetaKey.'_status"  >'.stripslashes_deep($fieldOpt['label']).'</label>';
+                                    $tempOptHtml .= '<label class="arm_display_members_fields_label" for="arm_display_member_field_edit_'.$fieldMetaKey.'_status'.$temp_unique_id.'"  >'.stripslashes_deep($fieldOpt['label']).'</label>';
                                 }
                                 
                                 $tempOptHtml .= '<div class="arm_list_sortable_icon"></div>';
@@ -1919,8 +2006,8 @@ if (!class_exists('ARM_members_directory')) {
                             $tempOptHtml .='<div class="social_profile_fields"><div class="arm_social_profile_fields_list_wrapper">';
                             foreach ($activeSPF as $spfKey => $spfLabel):
                                 $tempOptHtml .= '<div class="arm_social_profile_field_item">';
-                                    $tempOptHtml .= '<input type="checkbox" class="arm_icheckbox arm_spf_active_checkbox" value="'. $spfKey .'" name="template_options[arm_social_fields]['.$spfKey .']" id="arm_spf_'.$spfKey.'_status" '. ($val = (in_array($spfKey, $tempOptions['arm_social_fields'])) ? 'checked="checked"' : '') .'>';
-                                $tempOptHtml .= '<label for="arm_spf_'.$spfKey.'_status">'.$spfLabel.'</label>';
+                                    $tempOptHtml .= '<input type="checkbox" class="arm_icheckbox arm_spf_active_checkbox" value="'. $spfKey .'" name="template_options[arm_social_fields]['.$spfKey .']" id="arm_spf_'.$spfKey.'_status'.$temp_unique_id.'" '. ($val = (in_array($spfKey, $tempOptions['arm_social_fields'])) ? 'checked="checked"' : '') .'>';
+                                $tempOptHtml .= '<label for="arm_spf_'.$spfKey.'_status'.$temp_unique_id.'">'.$spfLabel.'</label>';
                                 $tempOptHtml .= '</div>';
                             endforeach;
                             $tempOptHtml .='</div></div>';
@@ -1932,7 +2019,7 @@ if (!class_exists('ARM_members_directory')) {
                         $tempOptHtml .= '<th>' . __('Color Scheme', 'ARMember') . '</th>';
                         $tempOptHtml .= '<td>';
                             $tempCS = ((!empty($tempOptions['color_scheme'])) ? $tempOptions['color_scheme'] : 'blue');
-                            $tempOptHtml .= '<div class="c_schemes" style="padding-left: 5px;">';
+                            $tempOptHtml .= '<div class="c_schemes arm_padding_left_5">';
                                 foreach ($tempColorSchemes as $color => $color_opt) {
                                     $tempOptHtml .= '<label class="arm_temp_color_scheme_block arm_temp_color_scheme_block_'.$color.' '.(($tempCS == $color) ? 'arm_color_box_active' : '').'">';
                                     $tempOptHtml .= '<span style="background-color:'.$color_opt['button_color'].'"></span>';
@@ -1944,12 +2031,12 @@ if (!class_exists('ARM_members_directory')) {
                                 $tempOptHtml .= '<input type="radio" id="arm_temp_color_radio_custom" name="template_options[color_scheme]" value="custom" class="arm_temp_color_radio" '.checked($tempCS, 'custom', false).' data-type="'.$tempType.'"/>';
                                 $tempOptHtml .= '</label>';
                             $tempOptHtml .= '</div>';
-                            $tempOptHtml .= '<div class="armclear" style="height: 1px;"></div>';
+                            $tempOptHtml .= '<div class="armclear arm_height_1"></div>';
                             $tempOptHtml .= '<div class="arm_temp_color_options" id="arm_temp_color_options" style="'.(($tempCS == 'custom') ? '' : 'display:none;').'">';
                                 foreach ($colorOptions as $key => $title) {
                                     $preVal = ((!empty($tempOptions[$key])) ? $tempOptions[$key] : '');
                                     $preVal = (empty($preVal) && isset($tempColorSchemes[$tempCS][$key])) ? $tempColorSchemes[$tempCS][$key] : $preVal;
-                                    if ($key == 'box_bg_color' && $tempSlug != 'directorytemplate3') {
+                                    if ($key == 'box_bg_color' && $tempSlug != 'directorytemplate3'&& $tempSlug != 'directorytemplate6') {
                                         continue;
                                     }
                                     $tempOptHtml .= '<div class="arm_pdtemp_color_opts">';
@@ -1972,8 +2059,8 @@ if (!class_exists('ARM_members_directory')) {
                                 $tempOptHtml .= '<label class="arm_temp_font_setting_label arm_temp_form_label">'.$title.'</label>';
 
                                 $tempOptHtml .= '<input type="hidden" id="arm_temp_font_family_'.$key.'" name="template_options['.$key.'][font_family]" value="' . ((!empty($fontVal['font_family'])) ? $fontVal['font_family'] : 'Helvetica') . '"/>';
-                                $tempOptHtml .= '<dl class="arm_selectbox column_level_dd">';
-                                    $tempOptHtml .= '<dt style="width:160px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                                $tempOptHtml .= '<dl class="arm_selectbox column_level_dd arm_margin_right_10 arm_width_220">';
+                                    $tempOptHtml .= '<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
                                     $tempOptHtml .= '<dd><ul data-id="arm_temp_font_family_'.$key.'">';
                                         $tempOptHtml .= $arm_member_forms->arm_fonts_list();
                                     $tempOptHtml .= '</ul></dd>';
@@ -1982,8 +2069,8 @@ if (!class_exists('ARM_members_directory')) {
                                     $fontVal['font_size'] = '16';
                                 }
                                 $tempOptHtml .= '<input type="hidden" id="arm_temp_font_size_'.$key.'" name="template_options['.$key.'][font_size]" value="' . (!empty($fontVal['font_size']) ? $fontVal['font_size'] : '14') . '"/>';
-                                $tempOptHtml .= '<dl class="arm_selectbox column_level_dd">';
-                                    $tempOptHtml .= '<dt style="width:70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                                $tempOptHtml .= '<dl class="arm_selectbox column_level_dd arm_margin_right_10 arm_width_90">';
+                                    $tempOptHtml .= '<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
                                     $tempOptHtml .= '<dd><ul data-id="arm_temp_font_size_'.$key.'">';
                                         for ($i = 8; $i < 41; $i++) {
                                             $tempOptHtml .= '<li data-label="' . $i . ' px" data-value="' . $i . '">' . $i . ' px</li>';
@@ -2040,7 +2127,7 @@ if (!class_exists('ARM_members_directory')) {
                         $tempOptHtml .= '<th>' . __('Custom Css', 'ARMember') . '</th>';
                         $tempOptHtml .= '<td>';
                         $tempOptHtml .= '<div class="arm_custom_css_wrapper">';
-                        $tempOptHtml .= '<textarea class="arm_temp_edit_codemirror_field" name="template_options[custom_css]" cols="10" rows="6" style="width: 500px;">' . $tempOptions['custom_css'] . '</textarea>';
+                        $tempOptHtml .= '<textarea class="arm_temp_edit_codemirror_field arm_width_500" name="template_options[custom_css]" cols="10" rows="6" ;">' . $tempOptions['custom_css'] . '</textarea>';
                         $tempOptHtml .= '</div>';
                         $tempOptHtml .= '<div class="armclear" style="min-height: 5px;"></div>';
                         if ($tempType == 'profile'){
@@ -2227,7 +2314,7 @@ if (!class_exists('ARM_members_directory')) {
                         $extraVars .= " temp_data='$tempData'";
                     }
                     ?>
-                    <div class="arm_template_preview_popup popup_wrapper" style="width:960px;">
+                    <div class="arm_template_preview_popup popup_wrapper">
                         <div class="popup_wrapper_inner">
                             <div class="popup_header">
                                 <span class="popup_close_btn arm_popup_close_btn arm_template_preview_close_btn"></span>
@@ -2264,20 +2351,20 @@ if (!class_exists('ARM_members_directory')) {
             global $wpdb, $ARMember;
             $color_schemes = array(
                 'blue' => array(
-                    "main_color" => '#0c7cd5',
-                    "title_color" => '#0c7cd5',
-                    "subtitle_color" => '#575d70',
-                    "border_color" => '#0c7cd5',
-                    "button_color" => '#0c7cd5',
-                    "button_font_color" => '#ffffff',
-                    "tab_bg_color" => '#0c7cd5',
-                    "tab_link_color" => '#616175',
-                    "tab_link_hover_color" => '#0c7cd5',
-                    'tab_link_bg_color' => '#0c7cd5',
+                    "main_color" => '#1A2538',
+                    "title_color" => '#1A2538',
+                    "subtitle_color" => '#2F3F5C',
+                    "border_color" => '#005AEE',
+                    "button_color" => '#005AEE',
+                    "button_font_color" => '#FFFFFF',
+                    "tab_bg_color" => '#1A2538',
+                    "tab_link_color" => '#ffffff',
+                    "tab_link_hover_color" => '#1A2538',
+                    'tab_link_bg_color' => '#1A2538',
                     'tab_link_hover_bg_color' => '#ffffff',
-                    "link_color" => '#0c7cd5',
-                    "link_hover_color" => '#41474c',
-                    "content_font_color" => '#616175',
+                    "link_color" => '#1A2538',
+                    "link_hover_color" => '#005AEE',
+                    "content_font_color" => '#3E4857',
                     "box_bg_color" => '#F4F4F4',
                 ),
                 'red' => array(
@@ -2391,20 +2478,20 @@ if (!class_exists('ARM_members_directory')) {
             global $wpdb, $ARMember;
             $color_schemes = array('directorytemplate1' => array(
                 'blue' => array(
-                    "main_color" => '#0c7cd5',
-                    "title_color" => '#0c7cd5',
-                    "subtitle_color" => '#575d70',
-                    "border_color" => '#0c7cd5',
-                    "button_color" => '#0c7cd5',
-                    "button_font_color" => '#ffffff',
-                    "tab_bg_color" => '#0c7cd5',
+                    "main_color" => '#1A2538',
+                    "title_color" => '#1A2538',
+                    "subtitle_color" => '#2F3F5C',
+                    "border_color" => '#005AEE',
+                    "button_color" => '#005AEE',
+                    "button_font_color" => '#FFFFFF',
+                    "tab_bg_color" => '#1A2538',
                     "tab_link_color" => '#ffffff',
-                    "tab_link_hover_color" => '#0c7cd5',
-                    'tab_link_bg_color' => '#0c7cd5',
+                    "tab_link_hover_color" => '#1A2538',
+                    'tab_link_bg_color' => '#1A2538',
                     'tab_link_hover_bg_color' => '#ffffff',
-                    "link_color" => '#0c7cd5',
-                    "link_hover_color" => '#41474c',
-                    "content_font_color" => '#616175',
+                    "link_color" => '#1A2538',
+                    "link_hover_color" => '#005AEE',
+                    "content_font_color" => '#3E4857',
                     "box_bg_color" => '#F4F4F4',
                 ),
                 'red' => array(
@@ -2512,20 +2599,20 @@ if (!class_exists('ARM_members_directory')) {
                 ),
                 'directorytemplate2' => array(
                     'blue' => array(
-                        "main_color" => '#0c7cd5',
-                        "title_color" => '#0c7cd5',
-                        "subtitle_color" => '#575d70',
-                        "border_color" => '#0c7cd5',
-                        "button_color" => '#0c7cd5',
-                        "button_font_color" => '#ffffff',
-                        "tab_bg_color" => '#0c7cd5',
+                        "main_color" => '#1A2538',
+                        "title_color" => '#1A2538',
+                        "subtitle_color" => '#2F3F5C',
+                        "border_color" => '#005AEE',
+                        "button_color" => '#005AEE',
+                        "button_font_color" => '#FFFFFF',
+                        "tab_bg_color" => '#1A2538',
                         "tab_link_color" => '#ffffff',
-                        "tab_link_hover_color" => '#0c7cd5',
-                        'tab_link_bg_color' => '#0c7cd5',
+                        "tab_link_hover_color" => '#1A2538',
+                        'tab_link_bg_color' => '#1A2538',
                         'tab_link_hover_bg_color' => '#ffffff',
-                        "link_color" => '#0c7cd5',
-                        "link_hover_color" => '#41474c',
-                        "content_font_color" => '#616175',
+                        "link_color" => '#1A2538',
+                        "link_hover_color" => '#005AEE',
+                        "content_font_color" => '#3E4857',
                         "box_bg_color" => '#F4F4F4',
                     ),
                     'red' => array(
@@ -2633,20 +2720,20 @@ if (!class_exists('ARM_members_directory')) {
                 ),
                 'directorytemplate4' => array(
                     'blue' => array(
-                        "main_color" => '#0c7cd5',
-                        "title_color" => '#ffffff',
-                        "subtitle_color" => '#575d70',
-                        "border_color" => '#0c7cd5',
-                        "button_color" => '#0c7cd5',
-                        "button_font_color" => '#ffffff',
-                        "tab_bg_color" => '#0c7cd5',
+                        "main_color" => '#1A2538',
+                        "title_color" => '#1A2538',
+                        "subtitle_color" => '#2F3F5C',
+                        "border_color" => '#005AEE',
+                        "button_color" => '#005AEE',
+                        "button_font_color" => '#FFFFFF',
+                        "tab_bg_color" => '#1A2538',
                         "tab_link_color" => '#ffffff',
-                        "tab_link_hover_color" => '#0c7cd5',
-                        'tab_link_bg_color' => '#0c7cd5',
+                        "tab_link_hover_color" => '#1A2538',
+                        'tab_link_bg_color' => '#1A2538',
                         'tab_link_hover_bg_color' => '#ffffff',
-                        "link_color" => '#0c7cd5',
-                        "link_hover_color" => '#41474c',
-                        "content_font_color" => '#616175',
+                        "link_color" => '#1A2538',
+                        "link_hover_color" => '#005AEE',
+                        "content_font_color" => '#3E4857',
                         "box_bg_color" => '#F4F4F4',
                     ),
                     'red' => array(
@@ -2754,20 +2841,141 @@ if (!class_exists('ARM_members_directory')) {
                 ),
                 'directorytemplate3' => array(
                     'blue' => array(
-                        "main_color" => '#0c7cd5',
-                        "title_color" => '#0c7cd5',
-                        "subtitle_color" => '#575d70',
-                        "border_color" => '#0c7cd5',
-                        "button_color" => '#0c7cd5',
-                        "button_font_color" => '#ffffff',
-                        "tab_bg_color" => '#0c7cd5',
+                        "main_color" => '#1A2538',
+                        "title_color" => '#1A2538',
+                        "subtitle_color" => '#2F3F5C',
+                        "border_color" => '#005AEE',
+                        "button_color" => '#005AEE',
+                        "button_font_color" => '#FFFFFF',
+                        "tab_bg_color" => '#1A2538',
                         "tab_link_color" => '#ffffff',
-                        "tab_link_hover_color" => '#0c7cd5',
-                        'tab_link_bg_color' => '#0c7cd5',
+                        "tab_link_hover_color" => '#1A2538',
+                        'tab_link_bg_color' => '#1A2538',
                         'tab_link_hover_bg_color' => '#ffffff',
-                        "link_color" => '#0c7cd5',
-                        "link_hover_color" => '#41474c',
+                        "link_color" => '#1A2538',
+                        "link_hover_color" => '#005AEE',
+                        "content_font_color" => '#3E4857',
+                        "box_bg_color" => '#F4F4F4',
+                    ),
+                    'red' => array(
+                        "main_color" => '#fc5468',
+                        "title_color" => '#fc5468',
+                        "subtitle_color" => '#635859',
+                        "border_color" => '#fc5468',
+                        "button_color" => '#fc5468',
+                        "button_font_color" => '#FFFFFF',
+                        "tab_bg_color" => '#5a52a7',
+                        "tab_link_color" => '#a9a9e5',
+                        "tab_link_hover_color" => '#ffffff',
+                        'tab_link_bg_color' => '#5a52a7',
+                        'tab_link_hover_bg_color' => '#a9a9e5',
+                        "link_color" => '#fc5468',
+                        "link_hover_color" => '#5a52a7',
                         "content_font_color" => '#616175',
+                        "box_bg_color" => '#F4F4F4',
+                    ),
+                    'orange' => array(
+                        "main_color" => '#ff7612',
+                        "title_color" => '#ff7612',
+                        "subtitle_color" => '#615d59',
+                        "border_color" => '#ff7612',
+                        "button_color" => '#ff7612',
+                        "button_font_color" => '#FFFFFF',
+                        "tab_bg_color" => '#312f2d',
+                        "tab_link_color" => '#aa9c91',
+                        "tab_link_hover_color" => '#ff7612',
+                        'tab_link_bg_color' => '#312f2d',
+                        'tab_link_hover_bg_color' => '#ffffff',
+                        "link_color" => '#ff7612',
+                        "link_hover_color" => '#312f2d',
+                        "content_font_color" => '#616175',
+                        "box_bg_color" => '#F4F4F4',
+                    ),
+                    'light_green' => array(
+                        "main_color" => '#17c9ab',
+                        "title_color" => '#1e1e28',
+                        "subtitle_color" => '#464d4c',
+                        "border_color" => '#17c9ab',
+                        "button_color" => '#17c9ab',
+                        "button_font_color" => '#FFFFFF',
+                        "tab_bg_color" => '#15b69b',
+                        "tab_link_color" => '#016554',
+                        "tab_link_hover_color" => '#FFFFFF',
+                        'tab_link_bg_color' => '#15b69b',
+                        'tab_link_hover_bg_color' => '#016554',
+                        "link_color" => '#17c9ab',
+                        "link_hover_color" => '#1e1e28',
+                        "content_font_color" => '#616175',
+                        "box_bg_color" => '#F4F4F4',
+                    ),
+                    'purple' => array(
+                        "main_color" => '#7955d3',
+                        "title_color" => '#191d2e',
+                        "subtitle_color" => '#514d5a',
+                        "border_color" => '#7955d3',
+                        "button_color" => '#7955d3',
+                        "button_font_color" => '#FFFFFF',
+                        "tab_bg_color" => '#4f446c',
+                        "tab_link_color" => '#a695d1',
+                        "tab_link_hover_color" => '#ffffff',
+                        'tab_link_bg_color' => '#4f446c',
+                        'tab_link_hover_bg_color' => '#a695d1',
+                        "link_color" => '#7955d3',
+                        "link_hover_color" => '#191d2e',
+                        "content_font_color" => '#616175',
+                        "box_bg_color" => '#F4F4F4',
+                    ),
+                    'green' => array(
+                        "main_color" => '#8ebd7e',
+                        "title_color" => '#1e1e28',
+                        "subtitle_color" => '#71776f',
+                        "border_color" => '#8ebd7e',
+                        "button_color" => '#8ebd7e',
+                        "button_font_color" => '#FFFFFF',
+                        "tab_bg_color" => '#e9eae9',
+                        "tab_link_color" => '#8b8b8b',
+                        "tab_link_hover_color" => '#303030',
+                        'tab_link_bg_color' => '#e9eae9',
+                        'tab_link_hover_bg_color' => '#ffffff',
+                        "link_color" => '#7dbc68',
+                        "link_hover_color" => '#4b4b5d',
+                        "content_font_color" => '#616175',
+                        "box_bg_color" => '#F4F4F4',
+                    ),
+                    'light_blue' => array(
+                        "main_color" => '#32c5fc',
+                        "title_color" => '#32c5fc',
+                        "subtitle_color" => '#6b7275',
+                        "border_color" => '#32c5fc',
+                        "button_color" => '#32c5fc',
+                        "button_font_color" => '#FFFFFF',
+                        "tab_bg_color" => '#ecf3f9',
+                        "tab_link_color" => '#73808b',
+                        "tab_link_hover_color" => '#1f1f1f',
+                        'tab_link_bg_color' => '#ecf3f9',
+                        'tab_link_hover_bg_color' => '#ffffff',
+                        "link_color" => '#32c5fc',
+                        "link_hover_color" => '#1e1e28',
+                        "content_font_color" => '#616175',
+                        "box_bg_color" => '#F4F4F4',
+                    ),
+                ),
+                'directorytemplate6' => array(
+                    'blue' => array(
+                        "main_color" => '#1A2538',
+                        "title_color" => '#1A2538',
+                        "subtitle_color" => '#2F3F5C',
+                        "border_color" => '#005AEE',
+                        "button_color" => '#005AEE',
+                        "button_font_color" => '#FFFFFF',
+                        "tab_bg_color" => '#1A2538',
+                        "tab_link_color" => '#ffffff',
+                        "tab_link_hover_color" => '#1A2538',
+                        'tab_link_bg_color' => '#1A2538',
+                        'tab_link_hover_bg_color' => '#ffffff',
+                        "link_color" => '#1A2538',
+                        "link_hover_color" => '#005AEE',
+                        "content_font_color" => '#3E4857',
                         "box_bg_color" => '#F4F4F4',
                     ),
                     'red' => array(
@@ -2875,20 +3083,20 @@ if (!class_exists('ARM_members_directory')) {
                 ),
                 'directorytemplate5' => array(
                     'blue' => array(
-                        "main_color" => '#0c7cd5',
-                        "title_color" => '#0c7cd5',
-                        "subtitle_color" => '#575d70',
-                        "border_color" => '#0c7cd5',
-                        "button_color" => '#0c7cd5',
-                        "button_font_color" => '#ffffff',
-                        "tab_bg_color" => '#0c7cd5',
+                        "main_color" => '#1A2538',
+                        "title_color" => '#1A2538',
+                        "subtitle_color" => '#2F3F5C',
+                        "border_color" => '#005AEE',
+                        "button_color" => '#005AEE',
+                        "button_font_color" => '#FFFFFF',
+                        "tab_bg_color" => '#1A2538',
                         "tab_link_color" => '#ffffff',
-                        "tab_link_hover_color" => '#0c7cd5',
-                        'tab_link_bg_color' => '#0c7cd5',
+                        "tab_link_hover_color" => '#1A2538',
+                        'tab_link_bg_color' => '#1A2538',
                         'tab_link_hover_bg_color' => '#ffffff',
-                        "link_color" => '#0c7cd5',
-                        "link_hover_color" => '#41474c',
-                        "content_font_color" => '#616175',
+                        "link_color" => '#1A2538',
+                        "link_hover_color" => '#005AEE',
+                        "content_font_color" => '#3E4857',
                         "box_bg_color" => '#F4F4F4',
                     ),
                     'red' => array(
@@ -3028,36 +3236,36 @@ if (!class_exists('ARM_members_directory')) {
                     'content_font_color' => '',
                     'box_bg_color' => '',
                     'title_font' => array(
-                        'font_family' => 'Open Sans Semibold',
-                        'font_size' => '26',
+                        'font_family' => 'Poppins',
+                        'font_size' => '18',
                         'font_bold' => 1,
                         'font_italic' => 0,
                         'font_decoration' => '',
                     ),
                     'subtitle_font' => array(
-                        'font_family' => 'Open Sans Semibold',
-                        'font_size' => '16',
+                        'font_family' => 'Poppins',
+                        'font_size' => '15',
                         'font_bold' => 0,
                         'font_italic' => 0,
                         'font_decoration' => '',
                     ),
                     'button_font' => array(
-                        'font_family' => 'Open Sans Semibold',
-                        'font_size' => '16',
+                        'font_family' => 'Poppins',
+                        'font_size' => '15',
                         'font_bold' => 0,
                         'font_italic' => 0,
                         'font_decoration' => '',
                     ),
                     'tab_link_font' => array(
-                        'font_family' => 'Open Sans Semibold',
-                        'font_size' => '16',
+                        'font_family' => 'Poppins',
+                        'font_size' => '15',
                         'font_bold' => 1,
                         'font_italic' => 0,
                         'font_decoration' => '',
                     ),
                     'content_font' => array(
-                        'font_family' => 'Open Sans Semibold',
-                        'font_size' => '16',
+                        'font_family' => 'Poppins',
+                        'font_size' => '15',
                         'font_bold' => 0,
                         'font_italic' => 0,
                         'font_decoration' => '',
@@ -3091,6 +3299,12 @@ if (!class_exists('ARM_members_directory')) {
                 $borderRGB['r'] = (!empty($borderRGB['r'])) ? $borderRGB['r'] : 0;
                 $borderRGB['g'] = (!empty($borderRGB['g'])) ? $borderRGB['g'] : 0;
                 $borderRGB['b'] = (!empty($borderRGB['b'])) ? $borderRGB['b'] : 0;
+
+                $buttonColorRGB = $arm_member_forms->armHexToRGB($tempOptions['button_color']);
+                $buttonColorRGB['r'] = (!empty($buttonColorRGB['r'])) ? $buttonColorRGB['r'] : 0;
+                $buttonColorRGB['g'] = (!empty($buttonColorRGB['g'])) ? $buttonColorRGB['g'] : 0;
+                $buttonColorRGB['b'] = (!empty($buttonColorRGB['b'])) ? $buttonColorRGB['b'] : 0;
+                
                 if (is_admin()) {
                     $templateStyle .= '<style type="text/css" id="arm_profile_runtime_css">';
                 } else {
@@ -3101,11 +3315,17 @@ if (!class_exists('ARM_members_directory')) {
 
                 $tempWrapperClass = ".arm_template_wrapper_{$tempID}";
                 $templateStyle .= "
+                    $tempWrapperClass .arm_profile_container .arm_profile_detail_text,
                     $tempWrapperClass .arm_profile_name_link,
                     $tempWrapperClass .arm_profile_name_link a,
                     $tempWrapperClass .arm_directory_container .arm_user_link{
                         color: {$tempOptions['title_color']} !important;
                         {$tempOptions['title_font']['font']}
+                    }
+                    .arm_template_wrapper$tempWrapperClass .arm_button_search_filter_btn_div .arm_directory_search_btn {
+                        background-color: {$tempOptions['button_color']};
+                        border-color: {$tempOptions['button_color']};
+                        color: {$tempOptions['button_font_color']};
                     }
                     $tempWrapperClass .arm_template_container .arm_user_link span{
                         color: {$tempOptions['title_color']} !important;
@@ -3129,10 +3349,14 @@ if (!class_exists('ARM_members_directory')) {
                     $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_user_link:before{
                         background-color: {$tempOptions['title_color']} !important;
                     }
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate6 .arm_user_link:before{
+                        background-color: {$tempOptions['title_color']} !important;
+                    }
                     $tempWrapperClass.arm_template_wrapper_profiletemplate1 .arm_profile_picture_block .arm_user_avatar,
                     $tempWrapperClass.arm_template_wrapper_profiletemplate2 .arm_profile_picture_block .arm_user_avatar,
                     $tempWrapperClass.arm_template_wrapper_profiletemplate3 .arm_profile_picture_block .arm_user_avatar,
-                    $tempWrapperClass.arm_template_wrapper_profiletemplate4 .arm_profile_picture_block .arm_user_avatar{
+                    $tempWrapperClass.arm_template_wrapper_profiletemplate4 .arm_profile_picture_block .arm_user_avatar,
+                    $tempWrapperClass.arm_template_wrapper_profiletemplate5 .arm_profile_picture_block .arm_user_avatar{
                         border-color: {$tempOptions['border_color']} !important;
                         display:none;
                     }
@@ -3144,7 +3368,15 @@ if (!class_exists('ARM_members_directory')) {
                     $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_member_field_label,
                     $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_member_field_label,
                     $tempWrapperClass.arm_template_wrapper_directorytemplate5 .arm_member_field_label,
-                    .arm_search_filter_field_item_label{
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate6 .arm_member_field_label,
+                    .arm_search_filter_field_item_label,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate1 .arm_member_since_detail_wrapper,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate2 .arm_member_since_detail_wrapper,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_member_since_detail_wrapper,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_member_since_detail_wrapper,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate5 .arm_member_since_detail_wrapper,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate6 .arm_member_since_detail_wrapper,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate6 .arm_member_field_label {
                         color: {$tempOptions['subtitle_color']} !important;
                         {$tempOptions['subtitle_font']['font']}
                     }
@@ -3162,10 +3394,11 @@ if (!class_exists('ARM_members_directory')) {
                     $tempWrapperClass .arm_directory_search_wrapper .arm_directory_search_box,
                     $tempWrapperClass .arm_directory_field_list_filter select,
                     $tempWrapperClass .arm_directory_list_by_filters select,
-                    $tempWrapperClass .arm_directory_list_of_filters label, .arm_search_filter_field_item_".$armSearchPosition." input, .arm_search_filter_field_item_".$armSearchPosition." .arm_chk_field_div label, .arm_search_filter_field_item_".$armSearchPosition." .arm_search_filter_radio label{
+                    $tempWrapperClass .arm_directory_list_of_filters label, .arm_search_filter_field_item_".$armSearchPosition." input, $tempWrapperClass .arm_search_filter_field_item_".$armSearchPosition." .arm_chk_field_div label, .arm_search_filter_field_item_".$armSearchPosition." .arm_search_filter_radio label, $tempWrapperClass .arm_template_advanced_search .arm_chk_field_div label, $tempWrapperClass .arm_template_advanced_search .arm_search_filter_radio label{
                         {$tempOptions['subtitle_font']['font_family']}
                         {$tempOptions['subtitle_font']['font_size']}
                     }
+                    $tempWrapperClass .arm_template_advanced_search .arm_search_filter_title_label_advanced { {$tempOptions['title_font']['font']} }
                     $tempWrapperClass .arm_directory_list_of_filters label.arm_active{
                         color: {$tempOptions['button_color']} !important;
                         border-color: {$tempOptions['button_color']};
@@ -3175,12 +3408,6 @@ if (!class_exists('ARM_members_directory')) {
                         color: {$tempOptions['tab_link_color']} !important;
                         {$tempOptions['tab_link_font']['font']}
                     }
-                    $tempWrapperClass.arm_template_wrapper_profiletemplate1 .arm_profile_picture_block,
-                    $tempWrapperClass.arm_template_wrapper_profiletemplate2 .arm_profile_picture_block,
-                    $tempWrapperClass.arm_template_wrapper_profiletemplate3 .arm_profile_picture_block,
-                    $tempWrapperClass.arm_template_wrapper_profiletemplate4 .arm_profile_picture_block{
-                        border-color:{$tempOptions['border_color']} !important;
-                    }
                     $tempWrapperClass .arm_profile_tabs .arm_profile_tab_link:hover,
                     $tempWrapperClass .arm_profile_tabs .arm_profile_tab_link.arm_profile_tab_link_active{
                         background-color: {$tempOptions['tab_link_hover_bg_color']} !important;
@@ -3189,10 +3416,11 @@ if (!class_exists('ARM_members_directory')) {
                     }
                     $tempWrapperClass .arm_profile_tabs_container .arm_profile_tab_detail,
                     $tempWrapperClass .arm_profile_tab_detail,
-                    $tempWrapperClass .arm_profile_tabs_container .arm_profile_tab_detail *:not(i){
+                    $tempWrapperClass .arm_profile_tabs_container .arm_profile_tab_detail *:not(i),
+                    $tempWrapperClass .arm_profile_tabs_container .arm_profile_tab_detail :not('.arm_profile_detail_text'){
                         color: {$tempOptions['content_font_color']} !important;
                     }
-                    $tempWrapperClass .arm_profile_tab_detail table tr td{
+                    $tempWrapperClass .arm_profile_tab_detail .arm_profile_detail_tbl .arm_profile_detail_row .arm_profile_detail_data{
                         {$tempOptions['content_font']['font']} 
                     }
                     $tempWrapperClass .arm_confirm_box .arm_confirm_box_text,
@@ -3211,13 +3439,48 @@ if (!class_exists('ARM_members_directory')) {
                     $tempWrapperClass .arm_directory_field_list_filter select:focus, .arm_search_filter_field_item_".$armSearchPosition." input:focus, .arm_search_filter_field_item_".$armSearchPosition." select:focus{
                         border-color: {$tempOptions['button_color']} !important;
                     }
+                    $tempWrapperClass .arm_search_filter_fields_wrapper input[type='checkbox']:checked, $tempWrapperClass .arm_search_filter_radio input[type='radio']:checked, $tempWrapperClass .arm_template_advanced_search input[type='checkbox']:checked{
+                        background-color: {$tempOptions['button_color']} !important;
+                        border-color: {$tempOptions['button_color']} !important;
+                    }
                     $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_directory_container .arm_view_profile_btn_wrapper a,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate6 .arm_directory_container .arm_view_profile_btn_wrapper a,
                     $tempWrapperClass.arm_template_wrapper_directorytemplate1 .arm_directory_container .arm_view_profile_btn_wrapper a,
-                    $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_directory_container .arm_view_profile_btn_wrapper a{
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate2 .arm_directory_container .arm_view_profile_btn_wrapper a,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate5 .arm_directory_container .arm_view_profile_btn_wrapper a,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_directory_container .arm_view_profile_btn_wrapper a {
+                        color: {$tempOptions['subtitle_color']} !important;
+                        {$tempOptions['button_font']['font']}
+                    }
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_directory_container .arm_view_profile_btn_wrapper a:hover,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate6 .arm_directory_container .arm_view_profile_btn_wrapper a:hover,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate1 .arm_directory_container .arm_view_profile_btn_wrapper a:hover,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_directory_container .arm_view_profile_btn_wrapper a:hover,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate2 .arm_directory_container .arm_view_profile_btn_wrapper a:hover,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate5 .arm_directory_container .arm_view_profile_btn_wrapper a:hover,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate1 .arm_directory_paging_container a.arm_directory_load_more_link:hover,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate2 .arm_directory_paging_container a.arm_directory_load_more_link:hover,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_directory_paging_container a.arm_directory_load_more_link:hover,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate6 .arm_directory_paging_container a.arm_directory_load_more_link:hover,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_directory_paging_container a.arm_directory_load_more_link:hover,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate5 .arm_directory_paging_container a.arm_directory_load_more_link:hover {
                         background-color: {$tempOptions['button_color']} !important;
                         border-color: {$tempOptions['button_color']} !important;
                         color: {$tempOptions['button_font_color']} !important;
-                        {$tempOptions['button_font']['font']}
+                    }
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_directory_container .arm_view_profile_btn_wrapper a:focus,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate2 .arm_directory_container .arm_view_profile_btn_wrapper a:focus,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate5 .arm_directory_container .arm_view_profile_btn_wrapper a:focus,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate6 .arm_directory_container .arm_view_profile_btn_wrapper a:focus,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate1 .arm_directory_container .arm_view_profile_btn_wrapper a:focus,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_directory_container .arm_view_profile_btn_wrapper a:focus,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_directory_paging_container a.arm_directory_load_more_link:focus,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate2 .arm_directory_paging_container a.arm_directory_load_more_link:focus,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate5 .arm_directory_paging_container a.arm_directory_load_more_link:focus,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate6 .arm_directory_paging_container a.arm_directory_load_more_link:focus,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate1 .arm_directory_paging_container a.arm_directory_load_more_link:focus,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_directory_paging_container a.arm_directory_load_more_link:focus {
+                        box-shadow: 0px 4px 12px 0px rgba(".$buttonColorRGB['r'].", ".$buttonColorRGB['g'].", ".$buttonColorRGB['b'].", 0.2);
                     }
                     $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_directory_container .arm_user_link{
                         background-color: {$tempOptions['button_color']} !important;
@@ -3231,12 +3494,29 @@ if (!class_exists('ARM_members_directory')) {
                         {$tempOptions['subtitle_font']['font']}
                     }
 
-                    $tempWrapperClass .arm_directory_container .arm_paging_wrapper .arm_paging_info, $tempWrapperClass.arm_template_wrapper_directorytemplate1 .arm_search_filter_field_item_".$armSearchPosition." input,  $tempWrapperClass.arm_template_wrapper_directorytemplate1 select,
-                    $tempWrapperClass.arm_template_wrapper_directorytemplate1 .arm_member_field_value, $tempWrapperClass.arm_template_wrapper_directorytemplate1 .arm_search_filter_field_item_".$armSearchPosition." input, $tempWrapperClass.arm_template_wrapper_directorytemplate1 select,
-                    $tempWrapperClass.arm_template_wrapper_directorytemplate2 .arm_member_field_value, $tempWrapperClass.arm_template_wrapper_directorytemplate2 .arm_search_filter_field_item_".$armSearchPosition." input, $tempWrapperClass.arm_template_wrapper_directorytemplate2 select,
-                    $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_member_field_value, $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_search_filter_field_item_".$armSearchPosition." input, $tempWrapperClass.arm_template_wrapper_directorytemplate3 select,
-                    $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_member_field_value, $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_search_filter_field_item_".$armSearchPosition." input, $tempWrapperClass.arm_template_wrapper_directorytemplate4 select,
-                    $tempWrapperClass.arm_template_wrapper_directorytemplate5 .arm_member_field_value, $tempWrapperClass.arm_template_wrapper_directorytemplate5 .arm_search_filter_field_item_".$armSearchPosition." input,  $tempWrapperClass.arm_template_wrapper_directorytemplate5 select{
+
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate1 .arm_search_filter_field_item_".$armSearchPosition." input,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate2 .arm_search_filter_field_item_".$armSearchPosition." input,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_search_filter_field_item_".$armSearchPosition." input, 
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_search_filter_field_item_".$armSearchPosition." input,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate5 .arm_search_filter_field_item_".$armSearchPosition." input,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate6 .arm_search_filter_field_item_".$armSearchPosition." input,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate1 select,                    
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate2 select,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate3 select,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate4 select,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate5 select,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate6 select {
+                        color: {$tempOptions['subtitle_color']} !important;
+                    }
+
+                    $tempWrapperClass .arm_directory_container .arm_paging_wrapper .arm_paging_info, 
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate1 .arm_member_field_value, 
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate2 .arm_member_field_value, 
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_member_field_value, 
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate4 .arm_member_field_value, 
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate5 .arm_member_field_value,
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate6 .arm_member_field_value {
                         color: {$tempOptions['subtitle_color']} !important;
                         {$tempOptions['content_font']['font']}
                     }
@@ -3250,7 +3530,8 @@ if (!class_exists('ARM_members_directory')) {
                         -moz-box-shadow: 0px 0px 25px 0px rgba(".$borderRGB['r'].", ".$borderRGB['g'].", ".$borderRGB['b'].", 0.15);
                         -o-box-shadow: 0px 0px 25px 0px rgba(".$borderRGB['r'].", ".$borderRGB['g'].", ".$borderRGB['b'].", 0.15);
                     }
-                    $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_cover_bg_wrapper{
+                    $tempWrapperClass.arm_template_wrapper_directorytemplate3 .arm_cover_bg_wrapper,
+		    $tempWrapperClass.arm_template_wrapper_directorytemplate6 .arm_cover_bg_wrapper {
                         background-color: {$tempOptions['box_bg_color']};
                     }
                     $tempWrapperClass.arm_template_wrapper_directorytemplate5 .arm_user_avatar:hover:after{
@@ -3344,6 +3625,12 @@ if (!class_exists('ARM_members_directory')) {
                     'arm_type' => 'profile',
                     'arm_core' => 1,
                 ),
+                array(
+                    'arm_title' => __('Profile Template 5', 'ARMember'),
+                    'arm_slug' => 'profiletemplate5',
+                    'arm_type' => 'profile',
+                    'arm_core' => 1,
+                ),
                 /**
                  * Directory Templates
                  */
@@ -3375,6 +3662,12 @@ if (!class_exists('ARM_members_directory')) {
                 array(
                     'title' => __('Directory Template 5', 'ARMember'),
                     'arm_slug' => 'directorytemplate5',
+                    'arm_type' => 'directory',
+                    'arm_core' => 1
+                ),
+                array(
+                    'title' => __('Directory Template 6', 'ARMember'),
+                    'arm_slug' => 'directorytemplate6',
                     'arm_type' => 'directory',
                     'arm_core' => 1
                 )
@@ -3423,56 +3716,56 @@ if (!class_exists('ARM_members_directory')) {
                 $profileCoverUrl = MEMBERSHIP_IMAGES_URL.'/profile_default_cover.png';
             }
             $profileTemplateOptions = array(
-                                'show_admin_users' => 0,
+                'show_admin_users' => 0,
                 'show_badges' => 1,
-                                'show_joining' => 1,
-                            'hide_empty_profile_fields' => 0,
+                'show_joining' => 1,
+                'hide_empty_profile_fields' => 0,
                 'color_scheme' => 'blue',
-                "title_color" => '#0c7cd5',
-                "subtitle_color" => '#575d70',
-                "border_color" => '#0c7cd5',
-                "button_color" => '#0c7cd5',
-                "button_font_color" => '#ffffff',
-                "tab_bg_color" => '#0c7cd5',
-                "tab_link_color" => '##616175',
-                "tab_link_hover_color" => '#0c7cd5',
-                'tab_link_bg_color' => '#0c7cd5',
-                'tab_link_hover_bg_color' => '#0c7cd5',
-                "link_color" => '#0c7cd5',
-                "link_hover_color" => '#41474c',
-                'content_font_color' => '#616175',
+                "title_color" => '#1A2538',
+                "subtitle_color" => '#2F3F5C',
+                "border_color" => '#005AEE',
+                "button_color" => '#005AEE',
+                "button_font_color" => '#FFFFFF',
+                "tab_bg_color" => '#1A2538',
+                "tab_link_color" => '#ffffff',
+                "tab_link_hover_color" => '#1A2538',
+                'tab_link_bg_color' => '#1A2538',
+                'tab_link_hover_bg_color' => '#ffffff',
+                "link_color" => '#1A2538',
+                "link_hover_color" => '#005AEE',
+                'content_font_color' => '#3E4857',
                 "box_bg_color" => '#F4F4F4',
                 'title_font' => array(
-                    'font_family' => 'Open Sans Semibold',
-                    'font_size' => '26',
+                    'font_family' => 'Poppins',
+                    'font_size' => '18',
                     'font_bold' => 1,
                     'font_italic' => 0,
                     'font_decoration' => '',
                 ),
                 'subtitle_font' => array(
-                    'font_family' => 'Open Sans Semibold',
-                    'font_size' => '16',
+                    'font_family' => 'Poppins',
+                    'font_size' => '15',
                     'font_bold' => 0,
                     'font_italic' => 0,
                     'font_decoration' => '',
                 ),
                 'button_font' => array(
-                    'font_family' => 'Open Sans Semibold',
-                    'font_size' => '16',
+                    'font_family' => 'Poppins',
+                    'font_size' => '15',
                     'font_bold' => 0,
                     'font_italic' => 0,
                     'font_decoration' => '',
                 ),
                 'tab_link_font' => array(
-                    'font_family' => 'Open Sans Semibold',
-                    'font_size' => '16',
+                    'font_family' => 'Poppins',
+                    'font_size' => '15',
                     'font_bold' => 1,
                     'font_italic' => 0,
                     'font_decoration' => '',
                 ),
                 'content_font' => array(
-                    'font_family' => 'Open Sans Semibold',
-                    'font_size' => '16',
+                    'font_family' => 'Poppins',
+                    'font_size' => '15',
                     'font_bold' => 0,
                     'font_italic' => 0,
                     'font_decoration' => '',
@@ -3506,49 +3799,47 @@ if (!class_exists('ARM_members_directory')) {
                         <div class="arm_profile_picture_block armCoverPhoto" style="{ARM_Profile_Cover_Image}">
                             <div class="arm_profile_picture_block_inner">
                                 <div class="armclear"></div>
-                                <div class="arm_profile_header_info arm_profile_header_bottom_box">
-                                    <span class="arm_profile_name_link">
-                                        {ARM_Profile_User_Name}
-                                    </span>
-                                    {ARM_Profile_Badges}
-                                </div>
-                                <span class="arm_user_last_active_text">Member Since {ARM_Profile_Join_Date}</span>
-                                <div class="armclear"></div>
-                                <div class="arm_user_social_icons_all social_profile_fields arm_mobile">
-                                    {ARM_Profile_Social_Icons_Mobile}
-                                </div>
                                 <div class="arm_profile_header_top_box">
-                                    <div class="arm_user_social_icons_left arm_desktop">
-                                        
-                                            {ARM_Profile_Social_Icons_Left}
-                                       
+                                    <div class="arm_user_badge_icons_left arm_desktop">
+                                        {ARM_Profile_Badges}
                                     </div>
                                     <div class="arm_user_avatar">
                                         {ARM_Profile_Avatar_Image}
                                     </div>
                                     <div class="arm_user_social_icons_right arm_desktop">
-                                        
-                                            {ARM_Profile_Social_Icons_Right}
-                                       
+                                        {ARM_Profile_Social_Icons_Temp2}
                                     </div>
                                 </div>
                             </div>
                             {ARM_Cover_Upload_Button}
                         </div>
+                        <div class="arm_profile_header_info arm_profile_header_bottom_box">
+                            <p class="arm_profile_name_link">
+                                {ARM_Profile_User_Name}
+                            </p>
+                            <span class="arm_user_last_active_text">{ARM_Profile_Join_Date}</span>
+                            <div class="arm_user_badge_icons_all arm_mobile">
+                                {ARM_Profile_Badges}
+                            </div>
+                            <div class="arm_user_social_icons_all social_profile_fields arm_mobile">
+                                    {ARM_Profile_Social_Icons_Mobile}
+                            </div>
+                        </div>
+                        <span class="arm_profile_detail_text">{ARM_Personal_Detail_Text}</span>
                         <div class="arm_profile_defail_container arm_profile_tabs_container">
                             <div class="arm_profile_field_before_content_wrapper"></div>
                             <div class="arm_profile_tab_detail" data-tab="general">
                                 <div class="arm_general_info_container">
-                                    <table class="arm_profile_detail_tbl">
-                                        <tbody>';
+                                    <div class="arm_profile_detail_tbl">
+                                        <div class="arm_profile_detail_body">';
                                         foreach($profileTemplateOptions['profile_fields'] as $k => $value ){
-                                            $arm_template_html .= "<tr>";
-                                                $arm_template_html .= "<td>".stripslashes_deep($profileTemplateOptions['label'][$k])."</td>";
-                                                $arm_template_html .= "<td>[arm_usermeta meta='".$k."']</td>";
-                                            $arm_template_html .= "</tr>";
+                                            $arm_template_html .= "<div class='arm_profile_detail_row'>";
+                                                $arm_template_html .= "<div class='arm_profile_detail_data'>".stripslashes_deep($profileTemplateOptions['label'][$k])."</div>";
+                                                $arm_template_html .= "<div class='arm_profile_detail_data arm_data_value'>[arm_usermeta meta='".$k."']</div>";
+                                            $arm_template_html .= "</div>";
                                           }
-                                      $arm_template_html .= '</tbody>
-                                    </table>
+                                      $arm_template_html .= '</div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="arm_profile_field_after_content_wrapper"></div>
@@ -3645,6 +3936,10 @@ if (!class_exists('ARM_members_directory')) {
                     $template_data .= "<div class='arm_profile_separator'></div>";
                     $template_data .= "<div class='arm_profile_header_info'>";
                         $template_data .= "<span class='arm_profile_name_link'>Will Smith</span>";
+
+                        $display_joining_date = ( isset($options['show_joining']) && $options['show_joining'] == 1 ) ? '' : 'hidden_section';
+                        $template_data .= "<div class='arm_user_last_active_text {$display_joining_date}'>".__('Member Since','ARMember').' '.date($arm_global_settings->arm_get_wp_date_format())."</div>";
+
                         $display_badges =  ( isset($options['show_badges']) && $options['show_badges'] == 1 ) ? '' : 'hidden_section';
                         $template_data .= "<div class='arm_user_badges_detail {$display_badges}'>";
                             $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Trending Topic', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/trending.svg' height='30' width='30' /></span>";
@@ -3652,17 +3947,18 @@ if (!class_exists('ARM_members_directory')) {
                             $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Diamond Member', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/diamond.svg' height='30' width='30' /></span>";
                             $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Author 100 Posts', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/author.svg' height='30' width='30' /></span>";
                         $template_data .= "</div>";
-                        $display_joining_date = ( isset($options['show_joining']) && $options['show_joining'] == 1 ) ? '' : 'hidden_section';
-                        $template_data .= "<div class='arm_user_last_active_text {$display_joining_date}'>".__('Member Since','ARMember').' '.date($arm_global_settings->arm_get_wp_date_format())."</div>";
-                        $template_data .= "<div class='social_profile_fields'>";
-                            foreach($social_fields_array as $fk => $val ){
-                                $k = array_keys($dbSocialFields,$fk);
-                                $cls = isset($k[0]) && ($dbSocialFields[$k[0]] == $fk) ? '' : 'hidden_section';
-                                $template_data .= "<div class='arm_social_prof_div {$cls} arm_user_social_fields arm_social_field_{$fk}'>";
-                                    $template_data .= "<a href='#'></a>";
+                            if(!empty($social_fields_array))
+                            {
+                                $template_data .= "<div class='social_profile_fields'>";
+                                foreach($social_fields_array as $fk => $val ){
+                                    $k = array_keys($dbSocialFields,$fk);
+                                    $cls = isset($k[0]) && ($dbSocialFields[$k[0]] == $fk) ? '' : 'hidden_section';
+                                    $template_data .= "<div class='arm_social_prof_div {$cls} arm_user_social_fields arm_social_field_{$fk}'>";
+                                        $template_data .= "<a href='#'></a>";
+                                    $template_data .= "</div>";
+                                }
                                 $template_data .= "</div>";
                             }
-                        $template_data .= "</div>";
                     $template_data .= "</div>";
                 $template_data .= "</div>";
                 
@@ -3672,6 +3968,8 @@ if (!class_exists('ARM_members_directory')) {
                 
                 $template_data .= $arm_profile_before_content_outside;
 
+                $template_data .= "<span class='arm_profile_detail_text'>".__('Personal Details','ARMember').' </span>';
+
                 $template_data .= "<div class='arm_profile_field_before_content_wrapper'>";
                     $template_data .= stripslashes_deep($profile_before_content);
                 $template_data .= "</div>";
@@ -3679,17 +3977,17 @@ if (!class_exists('ARM_members_directory')) {
                 $template_data .= "<div class='arm_profile_tab_detail'>";
                     $template_data .= "<div class='arm_general_info_container'>";
                         
-                        $template_data .= "<table class='arm_profile_detail_tbl'>";
-                            $template_data .= "<tbody>";
+                        $template_data .= "<div class='arm_profile_detail_tbl'>";
+                            $template_data .= "<div class='arm_profile_detail_body'>";
                                 foreach($profile_fields_data['profile_fields'] as $meta_key => $meta_val ){
-                                    $template_data .= "<tr id='".$meta_key."'>";
+                                    $template_data .= "<div class='arm_profile_detail_row' id='".$meta_key."'>";
                                         $user_value = isset($profile_fields_data['default_values'][$meta_key]) ? $profile_fields_data['default_values'][$meta_key] : '';
-                                        $template_data .= "<td>".stripslashes_deep($profile_fields_data['label'][$meta_key])."</td>";
-                                        $template_data .= "<td>".$user_value."</td>";
-                                    $template_data .= "</tr>";
+                                        $template_data .= "<div class='arm_profile_detail_data'>".stripslashes_deep($profile_fields_data['label'][$meta_key])."</div>";
+                                        $template_data .= "<div class='arm_profile_detail_data arm_data_value'>".$user_value."</div>";
+                                    $template_data .= "</div>";
                                 }
-                            $template_data .= "</tbody>";
-                        $template_data .= "</table>";
+                            $template_data .= "</div>";
+                        $template_data .= "</div>";
                     $template_data .= "</div>";
                 $template_data .= "</div>";
 
@@ -3712,29 +4010,10 @@ if (!class_exists('ARM_members_directory')) {
                 $template_data .= "<div class='arm_template_loading'><img src='".MEMBERSHIP_IMAGES_URL."/loader.gif' alt='".__('Loading','ARMember')."..' /></div>";
                 
                 $template_data .= "<div class='arm_profile_picture_block_inner'>";
-                    $template_data .= "<div class='arm_profile_header_info arm_profile_header_bottom_box'>";
-                        $template_data .= "<span class='arm_profile_name_link'>Will Smith</span>";
-                        $display_badges = ( isset($options['show_badges']) && $options['show_badges'] == 1 ) ? '' : 'hidden_section';
-                        $template_data .= "<div class='arm_user_badges_detail {$display_badges}'>";
-                            $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Trending Topic', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/trending.svg' height='30' width='30' /></span>";
-                            $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Most Comments', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/comments.svg' height='30' width='30' /></span>";
-                            $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Diamond Member', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/diamond.svg' height='30' width='30' /></span>";
-                            $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Author 100 Posts', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/author.svg' height='30' width='30' /></span>";
-                        $template_data .= "</div>";
-                        $display_joining_date = ( isset($options['show_joining']) && $options['show_joining'] == 1 ) ? '' : 'hidden_section';
-                        $template_data .= "<div class='arm_user_last_active_text {$display_joining_date}'>".__('Member Since','ARMember').' '.date($arm_global_settings->arm_get_wp_date_format())."</div>";
-                    $template_data .= "</div>";
-                    $template_data .= "<div class='armclear'></div>";
-                    $template_data .= "<div class='arm_user_social_icons_all social_profile_fields  arm_{$data_type}'>";
-                    foreach($social_fields_array as $fk => $val ){
-                        $k = array_keys($dbSocialFields,$fk);
-                        $cls = isset($k[0]) && ($dbSocialFields[$k[0]] == $fk) ? '' : 'hidden_section';
-                        $template_data .= "<div class='arm_social_prof_div {$cls} arm_user_social_fields arm_social_field_{$fk}'>";
-                            $template_data .= "<a href='#'></a>";
-                        $template_data .= "</div>";
-                    }
-                    $template_data .= "</div>";
-                    $template_data .= "<div class='arm_profile_header_top_box'>";
+                    $display_badges = ( isset($options['show_badges']) && $options['show_badges'] == 1 ) ? '' : 'hidden_section';
+                    $display_joining_date = ( isset($options['show_joining']) && $options['show_joining'] == 1 ) ? '' : 'hidden_section';
+                        
+                   $template_data .= "<div class='arm_profile_header_top_box'>";
                     
                     $template_data .= "<div class='arm_social_profile_hidden' id='arm_social_profile_hidden' style='width: !important0;height: !important0;padding: !important0;overflow: !importanthidden;visibility: !importanthidden;display:none !important;'>";
                         foreach($social_fields_array as $key => $spf ){
@@ -3744,35 +4023,35 @@ if (!class_exists('ARM_members_directory')) {
                         }
                     $template_data .= "</div>";
 
-                    $template_data .= "<div class='arm_user_social_icons_left arm_{$data_type}'>";
-                    $array_size = ceil(count($dbSocialFields)/2);
-                    if( $array_size < 1){
-                        $array_size = 1;
-                    }
-                    $chunked_array = array_chunk($dbSocialFields,$array_size,true);
-                        $template_data .= "<div class='social_profile_fields'>";
-                        if(isset($chunked_array[1]) ){
-                        foreach($chunked_array[0] as $fk => $key ){
-                            $template_data .= "<div class='arm_social_prof_div arm_user_social_fields arm_social_field_{$key}'>";
-                            $template_data .= "<a href='#'></a>";
-                            $template_data .= "</div>";
-                        }
-                    }
+                    $template_data .= "<div class='arm_user_badge_icons_left arm_{$data_type}'>";
+
+                        $template_data .= "<div class='arm_user_badges_detail {$display_badges}'>";
+                            $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Trending Topic', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/trending.svg' height='30' width='30' /></span>";
+                            $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Most Comments', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/comments.svg' height='30' width='30' /></span>";
+                            $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Diamond Member', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/diamond.svg' height='30' width='30' /></span>";
+                            $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Author 100 Posts', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/author.svg' height='30' width='30' /></span>";
                         $template_data .= "</div>";
+
+
                     $template_data .= "</div>";
+
                     $template_data .= "<div class='arm_user_avatar'><img class='avatar arm_grid_avatar arm-avatar avatar-200 photo' src='{$default_avatar_photo}' height='200' width='200' /></div>";
-                    $template_data .= "<div class='arm_user_social_icons_right arm_{$data_type}'>";
-                        $template_data .= "<div class='social_profile_fields'>";
-                        if(isset($chunked_array[1]) ){
-                            foreach($chunked_array[1] as $fk => $key ){
-                                $template_data .= "<div class='arm_social_prof_div arm_user_social_fields arm_social_field_{$key}'>";
-                                $template_data .= "<a href='#'></a>";
+                    
+                        $template_data .= "<div class='arm_user_social_icons_right arm_{$data_type}'>";
+                            $template_data .= "<div class='social_profile_fields'>";
+                        
+                            foreach($social_fields_array as $fk => $val ){
+                                $k = array_keys($dbSocialFields,$fk);
+                                $cls = isset($k[0]) && ($dbSocialFields[$k[0]] == $fk) ? '' : 'hidden_section';
+                                $template_data .= "<div class='arm_social_prof_div {$cls} arm_user_social_fields arm_social_field_{$fk}'>";
+                                    $template_data .= "<a href='#'></a>";
                                 $template_data .= "</div>";
                             }
-                            }
+
                         $template_data .= "</div>";
                     $template_data .= "</div>";
                     $template_data .= "</div>";
+
                     $template_data .= "<div class='arm_profile_separator'></div>";
                 $template_data .= "</div>";
                 
@@ -3780,7 +4059,36 @@ if (!class_exists('ARM_members_directory')) {
 
                 $template_data .= "<div class='armclear'></div>";
 
+                $template_data .= "<span class='arm_profile_name_link'>Will Smith</span>";
+                $template_data .= "<div class='arm_user_last_active_text {$display_joining_date}'>".__('Member Since','ARMember').' '.date($arm_global_settings->arm_get_wp_date_format())."</div>";
+
+                /* Mobile Screen icon start */
+                $template_data .= "<div class='armclear'></div>";
+                
+                $template_data .= "<div class='arm_user_badge_icons_all arm_{$data_type}'>";
+                    $template_data .= "<div class='arm_user_badges_detail {$display_badges}'>";
+                        $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Trending Topic', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/trending.svg' height='30' width='30' /></span>";
+                        $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Most Comments', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/comments.svg' height='30' width='30' /></span>";
+                        $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Diamond Member', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/diamond.svg' height='30' width='30' /></span>";
+                        $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Author 100 Posts', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/author.svg' height='30' width='30' /></span>";
+                    $template_data .= "</div>";
+                $template_data .= "</div>";
+
+                $template_data .= "<div class='arm_user_social_icons_all social_profile_fields arm_{$data_type}'>";
+                foreach($social_fields_array as $fk => $val ){
+                    $k = array_keys($dbSocialFields,$fk);
+                        $cls = isset($k[0]) && ($dbSocialFields[$k[0]] == $fk) ? '' : 'hidden_section';
+                        $template_data .= "<div class='arm_social_prof_div {$cls} arm_user_social_fields arm_social_field_{$fk}'>";
+                            $template_data .= "<a href='#'></a>";
+                        $template_data .= "</div>";
+                    }
+                $template_data .= "</div>";
+                /* Mobile Screen icon End */
+
+
                 $template_data .= $arm_profile_before_content_outside;
+                
+                $template_data .= "<span class='arm_profile_detail_text'>".__('Personal Details','ARMember').' </span>';
                 
                 $template_data .= "<div class='arm_profile_field_before_content_wrapper'>";
                     $template_data .= stripslashes_deep($profile_before_content);
@@ -3788,17 +4096,17 @@ if (!class_exists('ARM_members_directory')) {
 
                 $template_data .= "<div class='arm_profile_tab_detail'>";
                     $template_data .= "<div class='arm_general_info_container'>";
-                        $template_data .= "<table class='arm_profile_detail_tbl'>";
-                            $template_data .= "<tbody>";
+                        $template_data .= "<div class='arm_profile_detail_tbl'>";
+                            $template_data .= "<div class='arm_profile_detail_body'>";
                                 foreach($profile_fields_data['profile_fields'] as $meta_key => $meta_val ){
-                                    $template_data .= "<tr id='".$meta_key."'>";
+                                    $template_data .= "<div class='arm_profile_detail_row' id='".$meta_key."'>";
                                         $user_value = isset($profile_fields_data['default_values'][$meta_key]) ? $profile_fields_data['default_values'][$meta_key] : '';
-                                        $template_data .= "<td>".stripslashes_deep($profile_fields_data['label'][$meta_key])."</td>";
-                                        $template_data .= "<td>".$user_value."</td>";
-                                    $template_data .= "</tr>";
+                                        $template_data .= "<div class='arm_profile_detail_data'>".stripslashes_deep($profile_fields_data['label'][$meta_key])."</div>";
+                                        $template_data .= "<div class='arm_profile_detail_data arm_data_value'>".$user_value."</div>";
+                                    $template_data .= "</div>";
                                 }
-                            $template_data .= "</tbody>";
-                        $template_data .= "</table>";
+                            $template_data .= "</div>";
+                        $template_data .= "</div>";
                     $template_data .= "</div>";
                 $template_data .= "</div>";
 
@@ -3818,46 +4126,56 @@ if (!class_exists('ARM_members_directory')) {
 
                 $template_data .= "<div class='arm_template_loading'><img src='".MEMBERSHIP_IMAGES_URL."/loader.gif' alt='".__('Loading','ARMember')."..' /></div>";
 
+
                 $template_data .= "<div class='arm_profile_picture_block_inner'>";
                     
                     $template_data .= "<div class='arm_profile_header_info'>";
 
-                        $template_data .= "<span class='arm_profile_name_link'>Will Smith</span>";
+                        $template_data .= "<div class='arm_user_avatar'><img class='avatar arm_grid_avatar arm-avatar avatar-200 photo' src='{$default_avatar_photo}' height='200' width='200' /></div>";
+                        
+                        $template_data .= "<div class='arm_profile_header_info_left'>";
 
-                        $display_badges = ( isset($options['show_badges']) && $options['show_badges'] == 1 ) ? '' : 'hidden_section';
-                        $template_data .= "<div class='arm_user_badges_detail {$display_badges}'>";
-                            $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Trending Topic', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/trending.svg' height='30' width='30' /></span>";
-                            $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Most Comments', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/comments.svg' height='30' width='30' /></span>";
-                            $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Diamond Member', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/diamond.svg' height='30' width='30' /></span>";
-                            $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Author 100 Posts', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/author.svg' height='30' width='30' /></span>";
+                            $template_data .= "<span class='arm_profile_name_link'>Will Smith</span>";
+
+                            $display_badges = ( isset($options['show_badges']) && $options['show_badges'] == 1 ) ? '' : 'hidden_section';
+                            $template_data .= "<div class='arm_user_badges_detail {$display_badges}'>";
+                                $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Trending Topic', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/trending.svg' height='30' width='30' /></span>";
+                                $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Most Comments', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/comments.svg' height='30' width='30' /></span>";
+                                $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Diamond Member', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/diamond.svg' height='30' width='30' /></span>";
+                                $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Author 100 Posts', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/author.svg' height='30' width='30' /></span>";
+                            $template_data .= "</div>";
+
+                            $template_data .= "<div class='armclear'></div>";
+
+                            $display_joining_date = ( isset($options['show_joining']) && $options['show_joining'] == 1 ) ? '' : 'hidden_section';
+                            
+                            $template_data .= "<span class='arm_user_last_active_text {$display_joining_date}'>".__('Member Since','ARMember').' '.date($arm_global_settings->arm_get_wp_date_format())."</span>";
+
                         $template_data .= "</div>";
 
-                        $template_data .= "<div class='armclear'></div>";
-
-                        $display_joining_date = ( isset($options['show_joining']) && $options['show_joining'] == 1 ) ? '' : 'hidden_section';
-                        $template_data .= "<span class='arm_user_last_active_text {$display_joining_date}'>".__('Member Since','ARMember').' '.date($arm_global_settings->arm_get_wp_date_format())."</span>";
-
-                    $template_data .= "</div>";
-
-                    $template_data .= "<div class='armclear'></div>";
-
-                    $template_data .= "<div class='social_profile_fields'>";
-                        foreach($social_fields_array as $fk => $val ){
-                            $k = array_keys($dbSocialFields,$fk);
-                            $cls = isset($k[0]) && ($dbSocialFields[$k[0]] == $fk) ? '' : 'hidden_section';
-                            $template_data .= "<div class='arm_social_prof_div {$cls} arm_user_social_fields arm_social_field_{$fk}'>";
-                                $template_data .= "<a href='#'></a>";
+                        
+                        if(!empty($social_fields_array))
+                        {
+                            $template_data .= "<div class='social_profile_fields arm_profile_header_info_right'>";
+                            foreach($social_fields_array as $fk => $val ){
+                                $k = array_keys($dbSocialFields,$fk);
+                                $cls = isset($k[0]) && ($dbSocialFields[$k[0]] == $fk) ? '' : 'hidden_section';
+                                $template_data .= "<div class='arm_social_prof_div {$cls} arm_user_social_fields arm_social_field_{$fk}'>";
+                                    $template_data .= "<a href='#'></a>";
+                                $template_data .= "</div>";
+                            }
                             $template_data .= "</div>";
                         }
+
+                        $template_data .= "</div>";
+
                     $template_data .= "</div>";
-
-                $template_data .= "</div>";
-
-                $template_data .= "<div class='arm_user_avatar'><img class='avatar arm_grid_avatar arm-avatar avatar-200 photo' src='{$default_avatar_photo}' height='200' width='200' /></div>";
-
+                
                 $template_data .= "</div>";
 
                 $template_data .= $arm_profile_before_content_outside;
+                
+                $template_data .= "<span class='arm_profile_detail_text'>".__('Personal Details','ARMember').' </span>';
 
                 $template_data .= "<div class='arm_profile_field_before_content_wrapper'>";
                     $template_data .= stripslashes_deep($profile_before_content);
@@ -3865,18 +4183,17 @@ if (!class_exists('ARM_members_directory')) {
 
                 $template_data .= "<div class='arm_profile_tab_detail'>";
                     $template_data .= "<div class='arm_general_info_container'>";
-                        
-                        $template_data .= "<table class='arm_profile_detail_tbl'>";
-                            $template_data .= "<tbody>";
+                        $template_data .= "<div class='arm_profile_detail_tbl'>";
+                            $template_data .= "<div class='arm_profile_detail_body'>";
                                 foreach($profile_fields_data['profile_fields'] as $meta_key => $meta_val ){
-                                    $template_data .= "<tr id='".$meta_key."'>";
+                                    $template_data .= "<div class='arm_profile_detail_row' id='".$meta_key."'>";
                                         $user_value = isset($profile_fields_data['default_values'][$meta_key]) ? $profile_fields_data['default_values'][$meta_key] : '';
-                                        $template_data .= "<td>".stripslashes_deep($profile_fields_data['label'][$meta_key])."</td>";
-                                        $template_data .= "<td>".$user_value."</td>";
-                                    $template_data .= "</tr>";
+                                        $template_data .= "<div class='arm_profile_detail_data'>".stripslashes_deep($profile_fields_data['label'][$meta_key])."</div>";
+                                        $template_data .= "<div class='arm_profile_detail_data arm_data_value'>".$user_value."</div>";
+                                    $template_data .= "</div>";
                                 }
-                            $template_data .= "</tbody>";
-                        $template_data .= "</table>";
+                            $template_data .= "</div>";
+                        $template_data .= "</div>";
                     $template_data .= "</div>";
                 $template_data .= "</div>";
 
@@ -3906,7 +4223,9 @@ if (!class_exists('ARM_members_directory')) {
                                 $template_data .= "</div>";
                                 $display_joining_date = ( isset($options['show_joining']) && $options['show_joining'] == 1 ) ? '' : 'hidden_section';
                                 $template_data .= "<div class='arm_user_last_active_text {$display_joining_date}'>".__('Member Since','ARMember').' '.date($arm_global_settings->arm_get_wp_date_format())."</div>";
-                                $template_data .= "<div class='social_profile_fields'>";
+                                if(!empty($social_fields_array))
+                                {
+                                    $template_data .= "<div class='social_profile_fields'>";
                                     foreach($social_fields_array as $fk => $val ){
                                         $k = array_keys($dbSocialFields,$fk);
                                         $cls = isset($k[0]) && ($dbSocialFields[$k[0]] == $fk) ? '' : 'hidden_section';
@@ -3914,12 +4233,17 @@ if (!class_exists('ARM_members_directory')) {
                                             $template_data .= "<a href='#'></a>";
                                         $template_data .= "</div>";
                                     }
+                                    $template_data .= "</div>";
+                                }
                                 $template_data .= "</div>";
                             $template_data .= "</div>";
                         $template_data .= "</div>";
-                    $template_data .= "</div>";
                     $template_data .= "<div class='armclear'></div>";
-                        $template_data .= $arm_profile_before_content_outside;
+
+
+                    $template_data .= $arm_profile_before_content_outside;
+                    
+                    $template_data .= "<span class='arm_profile_detail_text'>".__('Personal Details','ARMember').' </span>';
                     
                     $template_data .= "<div class='arm_profile_field_before_content_wrapper'>";
                         $template_data .= stripslashes_deep($profile_before_content);
@@ -3927,17 +4251,17 @@ if (!class_exists('ARM_members_directory')) {
 
                     $template_data .= "<div class='arm_profile_tab_detail'>";
                         $template_data .= "<div class='arm_general_info_container'>";
-                            $template_data .= "<table class='arm_profile_detail_tbl'>";
-                                $template_data .= "<tbody>";
+                            $template_data .= "<div class='arm_profile_detail_tbl'>";
+                                $template_data .= "<div class='arm_profile_detail_body'>";
                                     foreach($profile_fields_data['profile_fields'] as $meta_key => $meta_val ){
-                                        $template_data .= "<tr id='".$meta_key."'>";
+                                        $template_data .= "<div class='arm_profile_detail_row' id='".$meta_key."'>";
                                             $user_value = isset($profile_fields_data['default_values'][$meta_key]) ? $profile_fields_data['default_values'][$meta_key] : '';
-                                            $template_data .= "<td>".stripslashes_deep($profile_fields_data['label'][$meta_key])."</td>";
-                                            $template_data .= "<td>".$user_value."</td>";
-                                        $template_data .= "</tr>";
+                                            $template_data .= "<div class='arm_profile_detail_data'>".stripslashes_deep($profile_fields_data['label'][$meta_key])."</div>";
+                                            $template_data .= "<div class='arm_profile_detail_data arm_data_value'>".$user_value."</div>";
+                                        $template_data .= "</div>";
                                     }
-                                $template_data .= "</tbody>";
-                            $template_data .= "</table>";
+                                $template_data .= "</div>";
+                            $template_data .= "</div>";
                         $template_data .= "</div>";
                     $template_data .= "</div>";
                     
@@ -3949,7 +4273,91 @@ if (!class_exists('ARM_members_directory')) {
 
                     $template_data .= "</div>";
                 $template_data .= "</div>";
-            } else {
+            } 
+            else if($template == 'profiletemplate5') {
+
+                $template_data .= "<div class='arm_profile_detail_wrapper'>";
+
+                    $template_data .= "<div class='arm_profile_picture_block armCoverPhoto' style='{$cover_photo_bg}'>";
+
+                        $template_data .= "<div class='arm_template_loading'><img src='".MEMBERSHIP_IMAGES_URL."/loader.gif' alt='".__('Loading','ARMember')."..' /></div>";
+
+                        $template_data .= "<div class='arm_user_avatar'><img class='avatar arm_grid_avatar arm-avatar avatar-200 photo' src='{$default_avatar_photo}' height='200' width='200' /></div>";
+
+                    $template_data .= "</div>";
+
+                    $template_data .= "<div class='arm_profile_picture_block_inner'>";
+                    
+                        $template_data .= "<div class='arm_profile_header_info'>";
+
+                            $template_data .= "<div class='arm_profile_header_info_left'>";
+
+                                $template_data .= "<span class='arm_profile_name_link'>Will Smith</span>";
+
+                                $display_badges = ( isset($options['show_badges']) && $options['show_badges'] == 1 ) ? '' : 'hidden_section';
+                                $template_data .= "<div class='arm_user_badges_detail {$display_badges}'>";
+                                    $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Trending Topic', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/trending.svg' height='30' width='30' /></span>";
+                                    $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Most Comments', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/comments.svg' height='30' width='30' /></span>";
+                                    $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Diamond Member', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/diamond.svg' height='30' width='30' /></span>";
+                                    $template_data .= "<span class='arm-user-badge armhelptip' title='".__('Achieve this badge for Author 100 Posts', 'ARMember')."'><img src='".MEMBERSHIP_IMAGES_URL."/social_badges/author.svg' height='30' width='30' /></span>";
+                                $template_data .= "</div>";
+
+                                $template_data .= "<div class='armclear'></div>";
+
+                                $display_joining_date = ( isset($options['show_joining']) && $options['show_joining'] == 1 ) ? '' : 'hidden_section';
+                            
+                                $template_data .= "<span class='arm_user_last_active_text {$display_joining_date}'>".__('Member Since','ARMember').' '.date($arm_global_settings->arm_get_wp_date_format())."</span>";
+
+                            $template_data .= "</div>";
+                            if(!empty($social_fields_array))
+                            {
+                                $template_data .= "<div class='social_profile_fields arm_profile_header_info_right'>";
+                                foreach($social_fields_array as $fk => $val ){
+                                    $k = array_keys($dbSocialFields,$fk);
+                                    $cls = isset($k[0]) && ($dbSocialFields[$k[0]] == $fk) ? '' : 'hidden_section';
+                                    $template_data .= "<div class='arm_social_prof_div {$cls} arm_user_social_fields arm_social_field_{$fk}'>";
+                                        $template_data .= "<a href='#'></a>";
+                                    $template_data .= "</div>";
+                                }
+                                $template_data .= "</div>";
+                            }
+
+                        $template_data .= "</div>";
+
+                    $template_data .= "</div>";
+                    
+                    $template_data .= $arm_profile_before_content_outside;
+                    $template_data .= "<div class='arm_profile_field_before_content_wrapper'>";
+                        $template_data .= stripslashes_deep($profile_before_content);
+                    $template_data .= "</div>";
+                    
+                    $template_data .= "<div class='arm_profile_tab_detail'>";
+                        $template_data .= "<div class='arm_general_info_container'>";
+                            $template_data .= "<span class='arm_profile_detail_text'>".__('Personal Details','ARMember').' </span>';
+                            $template_data .= "<div class='arm_profile_detail_tbl'>";
+                                $template_data .= "<div class='arm_profile_detail_body'>";
+                                    foreach($profile_fields_data['profile_fields'] as $meta_key => $meta_val ){
+                                        $template_data .= "<div class='arm_profile_detail_row' id='".$meta_key."'>";
+                                            $user_value = isset($profile_fields_data['default_values'][$meta_key]) ? $profile_fields_data['default_values'][$meta_key] : '';
+                                            $template_data .= "<div class='arm_profile_detail_data'>".stripslashes_deep($profile_fields_data['label'][$meta_key])."</div>";
+                                            $template_data .= "<div class='arm_profile_detail_data arm_data_value'>".$user_value."</div>";
+                                        $template_data .= "</div>";
+                                    }
+                                $template_data .= "</div>";
+                            $template_data .= "</div>";
+                        $template_data .= "</div>";
+                    $template_data .= "</div>";
+
+                $template_data .= "<div class='arm_profile_field_after_content_wrapper'>";
+                    $template_data .= stripslashes_deep($profile_after_content);
+                $template_data .= "</div>";
+
+                $template_data .= $arm_profile_after_content_outside;
+                    
+            $template_data .= "</div>";
+                
+            }   
+            else {
                 $template_data = apply_filters('arm_profile_template_data_outside',$template_data,$template,$dbProfileFields,$options,$profile_before_content,$profile_after_content,$arm_profile_before_content_outside,$arm_profile_after_content_outside);
             }
             $template_data .= "</div>";
@@ -3978,7 +4386,7 @@ if (!class_exists('ARM_members_directory')) {
             $after_content = isset($_POST['arm_after_profile_fields_content']) ? $_POST['arm_after_profile_fields_content'] : '';
 
 
-            $template = $this->arm_get_profile_editor_template($profile_template,$profile_fields,$options,$_POST['id'],true,$before_content,$after_content,$data_type);
+            $template = $this->arm_get_profile_editor_template($profile_template,$profile_fields,$options,intval($_POST['id']),true,$before_content,$after_content,$data_type);
             echo json_encode(array('template' => $template) );
             exit;
         }
@@ -4105,8 +4513,8 @@ if (!class_exists('ARM_members_directory')) {
                                     $card_html .= !empty($card_opts['custom_css']) ? $card_opts['custom_css'] : '';
                                     $card_html .= "</style>";
 
-                                    $iframe_src =  MEMBERSHIP_VIEWS_URL."/arm_membership_card_template.php?member_id=".$user_id."&arm_mcard_id=".$arm_mcard_id."&plan_id=".$plan_id."&iframe_id=iframe_".$plan_id."_".$n;
-                                    //echo '<iframe srcdoc="'.$iframe.'" style="display:none;" id="iframe_'.$plan_id.'_'.$n.'"></iframe>';
+                                    $iframe_src =  ARM_HOME_URL."?member_id=".$user_id."&arm_mcard_id=".$arm_mcard_id."&plan_id=".$plan_id."&iframe_id=iframe_".$plan_id."_".$n."&is_display_card_data=1";
+
                                     $card_html .= '<iframe src="'.$iframe_src.'" data-no-lazy="1" style="display:none;" id="iframe_'.$plan_id.'_'.$n.'"></iframe>';
                                     
                                     $user_info = get_user_meta($user_id);
@@ -4132,7 +4540,7 @@ if (!class_exists('ARM_members_directory')) {
                     $card_html = "<center><h4>".sprintf(esc_html__('%s user has no any plan at the moment.', 'ARMember'), $user->user_login)."</h4></center>";
                 }
 
-                $popup .= "<div class='arm_template_preview_popup popup_wrapper arm_mcard_template_preview_popup' style='width:960px;max-width:100%;'>";
+                $popup .= "<div class='arm_template_preview_popup popup_wrapper arm_mcard_template_preview_popup'>";
                 $popup .=   "<div class='popup_wrapper_inner'>";
                 $popup .=       "<div class='popup_header'>";
                 $popup .=           "<span class='popup_close_btn arm_popup_close_btn arm_template_preview_close_btn'></span>";
@@ -4369,7 +4777,7 @@ if (!class_exists('ARM_members_directory')) {
                         $display_avatar = (isset($card_opts["display_avatar"]) && ''!=$card_opts["display_avatar"]) ? $card_opts["display_avatar"] : 0;
                     }
                 }
-                $popup .= "<div class='arm_template_preview_popup popup_wrapper arm_mcard_template_preview_popup' style='width:960px;'>";
+                $popup .= "<div class='arm_template_preview_popup popup_wrapper arm_mcard_template_preview_popup'>";
                 $popup .= "<div class='popup_wrapper_inner'>";
                 $popup .= "<div class='popup_header'>";
                 $popup .= "<span class='popup_close_btn arm_popup_close_btn arm_template_preview_close_btn'></span>";
@@ -4396,13 +4804,15 @@ if (!class_exists('ARM_members_directory')) {
             $response = array('type' => 'error', 'message' => $message);
             if (isset($_POST['action']) && $_POST['action'] == 'arm_add_membership_card_template') {
                 $ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_member_templates'], '1');
+
+                $arm_template_title = !empty($_POST['arm_card_template_name']) ? $_POST['arm_card_template_name'] : '';
                 $templateType = isset($_POST['temp_type']) ? $_POST['temp_type'] : '';
                 $temp_options = isset($_POST['membership_card_template_options']) ? $_POST['membership_card_template_options'] : array();
                 $slug = isset($_POST['slug']) ? $_POST['slug'] : (isset($temp_options[$templateType]) ? $temp_options[$templateType] : '');
                 unset($temp_options['profile']);
                 unset($temp_options['directory']);
                 $newTempArg = array(
-                    'arm_title' => '',
+                    'arm_title' => $arm_template_title,
                     'arm_slug' => $slug,
                     'arm_type' => $templateType,
                     'arm_options' => maybe_serialize($temp_options),
@@ -4439,8 +4849,9 @@ if (!class_exists('ARM_members_directory')) {
                         $card_info = $template[0];
                         $card_opts = $card_info["arm_options"];
                         $card_opts = maybe_unserialize($card_opts);
+                        $card_opts['arm_title'] = $card_info['arm_title'];
 
-                        $popup = '<div class="arm_edit_membership_card_templates popup_wrapper" style="width: 750px;">';
+                        $popup = '<div class="arm_edit_membership_card_templates popup_wrapper">';
                         $popup .= '<form action="#" method="post" onsubmit="return false;" class="arm_membership_card_template_edit_form arm_admin_form" id="arm_membership_card_template_edit_form" data-temp_id="'.$temp_id.'" onsubmit="return false" enctype="multipart/form-data">';
                         $popup .= '<table cellspacing="0">';
                         $popup .= '<tr class="popup_wrapper_inner">';
@@ -4477,13 +4888,15 @@ if (!class_exists('ARM_members_directory')) {
         }
 
         function arm_get_membership_card_template_options_wrapper($card_type='add', $card_opts = '') {
+
+            $temp_unique_id = isset($_POST['temp_id']) ? '_'.$_POST['temp_id'] : '';            
             $active_card = !empty($card_opts['arm_card']) ? $card_opts['arm_card'] : 'membershipcard1';
             $active_color = !empty($card_opts['color_scheme']) ? $card_opts['color_scheme'] : 'blue';
 
             $active_title_color = !empty($card_opts['custom']['title_color']) ? $card_opts['custom']['title_color'] : '#ffffff';
-            $active_bg_color = !empty($card_opts['custom']['bg_color']) ? $card_opts['custom']['bg_color'] : '#0073c6';
-            $active_label_color = !empty($card_opts['custom']['label_color']) ? $card_opts['custom']['label_color'] : '#000000';
-            $active_font_color = !empty($card_opts['custom']['font_color']) ? $card_opts['custom']['font_color'] : '#000000';
+            $active_bg_color = !empty($card_opts['custom']['bg_color']) ? $card_opts['custom']['bg_color'] : '#005AEE';
+            $active_label_color = !empty($card_opts['custom']['label_color']) ? $card_opts['custom']['label_color'] : '#1A2538';
+            $active_font_color = !empty($card_opts['custom']['font_color']) ? $card_opts['custom']['font_color'] : '#2F3F5C';
 
             $company_logo = !empty($card_opts['company_logo']) ? $card_opts['company_logo'] : '';
 
@@ -4553,9 +4966,21 @@ if (!class_exists('ARM_members_directory')) {
             global $arm_members_directory, $arm_member_forms, $arm_subscription_plans;
             $arm_html_cnt = "<div class='arm_add_membership_card_template_options_wrapper'>";
             $arm_html_cnt .= "<div class='page_sub_title'>".__('Template Options', 'ARMember')."</div>";
-            
+
+            $arm_card_default_val = !empty($card_opts['arm_title']) ? $card_opts['arm_title'] : '';
+
             $arm_html_cnt .= "<div class='arm_solid_divider'></div>";
+
             $arm_html_cnt .= "<div class='arm_template_option_block'>";
+
+            $arm_html_cnt .= "<div class='arm_card_template_name_div arm_form_fields_wrapper'>";
+            $arm_html_cnt .= "<label class='arm_opt_title'>".__('Card Template Name', 'ARMember')."</label>";
+            $arm_html_cnt .= "<br>";
+            $arm_html_cnt .= "<div class='arm_opt_content'>";
+            $arm_html_cnt .= "<input type='text' name='arm_card_template_name' class='arm_form_input_box arm_width_100_pct' value='".$arm_card_default_val."'>";
+            $arm_html_cnt .= "</div>";
+            $arm_html_cnt .= "</div>";
+
             $arm_html_cnt .= "<div class='arm_opt_title'>".__('Select Template', 'ARMember')."</div>";
             $arm_html_cnt .= "<div class='arm_opt_content'>";
             $membership_card_default_template = $this->arm_default_membership_card_templates();
@@ -4581,29 +5006,29 @@ if (!class_exists('ARM_members_directory')) {
             $arm_html_cnt .= "<div class='arm_template_option_block'>";
             $arm_html_cnt .= "<div class='arm_opt_title'>".__('Color Scheme', 'ARMember')."</div>";
             $arm_html_cnt .= "<div class='arm_opt_content'>";
-            $arm_html_cnt .= "<div class='armclear' style='height: 1px;'></div>";
+            $arm_html_cnt .= "<div class='armclear arm_height_1'></div>";
             $active_class = ($active_color != "custom" ? "style='display:none'" : "");
             $arm_html_cnt .= "<div class='arm_temp_color_options' id='arm_temp_color_options' style='padding-top: 0'>";
             $arm_html_cnt .= "<div class='arm_custom_color_opts'>";
             $arm_html_cnt .= "<label class='arm_opt_label'>".__('Title Color', 'ARMember')."</label>";
             $arm_html_cnt .= "<div class='arm_custom_color_picker'>";
-            $arm_html_cnt .= "<input type='text' name='membership_card_template_options[custom][title_color]' id='arm_title_color_".$card_type."' class='arm_colorpicker' value='".$active_title_color."'>";
+            $arm_html_cnt .= "<input type='text' name='membership_card_template_options[custom][title_color]' id='arm_title_color_".$card_type."' class='arm_colorpicker arm_margin_edit_membership_card_input_color' value='".$active_title_color."'>";
             $arm_html_cnt .= "</div>";
             $arm_html_cnt .= "</div>";
             $arm_html_cnt .= "<div class='arm_custom_color_opts'>";
             $arm_html_cnt .= "<label class='arm_opt_label'>".__('Background Color', 'ARMember')."</label>";
             $arm_html_cnt .= "<div class='arm_custom_color_picker'>";
-            $arm_html_cnt .= "<input type='text' name='membership_card_template_options[custom][bg_color]' id='arm_bg_color_".$card_type."' class='arm_colorpicker' value='".$active_bg_color."'>";
+            $arm_html_cnt .= "<input type='text' name='membership_card_template_options[custom][bg_color]' id='arm_bg_color_".$card_type."' class='arm_colorpicker arm_margin_edit_membership_card_input_color' value='".$active_bg_color."'>";
             $arm_html_cnt .= "</div></div>";
             $arm_html_cnt .= "<div class='arm_custom_color_opts arm_temp_directory_options'>";
             $arm_html_cnt .= "<label class='arm_opt_label'>".__('Label Color', 'ARMember')."</label>";
             $arm_html_cnt .= "<div class='arm_custom_color_picker'>";
-            $arm_html_cnt .= "<input type='text' name='membership_card_template_options[custom][label_color]' id='arm_label_color_".$card_type."' class='arm_colorpicker' value='".$active_label_color."'>";
+            $arm_html_cnt .= "<input type='text' name='membership_card_template_options[custom][label_color]' id='arm_label_color_".$card_type."' class='arm_colorpicker arm_margin_edit_membership_card_input_color' value='".$active_label_color."'>";
             $arm_html_cnt .= "</div></div>";
             $arm_html_cnt .= "<div class='arm_custom_color_opts arm_temp_directory_options'>";
             $arm_html_cnt .= "<label class='arm_opt_label'>".__('Font Color', 'ARMember')."</label>";
             $arm_html_cnt .= "<div class='arm_custom_color_picker'>";
-            $arm_html_cnt .= "<input type='text' name='membership_card_template_options[custom][font_color]' id='arm_font_color_".$card_type."' class='arm_colorpicker' value='".$active_font_color."'>";
+            $arm_html_cnt .= "<input type='text' name='membership_card_template_options[custom][font_color]' id='arm_font_color_".$card_type."' class='arm_colorpicker arm_margin_edit_membership_card_input_color' value='".$active_font_color."'>";
             $arm_html_cnt .= "</div></div></div></div>";
             $arm_html_cnt .= "<div class='arm_solid_divider'></div>";
             $arm_html_cnt .= "<div class='arm_template_option_block'>";
@@ -4614,14 +5039,14 @@ if (!class_exists('ARM_members_directory')) {
                 $arm_html_cnt .= "<div class='arm_opt_label'>".$value["label"]."</div>";
                 $arm_html_cnt .= "<div class='arm_temp_font_opts'>";
                 $arm_html_cnt .= "<input type='hidden' id='arm_template_font_family_".$key."_".$card_type."' name='membership_card_template_options[".$key."][font_family]' value='".$value['font_family']."'/>";
-                $arm_html_cnt .= "<dl class='arm_selectbox column_level_dd'>";
-                $arm_html_cnt .= "<dt style='width:160px;'><span></span><input type='text' style='display:none;' value='' class='arm_autocomplete' /><i class='armfa armfa-caret-down armfa-lg'></i></dt>";
+                $arm_html_cnt .= "<dl class='arm_selectbox column_level_dd arm_margin_right_10 arm_width_230'>";
+                $arm_html_cnt .= "<dt><span></span><input type='text' style='display:none;' value='' class='arm_autocomplete' /><i class='armfa armfa-caret-down armfa-lg'></i></dt>";
                 $arm_html_cnt .= "<dd>";
                 $arm_html_cnt .= "<ul data-id='arm_template_font_family_".$key."_".$card_type."'>".$arm_member_forms->arm_fonts_list()."</ul>";
                 $arm_html_cnt .= "</dd></dl>";
                 $arm_html_cnt .= "<input type='hidden' id='arm_template_font_size_".$key."_".$card_type."' name='membership_card_template_options[".$key."][font_size]' value='".$value["font_size"]."'/>";
-                $arm_html_cnt .= "<dl class='arm_selectbox column_level_dd'>";
-                $arm_html_cnt .= "<dt style='width:70px;'><span></span><input type='text' style='display:none;' value='' class='arm_autocomplete' /><i class='armfa armfa-caret-down armfa-lg'></i></dt>";
+                $arm_html_cnt .= "<dl class='arm_selectbox column_level_dd arm_margin_right_10 arm_width_90'>";
+                $arm_html_cnt .= "<dt><span></span><input type='text' style='display:none;' value='' class='arm_autocomplete' /><i class='armfa armfa-caret-down armfa-lg'></i></dt>";
                 $arm_html_cnt .= "<dd>";
                 $arm_html_cnt .= "<ul data-id='arm_template_font_size_".$key."_".$card_type."'>";
                 for ($i = 8; $i < 41; $i++){
@@ -4691,9 +5116,9 @@ if (!class_exists('ARM_members_directory')) {
 
             $arm_html_cnt .= "<div class='arm_temp_opt_box arm_temp_opt_box_with_lbl '>";
             $arm_html_cnt .= "<div class='arm_opt_content_wrapper'>";
-            $arm_html_cnt .= '<div class="'.$active_class_company_logo.'" style="width: auto; float: left; margin: 5px 0;"> <input type="radio" name="membership_card_template_options[display_avatar]" value="0" id="arm_temp_display_company_logo_'.$card_type.'" '.$active_attr_company_logo.' class="arm_iradio" >
+            $arm_html_cnt .= '<div class="'.$active_class_company_logo.' arm_card_template_opt_style" > <input type="radio" name="membership_card_template_options[display_avatar]" value="0" id="arm_temp_display_company_logo_'.$card_type.'" '.$active_attr_company_logo.' class="arm_iradio" >
                 <label for="arm_temp_display_company_logo_'.$card_type.'" class="arm_temp_form_label">' . esc_html__('Company Logo', 'ARMember') . '</label></div>';
-            $arm_html_cnt .= '<div class="'.$active_class_avatar.'" style="width: auto; float: left; margin: 5px 0;"> <input type="radio" name="membership_card_template_options[display_avatar]" value="1" id="arm_temp_display_avatar_'.$card_type.'" '.$active_attr_avatar.' class="arm_iradio" >
+            $arm_html_cnt .= '<div class="'.$active_class_avatar.' arm_card_template_opt_style" > <input type="radio" name="membership_card_template_options[display_avatar]" value="1" id="arm_temp_display_avatar_'.$card_type.'" '.$active_attr_avatar.' class="arm_iradio" >
                 <label for="arm_temp_display_avatar_'.$card_type.'" class="arm_temp_form_label">' . esc_html__('User Avatar', 'ARMember') . '</label></div>';
             
             $arm_html_cnt .= "</div></div>";
@@ -4820,7 +5245,7 @@ if (!class_exists('ARM_members_directory')) {
                     }
                     
                     $arm_html_cnt .= '<li class="arm_profile_fields_li arm_user_custom_meta_'.$card_type.'" id="'.$fieldMetaKey.'_li_'.$card_type.'">';
-                    $arm_html_cnt .= '<input type="checkbox" value="'.$fieldMetaKey.'" class="arm_card_fields_checkbox arm_icheckbox" name="membership_card_template_options[display_member_fields]['.$fieldMetaKey.']" id="arm_display_member_field_edit_'.$fieldMetaKey.'_status" '.$fchecked.' '.$fdisabled.'/>';
+                    $arm_html_cnt .= '<input type="checkbox" value="'.$fieldMetaKey.'" class="arm_card_fields_checkbox arm_icheckbox" name="membership_card_template_options[display_member_fields]['.$fieldMetaKey.']" id="arm_display_member_field_edit_'.$fieldMetaKey.'_status'.$temp_unique_id.'" '.$fchecked.' '.$fdisabled.'/>';
                     $arm_html_cnt .= '';
                     
                     /*rpt_log changes for display pencil icon for all field*/
@@ -4828,15 +5253,15 @@ if (!class_exists('ARM_members_directory')) {
                     {
                         $arm_display_member_fields_label = !(empty($card_opts['display_member_fields_label'][$fieldMetaKey])) ? stripslashes_deep($card_opts['display_member_fields_label'][$fieldMetaKey]) : stripslashes_deep($fieldOpt['label']);
                         $arm_html_cnt .= '<span class="arm_display_member_fields_label ">';
-                        $arm_html_cnt .= '<input type="text"  value="'.stripslashes_deep($arm_display_member_fields_label).'" name="membership_card_template_options[display_member_fields_label]['.$fieldMetaKey.']" id="'.$fieldMetaKey.'_label" class="display_member_field_input" >';
+                        $arm_html_cnt .= '<input type="text"  value="'.stripslashes_deep($arm_display_member_fields_label).'" name="membership_card_template_options[display_member_fields_label]['.$fieldMetaKey.']" id="'.$fieldMetaKey.'_label_'.$card_type.'" class="display_member_field_input" >';
                         $arm_html_cnt .= '</span>';
                         $arm_html_cnt .= '<span class="arm_display_member_field_icons">';
-                        $arm_html_cnt .= '<span class="arm_display_member_field_icon edit_field" id="arm_edit_display_member_field" data-code="'.$fieldMetaKey.'_label" ></span>';
+                        $arm_html_cnt .= '<span class="arm_display_member_field_icon edit_field" id="arm_edit_display_member_field" data-code="'.$fieldMetaKey.'_label_'.$card_type.'" ></span>';
                         $arm_html_cnt .= '</span>';
                     }
                     else
                     {
-                        $arm_html_cnt .= '<label class="arm_display_members_fields_label" for="arm_display_member_field_edit_'.$fieldMetaKey.'_status"  >'.stripslashes_deep($fieldOpt['label']).'</label>';
+                        $arm_html_cnt .= '<label class="arm_display_members_fields_label" for="arm_display_member_field_edit_'.$fieldMetaKey.'_status'.$temp_unique_id.'"  >'.stripslashes_deep($fieldOpt['label']).'</label>';
                         $arm_html_cnt .= '<input type="hidden"  value="'.stripslashes_deep($fieldOpt['label']).'" name="membership_card_template_options[display_member_fields_label]['.$fieldMetaKey.']" id="'.$fieldMetaKey.'_label" class="display_member_field_input" >';
                     }
                     
@@ -4861,7 +5286,7 @@ if (!class_exists('ARM_members_directory')) {
                 }
             }
             $arm_html_cnt .= "</select>";
-            $arm_html_cnt .= "<div class='armclear' style='height: 1px;'></div>";
+            $arm_html_cnt .= "<div class='armclear arm_height_1'></div>";
             $arm_html_cnt .= "<span class='arm_temp_sub_plan_error' style='display:none; color: red;'>".__('Please select atleast one plan', 'ARMember')."</span>";
             $arm_html_cnt .= "<span class='arm_info_text arm_temp_directory_options'>(".__("Leave blank to display all plan's cards.", 'ARMember').")</span>";
             $arm_html_cnt .= "</div></div>";
@@ -4870,7 +5295,7 @@ if (!class_exists('ARM_members_directory')) {
             $arm_html_cnt .= "<div class='arm_opt_label'>".__('Custom Css','ARMember')."</div>";
             $arm_html_cnt .= "<div class='arm_opt_content_wrapper'>";
             $arm_html_cnt .= "<div class='arm_custom_css_wrapper'>";
-            $arm_html_cnt .= "<textarea class='arm_codemirror_field' name='membership_card_template_options[custom_css]' cols='10' rows='6' style='width: 500px;max-width: 500px;'>".$custom_css."</textarea>";
+            $arm_html_cnt .= "<textarea class='arm_codemirror_field arm_width_500 arm_max_width_500' name='membership_card_template_options[custom_css]' cols='10' rows='6'>".$custom_css."</textarea>";
             $arm_html_cnt .= "</div>";
             $arm_html_cnt .= "<div class='armclear'></div>";
             $arm_html_cnt .= "<div class='arm_temp_custom_class arm_temp_profile_options'>";
@@ -4903,6 +5328,7 @@ if (!class_exists('ARM_members_directory')) {
                         
                         $edit = $wpdb->update($ARMember->tbl_arm_member_templates, 
                             array(
+                                "arm_title" => !empty($_POST['arm_card_template_name']) ? $_POST['arm_card_template_name'] : '',
                                 "arm_slug" => $_POST["membership_card_template_options"]["arm_card"],
                                 "arm_options" => maybe_serialize($_POST["membership_card_template_options"]),
                             ), 
@@ -5048,7 +5474,7 @@ if (!class_exists('ARM_members_directory')) {
                                     foreach ($user_plans as $plan_id) {
                                         if(!empty( $user_info["arm_user_plan_" . $plan_id] )) {
                                             $plan_info = maybe_unserialize($user_info["arm_user_plan_" . $plan_id][0]);
-                                            $iframe_src =  MEMBERSHIP_VIEWS_URL."/arm_membership_card_template.php?arm_mcard_id=".$id."&plan_id=".$plan_id."&iframe_id=iframe_".$plan_id."_".$n;
+                                            $iframe_src =  ARM_HOME_URL."?arm_mcard_id=".$id."&plan_id=".$plan_id."&iframe_id=iframe_".$plan_id."_".$n."&is_display_card_data=1";
                                             $member_card_html .= '<iframe src="'.$iframe_src.'" data-no-lazy="1" style="display:none;" id="iframe_'.$plan_id.'_'.$n.'"></iframe>';
                                             $member_card_html .= $this->arm_get_membership_card_view($card_opts['arm_card'], $card_opts, $user_id, $user_info, $plan_info, '', true, "iframe_".$plan_id."_".$n, $display_avatar);
                                         }
@@ -5062,7 +5488,7 @@ if (!class_exists('ARM_members_directory')) {
             }
         }
 
-        function arm_get_membership_card_view($slug, $card_opts = '', $user_id = '', $user_info = '', $plan_info = '', $company_logo = '', $print = false, $frame_id = '', $display_avatar = 0, $card_background = '') {
+        function arm_get_membership_card_view($slug, $card_opts = '', $user_id = '', $user_info = '', $plan_info = '', $company_logo = '', $print = false, $frame_id = '', $display_avatar = 0, $card_background = '',$armpdf_status=0) {
             global $wpdb, $ARMember, $arm_global_settings,$arm_member_forms, $arm_mycred_feature, $arm_is_mycred_feature_active;
 
             $date_format = $arm_global_settings->arm_get_wp_date_format();
@@ -5076,14 +5502,35 @@ if (!class_exists('ARM_members_directory')) {
                 }
 
                 if($is_enable_gravatar == 0) {
-                    $company_logo = get_avatar($user_id, 60);
+                    $company_logo = get_avatar($user_id, 150);
+                    if(!empty($company_logo) && $armpdf_status=='1' && $slug == "membershipcard3"){
+                        $company_logo=str_replace("width='150'", "", $company_logo);
+                        $company_logo=str_replace(">", 'style="width: 100%;height: 100%;" >', $company_logo);
+                    }
+                    
                 } else {
                     if(""==get_the_author_meta('avatar', $user_id)){
                         $company_logo = esc_url( get_avatar_url( $user_id ) );
-                        $company_logo = "<img src='".$company_logo."' />";
+                        if($armpdf_status=='1' && !empty($company_logo) && $slug == "membershipcard2"){
+                              $company_logo = '<div style="width: 115px;height: 115px;background-image: url(\''.$company_logo.'\');background-position: center center;background-size: 100% 100%;background-repeat: no-repeat;border:2px solid #ffffff;overflow: hidden;border-radius: 50%;padding:1px;display:inline-block;">&nbsp;</div>';  
+                         }else if($armpdf_status=='1' && !empty($company_logo) && $slug == "membershipcard1"){
+                              $company_logo = "<img src='".$company_logo."' style='width:150px;'/>";
+                         }else if($armpdf_status=='1' && !empty($company_logo) && $slug == "membershipcard3"){
+                              $company_logo = "<img src='".$company_logo."' style='width:150px;'/>";
+                         }else{   
+                              $company_logo = "<img src='".$company_logo."'/>";
+                         }    
                     } else {
-                        $company_logo = get_the_author_meta('avatar', $user_id);    
-                        $company_logo = "<img src='".$company_logo."' />";
+                        $company_logo = get_the_author_meta('avatar', $user_id); 
+                        if($armpdf_status=='1' && !empty($company_logo) && $slug == "membershipcard2"){
+                              $company_logo = '<div style="width: 115px;height: 115px;background-image: url(\''.$company_logo.'\');background-position: center center;background-size: 100% 100%;background-repeat: no-repeat;border:2px solid #ffffff;overflow: hidden;border-radius: 50%;padding:1px;display:inline-block;">&nbsp;</div>';  
+                         }else if($armpdf_status=='1' && !empty($company_logo) && $slug == "membershipcard1"){
+                              $company_logo = "<img src='".$company_logo."' style='width:150px;'/>";
+                         }else if($armpdf_status=='1' && !empty($company_logo) && $slug == "membershipcard3"){
+                              $company_logo = "<img src='".$company_logo."' style='width:150px;'/>";
+                         }else{
+                            $company_logo = "<img src='".$company_logo."' />";
+                         }   
                     }    
                 }
                 
@@ -5091,25 +5538,62 @@ if (!class_exists('ARM_members_directory')) {
                 $card_opts["company_logo"] = isset($card_opts["company_logo"]) ? $card_opts["company_logo"] : '';
 
                 $company_logo = $card_opts["company_logo"];
+                
+                $card_comp_logo_style='';
+                if($armpdf_status=='1' && !empty($company_logo)){
+                    $armpdf_parsed = parse_url($company_logo);
+                    if (empty($armpdf_parsed['scheme'])) {
+                        $arm_pdf_protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === 0 ? 'https:' : 'http:';
+                        $company_logo = $arm_pdf_protocol . $company_logo;
+                    }
+                    if($slug == "membershipcard1"){
+                        $card_comp_logo_style='style="margin: 0 0 20px auto;width: 150px;"';
+                    }else if($slug == "membershipcard2"){
+                        $card_comp_logo_style='style="width: 115px;height: 115px;background-image: url(\''.$company_logo.'\');background-position: center center;background-size: 100% 100%;background-repeat: no-repeat;border:2px solid #ffffff;overflow: hidden;border-radius: 50%;padding:1px;display:inline-block;"';
+                    }else if ($slug == "membershipcard3") {
+                        $card_comp_logo_style='style="width: 100%;height: 100%;margin: auto;"';
+                    }
+                    
+                }
+
                 if(!empty($company_logo))
                 {
-                    $company_logo = "<img class='arm_membership_card_comp_logo' src='".$company_logo."' />";
+                    
+                    if($armpdf_status=='1' && !empty($company_logo) && $slug == "membershipcard2"){
+                        $company_logo = "<div class='arm_membership_card_comp_logo' ".$card_comp_logo_style.">&nbsp;</div>";    
+                    }else{    
+                        $company_logo = "<img class='arm_membership_card_comp_logo' ".$card_comp_logo_style." src='".$company_logo."' />";
+                    }    
                 }
             }
             
             $card_opts["card_background"] = isset($card_opts["card_background"]) ? $card_opts["card_background"] : '';
             $card_background = !empty($card_background) ? $card_background : $card_opts["card_background"];
-
+            
+            if($armpdf_status=='1' && !empty($card_background)){
+                $armpdf_bg_parsed = parse_url($card_background);
+                if (empty($armpdf_bg_parsed['scheme'])) {
+                    $arm_pdf_protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === 0 ? 'https:' : 'http:';
+                    $card_background = $arm_pdf_protocol . $card_background;
+                }
+            }        
             $card_width = isset($card_opts["card_width"]) ? $card_opts["card_width"] : '';
             $card_height = isset($card_opts["card_height"]) ? $card_opts["card_height"] : '';
-            $card_size_style = "";
+            $card_size_style = "border-radius:10px;";
+
             if($card_width != '') {
-                $card_size_style = "style='width: ".$card_width."; '";
+                $card_size_style .= "width: ".$card_width.";";
             }
-            $card_details_style = "";
+            $card_size_style = "style='".$card_size_style."'";
+            $card_details_style_temp = "";
+            if(empty($company_logo) && ($slug == "membershipcard1" || $slug == "membershipcard2" ))
+            {
+                $card_details_style_temp = "width: 100%;";
+            }    
             if($card_height != '') {
-                $card_details_style = "style='height:".$card_height."'";
+                $card_details_style_temp .= "height:".$card_height.";";
             }
+            $card_details_style = "style='".$card_details_style_temp."'";
             $card_title = !empty($user_info) ? ($user_info["first_name"][0] . " " . $user_info["last_name"][0]) : __("John Smith", "ARMember");
             $card_title = trim($card_title);
             
@@ -5164,11 +5648,10 @@ if (!class_exists('ARM_members_directory')) {
                 }
                 $bg_style = "";
                 if(''!=$card_background && $slug == "membershipcard1"){
-                    
-                    $bg_style = "style='background:url(\"".$card_background."\") no-repeat; background-position:center; background-color: #fff;'";
+                    $bg_style = 'style="background:url(\''.$card_background.'\') no-repeat; background-position:center;background-color: #fff;"';
                 } 
                 if(''!=$card_background && $slug == "membershipcard2"){
-                    $bg_style = "style='background:url(\"".$card_background."\") no-repeat; background-position:center;'";
+                    $bg_style = 'style="background:url(\''.$card_background.'\') no-repeat; background-position:center;"';
                 }
                 $card_html .= "<div class='arm_card_content' ".$bg_style.">";
 
@@ -5176,8 +5659,17 @@ if (!class_exists('ARM_members_directory')) {
                 
                 if(!empty($company_logo)) { 
                     $card_logo_style = "";
+                    if($slug == "membershipcard1"){
+                        $card_logo_style = "style='padding-top:20px;'";
+                    }
                     if(''!=$card_background) {
                         $card_logo_style = "style='background-color:unset;'";
+                        if($slug == "membershipcard1"){
+                            $card_logo_style = "style='background-color:unset;padding-top:20px;'";
+                        }
+                    }
+                    if($slug == "membershipcard2" && $armpdf_status=='1'){
+                        $card_logo_style = "style='background-color:unset;padding:40px 40px 0 0;border:none;margin:0;border-radius: 0;overflow: unset;'";
                     }
                     $card_html .= "<div class='arm_card_left_logo arm_card_logo' ".$card_logo_style.">";
                     //$card_html .= "<img src='".$company_logo."'>";
@@ -5185,7 +5677,7 @@ if (!class_exists('ARM_members_directory')) {
                     $card_html .= "</div>";
                 }
                 else {
-                    $card_html .= "<style type='text/css'>.membershipcard1.arm_card_".$card_opts['arm_mcard_id']." .arm_card_details {width: 100%;}.membershipcard2 .arm_card_details{width:100%;}</style>";
+                    
                     $card_width_company_logo_empty = " arm_card_width_company_logo_empty ";
                 }
 
@@ -5208,20 +5700,20 @@ if (!class_exists('ARM_members_directory')) {
                 } 
                 if(isset($card_opts['show_joining']) && $card_opts['show_joining']==1) {
                     $card_html .= "<li>";
-                    $card_html .= "<span class='arm_card_label'>".$card_opts['join_date_label']."</span>";
-                    $card_html .= "<span class='arm_card_value'>".$user_join_date."</span>";
+                    $card_html .= "<div class='arm_card_label'>".$card_opts['join_date_label']."</div>";
+                    $card_html .= "<div class='arm_card_value'>".$user_join_date."</div>";
                     $card_html .= "</li>";
                 } 
                 if(isset($card_opts['expiry_date']) && $card_opts['expiry_date']==1) {
                     $card_html .= "<li>";
-                    $card_html .= "<span class='arm_card_label'>".$card_opts['expiry_date_label']."</span>";
-                    $card_html .= "<span class='arm_card_value'>".$plan_expiry_date."</span>";
+                    $card_html .= "<div class='arm_card_label'>".$card_opts['expiry_date_label']."</div>";
+                    $card_html .= "<div class='arm_card_value'>".$plan_expiry_date."</div>";
                     $card_html .= "</li>";
                 } 
                 if(isset($card_opts['user_id']) && $card_opts['user_id']==1) {
                     $card_html .= "<li>";
-                    $card_html .= "<span class='arm_card_label'>".$card_opts['user_id_label']."</span>";
-                    $card_html .= "<span class='arm_card_value'>".$user_id."</span>";
+                    $card_html .= "<div class='arm_card_label'>".$card_opts['user_id_label']."</div>";
+                    $card_html .= "<div class='arm_card_value'>".$user_id."</div>";
                     $card_html .= "</li>";
                 } 
                 
@@ -5232,54 +5724,54 @@ if (!class_exists('ARM_members_directory')) {
                         if(isset($card_opts['display_member_fields'][$key]) && $key == $card_opts['display_member_fields'][$key]) {
                             if( $key=='arm_show_joining_date' ) {
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$join_date_label."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$user_join_date."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$join_date_label."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$user_join_date."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='arm_membership_card_user_id' ) {
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$user_id_label."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$user_id."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$user_id_label."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$user_id."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='arm_membership_plan' ) {
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$plan_label."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$plan_name."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$plan_label."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$plan_name."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='arm_membership_plan_expiry_date' ) {
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$plan_expiry_label."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$plan_expiry_date."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$plan_expiry_label."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$plan_expiry_date."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='user_email' ) {
                                 $user_meta_value = (isset($user_detail->user_email) && ''!=$user_detail->user_email) ? $user_detail->user_email : '';
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$user_email_label."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$user_meta_value."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$user_email_label."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$user_meta_value."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='display_name' ) {
                                 $user_meta_value = (isset($user_detail->display_name) && ''!=$user_detail->display_name) ? $user_detail->display_name : '';
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$display_field."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$user_meta_value."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$display_field."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$user_meta_value."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='user_login' ) {
                                 $user_meta_value = (isset($user_detail->user_login) && ''!=$user_detail->user_login) ? $user_detail->user_login : '';
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$display_field."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$user_meta_value."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$display_field."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$user_meta_value."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='user_url' ) {
                                 $user_meta_value = (isset($user_detail->user_url) && ''!=$user_detail->user_url) ? $user_detail->user_url : '';
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$display_field."</span>";
-                                $card_html .= "<span class='arm_card_value'><a href='{$user_meta_value}' target='_blank'>".$user_meta_value."</a></span>";
+                                $card_html .= "<div class='arm_card_label'>".$display_field."</div>";
+                                $card_html .= "<div class='arm_card_value'><a href='{$user_meta_value}' target='_blank'>".$user_meta_value."</a></div>";
                                 $card_html .= "</li>";
                             } else if( $key=='arm_membership_mycred_point' ) {
                                 if($arm_is_mycred_feature_active == 1) {
                                     $mycred_points = $arm_mycred_feature->arm_get_mycred_points_by_user($user_id);
                                     $card_html .= "<li>";
-                                    $card_html .= "<span class='arm_card_label'>".$mycred_label."</span>";
-                                    $card_html .= "<span class='arm_card_value'>".$mycred_points."</span>";
+                                    $card_html .= "<div class='arm_card_label'>".$mycred_label."</div>";
+                                    $card_html .= "<div class='arm_card_value'>".$mycred_points."</div>";
                                     $card_html .= "</li>";
                                 }
                             } else {
@@ -5320,13 +5812,16 @@ if (!class_exists('ARM_members_directory')) {
                                         $arm_meta_val = '<div class="arm_old_uploaded_file"><a href="' . $user_meta_value . '" target="__blank"><img alt="" src="' . ($fileUrl) . '" width="100px"/></a></div>';
                                         
                                     }
-                                } else if($arm_field_type=='date'){
+                                } 
+                                /*
+                                else if($arm_field_type=='date'){
                                     if ($user_meta_value != '') {
                                         $date_time_format = $arm_global_settings->arm_get_wp_date_format();
                                         $arm_meta_val = date_i18n($date_time_format, strtotime($user_meta_value));
                                     }    
 
-                                } else {
+                                }*/
+                                else {
                                     if ($key == "country") {
                                         $user_meta_value = get_user_meta($user_id, "country", true);
                                     }
@@ -5339,8 +5834,8 @@ if (!class_exists('ARM_members_directory')) {
                                 }
 
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$display_field."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$arm_meta_val."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$display_field."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$arm_meta_val."</div>";
                                 $card_html .= "</li>";
                             }
                                
@@ -5351,6 +5846,10 @@ if (!class_exists('ARM_members_directory')) {
                 $card_html .= "</div>";
                 $card_html .="</div>";
                 if($print) {
+                    $arm_pdf_icon_color=(!empty($card_opts["custom"]["title_color"]) ? $card_opts["custom"]["title_color"] : "#000000");
+                    $card_pdf_icon_html='';
+                    $card_pdf_icon_html = apply_filters('arm_membership_card_details_outside',$card_pdf_icon_html,$user_id,$card_opts['arm_mcard_id'],$arm_pdf_icon_color,$frame_id,$plan_info);
+                    $card_html .=$card_pdf_icon_html;
                     $card_html .= "<svg class='arm_card_print_btn' data-id='".$frame_id."' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' id='Layer_1' x='0px' y='0px' width='29px' height='30px' viewBox='0 0 29 30' enable-background='new 0 0 29 30' xml:space='preserve'><g><path xmlns='http://www.w3.org/2000/svg' fill='".(!empty($card_opts["custom"]["title_color"]) ? $card_opts["custom"]["title_color"] : "#000000")."' fill-rule='evenodd' clip-rule='evenodd' d='M29,24h-1h-4v5l0,0v1l0,0h-1H6H5l0,0v-1l0,0v-5H1H0l0,0v-1l0,0V10h1v13h4v-5l0,0   v-1l0,0h1h17h1l0,0v1l0,0v5h4V10h1v13l0,0V24L29,24z M23,18H6v5v1v5h17V18z M19,21h-9v-1h9V21z M19,24h-9v-1h9V24z M19,27h-9v-1h9   V27z M0,9h5V1l0,0V0l0,0h1h17h1l0,0v1l0,0v8h5v1H0V9z M6,9h17V1H6V9z'/></g></svg>";
                 }
                 $card_html .="</div>";
@@ -5360,7 +5859,7 @@ if (!class_exists('ARM_members_directory')) {
                 $card_html .= "<div class='arm_card_background arm_membership_card_template arm_membership_card_template_wrapper ".$slug." arm_card_".$card_opts['arm_mcard_id']."' ".$card_size_style.">";
                 $bg_style = "";
                 if(''!=$card_background){
-                    $bg_style = "style='background:url(\"".$card_background."\") no-repeat; background-position:center; background-color: #fff;'";
+                    $bg_style = 'style="background:url(\''.$card_background.'\') no-repeat; background-position:center;background-color: #fff;"';
                 }
                 $card_html .= "<div class='arm_card_content' ".$bg_style.">";
 
@@ -5386,26 +5885,26 @@ if (!class_exists('ARM_members_directory')) {
 
                 if(isset($card_opts['plan_label']) && $card_opts['plan_label']!='') {
                     $card_html .= "<li>";
-                    $card_html .= "<span class='arm_card_label'>".$card_opts['plan_label']."</span>";
-                    $card_html .= "<span class='arm_card_value'>".$plan_name."</span>";
+                    $card_html .= "<div class='arm_card_label'>".$card_opts['plan_label']."</div>";
+                    $card_html .= "<div class='arm_card_value'>".$plan_name."</div>";
                     $card_html .= "</li>";
                 } 
                 if(isset($card_opts['show_joining']) && $card_opts['show_joining']==1) {
                     $card_html .= "<li>";
-                    $card_html .= "<span class='arm_card_label'>".$card_opts['join_date_label']."</span>";
-                    $card_html .= "<span class='arm_card_value'>".$user_join_date."</span>";
+                    $card_html .= "<div class='arm_card_label'>".$card_opts['join_date_label']."</div>";
+                    $card_html .= "<div class='arm_card_value'>".$user_join_date."</div>";
                     $card_html .= "</li>";
                 } 
                 if(isset($card_opts['expiry_date']) && $card_opts['expiry_date']==1) {
                     $card_html .= "<li>";
-                    $card_html .= "<span class='arm_card_label'>".$card_opts['expiry_date_label']."</span>";
-                    $card_html .= "<span class='arm_card_value'>".$plan_expiry_date."</span>";
+                    $card_html .= "<div class='arm_card_label'>".$card_opts['expiry_date_label']."</div>";
+                    $card_html .= "<div class='arm_card_value'>".$plan_expiry_date."</div>";
                     $card_html .= "</li>";
                 } 
                 if(isset($card_opts['user_id']) && $card_opts['user_id']==1) {
                     $card_html .= "<li>";
-                    $card_html .= "<span class='arm_card_label'>".$card_opts['user_id_label']."</span>";
-                    $card_html .= "<span class='arm_card_value'>".$user_id."</span>";
+                    $card_html .= "<div class='arm_card_label'>".$card_opts['user_id_label']."</div>";
+                    $card_html .= "<div class='arm_card_value'>".$user_id."</div>";
                     $card_html .= "</li>";
                 }
 
@@ -5416,54 +5915,54 @@ if (!class_exists('ARM_members_directory')) {
                         if(isset($card_opts['display_member_fields'][$key]) && $key == $card_opts['display_member_fields'][$key]) {
                             if( $key=='arm_show_joining_date' ) {
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$join_date_label."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$user_join_date."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$join_date_label."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$user_join_date."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='arm_membership_card_user_id' ) {
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$user_id_label."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$user_id."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$user_id_label."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$user_id."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='arm_membership_plan' ) {
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$plan_label."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$plan_name."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$plan_label."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$plan_name."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='arm_membership_plan_expiry_date' ) {
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$plan_expiry_label."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$plan_expiry_date."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$plan_expiry_label."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$plan_expiry_date."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='user_email' ) {
                                 $arm_user_email = isset($user_detail->user_email) ? $user_detail->user_email : '';
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$user_email_label."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$arm_user_email."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$user_email_label."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$arm_user_email."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='display_name' ) {
                                 $user_display_name = isset($user_detail->display_name) ? $user_detail->display_name : '';
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$display_field."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$user_display_name."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$display_field."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$user_display_name."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='user_login' ) {
                                 $user_meta_value = (isset($user_detail->user_login) && ''!=$user_detail->user_login) ? $user_detail->user_login : '';
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$display_field."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$user_meta_value."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$display_field."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$user_meta_value."</div>";
                                 $card_html .= "</li>";
                             } else if( $key=='user_url' ) {
                                 $user_meta_value = (isset($user_detail->user_url) && ''!=$user_detail->user_url) ? $user_detail->user_url : '';
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$display_field."</span>";
-                                $card_html .= "<span class='arm_card_value'><a href='{$user_meta_value}' target='_blank'>".$user_meta_value."</a></span>";
+                                $card_html .= "<div class='arm_card_label'>".$display_field."</div>";
+                                $card_html .= "<div class='arm_card_value'><a href='{$user_meta_value}' target='_blank'>".$user_meta_value."</a></div>";
                                 $card_html .= "</li>";
                             } else if( $key=='arm_membership_mycred_point' ) {
                                 if($arm_is_mycred_feature_active == 1) {
                                     $mycred_points = $arm_mycred_feature->arm_get_mycred_points_by_user($user_id);
                                     $card_html .= "<li>";
-                                    $card_html .= "<span class='arm_card_label'>".$mycred_label."</span>";
-                                    $card_html .= "<span class='arm_card_value'>".$mycred_points."</span>";
+                                    $card_html .= "<div class='arm_card_label'>".$mycred_label."</div>";
+                                    $card_html .= "<div class='arm_card_value'>".$mycred_points."</div>";
                                     $card_html .= "</li>";    
                                 }
                             } else {
@@ -5503,13 +6002,15 @@ if (!class_exists('ARM_members_directory')) {
                                         $arm_meta_val = '<div class="arm_old_uploaded_file"><a href="' . $user_meta_value . '" target="__blank"><img alt="" src="' . ($fileUrl) . '" width="100px"/></a></div>';
                                         
                                     }
-                                } else if($arm_field_type=='date'){
+                                }
+                                /* else if($arm_field_type=='date'){
                                     if ($user_meta_value != '') {
                                         $date_time_format = $arm_global_settings->arm_get_wp_date_format();
                                         $arm_meta_val = date_i18n($date_time_format, strtotime($user_meta_value));
                                     }    
 
-                                } else {
+                                } */
+                                else {
                                     if(is_serialized($user_meta_value)) {
                                         $unserialize_val = maybe_unserialize($user_meta_value);
                                         $arm_meta_val = trim(implode(", ", $unserialize_val), ", ");
@@ -5518,8 +6019,8 @@ if (!class_exists('ARM_members_directory')) {
                                     }
                                 }
                                 $card_html .= "<li>";
-                                $card_html .= "<span class='arm_card_label'>".$display_field."</span>";
-                                $card_html .= "<span class='arm_card_value'>".$arm_meta_val."</span>";
+                                $card_html .= "<div class='arm_card_label'>".$display_field."</div>";
+                                $card_html .= "<div class='arm_card_value'>".$arm_meta_val."</div>";
                                 $card_html .= "</li>";
                             }
                                
@@ -5532,6 +6033,10 @@ if (!class_exists('ARM_members_directory')) {
 
                 $card_html .= "</div>"; /*arm_card_content over*/
                 if($print) {
+                    $arm_pdf_icon_color=(!empty($card_opts["custom"]["title_color"]) ? $card_opts["custom"]["title_color"] : "#000000");
+                    $card_pdf_icon_html='';
+                    $card_pdf_icon_html = apply_filters('arm_membership_card_details_outside',$card_pdf_icon_html,$user_id,$card_opts['arm_mcard_id'],$arm_pdf_icon_color,$frame_id,$plan_info);
+                    $card_html .=$card_pdf_icon_html;
                     $card_html .= "<svg class='arm_card_print_btn' data-id='".$frame_id."' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' version='1.1' id='Layer_1' x='0px' y='0px' width='29px' height='30px' viewBox='0 0 29 30' enable-background='new 0 0 29 30' xml:space='preserve'><g><path xmlns='http://www.w3.org/2000/svg' fill='".(!empty($card_opts["custom"]["title_color"]) ? $card_opts["custom"]["title_color"] : "#000000")."' fill-rule='evenodd' clip-rule='evenodd' d='M29,24h-1h-4v5l0,0v1l0,0h-1H6H5l0,0v-1l0,0v-5H1H0l0,0v-1l0,0V10h1v13h4v-5l0,0   v-1l0,0h1h17h1l0,0v1l0,0v5h4V10h1v13l0,0V24L29,24z M23,18H6v5v1v5h17V18z M19,21h-9v-1h9V21z M19,24h-9v-1h9V24z M19,27h-9v-1h9   V27z M0,9h5V1l0,0V0l0,0h1h17h1l0,0v1l0,0v8h5v1H0V9z M6,9h17V1H6V9z'/></g></svg>";
                 }
                 $card_html .= "</div>";
@@ -5546,6 +6051,10 @@ if (!class_exists('ARM_members_directory')) {
             $arm_display_member_ProfileFields = $this->arm_template_profile_fields();
                                                 
             $arm_display_member_fields = array(
+                                'arm_display_user_id' => array(
+                                                       'type' => 'text',
+                                                       'label' => __('User ID', 'ARMember'),
+                                                       'meta_key' => 'arm_display_user_id'),
                                 'arm_show_joining_date' => array(
                                                        'type' => 'text',
                                                        'label' => __('Member Since', 'ARMember'),
@@ -5599,6 +6108,7 @@ if (!class_exists('ARM_members_directory')) {
         {
             global $ARMember, $arm_subscription_plans,$arm_global_settings;
             $fileContent = '';
+            $join_date_content = "";
             $arm_display_member_field = isset($tempopt['display_member_fields']) ? $tempopt['display_member_fields'] : array();
             $arm_display_member_field_label = isset($tempopt['display_member_fields_label']) ? $tempopt['display_member_fields_label'] : array();
             $arm_show_joining_date = isset($arm_display_member_field['arm_show_joining_date']) ? $arm_display_member_field['arm_show_joining_date']: '';
@@ -5638,20 +6148,35 @@ if (!class_exists('ARM_members_directory')) {
 
                     if (in_array($fieldMetaKey, $arm_display_member_field)) {
 
-                        $fileContent .= '<li>';
+                        if($fieldMetaKey == "arm_show_joining_date") {
+                            $join_date_content .= '<div class="arm_member_since_detail_wrapper">';
+                        } else {
+                            $fileContent .= '<li>';
+                        }
                         if($arm_show_hide_member_details_label==1)
                         {
-                            $fileContent .= '<div class="arm_member_field_label">';
-                            $fileContent .= stripslashes_deep($arm_display_field_label);
-                            $fileContent .= '</div>';
+                            if($fieldMetaKey == "arm_show_joining_date") {
+                                $join_date_content .= '<span>';
+                                $join_date_content .= stripslashes_deep($arm_display_field_label);
+                            } else {
+                                $fileContent .= '<div class="arm_member_field_label">';
+                                $fileContent .= stripslashes_deep($arm_display_field_label);
+                                $fileContent .= '</div>';
+                            }
                         }
                         
-                        $fileContent .= '<div class="arm_member_field_value">';
-
+                        if($fieldMetaKey != "arm_show_joining_date") {
+                            $fileContent .= '<div class="arm_member_field_value">';    
+                        } 
+                        
                         if(empty($tempopt['show_joining']) && $fieldMetaKey=='arm_show_joining_date')
                         {
                             //$fileContent .= '<div class="arm_last_active_text">'. $arm_member_since_label . ' ' .$user['user_join_date'].'</div>';
-                            $fileContent .= $user['user_join_date'];
+                            if($fieldMetaKey == "arm_show_joining_date") {
+                                $join_date_content .= " ".$user['user_join_date'];
+                            } else {
+                                $fileContent .= $user['user_join_date'];
+                            }
                         }
                         if($fieldMetaKey=='arm_membership_plan' || $fieldMetaKey=='arm_membership_plan_expiry_date')
                         {
@@ -5696,11 +6221,21 @@ if (!class_exists('ARM_members_directory')) {
                             {
                                 $fileContent .= $arm_expire_plan;
                             }
+                        }else if($fieldMetaKey=='arm_display_user_id')
+                        {
+                            $fileContent .= $user['ID'];
                         }
                         
                         $fileContent .= '[arm_usermeta id='.$user['ID'].' meta='.$fieldMetaKey.']';
-                        $fileContent .= '</div>';
-                        $fileContent .= '</li>';
+                        
+                        if($fieldMetaKey == "arm_show_joining_date") {
+                            $join_date_content .= '</span>';
+                            $join_date_content .= '</div>';
+                        } else {
+                            $fileContent .= '</div>';
+                            $fileContent .= '</li>';
+                        }
+
                     }
                 }
                 $fileContent .= '</ul>';
@@ -5709,7 +6244,8 @@ if (!class_exists('ARM_members_directory')) {
                 $fileContent .= '<div class="armclear"></div>';
             }
 
-            return $fileContent;
+            $return_content = array("member_detail_content"=>$fileContent, "member_joining_date_content"=>$join_date_content);
+            return $return_content;
         }
 
         function arm_get_member_country($search = "")

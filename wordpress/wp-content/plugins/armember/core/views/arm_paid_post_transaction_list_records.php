@@ -15,6 +15,7 @@ $default_hide = array(
     'arm_user_fname' => 'First Name',
     'arm_user_lname' => 'Last Name',
     'arm_user_id' => 'User',
+    'arm_user_email' => 'User Email',
     'arm_plan_id' => 'Membership',
     'arm_payment_gateway' => 'Gateway',
     'arm_payment_type' => 'Payment Type',
@@ -25,7 +26,7 @@ $default_hide = array(
     'arm_cc_number' => 'Credit Card Number',
 );
 $user_id = get_current_user_id();
-$transaction_show_hide_column = maybe_unserialize(get_user_meta($user_id, 'arm_transaction_hide_show_columns', true));
+$transaction_show_hide_column = maybe_unserialize(get_user_meta($user_id, 'arm_transaction_paid_post_hide_show_columns', true));
 
 $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get_option('date_format'));
 
@@ -114,11 +115,11 @@ if(isset($_POST["arm_export_pphistory"]) && $_POST["arm_export_pphistory"] == 1)
 
     $search_ = "";
     if ($sSearch != '') {
-        $search_ = " AND (`arm_payment_history_log`.`arm_transaction_id` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_payer_email` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_created_date` LIKE '%{$sSearch}%' ) ";
+        $search_ = " AND (`arm_payment_history_log`.`arm_transaction_id` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_payer_email` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_created_date` LIKE '%{$sSearch}%' OR `arm_user_email` LIKE '%{$sSearch}%' ) ";
     }
 
     $orderby = "ORDER BY `arm_payment_history_log`.`arm_invoice_id` DESC";
-    $ctquery = "SELECT pt.arm_log_id,pt.arm_invoice_id,pt.arm_user_id,pt.arm_first_name,pt.arm_last_name,pt.arm_plan_id,pt.arm_payer_email,pt.arm_transaction_id,pt.arm_amount,pt.arm_currency,pt.arm_is_trial,pt.arm_payment_gateway,pt.arm_payment_mode,pt.arm_transaction_status,pt.arm_created_date,pt.arm_payment_type,pt.arm_extra_vars,sp.arm_subscription_plan_name,wpu.user_login as arm_user_login,pt.arm_display_log as arm_display_log,pt.arm_is_post_payment as arm_is_post_payment FROM `" . $ARMember->tbl_arm_payment_log . "` pt LEFT JOIN `" . $ARMember->tbl_arm_subscription_plans . "` sp ON pt.arm_plan_id = sp.arm_subscription_plan_id LEFT JOIN `" . $wpdb->users . "` wpu ON pt.arm_user_id = wpu.ID " . $pt_where;
+    $ctquery = "SELECT pt.arm_log_id,pt.arm_invoice_id,pt.arm_user_id,pt.arm_first_name,pt.arm_last_name,pt.arm_plan_id,pt.arm_payer_email,pt.arm_transaction_id,pt.arm_amount,pt.arm_currency,pt.arm_is_trial,pt.arm_payment_gateway,pt.arm_payment_mode,pt.arm_transaction_status,pt.arm_created_date,pt.arm_payment_type,pt.arm_extra_vars,sp.arm_subscription_plan_name,wpu.user_login as arm_user_login, wpu.user_email as arm_user_email, pt.arm_display_log as arm_display_log,pt.arm_is_post_payment as arm_is_post_payment FROM `" . $ARMember->tbl_arm_payment_log . "` pt LEFT JOIN `" . $ARMember->tbl_arm_subscription_plans . "` sp ON pt.arm_plan_id = sp.arm_subscription_plan_id LEFT JOIN `" . $wpdb->users . "` wpu ON pt.arm_user_id = wpu.ID " . $pt_where;
     $ptquery = "{$ctquery}";
         
     $payment_grid_query = "SELECT * FROM (" . $ptquery . ") AS arm_payment_history_log {$where_plog} {$search_} {$orderby}";
@@ -132,6 +133,7 @@ if(isset($_POST["arm_export_pphistory"]) && $_POST["arm_export_pphistory"] == 1)
             "First_Name" => '',
             "Last_Name" => '',
             "User" => '',
+            "User Email" => '',
             "Membership" => '',
             "Gateway" => '',
             "Payment_Type" => '',
@@ -166,6 +168,7 @@ if(isset($_POST["arm_export_pphistory"]) && $_POST["arm_export_pphistory"] == 1)
             $tmp["First_Name"] = $row["arm_first_name"];
             $tmp["Last_Name"] = $row["arm_last_name"];
             $tmp["User"] = $row["arm_user_login"];
+            $tmp["User Email"] = $row["arm_user_email"];
             $tmp["Membership"] = $row["arm_subscription_plan_name"];
             $tmp["Gateway"] = $row["arm_payment_gateway"] == "" ? __('Manual', 'ARMember') : $arm_payment_gateways->arm_gateway_name_by_key($row["arm_payment_gateway"]);
             $tmp["Payment_Type"] = "";
@@ -347,6 +350,7 @@ if(isset($_POST["arm_export_pphistory"]) && $_POST["arm_export_pphistory"] == 1)
                 });
             },
             "fnDrawCallback": function () {
+                arm_show_data();
                 jQuery('#paid_post_transactions_list_form .arm_loading_grid').hide();
                 jQuery(".cb-select-all-th").removeClass('sorting_asc');
                 jQuery("#cb-select-all-1").prop("checked", false);
@@ -423,8 +427,8 @@ if(isset($_POST["arm_export_pphistory"]) && $_POST["arm_export_pphistory"] == 1)
     <div class="arm_datatable_filters_options">
         <div class='sltstandard'>
             <input type='hidden' id='arm_transaction_bulk_action1' name="action1" value="-1" />
-            <dl class="arm_selectbox column_level_dd">
-                <dt style="width: 120px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+            <dl class="arm_selectbox column_level_dd arm_width_160">
+                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                 <dd>
                     <ul data-id="arm_transaction_bulk_action1">
                         <li data-label="<?php _e('Bulk Actions', 'ARMember'); ?>" data-value="-1"><?php _e('Bulk Actions', 'ARMember'); ?></li>
@@ -441,8 +445,8 @@ if(isset($_POST["arm_export_pphistory"]) && $_POST["arm_export_pphistory"] == 1)
         <div class="arm_datatable_filters_options">
             <div class='sltstandard'>
                 <input type='hidden' id='arm_transaction_bulk_action1' name="action1" value="-1" />
-                <dl class="arm_selectbox column_level_dd">
-                    <dt style="width: 120px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                <dl class="arm_selectbox column_level_dd arm_width_160">
+                    <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                     <dd>
                         <ul data-id="arm_transaction_bulk_action1">
                             <li data-label="<?php _e('Bulk Actions', 'ARMember'); ?>" data-value="-1"><?php _e('Bulk Actions', 'ARMember'); ?></li>
@@ -463,13 +467,12 @@ if(isset($_POST["arm_export_pphistory"]) && $_POST["arm_export_pphistory"] == 1)
                 <?php if (!empty($payment_gateways)) : ?>
                     <!--./====================Begin Filter By Payment Gateway Box====================/.-->
                     <div class="arm_datatable_filter_item arm_filter_pp_gateway_label">
-                        <span><?php _e('Gateway', 'ARMember') ?>:</span>
                         <input type="hidden" id="arm_filter_pp_gateway" class="arm_filter_pp_gateway" value="<?php echo $filter_gateway; ?>" />
-                        <dl class="arm_selectbox">
-                            <dt style="width: 110px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                        <dl class="arm_selectbox arm_width_160">
+                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                             <dd>
                                 <ul data-id="arm_filter_pp_gateway">
-                                    <li data-label="<?php _e('All', 'ARMember'); ?>" data-value="0"><?php _e('All', 'ARMember'); ?></li>
+                                    <li data-label="<?php _e('Gateway', 'ARMember'); ?>" data-value="0"><?php _e('Gateway', 'ARMember'); ?></li>
                                     <li data-label="<?php _e('Manual', 'ARMember'); ?>" data-value="<?php _e('manual', 'ARMember'); ?>"><?php _e('Manual', 'ARMember'); ?></li>
                                     <?php foreach ($payment_gateways as $key => $pg): ?>
                                         <li data-label="<?php echo $pg['gateway_name']; ?>" data-value="<?php echo $key; ?>"><?php echo $pg['gateway_name']; ?></li>                                                                                
@@ -482,13 +485,12 @@ if(isset($_POST["arm_export_pphistory"]) && $_POST["arm_export_pphistory"] == 1)
                 <?php endif; ?>
                 <!--./====================Begin Filter By Payment Type Box====================/.-->
                 <div class="arm_datatable_filter_item arm_filter_pptype_label">
-                    <span><?php _e('Payment Type', 'ARMember') ?>:</span>
                     <input type="hidden" id="arm_filter_pptype" class="arm_filter_pptype" value="<?php echo $filter_ptype; ?>" />
-                    <dl class="arm_selectbox">
-                        <dt style="min-width:60px; width: 75px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                    <dl class="arm_selectbox arm_width_160 arm_min_width_60">
+                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                         <dd>
                             <ul data-id="arm_filter_pptype">
-                                <li data-label="<?php _e('All', 'ARMember'); ?>" data-value="0"><?php _e('All', 'ARMember'); ?></li>
+                                <li data-label="<?php _e('Payment Type', 'ARMember'); ?>" data-value="0"><?php _e('Payment Type', 'ARMember'); ?></li>
                                 <li data-label="<?php _e('One Time', 'ARMember'); ?>" data-value="one_time"><?php _e('One Time', 'ARMember'); ?></li>
                                 <li data-label="<?php _e('Recurring', 'ARMember'); ?>" data-value="subscription"><?php _e('Recurring', 'ARMember'); ?></li>
                             </ul>
@@ -498,13 +500,12 @@ if(isset($_POST["arm_export_pphistory"]) && $_POST["arm_export_pphistory"] == 1)
                 <!--./====================End Filter By Payment Type Box====================/.-->
                 <!--./====================Begin Filter By Payment Mode Box====================/.-->
                 <div class="arm_datatable_filter_item arm_filter_ppmode_label">
-                    <span><?php _e('Subscription', 'ARMember') ?>:</span>
                     <input type="hidden" id="arm_filter_ppmode" class="arm_filter_ppmode" value="<?php echo $filter_pmode; ?>" />
-                    <dl class="arm_selectbox">
-                        <dt style="min-width:80px; width: 80px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                    <dl class="arm_selectbox arm_width_160 arm_min_width_80">
+                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                         <dd>
                             <ul data-id="arm_filter_ppmode">
-                                <li data-label="<?php _e('All', 'ARMember'); ?>" data-value="0"><?php _e('All', 'ARMember'); ?></li>
+                                <li data-label="<?php _e('Subscription', 'ARMember'); ?>" data-value="0"><?php _e('Subscription', 'ARMember'); ?></li>
                                 <li data-label="<?php _e('Automatic Subscription', 'ARMember'); ?>" data-value="auto_debit_subscription"><?php _e('Automatic Subscription', 'ARMember'); ?></li>
                                 <li data-label="<?php _e('Semi Automatic Subscription', 'ARMember'); ?>" data-value="manual_subscription"><?php _e('Semi Automatic Subscription', 'ARMember'); ?></li>
                             </ul>
@@ -514,13 +515,12 @@ if(isset($_POST["arm_export_pphistory"]) && $_POST["arm_export_pphistory"] == 1)
                 <!--./====================End Filter By Payment Mode Box====================/.-->
                 <!--./====================Begin Filter By Payment Status Box====================/.-->
                 <div class="arm_datatable_filter_item arm_filter_ppstatus_label">
-                    <span><?php _e('Status', 'ARMember') ?>:</span>
                     <input type="hidden" id="arm_filter_ppstatus" class="arm_filter_ppstatus" value="<?php echo $filter_pstatus; ?>" />
-                    <dl class="arm_selectbox">
-                        <dt style="min-width:60px; width: 75px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                    <dl class="arm_selectbox arm_width_160 arm_min_width_60">
+                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                         <dd>
                             <ul data-id="arm_filter_ppstatus">
-                                <li data-label="<?php _e('All', 'ARMember'); ?>" data-value="0"><?php _e('All', 'ARMember'); ?></li>
+                                <li data-label="<?php _e('Status', 'ARMember'); ?>" data-value="0"><?php _e('Status', 'ARMember'); ?></li>
                                 <li data-label="<?php _e('Success', 'ARMember'); ?>" data-value="success"><?php _e('Success', 'ARMember'); ?></li>
                                 <li data-label="<?php _e('Pending', 'ARMember'); ?>" data-value="pending"><?php _e('Pending', 'ARMember'); ?></li>
                                 <li data-label="<?php _e('Cancelled', 'ARMember'); ?>" data-value="canceled"><?php _e('Cancelled', 'ARMember'); ?></li>
@@ -534,40 +534,41 @@ if(isset($_POST["arm_export_pphistory"]) && $_POST["arm_export_pphistory"] == 1)
             </div>
             <div>
                 <!--./====================Begin Filter By Date====================/.-->
-                <div class="arm_datatable_filter_item arm_filter_ppstatus_label" style="margin-left: 0;">
+                <div class="arm_datatable_filter_item arm_filter_ppstatus_label arm_margin_left_0" >
                     <input type="text" id="arm_filter_ppstart_date"  placeholder="<?php _e('Start Date', 'ARMember'); ?>" data-date_format="<?php echo $arm_common_date_format; ?>" />
                 </div>
                 <div class="arm_datatable_filter_item arm_filter_ppstatus_label">
                     <input type="text" id="arm_filter_ppend_date" placeholder="<?php _e('End Date', 'ARMember'); ?>" data-date_format="<?php echo $arm_common_date_format; ?>" />
                 </div>
                 <!--./====================End Begin Filter By Date====================/.-->
-            </div>
-            <div class="arm_dt_filter_block arm_dt_filter_submit arm_payment_history_filter_submit">
-                <input type="button" class="armemailaddbtn" id="arm_paid_post_payment_grid_filter_btn" value="<?php _e('Filter', 'ARMember'); ?>" onClick="arm_load_paid_post_trasaction_list_filtered_grid()"/>
-                <input type="button" class="armemailaddbtn" id="arm_paid_post_payment_grid_export_btn" class="" value="<?php _e('Export To CSV', 'ARMember'); ?>"/>
+                <div class="arm_dt_filter_block arm_dt_filter_submit arm_payment_history_filter_submit">
+                    <input type="button" class="armemailaddbtn" id="arm_paid_post_payment_grid_filter_btn" value="<?php _e('Filter', 'ARMember'); ?>" onClick="arm_load_paid_post_trasaction_list_filtered_grid()"/>
+                    <input type="button" class="armemailaddbtn arm_cancel_btn" id="arm_paid_post_payment_grid_export_btn" class="" value="<?php _e('Export To CSV', 'ARMember'); ?>"/>
+                </div>
             </div>
             <div class="armclear"></div>
         </div>
         <div id="armmainformnewlist" class="arm_filter_grid_list_container">
             <div class="arm_loading_grid" style="display: none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/loader.gif" alt="Loading.."></div>
             <div class="response_messages"></div>
-            <table cellpadding="0" cellspacing="0" border="0" class="display" id="armember_datatable_1">
+            <table cellpadding="0" cellspacing="0" border="0" class="display arm_hide_datatable" id="armember_datatable_1">
                 <thead>
                     <tr>
-                        <th class="center cb-select-all-th" style="max-width:60px;"><input id="pp-cb-select-all-1" type="checkbox" class="chkstanard"></th>
+                        <th class="center cb-select-all-th arm_max_width_60" ><input id="pp-cb-select-all-1" type="checkbox" class="chkstanard"></th>
                         <th><?php _e('Transaction ID', 'ARMember'); ?></th>
                         <th><?php _e('Invoice ID', 'ARMember'); ?></th>
                         <th><?php _e('First Name', 'ARMember'); ?></th>
                         <th><?php _e('Last Name','ARMember'); ?></th>
                         <th><?php _e('User', 'ARMember'); ?></th>
-                        <th style="min-width: 150px;"><?php _e('Post Title', 'ARMember'); ?></th>
+                        <th><?php _e('User Email', 'ARMember'); ?></th>
+                        <th class="arm_min_width_150"><?php _e('Post Title', 'ARMember'); ?></th>
                         <th><?php _e('Payment Gateway', 'ARMember'); ?></th>
                         <th><?php _e('Payment Type', 'ARMember'); ?></th>
                         <th><?php _e('Payer Email', 'ARMember'); ?></th>
                         <th class="center"><?php _e('Transaction Status', 'ARMember'); ?></th>
-                        <th class="center" style="min-width: 150px;"><?php _e('Payment Date', 'ARMember'); ?></th>
+                        <th class="center arm_min_width_150" ><?php _e('Payment Date', 'ARMember'); ?></th>
                         <th class="center"><?php _e('Amount', 'ARMember'); ?></th>
-                        <th class="center" style="min-width: 150px;"><?php _e('Credit Card Number', 'ARMember'); ?></th>
+                        <th class="center arm_min_width_150" ><?php _e('Credit Card Number', 'ARMember'); ?></th>
                         <th data-key="armGridActionTD" class="armGridActionTD noVis" style="display: none;"></th>
                     </tr>
                 </thead>

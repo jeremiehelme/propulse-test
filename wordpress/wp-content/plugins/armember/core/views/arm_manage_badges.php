@@ -41,6 +41,10 @@ function arm_load_badge_list_grid() {
 			{"bVisible": false, "aTargets": []},
 			{"bSortable": false, "aTargets": [2]}
 		],
+        "language":{
+            "searchPlaceholder": "Search",
+            "search":"",
+        },
 		"oColVis": {"aiExclude": [0]},
         "aLengthMenu": [10, 15, 20, 25, 50, 100],
         "iDisplayLength": 15,
@@ -65,11 +69,11 @@ function arm_load_badge_list_grid() {
 					
 // ]]>
 </script>
-<div class="arm_global_settings_main_wrapper">
-    <div class="page_sub_content">
-        <div class="arm_add_new_item_box" style="margin: 0 0 20px 0;">			
-            <a class="greensavebtn arm_add_new_badges_btn" href="javascript:void(0);" style="margin-right:20px;"><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add New Badge', 'ARMember') ?></span></a>
-        </div>
+<div class="arm_global_settings_main_wrapper arm_margin_0">
+    <div class="page_sub_content arm_padding_0">
+        <?php /* <div class="arm_add_new_item_box arm_margin_bottom_20" >			
+            <a class="greensavebtn arm_add_new_badges_btn arm_margin_right_20" href="javascript:void(0);" ><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add New Badge', 'ARMember') ?></span></a>
+        </div> */ ?>
         <form method="GET" id="badges_list_form" class="data_grid_list">
             <input type="hidden" name="page" value="<?php echo $_GET['page'] ?>" />
             <input type="hidden" name="armaction" value="list" />
@@ -77,9 +81,9 @@ function arm_load_badge_list_grid() {
                 <table cellpadding="0" cellspacing="0" border="0" class="display" id="armember_datatable">
                     <thead>
                         <tr>
-                            <th class="center"><?php _e('Badge', 'ARMember'); ?></th>
-                            <th style="text-align: left;padding-left: 10px;"><?php _e('Badge Title', 'ARMember'); ?></th>
-                            <th><?php _e('No of Achievement', 'ARMember'); ?></th>
+                            <th class="center arm_text_align_center"><?php _e('Badge', 'ARMember'); ?></th>
+                            <th class="arm_text_align_left arm_padding_left_10"><?php _e('Badge Title', 'ARMember'); ?></th>
+                            <th class="arm_text_align_center"><?php _e('No of Achievement', 'ARMember'); ?></th>
                             <th class="armGridActionTD"></th>
                         </tr>
                     </thead>
@@ -159,7 +163,7 @@ function arm_load_badge_list_grid() {
     </div>
 </div>
 <!--./******************** Add New Badge Form ********************/.-->
-<div class="add_new_badges_wrapper popup_wrapper" style="width: 650px;margin-top: 40px;">
+<div class="add_new_badges_wrapper popup_wrapper">
 	<form method="post" action="#" id="arm_add_badges_wrapper_frm" class="arm_admin_form arm_add_badges_wrapper_frm">
 		<table cellspacing="0">
 			<tr class="popup_wrapper_inner">	
@@ -170,7 +174,7 @@ function arm_load_badge_list_grid() {
 						<tr>
 							<th><?php _e('Badge Title', 'ARMember');?></th>
 							<td class="arm_required_wrapper">
-								<input type="text" id="arm_badges_name" name="arm_badges_name" data-msg-required="<?php _e('Title can not be left blank.', 'ARMember');?>" value="" >
+								<input type="text" id="arm_badges_name" class="arm_width_100_pct" name="arm_badges_name" data-msg-required="<?php _e('Title can not be left blank.', 'ARMember');?>" value="" >
 							</td>
 						</tr>
 						<tr>
@@ -185,7 +189,7 @@ function arm_load_badge_list_grid() {
 				</td>
 				<td class="popup_content_btn popup_footer">
 					<div class="popup_content_btn_wrapper">
-						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_loader_img" style="position: relative;top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" width="20" height="20" />
+						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_loader_img arm_submit_btn_loader" style="top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" width="20" height="20" />
 						<input type="hidden" id="arm_badges_id_box" name="edit_id" value="<?php echo $bid;?>" />
 						<input type="hidden" id="arm_membership_url" name="arm_membership_url" value="<?php echo MEMBERSHIP_URL;?>" />
 						<input type="hidden" id="arm_membership_view_url" name="arm_membership_view_url" value="<?php echo MEMBERSHIP_VIEWS_URL;?>" />						

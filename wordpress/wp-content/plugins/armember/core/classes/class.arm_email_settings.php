@@ -11,17 +11,20 @@ if (!class_exists('ARM_email_settings'))
 			$is_opt_ins_feature = get_option('arm_is_opt_ins_feature', 0);
 			$this->isOptInsFeature = ($is_opt_ins_feature == '1') ? true : false;
 			
-			add_action('wp_ajax_arm_submit_email_template', array(&$this, 'arm_submit_email_template'));
-			add_action('wp_ajax_arm_edit_template_data', array(&$this, 'arm_edit_template_data'));
-			add_action('wp_ajax_arm_update_email_template_status', array(&$this, 'arm_update_email_template_status'));
-			add_action('wp_ajax_arm_refresh_aweber', array(&$this, 'arm_refresh_aweber'));
-			add_action('wp_ajax_arm_verify_mailchimp', array(&$this, 'arm_verify_mailchimp'));
-			add_action('wp_ajax_arm_verify_mailerlite', array(&$this, 'arm_verify_mailerlite'));
-			add_action('wp_ajax_arm_verify_constant', array(&$this, 'arm_verify_constant'));
-			add_action('wp_ajax_arm_verify_getresponse', array(&$this, 'arm_verify_getresponse'));
-			add_action('wp_ajax_arm_verify_madmimi', array(&$this, 'arm_verify_madmimi'));
-			add_action('wp_ajax_arm_delete_mail_config', array(&$this, 'arm_delete_mail_config'));
-			add_action('wp_ajax_arm_update_opt_ins_settings', array(&$this, 'arm_update_opt_ins_settings'));
+			add_action('wp_ajax_arm_submit_email_template', array($this, 'arm_submit_email_template'));
+			add_action('wp_ajax_arm_edit_template_data', array($this, 'arm_edit_template_data'));
+			add_action('wp_ajax_arm_update_email_template_status', array($this, 'arm_update_email_template_status'));
+			add_action('wp_ajax_arm_refresh_aweber', array($this, 'arm_refresh_aweber'));
+			add_action('wp_ajax_arm_verify_mailchimp', array($this, 'arm_verify_mailchimp'));
+			add_action('wp_ajax_arm_verify_sendinblue', array($this, 'arm_verify_sendinblue'));
+			add_action('wp_ajax_arm_verify_mailerlite', array($this, 'arm_verify_mailerlite'));
+			add_action('wp_ajax_arm_verify_constant', array($this, 'arm_verify_constant'));
+			add_action('wp_ajax_arm_verify_getresponse', array($this, 'arm_verify_getresponse'));
+			add_action('wp_ajax_arm_verify_madmimi', array($this, 'arm_verify_madmimi'));
+			add_action('wp_ajax_arm_delete_mail_config', array($this, 'arm_delete_mail_config'));
+			add_action('wp_ajax_arm_update_opt_ins_settings', array($this, 'arm_update_opt_ins_settings'));
+
+			add_action('wp_ajax_arm_aweber_redirect_url', array($this, 'arm_get_aweber_redirect_url'));
 			
 			$this->templates = new stdClass;
 			$this->templates->new_reg_user_admin = 'new-reg-user-admin';
@@ -38,6 +41,101 @@ if (!class_exists('ARM_email_settings'))
 			$this->templates->failed_payment_admin = 'failed-payment-admin';
                         $this->templates->on_menual_activation = 'on-menual-activation';
 		}
+
+
+		function arm_redirect_aweber_url()
+		{
+			if(!empty($_REQUEST['arm_redirect_aweber']) && $_REQUEST['arm_redirect_aweber'] == 1)
+			{
+				global $ARMember, $arm_capabilities_global;
+				$ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_transactions'], '1');
+
+				require_once( MEMBERSHIP_LIBRARY_DIR .'/aweber/aweber_api.php');
+				global $wpdb, $ARMember, $arm_slugs;
+				$email_settings_unser = get_option('arm_email_settings');
+				$email_setttings = maybe_unserialize($email_settings_unser);
+				$email_tools = (isset($email_setttings['arm_email_tools'])) ? $email_setttings['arm_email_tools'] : array();
+
+				$arm_return_data['url'] = "";
+				$arm_return_data['authorized'] = 0;
+
+				$consumerKey = MEMBERSHIP_AWEBER_CONSUMER_KEY;
+				$consumerSecret = MEMBERSHIP_AWEBER_CONSUMER_SECRET;
+				$aweber = new AWeberAPI($consumerKey, $consumerSecret);
+				if (empty($_COOKIE['accessToken']) || empty($_GET['oauth_token'])) {
+				    if (empty($_GET['oauth_token'])) {
+				        $callbackUrl = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI']; 
+				        list($requestToken, $requestTokenSecret) = $aweber->getRequestToken($callbackUrl);
+				        setcookie('requestTokenSecret', $requestTokenSecret);
+				        setcookie('callbackUrl', $callbackUrl);
+				        header("Location: {$aweber->getAuthorizeUrl()}");
+				        exit();
+				    }
+				    $aweber->user->tokenSecret = $_COOKIE['requestTokenSecret'];
+				    $aweber->user->requestToken = $_GET['oauth_token'];
+				    $aweber->user->verifier = $_GET['oauth_verifier'];
+				    list($accessToken, $accessTokenSecret) = $aweber->getAccessToken();
+				    setcookie('accessToken', $accessToken);
+				    setcookie('accessTokenSecret', $accessTokenSecret);
+				    header('Location: '.$_COOKIE['callbackUrl']);
+				    exit();
+				}
+
+				# set this to true to view the actual api request and response
+				$aweber->adapter->debug = false;
+				$account = $aweber->getAccount($_COOKIE['accessToken'], $_COOKIE['accessTokenSecret']);
+				// $account_lists_data = $account->lists->data;
+				// $account_lists_entries = $account_lists_data['entries'];
+				$HTTP_METHOD = 'GET';
+				$URL = $account->url."/lists";
+				$PARAMETERS = array('ws.start'=>0, 'ws.size'=>100);
+				$RETURN_FORMAT = array();
+				$account_lists_entries = array();
+				get_more_pagination :
+				$entries = $aweber->adapter->request($HTTP_METHOD, $URL, $PARAMETERS, $RETURN_FORMAT);
+				if(isset($entries['entries']) && count($entries['entries']) > 0) {
+					foreach ($entries['entries'] as $entry) {
+						array_push($account_lists_entries, $entry);
+					}
+					$PARAMETERS['ws.start'] = $PARAMETERS['ws.start'] + $PARAMETERS['ws.size'];
+					if(isset($entries['next_collection_link'])) {
+						goto get_more_pagination; 
+					}
+				}
+
+				$aweberLists = array();
+				$i = 0;
+
+				if (!empty($account_lists_entries)) {
+					foreach ($account_lists_entries as $offset => $list) {
+						if (!empty($list['id'])) {
+							$aweberLists[$i]['id'] = $list['id'];
+							$aweberLists[$i]['name'] = $list['name'];
+							$i++;
+						}
+					}
+				}
+				if ($consumerKey != "" && $consumerSecret != "" && $_COOKIE['accessToken'] != "" && $_COOKIE['accessTokenSecret'] != "" && $account->id != "") {
+					$temp = array('accessToken' => $_COOKIE['accessToken'], 'accessTokenSecret' => $_COOKIE['accessTokenSecret'], 'acc_id' => $account->id);
+					$temp_data = serialize($temp);
+					$email_tools['aweber'] = array(
+						'consumer_key' => $consumerKey,
+						'consumer_secret' => $consumerSecret,
+						'temp' => $temp,
+						'status' => 1,
+						'list' => $aweberLists,
+						'list_id' => '',
+					);
+					$email_setttings['arm_email_tools'] = $email_tools;
+					update_option('arm_email_settings', $email_setttings);
+				}
+
+				echo "<script>window.opener.location.replace('".admin_url('admin.php?page=' . $arm_slugs->general_settings.'&action=opt_ins_options')."');</script>";
+				echo '<script>window.close();</script>';
+				exit;
+			}			
+		}
+
 		function arm_get_email_template($temp_slug)
 		{
 			global $wpdb,$ARMember;
@@ -102,7 +200,7 @@ if (!class_exists('ARM_email_settings'))
 				if (isset($email_tools['constant'])) {
 					$email_tools['constant']['list'] = isset($old_email_tools['constant']['list']) ? $old_email_tools['constant']['list'] : array();
 				}
-                                if (isset($email_tools['getresponse'])) {
+                if (isset($email_tools['getresponse'])) {
 					$email_tools['getresponse']['list'] = isset($old_email_tools['getresponse']['list']) ? $old_email_tools['getresponse']['list'] : array();
 				}
 				if (isset($email_tools['madmimi'])) {
@@ -110,6 +208,9 @@ if (!class_exists('ARM_email_settings'))
 				}
 				if (isset($email_tools['mailerlite'])) {
 					$email_tools['mailerlite']['list'] = isset($old_email_tools['mailerlite']['list']) ? $old_email_tools['mailerlite']['list'] : array();
+				}
+				if (isset($email_tools['sendinblue'])) {
+					$email_tools['sendinblue']['list'] = isset($old_email_tools['sendinblue']['list']) ? $old_email_tools['sendinblue']['list'] : array();
 				}
 				$email_tools = apply_filters('arm_change_optin_settings_before_save', $email_tools);
 				
@@ -196,6 +297,9 @@ if (!class_exists('ARM_email_settings'))
 			$api_key = (isset($_POST['api_key'])) ? sanitize_text_field($_POST['api_key']) : $api_key;
 			if (!empty($api_key)) {
 				$mailchimpResp = $this->arm_get_mailchimp_list($api_key);
+
+				do_action('arm_general_log_entry', 'mailchimp', 'verify MailChimp list response', 'armember', $mailchimpResp);
+
 				if ($mailchimpResp['type'] == 'error') {
 					$statusRes = array('type' => 'error', 'msg' => $mailchimpResp['message']);
 				} else {
@@ -219,6 +323,7 @@ if (!class_exists('ARM_email_settings'))
 				}
 			}
 			$statusRes['list'] = $mailchimpList;
+
 			if (isset($_POST['action']) && $_POST['action'] == 'arm_verify_mailchimp') {
 				echo json_encode($statusRes);
 				exit;
@@ -273,7 +378,11 @@ if (!class_exists('ARM_email_settings'))
 			$access_token = (isset($_POST['access_token'])) ? sanitize_text_field($_POST['access_token']) : $access_token;
 			if (!empty($api_key) && !empty($access_token)) {
 				$lists = $this->arm_get_constant_list($api_key, $access_token);
+
+				do_action('arm_general_log_entry', 'constant', 'verify constant list response', 'armember', $lists);
+
 				if (count($lists) > 0) {
+
 					$email_tools['constant'] = array(
 						'api_key' => $api_key,
 						'access_token' => $access_token,
@@ -321,8 +430,8 @@ if (!class_exists('ARM_email_settings'))
 			}
 			return $constantList;
 		}
-                function arm_verify_getresponse($api_key = '')
-                {
+		function arm_verify_getresponse($api_key = '')
+		{
 			global $wpdb, $ARMember, $arm_capabilities_global;
 			$ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_general_settings'], '1');
 			$email_setttings = $this->arm_get_all_email_settings();
@@ -332,6 +441,9 @@ if (!class_exists('ARM_email_settings'))
 			$api_key = (isset($_POST['api_key'])) ? sanitize_text_field($_POST['api_key']) : $api_key;
 			if (!empty($api_key) ) {
 				$lists = $this->arm_get_getresponse_list($api_key);
+
+				do_action('arm_general_log_entry', 'getresponse', 'verify GetResponse list response', 'armember', $lists);
+
 				if (count($lists) > 0) {
 					$email_tools['getresponse'] = array(
 						'api_key' => $api_key,
@@ -406,6 +518,8 @@ if (!class_exists('ARM_email_settings'))
 
                 $lists = $this->arm_get_madmimi_list($madmimi_email, $api_key);
 
+                do_action('arm_general_log_entry', 'madmimi', 'verify MadMimi list response', 'armember', $lists);
+
                 if (count($lists) > 0) {
                     $email_tools['madmimi'] = array(
                         'api_key' => $api_key,
@@ -477,6 +591,8 @@ if (!class_exists('ARM_email_settings'))
 
                 $mailerlitegroups = $this->arm_get_mailerlite_groups($api_key);
 
+                do_action('arm_general_log_entry', 'mailerlite', 'verify MailerLite Group response', 'armember', $mailerlitegroups);
+
                 if (count($mailerlitegroups) > 0) {
                     $email_tools['mailerlite'] = array(
                         'api_key' => $api_key,
@@ -533,6 +649,98 @@ if (!class_exists('ARM_email_settings'))
             }
             return $mailerliteGroupsList;
         }
+        function arm_verify_sendinblue($api_key = '')
+		{
+			global $wpdb, $ARMember, $arm_capabilities_global;
+			$ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_general_settings'], '1');
+			$email_setttings = $this->arm_get_all_email_settings();
+
+			$email_tools = (isset($email_setttings['arm_email_tools'])) ? $email_setttings['arm_email_tools'] : array();
+			$sendinblueList = '';
+			$statusRes = array('type' => 'error', 'msg' => __('Sorry, Something went wrong. Please try again.', 'ARMember'));
+			$api_key = (isset($_POST['api_key'])) ? sanitize_text_field($_POST['api_key']) : $api_key;
+					
+			if (!empty($api_key)) {
+				$sendinblueResp = $this->arm_get_sendinblue_list($api_key);
+
+				do_action('arm_general_log_entry', 'sendinblue', 'verify Sendinblue List response', 'armember', $sendinblueResp);
+
+				if ($sendinblueResp['type'] == 'error') {
+					$statusRes = array('type' => 'error', 'msg' => $sendinblueResp['message']);
+				} else {
+					$lists = $sendinblueResp['list'];
+					if (count($lists) > 0) {
+						$email_tools['sendinblue'] = array(
+							'api_key' => $api_key,
+							'status' => 1,
+							'list' => $lists,
+							'list_id' => $lists[0]['id'],
+						);
+						$email_setttings['arm_email_tools'] = arm_array_map($email_tools);
+						update_option('arm_email_settings', $email_setttings);
+						$statusRes = array('type' => 'success', 'msg' => __('Settings has been verified.', 'ARMember'));
+						foreach ($lists as $list) {
+							$sendinblueList .= '<li data-label="' . $list['name'] . '" data-value="' . $list['id'] . '">' . $list['name'] . '</li>';
+						}
+					} else {
+						$statusRes = array('type' => 'error', 'msg' => __('Sendinblue List Not Found.', 'ARMember'));
+					}
+				}
+			}
+			$statusRes['list'] = $sendinblueList;
+			if (isset($_POST['action']) && $_POST['action'] == 'arm_verify_sendinblue') {
+				echo json_encode($statusRes);
+				exit;
+			} else {
+				return $statusRes;
+			}
+		}
+
+		function arm_get_sendinblue_list($api_key = '')
+		{
+			global $wpdb, $ARMember,$arm_global_settings, $arm_sbapi_version;
+			$sendinblueList = array();
+	     	$results = array('type' => 'error', 'message' => __('API Key is not valid.', 'ARMember'));
+		
+			if (!empty($api_key)) {
+				$sendinblue_url = 'https://api.sendinblue.com/'.$arm_sbapi_version.'/contacts/lists';
+				$arg =array(
+						'timeout' => '5000',          
+		                'headers' => array(
+		                    'Content-Type' => 'application/json',
+		                    'api-key' => $api_key,
+		                )
+		             );
+
+				$arm_sendinblue_response = wp_remote_get($sendinblue_url,$arg);
+
+	            if( !is_wp_error($arm_sendinblue_response)) {
+	            
+	            	$arm_sendinblue_response_list = json_decode($arm_sendinblue_response['body'],true);
+	            	$sendinblueLists = !empty($arm_sendinblue_response_list['lists']) ? $arm_sendinblue_response_list['lists'] : array();
+	            	if(!empty($sendinblueLists) && is_array($sendinblueLists))
+	            	{
+		            	if (count($sendinblueLists) > 0) 
+		            	{
+		            		$i = 0;
+		            		foreach ($sendinblueLists as $list) {
+		            			$sendinblueList[$i]['id'] = $list['id'];
+		            			$sendinblueList[$i]['name'] = $list['name'];
+		            			$i++;
+		            		}
+		            		$results = array('type' => 'success', 'message' => '');
+		            	}
+		            	else
+			            {
+			            	$results['message'] = __('Please create atleast one Sendinblue List.', 'ARMember');
+			            }
+		            }
+	            }
+			}
+
+			$results['list'] = $sendinblueList;
+			return $results;
+		}
 
 		function arm_delete_mail_config($id = '')
 		{
@@ -589,6 +797,14 @@ if (!class_exists('ARM_email_settings'))
 				}
 				if ($id == 'mailerlite') {
 					$email_tools['mailerlite'] = array(
+						'api_key' => '',
+						'status' => 0,
+						'list' => '',
+						'list_id' => '',
+					);
+				}
+				if ($id == 'sendinblue') {
+					$email_tools['sendinblue'] = array(
 						'api_key' => '',
 						'status' => 0,
 						'list' => '',

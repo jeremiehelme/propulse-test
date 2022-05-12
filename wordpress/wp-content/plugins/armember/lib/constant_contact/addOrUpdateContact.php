@@ -62,15 +62,25 @@ if (!empty($responder_list_id) && !empty($api_key) && !empty($access_token)) {
 					$contact->addList($responder_list_id);
 					$contact->first_name = $armfname;
 					$contact->last_name = $armlname;
+
+					do_action('arm_general_log_entry', 'constant', 'subscriber parameters', 'armember', $contact);
+
 					$returnContact = $cc->addContact(ACCESS_TOKEN, $contact);
 					/*update the existing contact if address already existed*/
+
+					do_action('arm_general_log_entry', 'constant', 'subscriber add response', 'armember', $returnContact);
 				} else {
 					$action = "Updating Contact";
 					$contact = $response->results[0];
 					$contact->addList($responder_list_id);
 					$contact->first_name = $armfname;
 					$contact->last_name = $armlname;
+
+					do_action('arm_general_log_entry', 'constant', 'subscriber update parameters', 'armember', $contact);
+
 					$returnContact = $cc->updateContact(ACCESS_TOKEN, $contact);
+
+					do_action('arm_general_log_entry', 'constant', 'subscriber update response', 'armember', $returnContact);
 				}
 				/*catch any exceptions thrown during the process and print the errors to screen*/
 			} catch (CtctException $ex) {
@@ -79,6 +89,7 @@ if (!empty($responder_list_id) && !empty($api_key) && !empty($access_token)) {
 				  print_r($ex->getErrors());
 				  echo '</pre></div>';
 				  die(); */
+				  do_action('arm_general_log_entry', 'constant', 'subscriber error response', 'armember', $ex->getErrors());
 			}
 		}
 	}

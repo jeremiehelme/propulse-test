@@ -1,4 +1,4 @@
-<?php
+<?php 
 global $wpdb, $ARMember, $arm_members_class, $arm_member_forms, $arm_global_settings, $arm_subscription_plans;
 $arm_all_block_settings = $arm_global_settings->arm_get_all_block_settings();
 $all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('all', ARRAY_A, true);
@@ -97,8 +97,8 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
 							<input type="checkbox" id="failed_login_lockdown" value="1" class="armswitch_input" name="arm_block_settings[failed_login_lockdown]" <?php checked($arm_all_block_settings['failed_login_lockdown'], 1);?>/>
 							<label for="failed_login_lockdown" class="armswitch_label"></label>
 						</div>
-                        <span class="arm_info_text" style="margin: 10px 0 0; display:block;">(<?php _e('Enable login security option for failed login attempts.','ARMember'); ?>)</span>
-                        <span class="arm_info_text" style="margin: 10px 0 0; display:block;color: #f00;">(<?php _e('Note', 'ARMember'); ?>: <?php _e('Failed login attempt history will automatically be cleared which is older than 30 days.', 'ARMember'); ?>)</span>
+                        <span class="arm_info_text arm_info_text_style" >(<?php _e('Enable login security option for failed login attempts.','ARMember'); ?>)</span>
+                        <span class="arm_info_text arm_info_text_style arm-note-message --warning" >(<?php _e('Note', 'ARMember'); ?>: <?php _e('Failed login attempt history will automatically be cleared which is older than 30 days.', 'ARMember'); ?>)</span>
 					</td>
 				</tr>
 				<tr class="arm_global_settings_sub_content failed_login_lockdown <?php echo ($arm_all_block_settings['failed_login_lockdown'] == 1) ? '':'hidden_section';?>">
@@ -107,19 +107,19 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
                                             <tr>
                                                 <td><span class="arm_failed_login_before_label"><?php _e('Maximum Number of login attempts','ARMember');?></span></td>
                                                 <td>
-                                                <input  type="text" id="max_login_retries" value="<?php echo $arm_all_block_settings['max_login_retries'];?>" class="arm_general_input" style="width:50px !important;" name="arm_block_settings[max_login_retries]" onkeypress="return isNumber(event)" />
-                                                <span class="arm_max_login_retries_error arm_error_msg" style="display:none; margin: 0 5px;"><?php _e('Please enter maximum number of login attempts.','ARMember');?> </span>
+                                                <input  type="text" id="max_login_retries" value="<?php echo $arm_all_block_settings['max_login_retries'];?>" class="arm_general_input arm_width_50"  name="arm_block_settings[max_login_retries]" onkeypress="return isNumber(event)" />
+                                                <span class="arm_max_login_retries_error arm_error_msg"style="display: none;" ><?php _e('Please enter maximum number of login attempts.','ARMember');?> </span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td><span class="arm_failed_login_before_label"><?php _e('Lock user temporarily for','ARMember');?></span></td>
                                                 <td>
-                                                    <input  type="text" id="temporary_lockdown_duration" value="<?php echo $arm_all_block_settings['temporary_lockdown_duration'];?>" class="arm_general_input" style="width:50px !important;" name="arm_block_settings[temporary_lockdown_duration]" onkeypress="return isNumber(event)" />
+                                                    <input  type="text" id="temporary_lockdown_duration" value="<?php echo $arm_all_block_settings['temporary_lockdown_duration'];?>" class="arm_general_input arm_width_50"  name="arm_block_settings[temporary_lockdown_duration]" onkeypress="return isNumber(event)" />
                                                     <br/>
                                                     <span class="arm_failed_login_after_label">&nbsp;<?php _e('Minutes','ARMember');?></span>
                                                     <i class="arm_helptip_icon armfa armfa-question-circle" title="<?php _e("After maximum failed login attempts user will be inactive for given minutes. During this time, user will not be able to login into the system.", 'ARMember');?>" style="margin-top: 0px !important;"></i>
                                                     <br/>
-                                                    <span class="arm_temporary_lockdown_duration_error arm_error_msg" style="display:none; margin: 0 5px;"> <?php _e('Please enter temporarily lock user duration.','ARMember');?></span>
+                                                    <span class="arm_temporary_lockdown_duration_error arm_error_msg" style="display:none;"> <?php _e('Please enter temporarily lock user duration.','ARMember');?></span>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -129,16 +129,16 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
                                             <tr>
                                                 <td><span class="arm_failed_login_before_label"><?php _e('Permanent lock user after login attempts','ARMember');?></span></td>
                                                 <td>
-                                                    <input  type="text" id="permanent_login_retries" value="<?php echo $arm_all_block_settings['permanent_login_retries'];?>" class="arm_general_input" style="width:50px !important;" name="arm_block_settings[permanent_login_retries]" onkeypress="return isNumber(event)" />
-                                                    <span class="arm_permanent_login_retries_error arm_error_msg" style="display:none; margin: 0 5px;"><?php _e('Please enter number of login attempts after user permanent lock.','ARMember');?></span>
+                                                    <input  type="text" id="permanent_login_retries" value="<?php echo $arm_all_block_settings['permanent_login_retries'];?>" class="arm_general_input arm_width_50"  name="arm_block_settings[permanent_login_retries]" onkeypress="return isNumber(event)" />
+                                                    <span class="arm_permanent_login_retries_error arm_error_msg" style="display:none;"><?php _e('Please enter number of login attempts after user permanent lock.','ARMember');?></span>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td><span class="arm_failed_login_before_label"><?php _e('Permanent lockdown Duration','ARMember');?></span></td>
                                                 <td>
-                                                    <input  type="text" id="permanent_lockdown_duration" value="<?php echo $arm_all_block_settings['permanent_lockdown_duration'];?>" class="arm_general_input" style="width:50px !important;" name="arm_block_settings[permanent_lockdown_duration]" onkeypress="return isNumber(event)" />
+                                                    <input  type="text" id="permanent_lockdown_duration" value="<?php echo $arm_all_block_settings['permanent_lockdown_duration'];?>" class="arm_general_input arm_width_50"  name="arm_block_settings[permanent_lockdown_duration]" onkeypress="return isNumber(event)" />
                                                     <br/><span class="arm_failed_login_after_label">&nbsp;<?php _e('Hours','ARMember');?></span>
-                                                    <span class="arm_permanent_lockdown_duration_error arm_error_msg" style="display:none; margin: 0 5px;"> <?php _e('Please enter permanent lockdown duration.','ARMember');?></span>
+                                                    <span class="arm_permanent_lockdown_duration_error arm_error_msg" style="display:none;"> <?php _e('Please enter permanent lockdown duration.','ARMember');?></span>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -149,8 +149,8 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
                                             </tr>
                                             <tr>
                                                 <td><span class="arm_failed_login_before_label" style="<?php echo (is_rtl()) ? 'margin-left: 115px;' : 'margin-right: 72px;';?>"><?php _e('Reset Failed Login Attempts History','ARMember');?></span></td>
-                                                <td style="width:500px;">
-                                                    <select id="arm_reset_login_attempts_users" class="arm_chosen_selectbox" name="arm_general_settings[arm_exclude_role_for_restrict_admin][]" data-placeholder="<?php _e('Select User(s)..', 'ARMember');?>" multiple="multiple" style="width:352px;" >
+                                                <td class="arm_width_500">
+                                                    <select id="arm_reset_login_attempts_users" class="arm_chosen_selectbox arm_width_352" name="arm_general_settings[arm_exclude_role_for_restrict_admin][]" data-placeholder="<?php _e('Select User(s)..', 'ARMember');?>" multiple="multiple"  >
                                                         <?php
                                                             if (!empty($failed_login_users)):
                                                                 ?><option class="arm_message_selectbox_op" value="all" >All Users</option><?php
@@ -160,7 +160,7 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
                                                             else:
                                                         ?><option value="" disabled="true"><?php _e('No Users Available', 'ARMember');?></option><?php endif;?>
                                                     </select>
-                                                    <div class="arm_datatable_filters_options" style="position: absolute;">
+                                                    <div class="arm_datatable_filters_options arm_position_absolute" >
                                                         <input id="doaction1" class="armbulkbtn armemailaddbtn" value="Go" type="button"  onclick="showConfirmBoxCallback('arm_clear_login_user');">
                                                         <?php echo $arm_global_settings->arm_get_confirm_box('arm_clear_login_user', __('Are you sure want to reset login attempts for the selected member?', 'ARMember'), 'arm_reset_user_login_attempts'); ?>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_reset_loader_img" style="position:relative;top:0px;display:none;" width="24" height="24" />
                                                     </div>
@@ -170,7 +170,7 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
                                             <tr>
                                                 <td></td>
                                             	<td>
-                                            		<div style="position:relative;">
+                                            		<div class="arm_position_relative">
 								                        <a href="javascript:void(0)" id="arm_failed_login_attempts_history" class="arm_failed_login_attempts_history armemailaddbtn"><?php _e('View Failed Login Attempts History', 'ARMember'); ?></a>
 								                    </div>
                                             	</td>
@@ -190,19 +190,19 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
 							<input type="checkbox" id="remained_login_attempts" value="1" class="armswitch_input" name="arm_block_settings[remained_login_attempts]" <?php checked($remiand_login_attempts, 1);?>/>
 							<label for="remained_login_attempts" class="armswitch_label"></label>
 						</div>
-                                                <span class="arm_info_text" style="margin: 10px 0 0; display:block;">(<?php _e('Display remaining login attempts warning message.','ARMember'); ?>)</span>
+                                                <span class="arm_info_text arm_info_text_style" >(<?php _e('Display remaining login attempts warning message.','ARMember'); ?>)</span>
 					</td>
 				</tr>
 			</table>
 			<div class="arm_solid_divider"></div>
 			<table class="form-table">
 				<tr class="form-field">
-					<th class="arm-form-table-label armember_general_setting_lbl"><label for="arm_block_usernames"><?php _e('Block Username On Signup', 'ARMember'); ?>
+					<th class="arm-form-table-label"><label for="arm_block_usernames"><?php _e('Block Username On Signup', 'ARMember'); ?>
                                         <i class="arm_helptip_icon armfa armfa-question-circle" title="<?php _e("Those username(s) which are entered here, will be blocked on new user registration, that means those keywords will not be allowed to use as username upon signup. For example, if you will enter 'test' here, then all usernames which contain 'test' will be banned, like '<u>test</u>abc', 'abc<u>test</u>', 'abc<u>test</u>def'.", 'ARMember');?>"></i></label></th>
 					<td class="arm-form-table-content">
 						<textarea name="arm_block_settings[arm_block_usernames]" id="arm_block_usernames" rows="8" cols="40"><?php 
 						$arm_block_usernames = (isset($arm_all_block_settings['arm_block_usernames'])) ? $arm_all_block_settings['arm_block_usernames'] : '';
-						echo (!empty($arm_block_usernames)) ? (esc_textarea(get_magic_quotes_runtime() ? stripslashes_deep($arm_block_usernames) : $arm_block_usernames)) : '';
+						echo (!empty($arm_block_usernames)) ? esc_textarea( stripslashes_deep($arm_block_usernames) ) : '';
 						?></textarea>
 						<div class="arm_info_text"><?php _e('You should place each keyword on a new line.','ARMember'); ?></div>
 					</td>
@@ -218,12 +218,12 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
 			<div class="arm_solid_divider"></div>
 			<table class="form-table">
 				<tr class="form-field">
-					<th class="arm-form-table-label armember_general_setting_lbl"><label for="arm_block_emails"><?php _e('Block Email Addresses On Signup', 'ARMember'); ?>
+					<th class="arm-form-table-label"><label for="arm_block_emails"><?php _e('Block Email Addresses On Signup', 'ARMember'); ?>
                                         <i class="arm_helptip_icon armfa armfa-question-circle" title="<?php _e("Those Email Address(es) which are entered here, will be blocked on new user registration, that means those keywords will not be allowed to use as Email Address upon signup. For example, if you will enter 'abc@def.ghi' here, then exact this email address will be banned, but if you will enter 'test' only, then all email addresses which contain 'test' will be banned, like '<u>test</u>abc@abc.def', 'ab<u>test</u>@cde.efg', 'ab<u>test</u>cd@efg.ghi', 'abc@def.<u>test</u>', 'abc@<u>test</u>.def'.", 'ARMember');?>"></i></label></th>
 					<td class="arm-form-table-content">
 						<textarea name="arm_block_settings[arm_block_emails]" id="arm_block_emails" rows="8" cols="40"><?php 
 						$arm_block_emails = (isset($arm_all_block_settings['arm_block_emails'])) ? $arm_all_block_settings['arm_block_emails'] : '';
-						echo (!empty($arm_block_emails)) ? ( esc_textarea( get_magic_quotes_runtime() ? stripslashes_deep($arm_block_emails) : $arm_block_emails ) ) : '';
+						echo (!empty($arm_block_emails)) ? esc_textarea( stripslashes_deep($arm_block_emails) ) : '';
 						?></textarea>
 						<div class="arm_info_text"><?php _e('You should place each keyword on a new line.','ARMember'); ?></div>
 					</td>
@@ -239,11 +239,12 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
 			<div class="arm_solid_divider"></div>
 			<table class="form-table">
 				<tr class="form-field">
-					<th class="arm-form-table-label"><label for="arm_block_ips"><?php _e('Block IP Addresses', 'ARMember'); ?></label><i class="arm_helptip_icon armfa armfa-question-circle" title="<?php _e("Those IP Address(es) which are entered here, will not be able to access your website. Please note that IP address should exact match. For example, 0.0.0.1 will be banned if and only if IP address will exact match with user's IP address.", 'ARMember');?>"></i></th>
+					<th class="arm-form-table-label"><label for="arm_block_ips"><?php _e('Block IP Addresses', 'ARMember'); ?>
+                    <i class="arm_helptip_icon armfa armfa-question-circle" title="<?php _e("Those IP Address(es) which are entered here, will not be able to access your website. Please note that IP address should exact match. For example, 0.0.0.1 will be banned if and only if IP address will exact match with user's IP address.", 'ARMember');?>"></i></label></th>
 					<td class="arm-form-table-content">
 						<textarea name="arm_block_settings[arm_block_ips]" id="arm_block_ips" rows="8" cols="40"><?php 
 						$arm_block_ips = $arm_all_block_settings['arm_block_ips'];
-						echo (!empty($arm_block_ips)) ? ( esc_textarea( get_magic_quotes_runtime() ? stripslashes_deep($arm_block_ips) : $arm_block_ips ) ) : '';
+						echo (!empty($arm_block_ips)) ? esc_textarea( stripslashes_deep($arm_block_ips) ) : '';
 						?></textarea>
 						<div class="arm_info_text"><?php _e('You should place each IP Address on a new line.','ARMember'); ?></div>
 					</td>
@@ -261,7 +262,7 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
 				<tr class="form-field">
 					<th class="arm-form-table-label"><label for="arm_block_urls"><?php _e('Block URLs', 'ARMember'); ?></label></th>
 					<td class="arm-form-table-content">
-			<textarea name="arm_block_settings[arm_block_urls]" id="arm_block_urls" rows="8" cols="40"><?php echo (!empty($arm_all_block_settings['arm_block_urls'])) ? ( esc_textarea(get_magic_quotes_runtime() ? stripslashes_deep($arm_all_block_settings['arm_block_urls']) : $arm_all_block_settings['arm_block_urls'] ) ) : '';
+			<textarea name="arm_block_settings[arm_block_urls]" id="arm_block_urls" rows="8" cols="40"><?php echo (!empty($arm_all_block_settings['arm_block_urls'])) ?  esc_textarea( stripslashes_deep($arm_all_block_settings['arm_block_urls']) ) : '';
 						?></textarea>
 						<div class="arm_info_text"><?php _e('You should place each URL on a new line','ARMember'); ?></div>
                                                 <div class="arm_info_text"><?php _e('Entered URLs will be blocked for all users and visitors except administrator.','ARMember'); ?></div>
@@ -324,7 +325,7 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
                                                                     <label for="arm_block_urls"><?php _e('Block URLs', 'ARMember'); ?></label>
                                                                 </td>
                                                                 <td class="arm_conditionally_block_urls_content">
-                                                                    <textarea name="arm_block_settings[arm_conditionally_block_urls_options][<?php echo $condition_count; ?>][arm_block_urls]" id="arm_block_urls" rows="5" cols="40"><?php echo (!empty($condition['arm_block_urls'])) ? ( esc_textarea(get_magic_quotes_runtime() ? stripslashes_deep($condition['arm_block_urls']) : $condition['arm_block_urls'] ) ) : ''; ?></textarea>
+                                                                    <textarea name="arm_block_settings[arm_conditionally_block_urls_options][<?php echo $condition_count; ?>][arm_block_urls]" id="arm_block_urls" rows="5" cols="40"><?php echo (!empty($condition['arm_block_urls'])) ? esc_textarea( stripslashes_deep($condition['arm_block_urls']) ) : ''; ?></textarea>
                                                                 </td>
                                                                 <td></td><td></td>
                                                             </tr>
@@ -336,7 +337,7 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
 				</tr>
 				<tr class="form-field">
 					<th class="arm-form-table-label"><label><?php _e('Blocked URLs Options', 'ARMember'); ?></label></th>
-					<td class="arm-form-table-content" style="padding-top: 14px;">
+					<td class="arm-form-table-content arm_padding_top_14" >
 						<?php $arm_all_block_settings['arm_block_urls_option'] = (!empty($arm_all_block_settings['arm_block_urls_option'])) ? $arm_all_block_settings['arm_block_urls_option'] : 'message';?>
 						<input type="radio" id="arm_block_urls_opt_radio_message" class="arm_iradio arm_block_urls_opt_radio" name="arm_block_settings[arm_block_urls_option]" value="message" <?php checked($arm_all_block_settings['arm_block_urls_option'], 'message');?>>
 						<label for="arm_block_urls_opt_radio_message"><span><?php _e('Display Message', 'ARMember'); ?></span></label>
@@ -369,16 +370,16 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
 		
                 <tr><td></td>
                     <td>
-                        <div style="position:relative; float: left;">
+                        <div class ="arm_position_relative arm_float_left" >
                              <button onclick="showConfirmBoxCallback('arm_clear_login_history');" class="armemailaddbtn" type="button"><?php _e('Reset Login History', 'ARMember'); ?></button>
-                            <?php echo $arm_global_settings->arm_get_confirm_box('arm_clear_login_history', __("Are you sure want to reset all user's login history?", "ARMember"), 'arm_reset_login_history', ''); ?>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_reset_history_loader_img" style="position:relative;top:8px;display:none;" width="24" height="24" />
+                            <?php echo $arm_global_settings->arm_get_confirm_box('arm_clear_login_history', __("Are you sure want to reset all user's login history?", "ARMember"), 'arm_reset_login_history', ''); ?>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" class="arm_submit_btn_loader" id="arm_reset_history_loader_img" style="display:none;" width="24" height="24" />
                         </div>
                     </td>
                 </tr>
                                 
 			</table>
 			<div class="arm_submit_btn_container">
-				<button class="arm_save_btn arm_block_settings_btn" type="submit" id="arm_block_settings_btn" name="arm_block_settings_btn"><?php _e('Save', 'ARMember') ?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" style="position:relative;top:8px;display:none;" width="24" height="24" />
+				<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" class="arm_submit_btn_loader" id="arm_loader_img" style="display:none;" width="24" height="24" />&nbsp;<button class="arm_save_btn arm_block_settings_btn" type="submit" id="arm_block_settings_btn" name="arm_block_settings_btn"><?php _e('Save', 'ARMember') ?></button>
                 <?php wp_nonce_field( 'arm_wp_nonce' );?>
 			</div>
 		</form>
@@ -389,12 +390,12 @@ if(isset($_POST["arm_export_login_history"]) && $_POST["arm_export_login_history
     var ARM_CONDI_BLOCK_REQ_MSG = '<?php _e('Please select plan.', 'ARMember'); ?>';
 </script>
 
-<div class="arm_failed_login_attempts_history_popup popup_wrapper" style="width: 650px;margin-top: 40px;">
+<div class="arm_failed_login_attempts_history_popup popup_wrapper" >
     <table cellspacing="0">
         <tr class="popup_wrapper_inner">	
             <td class="arm_failed_login_attempts_history_popup_close_btn arm_popup_close_btn"></td>
             <td class="popup_header"><?php _e('Failed Login Attempts History', 'ARMember');?></td>
-            <td class="popup_content_text" style="padding:0">
+            <td class="popup_content_text arm_padding_0" >
                 <?php 
                     $arm_failed_login_attempts_history = $arm_members_class->arm_get_failed_login_attempts_history(1, 10);
                     if(isset($arm_failed_login_attempts_history) && !empty($arm_failed_login_attempts_history))

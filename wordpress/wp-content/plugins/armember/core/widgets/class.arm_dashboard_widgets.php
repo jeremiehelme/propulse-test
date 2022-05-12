@@ -5,13 +5,13 @@ if(!class_exists('armAdminDashboardWidgets'))
 	{
 		function __construct()
 		{
-			add_action('admin_head', array(&$this, 'armAdminDashboardWidgetsStyle'));
-			add_action('wp_dashboard_setup', array(&$this, 'armAdminDashboardWidgets_init'));
+			add_action('admin_head', array($this, 'armAdminDashboardWidgetsStyle'));
+			add_action('wp_dashboard_setup', array($this, 'armAdminDashboardWidgets_init'));
 		}
 		function armAdminDashboardWidgetsStyle()
 		{
 			global $pagenow, $arm_ajaxurl;
-			if (current_user_can('administrator') && $pagenow == 'index.php')
+			if ( (current_user_can('administrator') || current_user_can('arm_admin_dashboard_widgets') ) && $pagenow == 'index.php')
 			{
 				wp_enqueue_script('arm_common_js', MEMBERSHIP_URL . '/js/arm_common.js', array('jquery'), MEMBERSHIP_VERSION);
 				
@@ -67,34 +67,34 @@ if(!class_exists('armAdminDashboardWidgets'))
 				    font-size: 14px;    
 				}
 				.arm_dashboard_member_summary .arm_total_members{
-				    background: #44425b;
+				    background: #2C2D42;
 				    margin-right: 8px;
 				}
 				.arm_dashboard_member_summary .arm_active_members{
-				    background: #4caf50;
+				    background: #0EC9AE;
 				}
 				.arm_dashboard_member_summary .arm_inactive_members{
-				    background: #f44336;
+				    background: #FF3B3B;
 				    margin-right: 8px;
 				}
 				.arm_dashboard_member_summary .arm_membership_plans{
-				    background: #23b7e5;
+				    background: #005AEE;
 				}
 				.arm_dashboard_member_summary .arm_pending_members{
-				    background: #FFA500;
+				    background: #F2D229;
 				    margin-right: 8px;
 				}
 				.arm_dashboard_member_summary .arm_terminate_members{
-				    background: #e81000;
+				    background: #FF3B3B;
 				}
 				.armAdminDashboardWidgetContent{width: 100%;display: block;box-sizing: border-box;font-family: "Open Sans",sans-serif;}
 				.armAdminDashboardWidgetContent table{width: 100%;box-sizing: border-box;border: 1px solid #EDEEEF;border-radius: 3px;table-layout: fixed;word-wrap: break-word;}
 				.armAdminDashboardWidgetContent table tr:nth-child(odd) {background-color: #FFF;}
-				.armAdminDashboardWidgetContent table tr:nth-child(even) {background-color: #F6F8F8;}
-				.armAdminDashboardWidgetContent table tr:hover td {background-color: #C8F9FB !important;}
+				div.armAdminDashboardWidgetContent table tr:nth-child(even) {background-color: #F6F8F8;}
+				div.armAdminDashboardWidgetContent table tr:hover td {background-color: #e7eef9 !important;}
 				.armAdminDashboardWidgetContent table th,
 				.armAdminDashboardWidgetContent table td{padding: 7px 5px;word-break: break-word;font-size: 13px;}
-				.armAdminDashboardWidgetContent table th {
+				div.armAdminDashboardWidgetContent table th {
 					background: none;
 					background-color: #F6F8F8;
 					border: 0;
@@ -149,22 +149,24 @@ if(!class_exists('armAdminDashboardWidgets'))
 				.arm_product_desc{
 
 					text-align: justify;
-				}
+				}.arm_min_width_255 {
+					min-width: 255px;
+				}				
 				</style>
 				<?php 
 			}
 		}
 		function armAdminDashboardWidgets_init()
 		{
-			if (current_user_can('administrator'))
+			if( current_user_can('administrator') || current_user_can('arm_admin_dashboard_widgets') )
 			{
 				/* Register Admin Widgets */
 				$armemberstatistics_txt = __('ARMember Statistics', 'ARMember');
 				$recentmemeber_txt = __('Recent Members', 'ARMember');
 				$recentpayments_txt = __('Recent Payments', 'ARMember');
-				wp_add_dashboard_widget('ARMemberSummary', $armemberstatistics_txt, array(&$this, 'ARMemberSummary_display'));
-				wp_add_dashboard_widget('ARMRegisteredMembers', $recentmemeber_txt, array(&$this, 'ARMRegisteredMembers_display'));
-				wp_add_dashboard_widget('ARMUserTransactions', $recentpayments_txt, array(&$this, 'ARMUserTransactions_display'));
+				wp_add_dashboard_widget('ARMemberSummary', $armemberstatistics_txt, array($this, 'ARMemberSummary_display'));
+				wp_add_dashboard_widget('ARMRegisteredMembers', $recentmemeber_txt, array($this, 'ARMRegisteredMembers_display'));
+				wp_add_dashboard_widget('ARMUserTransactions', $recentpayments_txt, array($this, 'ARMUserTransactions_display'));
 				wp_add_dashboard_widget('armember-add-ons', esc_html__('ARMember Add-Ons', 'ARMember'), array($this, 'armember_dashboard_widgets_add_ons_list'));
 
 				global $wp_meta_boxes;
@@ -188,8 +190,10 @@ if(!class_exists('armAdminDashboardWidgets'))
 			}
 		}
 		function armember_dashboard_widgets_add_ons_list(){
-			$arm_dashboard_add_ons_list_url = 'https://www.armemberplugin.com/armember_addons/addon_whatsnew_list.php';
-	        $arm_dashboard_add_ons_list     = wp_remote_get($arm_dashboard_add_ons_list_url, $args = array());
+			global $arm_version;
+			$arm_dashboard_add_ons_list_url = 'https://www.armemberplugin.com/armember_addons/addon_whatsnew_list.php?arm_version='.$arm_version;
+			$arm_dashboard_add_ons_list_args = array();
+	        $arm_dashboard_add_ons_list	= wp_remote_get($arm_dashboard_add_ons_list_url, $arm_dashboard_add_ons_list_args);
 
 	        if (is_wp_error($arm_dashboard_add_ons_list)) {
 	            printf(esc_html__("%sThere is something error to retrieve the %s add-ons list. Please try again later.%s",MEMBERSHIP_TXTDOMAIN),"<div class='arm_add_ons_msg'>","ARMember","</div>");
@@ -220,33 +224,45 @@ if(!class_exists('armAdminDashboardWidgets'))
 	                                $arm_add_ons_list_link = $arm_add_ons_list->addon_url;
 	                                $arm_add_ons_list_img  = $arm_add_ons_list->addon_icon_url;
 	                                $arm_add_ons_list_name = $arm_add_ons_list->addon_name;
-	                                
-	                                $arm_add_on_td_class = '';
+	                                if(!empty($arm_add_ons_list->addon_display_size) && $arm_add_ons_list->addon_display_size == 'full') {
+	                                	$addon_display_anchor_styling = !empty($arm_add_ons_list->addon_display_anchor_styling) ? ' style="'.$arm_add_ons_list->addon_display_anchor_styling.'"' : '';
+		                    ?>
+		                                	<td colspan="4" align="center" class="arm_dashboard_add_ons_icon arm_dashboard_addon_list_no_border arm_dashboard_icon_full">
+				                                <a target="_blank" class="arm_dashboard_add_ons_icon_image" href="<?php echo esc_url($arm_add_ons_list_link); ?>" title='<?php echo esc_attr($arm_add_ons_list_name); ?>'<?php echo $addon_display_anchor_styling;?>>
+				                                    <img src="<?php echo esc_url($arm_add_ons_list_img); ?>"  alt='<?php echo esc_attr($arm_add_ons_list_name); ?>'/>
+				                                </a>			                            
+				                            </td>   			                              			                                
+							<?php
+			                            $arm_addons_list_counter = $arm_addons_list_counter + 3;
+			                            $arm_total_addons = $arm_total_addons+3;
+			                            $arm_addons_last_tr_counter++;
+	                                } else {
+		                                $arm_add_on_td_class = '';
+		                                if( $arm_addons_list_counter % 4 == 0 ){
+		                                    $arm_add_on_td_class = ' arm_dashboard_addon_list_no_border';
+		                                }
+		                    ?>
+			                            <td class="arm_dashboard_add_ons_icon <?php echo esc_attr($arm_add_on_td_class); ?>">
+			                                <a target="_blank" class="arm_dashboard_add_ons_icon_image" href="<?php echo esc_url($arm_add_ons_list_link); ?>" title='<?php echo esc_attr($arm_add_ons_list_name); ?>'>
+			                                    <img src="<?php echo esc_url($arm_add_ons_list_img); ?>"  alt='<?php echo esc_attr($arm_add_ons_list_name); ?>'/>
+			                                </a>
+			                            </td>			                        
+			                <?php
+			                        }    
+		                                if( $arm_addons_list_counter % 4 == 0 && $arm_addons_list_counter < $arm_total_addons ){
+		                                    echo '</tr>';
+		                                    $arm_addons_list_tr_class = ($arm_addons_list_tr_class =='even') ? 'odd' : 'even';
+		                                    $arm_addons_row_counter++;
+		                                    if( $arm_addons_row_counter == $arm_addons_last_tr_counter ){
+		                                        $arm_addons_list_tr_class_ext ='arm_dashboard_addons_last_row';
+		                                    }
+		                                    echo '<tr class="'.esc_attr($arm_addons_list_tr_class).' '.esc_attr($arm_addons_list_tr_class_ext).'">';
+		                                }
 
-	                                if( $arm_addons_list_counter % 4 == 0 ){
-	                                    $arm_add_on_td_class = ' arm_dashboard_addon_list_no_border';
-	                                }
-		                            ?>
-		                            <td class="arm_dashboard_add_ons_icon <?php echo esc_attr($arm_add_on_td_class); ?>">
-		                                <a target="_blank" class="arm_dashboard_add_ons_icon_image" href="<?php echo esc_url($arm_add_ons_list_link); ?>" title='<?php echo esc_attr($arm_add_ons_list_name); ?>'>
-		                                    <img src="<?php echo esc_url($arm_add_ons_list_img); ?>"  alt='<?php echo esc_attr($arm_add_ons_list_name); ?>'/>
-		                                </a>
-		                            </td>
-		                            <?php
-	                                if( $arm_addons_list_counter % 4 == 0 && $arm_addons_list_counter < $arm_total_addons ){
-	                                    echo '</tr>';
-	                                    $arm_addons_list_tr_class = ($arm_addons_list_tr_class =='even') ? 'odd' : 'even';
-	                                    $arm_addons_row_counter++;
-	                                    if( $arm_addons_row_counter == $arm_addons_last_tr_counter ){
-	                                        $arm_addons_list_tr_class_ext ='arm_dashboard_addons_last_row';
-	                                    }
-	                                    echo '<tr class="'.esc_attr($arm_addons_list_tr_class).' '.esc_attr($arm_addons_list_tr_class_ext).'">';
-	                                }
-
-	                                if( $arm_addons_list_counter == $arm_total_addons ){
-	                                    echo '</tr>';
-	                                }
-	                                $arm_addons_list_counter++;
+		                                if( $arm_addons_list_counter == $arm_total_addons ){
+		                                    echo '</tr>';
+		                                }
+		                                $arm_addons_list_counter++;		                                
 	                            }
 
 	                        }
@@ -313,7 +329,7 @@ if(!class_exists('armAdminDashboardWidgets'))
 		{	
 			global $wp, $wpdb, $ARMember, $arm_slugs, $arm_global_settings, $arm_members_class, $arm_subscription_plans, $arm_payment_gateways, $arm_transaction;
 			$date_format = $arm_global_settings->arm_get_wp_date_format();
-			$pay_log = $wpdb->get_results("SELECT * FROM `".$ARMember->tbl_arm_payment_log."` WHERE `arm_is_post_payment`='0' AND `arm_paid_post_id`='0' ORDER BY `arm_created_date` DESC", ARRAY_A);
+			$pay_log = $wpdb->get_results("SELECT * FROM `".$ARMember->tbl_arm_payment_log."` WHERE `arm_is_post_payment`='0' AND `arm_paid_post_id`='0' AND arm_is_gift_payment = 0 ORDER BY `arm_created_date` DESC LIMIT 0,6", ARRAY_A);
             $bt_logs = $arm_transaction->arm_get_bank_transfer_logs(0, 0, 0, 6);
             $payment_log = array_merge($pay_log, $bt_logs);
             $transactions = array();
@@ -462,7 +478,7 @@ if(!class_exists('armAdminDashboardWidgets'))
 			</div>
 			<div class="armclear"></div>
 			<hr style="margin: 20px 0;"/>
-			<div class="arm_members_chart_container" style="min-width: 255px;">
+			<div class="arm_members_chart_container arm_min_width_255" >
 				<?php $arm_members_class->arm_chartRecentMembers()?>
 				<div class="armclear"></div>
 				<?php $arm_members_class->arm_chartPlanMembers($all_plans)?>

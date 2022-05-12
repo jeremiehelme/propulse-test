@@ -5,31 +5,36 @@ if (!class_exists('ARM_membership_setup')) {
 
         function __construct() {
             global $wpdb, $ARMember, $arm_slugs, $arm_global_settings;
-            add_action('wp_ajax_arm_delete_single_setup', array(&$this, 'arm_delete_single_setup'));
-            add_action('wp_ajax_arm_refresh_setup_items', array(&$this, 'arm_refresh_setup_items'));
-            add_action('wp_ajax_arm_update_plan_form_gateway_selection', array(&$this, 'arm_update_plan_form_gateway_selection'));
-            add_action('wp_ajax_arm_setup_shortcode_preview', array(&$this, 'arm_setup_shortcode_preview_func'));
+            add_action('wp_ajax_arm_delete_single_setup', array($this, 'arm_delete_single_setup'));
+            add_action('wp_ajax_arm_refresh_setup_items', array($this, 'arm_refresh_setup_items'));
+            add_action('wp_ajax_arm_update_plan_form_gateway_selection', array($this, 'arm_update_plan_form_gateway_selection'));
+            add_action('wp_ajax_arm_setup_shortcode_preview', array($this, 'arm_setup_shortcode_preview_func'));
             /* Membership Setup Wizard Form Shortcode Ajax Action */
-            add_action('wp_ajax_arm_membership_setup_form_ajax_action', array(&$this, 'arm_membership_setup_form_ajax_action'));
-            add_action('wp_ajax_nopriv_arm_membership_setup_form_ajax_action', array(&$this, 'arm_membership_setup_form_ajax_action'));
-            add_action('arm_save_membership_setups', array(&$this, 'arm_save_membership_setups_func'));
-            add_shortcode('arm_setup', array(&$this, 'arm_setup_shortcode_func'));
-            add_shortcode('arm_setup_internal', array(&$this, 'arm_setup_shortcode_func_internal'));
+            add_action('wp_ajax_arm_membership_setup_form_ajax_action', array($this, 'arm_membership_setup_form_ajax_action'));
+            add_action('wp_ajax_nopriv_arm_membership_setup_form_ajax_action', array($this, 'arm_membership_setup_form_ajax_action'));
+            add_action('arm_save_membership_setups', array($this, 'arm_save_membership_setups_func'));
+            add_shortcode('arm_setup', array($this, 'arm_setup_shortcode_func'));
+            add_shortcode('arm_setup_internal', array($this, 'arm_setup_shortcode_func_internal'));
 
-            add_action('arm_before_render_membership_setup_form', array(&$this, 'arm_check_include_js_css'), 10, 2);
-            add_action('wp_ajax_arm_renew_plan_action', array(&$this, 'arm_renew_update_plan_action_func'));
-            add_action('wp_ajax_nopriv_arm_renew_plan_action', array(&$this, 'arm_renew_update_plan_action_func'));
-            add_action('wp_ajax_arm_update_plan_action', array(&$this, 'arm_renew_update_plan_action_func'));
-            add_action('wp_ajax_nopriv_arm_update_plan_action', array(&$this, 'arm_renew_update_plan_action_func'));
-            add_action('wp_ajax_arm_update_card_action', array(&$this, 'arm_update_card_action_func'));
-            add_action('wp_ajax_arm_membership_update_card_form_ajax_action', array(&$this, 'arm_membership_update_card_form_ajax_action'));
+            add_action('arm_before_render_membership_setup_form', array($this, 'arm_check_include_js_css'), 10, 2);
+            add_action('wp_ajax_arm_renew_plan_action', array($this, 'arm_renew_update_plan_action_func'));
+            add_action('wp_ajax_arm_update_card_action', array($this, 'arm_update_card_action_func'));
+            add_action('wp_ajax_arm_membership_update_card_form_ajax_action', array($this, 'arm_membership_update_card_form_ajax_action'));
 
             //For configure plan preview data save
-            add_action('wp_ajax_arm_save_configure_preview_data', array(&$this, 'arm_save_configure_signup_preview_data'));
+            add_action('wp_ajax_arm_save_configure_preview_data', array($this, 'arm_save_configure_signup_preview_data'));
 
             
-            //add_action('wp', array(&$this, 'arm_membership_setup_preview_func'));
-            add_action('arm_cancel_subscription_gateway_action', array(&$this, 'arm_cancel_bank_transfer_subscription'), 10, 2);
+            //add_action('wp', array($this, 'arm_membership_setup_preview_func'));
+            add_action('arm_cancel_subscription_gateway_action', array($this, 'arm_cancel_bank_transfer_subscription'), 10, 2);
+
+
+            // New hooks of payment functions
+            add_filter('arm_calculate_payment_gateway_submit_data', array($this, 'arm_calculate_membership_data'), 10, 5);
+
+            add_action('arm_webhook_update_next_recurring_data', array($this, 'arm_webhook_next_recurring_update_data'), 10, 3);
+
+            add_filter('arm_modify_payment_webhook_data', array($this, 'arm_modify_payment_webhook_data'), 10, 10);
         } 
         function arm_save_configure_signup_preview_data(){
             global $ARMember, $arm_capabilities_global;
@@ -72,20 +77,25 @@ if (!class_exists('ARM_membership_setup')) {
         }
 
         function arm_cancel_bank_transfer_subscription($user_id, $plan_id) {
-            global $wpdb, $ARMember, $arm_global_settings, $arm_subscription_plans, $arm_transaction, $arm_payment_gateways, $arm_manage_communication;
+            global $wpdb, $ARMember, $arm_global_settings, $arm_subscription_plans, $arm_transaction, $arm_payment_gateways, $arm_manage_communication, $arm_debug_payment_log_id;
+
+
+
             if (!empty($user_id) && $user_id != 0 && !empty($plan_id) && $plan_id != 0) {
-                $defaultPlanData = $arm_subscription_plans->arm_default_plan_array();
-                $userPlanDatameta = get_user_meta($user_id, 'arm_user_plan_' . $plan_id, true);
-                $userPlanDatameta = !empty($userPlanDatameta) ? $userPlanDatameta : array();
-                $planData = shortcode_atts($defaultPlanData, $userPlanDatameta);
+                $arm_cancel_subscription_data = array();
+                $arm_cancel_subscription_data = apply_filters('arm_gateway_cancel_subscription_data', $arm_cancel_subscription_data, $user_id, $plan_id, 'bank_transfer', '', '', '');
 
-                $user_payment_gateway = $planData['arm_user_gateway'];
+                if(!empty($arm_cancel_subscription_data)){
 
-                $user_detail = get_userdata($user_id);
-                $payer_email = $user_detail->user_email;
-
-                if (in_array(strtolower($user_payment_gateway), array('bank_transfer', 'manual'))) {
-                    $arm_manage_communication->arm_user_plan_status_action_mail(array('plan_id' => $plan_id, 'user_id' => $user_id, 'action' => 'on_cancel_subscription'));
+                    $arm_debug_log_data = array(
+                        'user_id' => $user_id,
+                        'plan_id' => $plan_id,
+                        'cancel_subscription_data' => $arm_cancel_subscription_data,
+                    );
+                    do_action('arm_payment_log_entry', 'bank_transfer', 'bank transfer cancel subscription', 'armember', $arm_debug_log_data, $arm_debug_payment_log_id);
+                    
+                    $arm_cancel_amount = !empty($arm_cancel_subscription_data['arm_cancel_amount']) ? $arm_cancel_subscription_data['arm_cancel_amount'] : 0;
+                    do_action('arm_cancel_subscription_payment_log_entry', $user_id, $plan_id, 'bank_transfer', '', '', '', $arm_cancel_amount);
                 }
             }
         }
@@ -101,7 +111,7 @@ if (!class_exists('ARM_membership_setup')) {
         }
 
         function arm_membership_setup_form_ajax_action($setup_id = 0, $post_data = array()) {
-            global $wp, $wpdb, $current_user, $arm_slugs, $arm_errors, $ARMember, $arm_member_forms, $arm_global_settings, $arm_payment_gateways, $arm_manage_coupons, $arm_subscription_plans, $payment_done, $authorize_net_auth, $arm_manage_communication, $arm_transaction, $is_multiple_membership_feature, $arm_pay_per_post_feature;
+            global $wp, $wpdb, $current_user, $arm_slugs, $arm_errors, $ARMember, $arm_member_forms, $arm_global_settings, $arm_payment_gateways, $arm_manage_coupons, $arm_subscription_plans, $payment_done, $authorize_net_auth, $arm_manage_communication, $arm_transaction, $is_multiple_membership_feature, $arm_pay_per_post_feature, $arm_debug_payment_log_id;
             $authorize_net_auth = array();
             $post_data = (!empty($_POST)) ? $_POST : $post_data;
             $setup_id = (!empty($post_data['setup_id']) && $post_data['setup_id'] != 0) ? intval($post_data['setup_id']) : $setup_id;
@@ -261,6 +271,9 @@ if (!class_exists('ARM_membership_setup')) {
 
                                             $plan = $same_old_plan;
                                         }
+                                    } else if($oldPaymentMode == 'auto_debit_subscription' && !$is_multiple_membership_feature->isMultipleMembershipFeature && !$arm_is_paid_post) {
+                                        //If old payment mode is auto-debit and same plan purchase then old subscription will canceled.
+                                        do_action('arm_cancel_subscription_gateway_action', $user_id, $plan_id);
                                     }
                                 }
                             }
@@ -339,6 +352,19 @@ if (!class_exists('ARM_membership_setup')) {
                         }
                     }
 
+                    $arm_plan_details = !empty($plan->plan_detail) ? $plan->plan_detail : '' ;  
+                    $arm_modify_setup_urls = array('default_setup_url' => $arm_default_setup_url, 'setup_redirect' => $setup_redirect);
+                    $arm_modify_setup_urls = apply_filters('arm_modify_setup_ajax_default_setup_url', $arm_modify_setup_urls, $redirection_settings, $arm_plan_details);
+                    if(!empty($arm_modify_setup_urls) && is_array($arm_modify_setup_urls)){
+                        if($arm_modify_setup_urls['default_setup_url']){
+                            $arm_default_setup_url = $arm_modify_setup_urls['default_setup_url'];
+                        }
+
+                        if(!empty($arm_modify_setup_urls['setup_redirect'])){
+                            $setup_redirect = $arm_modify_setup_urls['setup_redirect'];
+                        }
+                    }
+
                     $all_global_settings = $arm_global_settings->arm_get_all_global_settings();
                     $general_settings = $all_global_settings['general_settings'];
                     $enable_tax= isset($general_settings['enable_tax']) ? $general_settings['enable_tax'] : 0;
@@ -370,6 +396,15 @@ if (!class_exists('ARM_membership_setup')) {
                     $setup_name = $setup_data['setup_name'];
                     $modules = $setup_data['setup_modules']['modules'];
                     $coupon_as_invitation = isset($setup_data['setup_modules']['modules']['coupon_as_invitation']) ? $setup_data['setup_modules']['modules']['coupon_as_invitation'] : 0 ;
+
+                    if(!is_user_logged_in() && $coupon_as_invitation == 1 && empty($post_data['arm_coupon_code'])){
+                        $response['status'] = 'error';
+                        $response['type'] = 'message';
+                        $response['message'] = '<div class="arm_error_msg">'.__('Please enter the coupon code.', 'ARMember').'</div>';
+
+                        echo json_encode($response);
+                        exit();
+                    }
                    
                     $module_order = array(
                         'plans' => 1,
@@ -530,7 +565,6 @@ if (!class_exists('ARM_membership_setup')) {
                                                 $actual_error = !empty($actual_error) ? $actual_error_code.' '.$actual_error.' '.$arm_help_link : '';
                                                 $err_msg = $arm_global_settings->common_message['arm_invalid_credit_card'];
                                                 $actualmsg = ($arm_authorise_enable_debug_mode == '1') ? $actual_error : $err_msg;
-                                                $ARMember->arm_write_response('reputelog authorize.net response4=> '.$actualmsg);
                                                 $validate_msgs['card_number'] = (!empty($err_msg)) ? $err_msg : __('Please enter correct card details.', 'ARMember');
                                                 $validate_msgs['card_number'] = (!empty($actualmsg)) ? $actualmsg : $validate_msgs['card_number'];
                                             }
@@ -559,6 +593,7 @@ if (!class_exists('ARM_membership_setup')) {
                             }
                             if ($module == 'coupons' && !empty($post_data['arm_coupon_code'])) {
                                 if ($arm_manage_coupons->isCouponFeature) {
+                                    $post_data['arm_coupon_code'] = trim($post_data['arm_coupon_code']);
                                     $check_coupon = $arm_manage_coupons->arm_apply_coupon_code($post_data['arm_coupon_code'], $plan_id, $setup_id, $payment_cycle, $current_user_plan);
                                     if ($check_coupon['status'] == 'error') {
                                         $validate = false;
@@ -603,6 +638,7 @@ if (!class_exists('ARM_membership_setup')) {
                         }
                         
                         $entry_post_data['tax_percentage'] = $tax_percentage;
+                        $entry_post_data = apply_filters('arm_modify_submission_entry_post_data', $entry_post_data, $plan);
                         $entry_post_data = apply_filters('arm_add_arm_entries_value', $entry_post_data);
                         $new_entry = array(
                             'arm_entry_email' => $entry_email,
@@ -626,8 +662,8 @@ if (!class_exists('ARM_membership_setup')) {
                                 $new_entry['arm_is_post_entry'] = 1;
                                 $new_entry['arm_paid_post_id'] = $arm_paid_post_id;
                                 $arm_is_paid_post = true;
-				
-				                $arm_setup_redirect_url = get_permalink($arm_paid_post_id);
+                
+                                $arm_setup_redirect_url = get_permalink($arm_paid_post_id);
 
                                 $setup_redirect = $arm_setup_redirect_url;
                                 $arm_redirection_setup_paid_post_type = (isset($redirection_settings['setup_paid_post']['type']) && !empty($redirection_settings['setup_paid_post']['type'])) ? $redirection_settings['setup_paid_post']['type'] : '0';
@@ -639,12 +675,16 @@ if (!class_exists('ARM_membership_setup')) {
                                        $setup_redirect = $arm_global_settings->arm_get_permalink('', $arm_redirection_setup_paid_post_page_id);
                                    }
                                 }
-                            	$entry_post_data['setup_redirect'] = $setup_redirect;
+                                $entry_post_data['setup_redirect'] = $setup_redirect;
                                 $new_entry['arm_entry_value'] = maybe_serialize($entry_post_data);
                             }
 
                         }
 
+                        $arm_is_gift = (!empty($plan->isGiftPlan) && ($plan->isGiftPlan == 1)) ? 1 : 0;
+                        
+                        $new_entry = apply_filters('arm_modify_entry_data_before_submit', $new_entry);
+			
                         $new_entry_results = $wpdb->insert($ARMember->tbl_arm_entries, $new_entry);
                         $entry_id = $wpdb->insert_id;
 
@@ -689,10 +729,8 @@ if (!class_exists('ARM_membership_setup')) {
                                                     $need_to_cancel_payment_gateway_array = $arm_payment_gateways->arm_need_to_cancel_old_subscription_gateways();
                                                     $need_to_cancel_payment_gateway_array = !empty($need_to_cancel_payment_gateway_array) ? $need_to_cancel_payment_gateway_array : array();
                                                     if (in_array($payment_gateway, $need_to_cancel_payment_gateway_array)) {
-                                                       
                                                         do_action('arm_cancel_subscription_gateway_action', $user_id, $plan_id);
-                                                    }
-                                                    
+                                                    }   
                                                 }
                                             }
                                         } else {
@@ -712,7 +750,7 @@ if (!class_exists('ARM_membership_setup')) {
                                         /* check if upgrade downgrade action is applied
                                          * if it is immmediately then, cancel old subscription if plan is recurring immediately */
 
-                                        if (!$is_multiple_membership_feature->isMultipleMembershipFeature && !$arm_is_paid_post ) {
+                                        if (!$is_multiple_membership_feature->isMultipleMembershipFeature && !$arm_is_paid_post && !$arm_is_gift) {
                                             if ($old_plan->exists()) {
                                                 if ($old_plan->is_lifetime() || $old_plan->is_free() || ($old_plan->is_recurring() && $plan->is_recurring())) {
                                                     $is_update_plan = true;
@@ -746,8 +784,16 @@ if (!class_exists('ARM_membership_setup')) {
                                     if (!$plan->is_free()) {
                                         if (!empty($payment_gateway_options)) {
                                             if ($payment_gateway == 'bank_transfer') {
-                                                
                                                 $arm_bank_transfer_do_not_allow_pending_transaction = isset($payment_gateway_options['arm_bank_transfer_do_not_allow_pending_transaction']) ? $payment_gateway_options['arm_bank_transfer_do_not_allow_pending_transaction'] : 0;
+                                                $arm_debug_log_data = array(
+                                                    'do_not_allow_pending_transaction' => $arm_bank_transfer_do_not_allow_pending_transaction,
+                                                    'is_recurring' => $plan->is_recurring(),
+                                                    'user_id' => $user_id,
+                                                    'plan_id' => $plan_id,
+                                                    'entry_id' => $entry_id,
+                                                    'post_data' => $post_data,
+                                                );
+                                                do_action('arm_payment_log_entry', 'bank_transfer', 'Submit form details', 'armember', $arm_debug_log_data, $arm_debug_payment_log_id);
                                                 $payment_mode_bt = '';
                                                 if ($plan->is_recurring()) {
                                                     $payment_mode_bt = "manual_subscription";
@@ -765,6 +811,7 @@ if (!class_exists('ARM_membership_setup')) {
                                                     if($arm_bank_transfer_do_not_allow_pending_transaction == '1')
                                                     {
                                                         $arm_last_bank_transfer_payment_status = $wpdb->get_var($wpdb->prepare("SELECT `arm_transaction_status` FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_user_id`=%d AND `arm_plan_id`=%d AND arm_payment_gateway=%s AND `arm_created_date`<=%s ORDER BY `arm_log_id` DESC LIMIT 0,1", $user_id, $plan_id,'bank_transfer', $now));
+                                                        do_action('arm_payment_log_entry', 'bank_transfer', 'Last bank transfer payment status', 'armember', $arm_last_bank_transfer_payment_status, $arm_debug_payment_log_id);
                                                         if(isset($arm_last_bank_transfer_payment_status) && $arm_last_bank_transfer_payment_status==0)
                                                         {
                                                             $arm_bank_transfer_err_msg = $arm_global_settings->common_message['arm_do_not_allow_pending_payment_bank_transfer'];
@@ -799,12 +846,25 @@ if (!class_exists('ARM_membership_setup')) {
                                                     $validate_msgs['payment_failed'] = __('Selected plan is not valid for bank transfer.', 'ARMember');
                                                 }
                                             } else {
-                                                
-                                                
                                                 $post_data = apply_filters('arm_change_posted_data_before_payment_outside', $post_data, $payment_gateway, $payment_gateway_options, $entry_id);
 
-                                               
-                                                do_action('arm_payment_gateway_validation_from_setup', $payment_gateway, $payment_gateway_options, $post_data, $entry_id);
+                                                $arm_plan_id = (!empty($post_data['subscription_plan'])) ? $post_data['subscription_plan'] : 0;
+                                                if ($arm_plan_id == 0) {
+                                                    $arm_plan_id = (!empty($post_data['_subscription_plan'])) ? $post_data['_subscription_plan'] : 0;
+                                                }
+
+                                                $trial_not_allowed = 0;
+                                                $trial_not_allowed = apply_filters('arm_payment_gateway_trial_allowed', $trial_not_allowed, $arm_plan_id, $payment_gateway, $payment_gateway_options, $post_data);
+
+                                                if($trial_not_allowed){
+                                                    $err_msg = esc_html__('The Trial Period you have selected for this plan is not supported with', 'ARMember')." ".$payment_gateway;
+                                                    $payment_done = array('status' => FALSE, 'error' => $err_msg);
+                                                }
+                                                else
+                                                {                                               
+                                                    do_action('arm_payment_gateway_validation_from_setup', $payment_gateway, $payment_gateway_options, $post_data, $entry_id);
+                                                }
+
                                                 global $payment_done;
                                                 if (isset($payment_done['status']) && $payment_done['status'] === FALSE) {
                                                     $validate_msgs['payment_failed'] = $payment_done['error'];
@@ -836,6 +896,12 @@ if (!class_exists('ARM_membership_setup')) {
                                                         $userPlanData['arm_2checkout'] = '';
                                                     } elseif ($payment_gateway == 'stripe') {
                                                         $pg_subsc_data = array('customer_id' => $log_detail->arm_token, 'transaction_id' => $log_detail->arm_transaction_id);
+                                                        $arm_extra_vars_data = !empty($log_detail->arm_extra_vars) ? maybe_unserialize($log_detail->arm_extra_vars) : '';
+                                                        if(!empty($arm_extra_vars_data) && !empty($arm_extra_vars_data['arm_stripe_customer_id']))
+                                                        {
+                                                            $pg_subsc_data['customer_id'] = $arm_extra_vars_data['arm_stripe_customer_id'];
+                                                            $pg_subsc_data['transaction_id'] = $log_detail->arm_token;
+                                                        }
                                                         $userPlanData['arm_stripe'] = $pg_subsc_data;
                                                         $userPlanData['arm_authorize_net'] = '';
                                                         $userPlanData['arm_2checkout'] = '';
@@ -907,7 +973,28 @@ if (!class_exists('ARM_membership_setup')) {
                                             }
                                         } else {
                                             $post_data = apply_filters('arm_change_posted_data_before_payment_outside', $post_data, $payment_gateway, $payment_gateway_options, $entry_id);
-                                            do_action('arm_payment_gateway_validation_from_setup', $payment_gateway, $payment_gateway_options, $post_data, $entry_id);
+
+                                            $arm_extra_vars['entry_id'] = $entry_id;
+                                            
+                                            $arm_plan_id = (!empty($post_data['subscription_plan'])) ? $post_data['subscription_plan'] : 0;
+                                            if ($arm_plan_id == 0) {
+                                                $arm_plan_id = (!empty($post_data['_subscription_plan'])) ? $post_data['_subscription_plan'] : 0;
+                                            }
+
+                                            //Check trial supported or not at payment gateway side.
+                                            $trial_not_allowed = 0;
+                                            $trial_not_allowed = apply_filters('arm_payment_gateway_trial_allowed', $trial_not_allowed, $arm_plan_id, $payment_gateway, $payment_gateway_options, $post_data);
+
+                                            if($trial_not_allowed){
+                                                $err_msg = esc_html__('The Trial Period you have selected for this plan is not supported with', 'ARMember').' '. $payment_gateway;
+                                                $payment_done = array('status' => FALSE, 'error' => $err_msg);
+                                            }
+                                            else
+                                            {
+                                                do_action('arm_payment_gateway_validation_from_setup', $payment_gateway, $payment_gateway_options, $post_data, $entry_id);
+                                            }
+
+
 
                                             global $payment_done;
                                             if (isset($payment_done['status']) && $payment_done['status'] === FALSE) {
@@ -934,7 +1021,6 @@ if (!class_exists('ARM_membership_setup')) {
                                                 'arm_amount' => 0,
                                                 'arm_currency' => 'USD',
                                                 'arm_coupon_code' => '',
-                                                'arm_response_text' => '',
                                                 'arm_extra_vars' => '',
                                                 'arm_created_date' => current_time('mysql')
                                             );
@@ -969,13 +1055,14 @@ if (!class_exists('ARM_membership_setup')) {
                                                     $user_register_verification = isset($arm_global_settings->global_settings['user_register_verification']) ? $arm_global_settings->global_settings['user_register_verification'] : 'auto';
                                                     if($chk_log_detail->arm_amount==0 && $user_register_verification == 'auto')
                                                     {
-                                                        $arm_transaction->arm_change_bank_transfer_status($payment_log_id, '1');
+                                                        $arm_transaction->arm_change_bank_transfer_status($payment_log_id, '1', 0);
                                                     }
                                                 }
                                             }
                                             
                                             if ($module == 'coupons' && !empty($post_data['arm_coupon_code'])) {
                                                 if ($arm_manage_coupons->isCouponFeature) {
+                                                    $post_data['arm_coupon_code'] = trim($post_data['arm_coupon_code']);
                                                     $check_coupon = $arm_manage_coupons->arm_apply_coupon_code($post_data['arm_coupon_code'], $plan_id, $setup_id, $payment_cycle, $current_user_plan);
                                                     if ('success' == $check_coupon['status']) { 
                                                         if( 1 == $coupon_as_invitation ) {
@@ -1102,7 +1189,8 @@ if (!class_exists('ARM_membership_setup')) {
                 'subscription_plan' => 0,
                 'hide_plans' => 0,
                 'is_arm_paid_post' => 0,
-                'paid_post_id' => ''
+                'paid_post_id' => '',
+                'your_current_membership_text' =>__('Your Current Membership', 'ARMember'),
             );
 
             $ARMember->arm_session_start();
@@ -1152,6 +1240,8 @@ if (!class_exists('ARM_membership_setup')) {
                             }
                         }
                     }
+
+                    $current_user_plan_ids = apply_filters('arm_modify_plan_ids_externally', $current_user_plan_ids, $current_user_id);
 
                     $current_user_plan = '';
                     $current_plan_data = array();
@@ -1350,7 +1440,7 @@ if (!class_exists('ARM_membership_setup')) {
                                         }
                                         if (!empty($current_user_plan_ids)) {
 
-                                            $module_content .= '<div class="arm_current_user_plan_info">' . __('Your Current Membership', 'ARMember') . ': <span>' . implode(", ", $plan_name_array) . '</span></div>';
+                                            $module_content .= '<div class="arm_current_user_plan_info">' . $your_current_membership_text . ': <span>' . implode(", ", $plan_name_array) . '</span></div>';
                                         }
                                         $module_content .= '<div class="arm_module_plans_container arm_module_box ' . $form_no . ' ' . $form_layout . '" ' . $is_hide_class . '>';
 
@@ -1543,6 +1633,9 @@ if (!class_exists('ARM_membership_setup')) {
                                                         $data_allowed_payment_gateways = json_encode($allowed_payment_gateways_);
 
                                                         $arm_plan_amount = $arm_payment_gateways->arm_amount_set_separator($global_currency, $planObj->amount);
+
+                                                        $arm_plan_amount = $planObj->amount = apply_filters('arm_modify_secondary_amount_outside', $arm_plan_amount, $plan_data);
+
                                                         $planInputAttr = ' data-type="' . $plan_type . '" data-plan_name="' . $planObj->name . '" data-amt="' . $arm_plan_amount . '" data-recurring="' . $payment_type . '" data-is_trial="' . $is_trial . '" data-trial_amt="' . $trial_amount . '" data-allowed_gateways=\'' . $data_allowed_payment_gateways . '\' data-plan_text="' . htmlentities($planText) . '"';
 
 
@@ -1738,6 +1831,7 @@ if (!class_exists('ARM_membership_setup')) {
                                                         $allowed_payment_gateways_ = apply_filters('arm_allowed_payment_gateways', $allowed_payment_gateways_, $planObj, $plan_options);
                                                         $data_allowed_payment_gateways = json_encode($allowed_payment_gateways_);
                                                         $arm_plan_amount = $arm_payment_gateways->arm_amount_set_separator($global_currency, $planObj->amount);
+                                                        $arm_plan_amount = $planObj->amount = apply_filters('arm_modify_secondary_amount_outside', $arm_plan_amount,  $plan_data);
                                                         $planInputAttr = ' data-type="' . $plan_type . '" data-plan_name="' . $planObj->name . '" data-amt="' . $arm_plan_amount . '" data-recurring="' . $payment_type . '" data-is_trial="' . $is_trial . '" data-trial_amt="' . $trial_amount . '"  data-allowed_gateways=\'' . $data_allowed_payment_gateways . '\' data-plan_text="' . htmlentities($planText) . '"';
 
 
@@ -1933,6 +2027,7 @@ if (!class_exists('ARM_membership_setup')) {
 
 
                                                     $arm_paymentg_cycle_amount = (isset($arm_cycle_data['cycle_amount'])) ? $arm_payment_gateways->arm_amount_set_separator($global_currency, $arm_cycle_data['cycle_amount']) : 0;
+                                                    $arm_paymentg_cycle_amount = apply_filters('arm_modify_secondary_amount_outside', $arm_paymentg_cycle_amount, $arm_cycle_data);
                                                     $arm_paymentg_cycle_label = (isset($arm_cycle_data['cycle_label'])) ? $arm_cycle_data['cycle_label'] : '';
 
 
@@ -1961,6 +2056,8 @@ if (!class_exists('ARM_membership_setup')) {
 
 
                                                     $arm_paymentg_cycle_amount = (isset($arm_cycle_data['cycle_amount'])) ? $arm_payment_gateways->arm_amount_set_separator($global_currency, $arm_cycle_data['cycle_amount']) : 0;
+                                                    $arm_paymentg_cycle_amount = apply_filters('arm_modify_secondary_amount_outside', $arm_paymentg_cycle_amount, $arm_cycle_data);
+
                                                     $arm_paymentg_cycle_label = (isset($arm_cycle_data['cycle_label'])) ? $arm_cycle_data['cycle_label'] : '';
 
                                                     $pc_content = '<label class="arm_module_payment_cycle_option">';
@@ -2475,6 +2572,7 @@ if (!class_exists('ARM_membership_setup')) {
                 'hide_plans' => 0,
                 'payment_duration' => 0,
                 'setup_form_id' => '',
+                'your_current_membership_text' =>__('Your Current Membership', 'ARMember'),
             );
             /* Extract Shortcode Attributes */
             $args = shortcode_atts($defaults, $atts, 'arm_setup');
@@ -2527,6 +2625,8 @@ if (!class_exists('ARM_membership_setup')) {
                         }
                     }
 
+                    $current_user_plan_ids = apply_filters('arm_modify_plan_ids_externally', $current_user_plan_ids, $current_user_id);
+
                     $current_user_plan = '';
                     $current_plan_data = array();
                     if (!empty($current_user_plan_ids)) {
@@ -2540,6 +2640,7 @@ if (!class_exists('ARM_membership_setup')) {
                     $user_selected_plan = isset($setup_modules['selected_plan']) ? $setup_modules['selected_plan'] : "";
                     $modules = $setup_modules['modules'];
                     $setup_style = isset($setup_modules['style']) ? $setup_modules['style'] : array();
+                    $setup_type = (!empty($setup_data['setup_type'])) ? stripslashes($setup_data['setup_type']) : 0;
 
                     $tax_percentage = 0;
                     $enable_tax = isset($general_settings['enable_tax']) ? $general_settings['enable_tax'] : 0;
@@ -2751,7 +2852,6 @@ if (!class_exists('ARM_membership_setup')) {
 
                                     $module_content .= '<input type="hidden" data-id="arm_user_old_plan" name="arm_user_old_plan" value="' . $arm_user_old_plan . '">';
                                     $module_content .= '<input type="hidden" name="arm_is_user_logged_in_flag" data-id="arm_is_user_logged_in_flag" value="' . $arm_is_user_logged_in_flag . '">';
-
                                     $planOrders = (isset($modules['plans_order']) && !empty($modules['plans_order'])) ? $modules['plans_order'] : array();
                                     if (!empty($planOrders)) {
                                         asort($planOrders);
@@ -2759,6 +2859,8 @@ if (!class_exists('ARM_membership_setup')) {
                                     $plans = $this->armSortModuleOrders($modules['plans'], $planOrders);
                                     if (!empty($plans)) {
                                         $all_active_plans = $arm_subscription_plans->arm_get_all_active_subscription_plans();
+                                        $all_active_plans = apply_filters('arm_filter_active_plans_for_setup', $all_active_plans, $setup_type);
+                                        
                                         $is_hide_class = '';
                                         if ($isHidePlans == true || $is_hide_plan_selection_area == true) {
                                             $is_hide_class = 'style="display:none;"';
@@ -2776,7 +2878,7 @@ if (!class_exists('ARM_membership_setup')) {
 
                                         if (!empty($current_user_plan_ids)) {
 
-                                            $module_content .= '<div class="arm_current_user_plan_info">' . __('Your Current Membership', 'ARMember') . ': <span>' . implode(", ", $plan_name_array) . '</span></div>';
+                                            $module_content .= '<div class="arm_current_user_plan_info">' . $your_current_membership_text . ': <span>' . implode(", ", $plan_name_array) . '</span></div>';
                                         }
                                        
                                         $module_content .= '<div class="arm_module_plans_main_container"><div class="arm_module_plans_container arm_module_box ' . $form_no . ' ' . $form_layout . '" ' . $is_hide_class . '>';
@@ -2981,6 +3083,7 @@ if (!class_exists('ARM_membership_setup')) {
                                                         $data_allowed_payment_gateways = json_encode($allowed_payment_gateways_);
 
                                                         $arm_plan_amount = $arm_payment_gateways->arm_amount_set_separator($global_currency, $planObj->amount);
+                                                        $arm_plan_amount = $planObj->amount = apply_filters('arm_modify_secondary_amount_outside',  $arm_plan_amount, $plan_data);
                                                         $planInputAttr = ' data-type="' . $plan_type . '" data-plan_name="' . $planObj->name . '" data-amt="' . $arm_plan_amount . '" data-recurring="' . $payment_type . '" data-is_trial="' . $is_trial . '" data-trial_amt="' . $trial_amount . '" data-allowed_gateways=\'' . $data_allowed_payment_gateways . '\' data-plan_text="' . htmlentities($planText) . '"';
 
                                                         $count_total_cycle = 0;
@@ -3181,6 +3284,8 @@ if (!class_exists('ARM_membership_setup')) {
                                                         $allowed_payment_gateways_ = apply_filters('arm_allowed_payment_gateways', $allowed_payment_gateways_, $planObj, $plan_options);
                                                         $data_allowed_payment_gateways = json_encode($allowed_payment_gateways_);
                                                         $arm_plan_amount = $arm_payment_gateways->arm_amount_set_separator($global_currency, $planObj->amount);
+                                                        $arm_plan_amount = $planObj->amount = apply_filters('arm_modify_secondary_amount_outside', $arm_plan_amount, $plan_data);
+
                                                         $planInputAttr = ' data-type="' . $plan_type . '" data-plan_name="' . $planObj->name . '" data-amt="' . $arm_plan_amount . '" data-recurring="' . $payment_type . '" data-is_trial="' . $is_trial . '" data-trial_amt="' . $trial_amount . '"  data-allowed_gateways=\'' . $data_allowed_payment_gateways . '\' data-plan_text="' . htmlentities($planText) . '"';
 
                                                         $count_total_cycle = 0;
@@ -3436,6 +3541,7 @@ if (!class_exists('ARM_membership_setup')) {
 
 
                                                     $arm_paymentg_cycle_amount = (isset($arm_cycle_data['cycle_amount'])) ? $arm_payment_gateways->arm_amount_set_separator($global_currency, $arm_cycle_data['cycle_amount']) : 0;
+                                                    $arm_paymentg_cycle_amount = apply_filters('arm_modify_secondary_amount_outside', $arm_paymentg_cycle_amount, $arm_cycle_data);
                                                     $arm_paymentg_cycle_label = (isset($arm_cycle_data['cycle_label'])) ? $arm_cycle_data['cycle_label'] : '';
 
                                                     
@@ -3470,6 +3576,9 @@ if (!class_exists('ARM_membership_setup')) {
 
 
                                                     $arm_paymentg_cycle_amount = (isset($arm_cycle_data['cycle_amount'])) ? $arm_payment_gateways->arm_amount_set_separator($global_currency, $arm_cycle_data['cycle_amount']) : 0;
+                                                    
+                                                    $arm_paymentg_cycle_amount = apply_filters('arm_modify_secondary_amount_outside', $arm_paymentg_cycle_amount, $arm_cycle_data);
+
                                                     $arm_paymentg_cycle_label = (isset($arm_cycle_data['cycle_label'])) ? $arm_cycle_data['cycle_label'] : '';
 
                                                    
@@ -4326,6 +4435,8 @@ if (!class_exists('ARM_membership_setup')) {
                         border-color: ' . $setup_style['bg_active_color'] . ' !important;
                         color: ' . $setup_style['bg_active_color'] . ' !important;
                     }
+                    .arm_setup_form_' . $setupid . ' .arm_radio_wrapper input[type=radio] + span { border-color: ' . $setup_style['bg_active_color'] . ' !important; }
+                    .arm_setup_form_' . $setupid . ' .arm_radio_wrapper input[type=radio]:checked + span:before { background: ' . $setup_style['bg_active_color'] . ' !important; }
                     .arm_setup_form_' . $setupid . ' .arm_plan_skin3 .arm_module_plan_option .arm_setup_check_circle i,
                     .arm_setup_form_' . $setupid . ' .arm_plan_skin3 .arm_module_plan_option:hover .arm_setup_check_circle i{
                         color:  ' . $setup_style['bg_active_color'] . ' !important;
@@ -4613,6 +4724,9 @@ if (!class_exists('ARM_membership_setup')) {
                 $activeGateways = $arm_payment_gateways->arm_get_active_payment_gateways();
                 $returnArr['gateways'] = $this->arm_setup_gateway_list_options($selectedGateways, $activeGateways);
             }
+
+            $returnArr = apply_filters('arm_modify_update_plan_form_gateway_selection', $returnArr, $_POST);
+
             echo json_encode($returnArr);
             exit;
         }
@@ -4644,15 +4758,20 @@ if (!class_exists('ARM_membership_setup')) {
             global $wp, $wpdb, $ARMember, $arm_subscription_plans;
             $planOrderList = '';
             $allPlans = $arm_subscription_plans->arm_get_all_subscription_plans();
-
+	    
+            $allPlans = apply_filters('arm_modify_all_plans_arr_for_setup', $allPlans);
+	    
             $orderPlans = $this->arm_sort_module_by_order($allPlans, $planOrders);
             $user_selected_plan = (isset($user_selected_plan)) ? $user_selected_plan : '';
-
 
             if (!empty($orderPlans)) {
                 $pi = 1;
                 foreach ($orderPlans as $plan) {
                     $plan_id = $plan['arm_subscription_plan_id'];
+                    $add_class = 'arm_setup_subscription_plan_li';
+
+                    $add_class = apply_filters('arm_add_class_filter_for_setup', $add_class, $plan_id);
+
                     /* if no plan selected than set first plan default selected */
                     if ($pi == 1 && $user_selected_plan == '') {
                         $user_selected_plan = $plan_id;
@@ -4660,7 +4779,7 @@ if (!class_exists('ARM_membership_setup')) {
 
                     $planClass = 'arm_membership_setup_plans_li_' . $plan_id;
                     $planClass .= (!in_array($plan_id, $selectedPlans) ? ' hidden_section ' : '');
-                    $planOrderList .= '<li class="arm_membership_setup_sub_li arm_membership_setup_plans_li ' . $planClass . '">';
+                    $planOrderList .= '<li class="arm_membership_setup_sub_li arm_membership_setup_plans_li ' . $planClass . ' '.$add_class.'">';
                     $planOrderList .= '<div class="arm_membership_setup_sortable_icon"></div>';
                     $planOrderList .= '<input type="radio" class="arm_iradio arm_default_user_selected_plan" name="setup_data[setup_modules][selected_plan]" value="' . $plan_id . '" ' . checked($user_selected_plan, $plan_id, false) . ' id="arm_setup_plan_' . $plan_id . '">';
                     $planOrderList .= '<label for="arm_setup_plan_' . $plan_id . '" class="arm_setup_plan_label">' . $plan['arm_subscription_plan_name'] . '</label>';
@@ -4775,6 +4894,7 @@ if (!class_exists('ARM_membership_setup')) {
                     $setup_data['setup_name'] = $setup_data['arm_setup_name'];
                     $setup_data['setup_modules'] = $setup_data['arm_setup_modules'];
                     $setup_data['setup_labels'] = $setup_data['arm_setup_labels'];
+                    $setup_data['setup_type'] = $setup_data['arm_setup_type'];
                 }
                 return $setup_data;
             } else {
@@ -4935,64 +5055,64 @@ if (!class_exists('ARM_membership_setup')) {
         function arm_setup_skin_default_color_array() {
             $font_colors = array(
                 'skin1' => array(
-                    'arm_setup_plan_title_font_color' => '#616161',
-                    'arm_setup_plan_desc_font_color' => '#616161',
-                    'arm_setup_price_font_color' => '#616161',
-                    'arm_setup_summary_font_color' => '#616161',
-                    'arm_setup_selected_plan_title_font_color' => '#23b7e5',
-                    'arm_setup_selected_plan_desc_font_color' => '#616161',
-                    'arm_setup_selected_price_font_color' => '#ffffff',
-                    'arm_setup_bg_active_color' => '#23b7e5'
+                        'arm_setup_plan_title_font_color' => '#2C2D42',
+                        'arm_setup_plan_desc_font_color' => '#555F70',
+                        'arm_setup_price_font_color' => '#2C2D42',
+                        'arm_setup_summary_font_color' => '#555F70',
+                    'arm_setup_selected_plan_title_font_color' => '#005AEE',
+                        'arm_setup_selected_plan_desc_font_color' => '#2C2D42',
+                    'arm_setup_selected_price_font_color' => '#FFFFFF',
+                    'arm_setup_bg_active_color' => '#005AEE'
                 ),
                 'skin2' => array(
-                    'arm_setup_plan_title_font_color' => '#616161',
-                    'arm_setup_plan_desc_font_color' => '#616161',
-                    'arm_setup_price_font_color' => '#616161',
-                    'arm_setup_summary_font_color' => '#616161',
-                    'arm_setup_selected_plan_title_font_color' => '#ffffff',
-                    'arm_setup_selected_plan_desc_font_color' => '#616161',
-                    'arm_setup_selected_price_font_color' => '#23b7e5',
-                    'arm_setup_bg_active_color' => '#23b7e5'
+                        'arm_setup_plan_title_font_color' => '#2C2D42',
+                        'arm_setup_plan_desc_font_color' => '#555F70',
+                        'arm_setup_price_font_color' => '#2C2D42',
+                        'arm_setup_summary_font_color' => '#555F70',
+                    'arm_setup_selected_plan_title_font_color' => '#FFFFFF',
+                        'arm_setup_selected_plan_desc_font_color' => '#2C2D42',
+                    'arm_setup_selected_price_font_color' => '#005AEE',
+                    'arm_setup_bg_active_color' => '#005AEE'
                 ),
                 'skin3' => array(
-                    'arm_setup_plan_title_font_color' => '#616161',
-                    'arm_setup_plan_desc_font_color' => '#616161',
-                    'arm_setup_price_font_color' => '#616161',
-                    'arm_setup_summary_font_color' => '#616161',
-                    'arm_setup_selected_plan_title_font_color' => '#616161',
-                    'arm_setup_selected_plan_desc_font_color' => '#616161',
-                    'arm_setup_selected_price_font_color' => '#616161',
-                    'arm_setup_bg_active_color' => '#23b7e5'
+                        'arm_setup_plan_title_font_color' => '#2C2D42',
+                        'arm_setup_plan_desc_font_color' => '#555F70',
+                        'arm_setup_price_font_color' => '#2C2D42',
+                        'arm_setup_summary_font_color' => '#555F70',
+                        'arm_setup_selected_plan_title_font_color' => '#005AEE',
+                        'arm_setup_selected_plan_desc_font_color' => '#2C2D42',
+                        'arm_setup_selected_price_font_color' => '#005AEE',
+                    'arm_setup_bg_active_color' => '#005AEE'
                 ),
                 'skin4' => array(
-                    'arm_setup_plan_title_font_color' => '#616161',
-                    'arm_setup_plan_desc_font_color' => '#616161',
-                    'arm_setup_price_font_color' => '#616161',
-                    'arm_setup_summary_font_color' => '#616161',
-                    'arm_setup_selected_plan_title_font_color' => '#ffffff',
-                    'arm_setup_selected_plan_desc_font_color' => '#ffffff',
-                    'arm_setup_selected_price_font_color' => '#ffffff',
-                    'arm_setup_bg_active_color' => '#23b7e5'
+                        'arm_setup_plan_title_font_color' => '#2C2D42',
+                        'arm_setup_plan_desc_font_color' => '#555F70',
+                        'arm_setup_price_font_color' => '#2C2D42',
+                        'arm_setup_summary_font_color' => '#555F70',
+                    'arm_setup_selected_plan_title_font_color' => '#FFFFFF',
+                    'arm_setup_selected_plan_desc_font_color' => '#FFFFFF',
+                    'arm_setup_selected_price_font_color' => '#FFFFFF',
+                    'arm_setup_bg_active_color' => '#005AEE'
                 ),
                 'skin5' => array(
-                    'arm_setup_plan_title_font_color' => '#616161',
-                    'arm_setup_plan_desc_font_color' => '#616161',
-                    'arm_setup_price_font_color' => '#616161',
-                    'arm_setup_summary_font_color' => '#616161',
-                    'arm_setup_selected_plan_title_font_color' => '#23b7e5',
-                    'arm_setup_selected_plan_desc_font_color' => '#616161',
-                    'arm_setup_selected_price_font_color' => '#ffffff',
-                    'arm_setup_bg_active_color' => '#23b7e5'
+                        'arm_setup_plan_title_font_color' => '#2C2D42',
+                        'arm_setup_plan_desc_font_color' => '#555F70',
+                        'arm_setup_price_font_color' => '#2C2D42',
+                        'arm_setup_summary_font_color' => '#555F70',
+                    'arm_setup_selected_plan_title_font_color' => '#005AEE',
+                        'arm_setup_selected_plan_desc_font_color' => '#2C2D42',
+                    'arm_setup_selected_price_font_color' => '#FFFFFF',
+                    'arm_setup_bg_active_color' => '#005AEE'
                 ),
                 'skin6' => array(
-                    'arm_setup_plan_title_font_color' => '#616161',
-                    'arm_setup_plan_desc_font_color' => '#6b6e78',
-                    'arm_setup_price_font_color' => '#616161',
-                    'arm_setup_summary_font_color' => '#616161',
-                    'arm_setup_selected_plan_title_font_color' => '#ffffff',
-                    'arm_setup_selected_plan_desc_font_color' => '#ffffff',
-                    'arm_setup_selected_price_font_color' => '#ffffff',
-                    'arm_setup_bg_active_color' => '#23b7e5'
+                        'arm_setup_plan_title_font_color' => '#2C2D42',
+                    'arm_setup_plan_desc_font_color' => '#555F70',
+                        'arm_setup_price_font_color' => '#2C2D42',
+                        'arm_setup_summary_font_color' => '#555F70',
+                    'arm_setup_selected_plan_title_font_color' => '#FFFFFF',
+                    'arm_setup_selected_plan_desc_font_color' => '#FFFFFF',
+                    'arm_setup_selected_price_font_color' => '#FFFFFF',
+                    'arm_setup_bg_active_color' => '#005AEE'
                 ),
             );
 
@@ -5221,6 +5341,10 @@ if (!class_exists('ARM_membership_setup')) {
                         if(!empty($arm_user_plan_stripe_details['customer_id']))
                         {
                            $arm_user_stripe_customer_id =  $arm_user_plan_stripe_details['customer_id'];
+                        } elseif(!empty($arm_user_plan_stripe_details['transaction_id'])) {
+                            if (strpos($arm_user_plan_stripe_details['transaction_id'],'cus_') !== false) {
+                                $arm_user_stripe_customer_id = $arm_user_plan_stripe_details['transaction_id'];
+                            }
                         }
                         if( file_exists( MEMBERSHIP_DIR . "/lib/Stripe/vendor/autoload.php" ) ){
                             require_once( MEMBERSHIP_DIR . "/lib/Stripe/vendor/autoload.php" );
@@ -5235,6 +5359,20 @@ if (!class_exists('ARM_membership_setup')) {
                         try {
                             $stripe_client = new \Stripe\StripeClient($stripe_secret_key);
                             Stripe\Stripe::setApiVersion($arm_stripe->arm_stripe_api_version);
+
+                            if(empty($arm_user_stripe_customer_id))
+                            {
+                                $arm_stripe_subscription_id = !empty($arm_user_plan_stripe_details['transaction_id']) ? $arm_user_plan_stripe_details['transaction_id'] : '';
+                                if(!empty($arm_stripe_subscription_id))
+                                {
+                                    //Get Subscription
+                                    $arm_subscription_obj = $stripe_client->subscriptions->subscriptions($arm_stripe_subscription_id);
+                                    if(!empty($arm_subscription_obj))
+                                    {
+                                        $arm_user_stripe_customer_id = $arm_subscription_obj->customer;
+                                    }
+                                }
+                            }
                             
                             $token = $stripe_client->tokens->create(array("card" => $card_data));
                             $request_token = $token->id;
@@ -5296,6 +5434,1364 @@ if (!class_exists('ARM_membership_setup')) {
                 echo json_encode($response);
                 exit;
             }
+        }
+
+
+        function arm_calculate_membership_data($arm_return_data, $payment_gateway, $payment_gateway_options, $posted_data, $entry_id = 0)
+        {
+            global $wpdb, $ARMember, $arm_global_settings, $arm_subscription_plans, $arm_member_forms, $arm_manage_coupons, $payment_done, $arm_payment_gateways, $arm_membership_setup, $arm_slugs, $is_free_manual, $arm_debug_payment_log_id;
+
+            $arm_debug_log_data = array(
+                'payment_gateway_options' => $payment_gateway_options,
+                'posted_data' => $posted_data,
+                'entry_id' => $entry_id,
+            );
+            do_action('arm_payment_log_entry', $payment_gateway, 'calculate membership data from common ', 'armember', $arm_debug_log_data, $arm_debug_payment_log_id);
+
+            $arm_return_data = apply_filters('arm_before_prepare_payment_data', $arm_return_data, $payment_gateway, $posted_data, $entry_id);
+
+            $arm_return_data['arm_recurring_data'] = '';
+            $arm_return_data['arm_trial_data'] = '';
+            $arm_return_data['arm_trial_amount'] = '';
+            $arm_return_data['arm_coupon_data'] = '';
+            $arm_return_data['arm_coupon_amount'] = '';
+            $arm_return_data['arm_payment_mode'] = '';
+            $arm_return_data['arm_payable_amount'] = '';
+            $arm_return_data['arm_remained_days'] = 0;
+            $arm_return_data['arm_plan_action'] = 'new_subscription';
+            $arm_return_data['arm_tax_data'] = '';
+            $arm_return_data['arm_plan_start_date'] = current_time("mysql");
+            $arm_return_data['arm_extra_vars'] = array();
+
+            $entry_data = $arm_payment_gateways->arm_get_entry_data_by_id($entry_id);
+            $arm_return_data['arm_entry_data'] = $entry_data;
+
+            $plan_id = (!empty($posted_data['subscription_plan'])) ? $posted_data['subscription_plan'] : 0;
+            if ($plan_id == 0) {
+                $plan_id = (!empty($posted_data['_subscription_plan'])) ? $posted_data['_subscription_plan'] : 0;
+            }
+
+
+            $plan = new ARM_Plan($plan_id);
+            $plan_action = 'new_subscription';
+
+            $arm_return_data['arm_plan_id'] = $plan_id;
+            $arm_return_data['arm_plan_obj'] = $plan;
+
+            $plan_expiry_date = "now";
+            $payment_mode = !empty($posted_data['arm_selected_payment_mode']) ? $posted_data['arm_selected_payment_mode'] : 'manual_subscription';
+
+            $oldPlanIdArray = (isset($posted_data['old_plan_id']) && !empty($posted_data['old_plan_id'])) ? explode(",", $posted_data['old_plan_id']) : 0;
+            if (!empty($oldPlanIdArray)) {
+                if (in_array($plan_id, $oldPlanIdArray)) {
+                    $plan_action = 'renew_subscription';
+                    $arm_return_data['arm_plan_action'] = "renew_subscription";
+
+                    $user_id = !empty($entry_data['arm_user_id']) ? $entry_data['arm_user_id'] : 0;
+
+                    $user_plan_data = get_user_meta($user_id, 'arm_user_plan_' . $plan_id, true);
+                    $user_plan_data = !empty($user_plan_data) ? $user_plan_data : array();
+                    $plan_expiry_date = (isset($user_plan_data['arm_expire_plan']) && !empty($user_plan_data['arm_expire_plan'])) ? $user_plan_data['arm_expire_plan'] : "now";
+                    $plan_action = 'renew_subscription';
+                    $is_recurring_payment = $arm_subscription_plans->arm_is_recurring_payment_of_user($user_id, $plan_id, $payment_mode);
+                    if ($is_recurring_payment) {
+                        $plan_action = 'recurring_payment';
+                        $planData = get_user_meta($user_id, 'arm_user_plan_' . $plan_id, true);
+                        $oldPlanDetail = $planData['arm_current_plan_detail'];
+                        $user_subsdata = $planData['arm_stripe'];
+                        if (!empty($oldPlanDetail)) {
+                            $plan = new ARM_Plan(0);
+                            $plan->init((object) $oldPlanDetail);
+                        }
+                    }
+                } else {
+                    $plan_action = 'change_subscription';
+                    $arm_return_data['arm_plan_action'] = "change_subscription";
+                }
+            }
+
+            $arm_return_data['arm_plan_expiry_date'] = $plan_expiry_date;
+
+
+            $trial_not_allowed = 0;
+            if ($plan->is_recurring()) 
+            {
+                $setup_id = $posted_data['setup_id'];
+                $payment_mode_ = !empty($posted_data['arm_selected_payment_mode']) ? $posted_data['arm_selected_payment_mode'] : 'manual_subscription';
+                if(isset($posted_data['arm_payment_mode'][$payment_gateway])){
+                    $payment_mode_ = !empty($posted_data['arm_payment_mode'][$payment_gateway]) ? $posted_data['arm_payment_mode'][$payment_gateway] : 'manual_subscription';
+                }
+                else{
+                    $setup_data = $arm_membership_setup->arm_get_membership_setup($setup_id);
+                    if (!empty($setup_data) && !empty($setup_data['setup_modules']['modules'])) {
+                        $setup_modules = $setup_data['setup_modules'];
+                        $modules = $setup_modules['modules'];
+                        $payment_mode_ = $modules['payment_mode'][$payment_gateway];
+                    }
+                }
+
+                $subscription_plan_detail = $arm_subscription_plans->arm_get_subscription_plan($plan_id);
+
+                
+                if(!empty($subscription_plan_detail['arm_subscription_plan_options']['trial']))
+                {
+                    $arm_return_data['arm_trial_data'] = $subscription_plan_detail['arm_subscription_plan_options']['trial'];
+                }
+
+                $payment_mode = 'manual_subscription';
+                $c_mpayment_mode = "";
+                if(isset($posted_data['arm_pay_thgough_mpayment']) && $posted_data['arm_plan_type']=='recurring' && is_user_logged_in())
+                {
+                    $current_user_id = get_current_user_id();
+                    $current_user_plan_ids = get_user_meta($current_user_id, 'arm_user_plan_ids', true);
+                    $current_user_plan_ids = !empty($current_user_plan_ids) ? $current_user_plan_ids : array();
+                    $Current_M_PlanData = get_user_meta($current_user_id, 'arm_user_plan_' . $plan_id, true);
+                    $Current_M_PlanDetails = $Current_M_PlanData['arm_current_plan_detail'];
+                    if (!empty($current_user_plan_ids)) {
+                        if(in_array($plan_id, $current_user_plan_ids) && !empty($Current_M_PlanDetails))
+                        {
+                            $arm_cmember_paymentcycle = $Current_M_PlanData['arm_payment_cycle'];
+                            $arm_cmember_completed_recurrence = $Current_M_PlanData['arm_completed_recurring'];
+                            $arm_cmember_plan = new ARM_Plan(0);
+                            $arm_cmember_plan->init((object) $Current_M_PlanDetails);
+                            $arm_cmember_plan_data = $arm_cmember_plan->prepare_recurring_data($arm_cmember_paymentcycle);
+                            $arm_cmember_TotalRecurring = $arm_cmember_plan_data['rec_time'];
+                            if ($arm_cmember_TotalRecurring == 'infinite' || ($arm_cmember_completed_recurrence !== '' && $arm_cmember_completed_recurrence != $arm_cmember_TotalRecurring)) {
+                                $c_mpayment_mode = 1;
+                            }
+                        }
+                    }
+                }
+                if(empty($c_mpayment_mode))
+                {
+                    if ($payment_mode_ == 'both') {
+                        $payment_mode = !empty($posted_data['arm_selected_payment_mode']) ? $posted_data['arm_selected_payment_mode'] : 'manual_subscription';
+                    } else {
+                        $payment_mode = $payment_mode_;
+                    }
+                }
+            }
+            else{
+                $payment_mode = '';
+            }
+
+            $arm_return_data['arm_payment_mode'] = $payment_mode;
+
+            $coupon_code = (!empty($posted_data['arm_coupon_code'])) ? trim($posted_data['arm_coupon_code']) : '';
+            $setup_id = $posted_data['setup_id'];
+
+            $is_free_manual = false;
+            if (!empty($plan_id) && $plan_id != 0 && !empty($entry_id) && $entry_id != 0) {
+                $all_payment_gateways = $arm_payment_gateways->arm_get_active_payment_gateways();
+                if (isset($all_payment_gateways[$payment_gateway]) && !empty($all_payment_gateways[$payment_gateway])) {
+                    $arm_payment_gateway_options = $all_payment_gateways[$payment_gateway];
+
+                    $arm_payment_gateway_notification_url = ARM_HOME_URL."/";
+                    if(strstr($arm_payment_gateway_notification_url, '?')){
+                        $arm_payment_gateway_notification_url = $arm_payment_gateway_notification_url.'&arm-listener=arm_'.$payment_gateway.'_api';
+                    }else{
+                        $arm_payment_gateway_notification_url = $arm_payment_gateway_notification_url.'?arm-listener=arm_'.$payment_gateway.'_api';
+                    }
+
+                    $arm_return_data['arm_extra_vars']['arm_notification_url'] = $arm_payment_gateway_notification_url;
+
+                    $globalSettings = $arm_global_settings->global_settings;
+                    $cp_page_id = isset($globalSettings['cancel_payment_page_id']) ? $globalSettings['cancel_payment_page_id'] : 0;
+                    $default_cancel_url = $arm_global_settings->arm_get_permalink('', $cp_page_id);
+
+                    $cancel_url = (!empty($paypal_options['cancel_url'])) ? $paypal_options['cancel_url'] : $default_cancel_url;
+                    if ($cancel_url == '' || empty($cancel_url)) {
+                        $cancel_url = ARM_HOME_URL;
+                    }
+
+                    $arm_return_data['arm_extra_vars']['arm_cancel_url'] = $cancel_url;
+
+                    $entry_data = $arm_payment_gateways->arm_get_entry_data_by_id($entry_id);
+                    if(!empty($entry_data))
+                    {
+                        $user_email = $entry_data['arm_entry_email'];
+                        $arm_return_data['arm_user_email'] = $user_email;
+                        $form_id = $entry_data['arm_form_id'];
+                        $user_id = $entry_data['arm_user_id'];
+                        $entry_values = maybe_unserialize($entry_data['arm_entry_value']);
+                        $return_url = $entry_values['setup_redirect'];
+
+                        if (empty($return_url)) {
+                            $return_url = ARM_HOME_URL;
+                        }
+
+                        $arm_return_data['arm_extra_vars']['arm_return_url'] = $return_url;
+
+                        $arm_user_selected_payment_cycle = $entry_values['arm_selected_payment_cycle'];
+                        $tax_percentage =  isset($entry_values['tax_percentage']) ? $entry_values['tax_percentage'] : 0;
+
+                        $arm_user_old_plan = (isset($entry_values['arm_user_old_plan']) && !empty($entry_values['arm_user_old_plan'])) ? explode(",", $entry_values['arm_user_old_plan']) : array();
+                        $arm_is_trial = '0';
+
+                        $currency = $arm_payment_gateways->arm_get_global_currency();
+
+                        $defaultPlanData = $arm_subscription_plans->arm_default_plan_array();
+                        $userPlanDatameta = get_user_meta($user_id, 'arm_user_plan_' . $plan_id, true);
+                        $planDataDefault = shortcode_atts($defaultPlanData, $userPlanDatameta);
+                        $planData = !empty($userPlanDatameta) ? $userPlanDatameta : $planDataDefault;
+
+                        if ($plan_action == 'renew_subscription' && $plan->is_recurring()) {
+                            $is_recurring_payment = $arm_subscription_plans->arm_is_recurring_payment_of_user($user_id, $plan_id, $payment_mode);
+                            if ($is_recurring_payment) {
+                                $plan_action = 'recurring_payment';
+                                $oldPlanDetail = $planData['arm_current_plan_detail'];
+                                if (!empty($oldPlanDetail)) {
+                                    $plan = new ARM_Plan(0);
+                                    $plan->init((object) $oldPlanDetail);
+                                }
+                            }
+                        }
+
+                        $plan_payment_type = $plan->payment_type;
+
+                        if ($plan->is_recurring()) {
+                            $plan_data = $plan->prepare_recurring_data($arm_user_selected_payment_cycle);
+                            $plan_data = apply_filters('arm_modify_recurring_data_outside', $plan_data, $plan, $plan->amount, $entry_id, $arm_user_selected_payment_cycle);
+
+                            $amount = $plan_data['amount'];
+                        } else {
+                            $amount = $plan->amount;
+                            $amount = apply_filters('arm_modify_subscription_plan_amount_outside',  $amount, $plan, $entry_id, $arm_user_selected_payment_cycle);
+                        }
+
+                        $amount = str_replace(",", "", $amount);
+                        $main_amount = $amount;
+
+                        $discount_amt = $coupon_amount = $arm_coupon_discount = 0;$trial_amount = 0;
+                        $arm_coupon_discount_type = '';
+                        $arm_coupon_discount_type_default ='';
+                        $arm_coupon_on_each_subscriptions = '0';
+
+                        if ($arm_manage_coupons->isCouponFeature && !empty($coupon_code)) {
+                            $couponApply = $arm_manage_coupons->arm_apply_coupon_code($coupon_code, $plan, $setup_id, $arm_user_selected_payment_cycle, $arm_user_old_plan);
+                            $couponApply['arm_coupon_code'] = $coupon_code;
+                            $arm_return_data['arm_coupon_data'] = $couponApply;
+                            $coupon_amount = isset($couponApply['coupon_amt']) ? $couponApply['coupon_amt'] : 0;
+                            $coupon_amount = str_replace(",", "", $coupon_amount);
+                            $discount_amt = isset($couponApply['total_amt']) ? $couponApply['total_amt'] : $amount;
+                            $arm_return_data['arm_coupon_amount'] = $discount_amt;
+                            $arm_coupon_on_each_subscriptions = isset($couponApply['arm_coupon_on_each_subscriptions']) ? $couponApply['arm_coupon_on_each_subscriptions'] : '0';
+                            $arm_coupon_discount_type_default = isset($couponApply['discount_type']) ? $couponApply['discount_type'] : "";
+
+                            $arm_coupon_discount = isset($couponApply['discount']) ? $couponApply['discount'] : 0;
+                            $global_currency = $arm_payment_gateways->arm_get_global_currency();
+                            if (isset($couponApply['discount_type'])) {
+                                $arm_coupon_discount_type = ($couponApply['discount_type'] != 'percentage') ? $global_currency : "%";
+                            } else {
+                                $arm_coupon_discount_type = '';
+                            }
+                        }
+
+                        $plan_form_data = '';
+
+                        $allow_trial = false;
+
+                        $discount_amt_next = $amount;
+                        if ($plan->is_recurring()){
+
+                            //if ($discount_amt > 0 && isset($arm_coupon_on_each_subscriptions) && !empty($arm_coupon_on_each_subscriptions)) {
+                            if ($coupon_amount > 0 && isset($arm_coupon_on_each_subscriptions) && !empty($arm_coupon_on_each_subscriptions)) {
+                                if($arm_coupon_discount_type_default=='percentage')
+                                {
+                                    $discount_amt_next = ($amount * $arm_coupon_discount) / 100;
+                                    $discount_amt_next = $amount-$discount_amt_next;
+                                }
+                                else if($arm_coupon_discount_type_default=='fixed')
+                                {
+                                    $discount_amt_next = $amount - $arm_coupon_discount;
+                                }
+
+                                if($discount_amt_next<0)
+                                {
+                                   $discount_amt_next = 0; 
+                                }
+                                $arm_return_data['arm_coupon_amount_on_each_subs'] = $discount_amt;
+                            }
+
+                            $recurring_data = $plan->prepare_recurring_data($arm_user_selected_payment_cycle);
+
+                            $recurring_data = apply_filters('arm_modify_recurring_data_outside', $recurring_data, $plan, $amount, $entry_id, $arm_user_selected_payment_cycle);
+                            $arm_return_data['arm_recurring_data'] = $recurring_data;
+
+                            $recur_period = $recurring_data['period'];
+                            $recur_interval = $recurring_data['interval'];
+                            $recur_cycles = $recurring_data['cycles'];
+
+                            $is_trial = false;
+                            $allow_trial = true;
+                            if (is_user_logged_in()) {
+                                $user_id = get_current_user_id();
+                                $user_plan = get_user_meta($user_id, 'arm_user_plan_ids', true);
+                                if (!empty($user_plan)) {
+                                    $allow_trial = false;
+                                }
+                            }
+
+                            if (!empty($recurring_data['trial']) && $allow_trial) {
+                                $arm_return_data['arm_trial_data'] = $recurring_data['trial'];
+                                $is_trial = true;
+                                $arm_is_trial = '1';
+                                $trial_amount = $recurring_data['trial']['amount'];
+                                $trial_period = $recurring_data['trial']['period'];
+                                $trial_interval = $recurring_data['trial']['interval'];
+                                $trial_amount = str_replace(",", "", $trial_amount);
+                            }
+
+
+                            if (!empty($coupon_amount) && $coupon_amount > 0) {
+                                //$amount = $discount_amt_next = $discount_amt = $amount - $coupon_amount;
+                                $discount_amt = $amount - $coupon_amount;
+                                if (!$is_trial) {
+                                    $recur_cycles = ($recur_cycles > 1) ? $recur_cycles - 1 : 1;
+                                    $is_trial = true;
+                                    $plan_action = 'new_subscription';
+                                    $trial_interval = $recur_interval;
+                                    $trial_period = $recur_period;
+
+                                    $arm_return_data['arm_coupon_amount'] = $discount_amt;
+                                }
+                                else{
+                                    $arm_return_data['arm_coupon_amount'] = $trial_amount;
+                                    $trial_amount = $trial_amount - $coupon_amount;
+                                    $trial_amount = str_replace(",", "", $trial_amount);
+                                }
+                            } else {
+                                if(!empty($arm_coupon_on_each_subscriptions) && (empty($coupon_amount) || $coupon_amount == '0.00' || $coupon_amount == 0) && ($is_trial) && (empty($trial_amount) || $trial_amount == '0.00' || $trial_amount == 0) && !empty($arm_return_data['arm_coupon_data']))
+                                {
+                                    //If plan has free trial and all recurring coupon applied with plan then calculate discount amount.
+                                    $arm_discount_amt = $arm_return_data['arm_coupon_data']['discount'];
+                                    if($arm_coupon_discount_type == '%'){
+                                        $arm_calculated_discounted_amt = $amount * ($arm_discount_amt / 100);
+                                    } else {
+                                        $arm_calculated_discounted_amt = $amount - $arm_discount_amt;
+                                    }
+                                    $arm_calculated_discounted_amt = number_format($arm_calculated_discounted_amt, 2);
+                                    $arm_return_data['arm_coupon_data']['coupon_amt'] = $arm_calculated_discounted_amt;
+                                }
+                            }
+
+                            $remained_days = 0;
+                            if ($plan_action == 'renew_subscription') {
+                                $user_plan_data = get_user_meta($user_id, 'arm_user_plan_' . $plan_id, true);
+                                $plan_expiry_date = $user_plan_data['arm_expire_plan'];
+                                $now = strtotime(current_time('mysql'));
+
+                                $remained_days = ceil(abs($plan_expiry_date - $now) / 86400);
+                                $arm_return_data['arm_remained_days'] = $remained_days;
+
+                                if ($remained_days > 0) {
+                                    $trial_amount = 0;
+                                    $trial_interval = $remained_days;
+                                    $trial_period = 'D';
+                                    
+                                }
+                            }
+                        }
+                        else{
+                            if (!empty($coupon_amount) && $coupon_amount > 0) {
+                                $amount = $discount_amt_next = $discount_amt = $amount - $coupon_amount;
+                                $arm_return_data['arm_coupon_amount'] = $discount_amt;
+                            }
+                        }
+
+                        $amount = str_replace(",", "", $discount_amt_next);
+                       
+                        $final_trial_amount = $trial_amount;
+                        $final_amount = $amount;
+                        if($tax_percentage > 0){
+                            $trial_tax_amount =($trial_amount*$tax_percentage)/100;
+                            $trial_tax_amount = number_format((float)$trial_tax_amount, 2, '.','');
+                            $final_trial_amount = $trial_amount+$trial_tax_amount;
+
+                            $tax_amount =($amount*$tax_percentage)/100;
+                            $tax_amount = number_format((float)$tax_amount, 2, '.','');
+
+                            $final_amount = $amount+$tax_amount;
+                            
+                            $arm_return_data_tmp = array(
+                                'trial_tax_amount' => $trial_tax_amount,
+                                'final_trial_amount' => $final_trial_amount,
+                                'tax_amount' => $tax_amount,
+                                'tax_final_amount' => $final_amount,
+                                'tax_percentage' => $tax_percentage,
+                            );
+
+                            //Calculate tax for discounted amount
+                            $discount_amt = $discount_amt + ($discount_amt * ($tax_percentage / 100));
+                            $arm_return_data['arm_tax_data'] = $arm_return_data_tmp;
+                        }
+
+                        $zero_demial_currencies = $arm_payment_gateways->arm_stripe_zero_decimal_currency_array();
+                        if(in_array($currency, $zero_demial_currencies))
+                        {
+                            $final_trial_amount= number_format((float) $final_trial_amount, 0, '', '');
+                            $final_amount = number_format((float) $final_amount, 0, '', '');
+                        }
+                        else
+                        {
+                            $final_trial_amount = number_format((float)$final_trial_amount, 2, '.','');
+                            $final_amount = number_format((float)$final_amount, 2, '.','');
+                        }
+
+                        /*if($is_trial){
+                            $final_amount = $final_trial_amount;
+                        }*/
+
+                        $arm_return_data['allow_trial'] = $allow_trial;
+                        $arm_return_data['arm_trial_amount'] = $final_trial_amount;
+                        $arm_return_data['arm_payable_amount'] = $final_amount;
+                        $arm_return_data['arm_trial_amount_for_not_in_plan_trial'] = ($arm_is_trial) ? $final_trial_amount : $discount_amt;
+                        $arm_return_data['arm_trial_amount_for_not_in_plan_trial_flag'] = 0;
+
+                        if($plan->is_recurring() && !$arm_is_trial && empty($arm_coupon_on_each_subscriptions) && $arm_manage_coupons->isCouponFeature && !empty($coupon_code)){
+                            $arm_return_data['arm_trial_amount_for_not_in_plan_trial_flag'] = 1;
+                        }
+                    }
+                }
+            }
+
+            $arm_return_data = apply_filters('arm_after_prepare_payment_data', $arm_return_data, $payment_gateway, $posted_data, $entry_id);
+
+            return $arm_return_data;
+        }
+
+
+        function arm_calculate_webhook_coupon_data($arm_payment_log_data){
+            global $ARMember, $wpdb, $arm_subscription_plans, $arm_manage_coupons, $arm_payment_gateways;
+            $arm_return_coupon_data = array();
+            $global_currency = $arm_payment_gateways->arm_get_global_currency();
+
+            if(!empty($arm_payment_log_data) && is_object($arm_payment_log_data)){
+                $user_id = !empty($arm_payment_log_data->arm_user_id) ? $arm_payment_log_data->arm_user_id : 0;
+                if(!empty($user_id))
+                {
+                    $plan_ids = get_user_meta($user_id, 'arm_user_plan_ids', true);
+                    $plan_ids = !empty($plan_ids) ? $plan_ids : array();
+                    $plan_id = $arm_payment_log_data->arm_plan_id;
+
+                    $new_plan = new ARM_Plan($plan_id);
+
+                    $arm_coupon_code = !empty($arm_payment_log_data->arm_coupon_code) ? $arm_payment_log_data->arm_coupon_code : '';
+                    $arm_coupon_discount = !empty($arm_payment_log_data->arm_coupon_discount) ? $arm_payment_log_data->arm_coupon_discount : '';
+                    $arm_coupon_discount_type = !empty($arm_payment_log_data->arm_coupon_discount_type) ? $arm_payment_log_data->arm_coupon_discount_type : '';
+                    $arm_coupon_on_each_subscriptions = !empty($arm_payment_log_data->arm_coupon_on_each_subscriptions) ? $arm_payment_log_data->arm_coupon_on_each_subscriptions : '';
+
+                    if(!empty($arm_coupon_code)){
+                        $couponApply = $arm_manage_coupons->arm_apply_coupon_code($arm_coupon_code);
+
+                        $coupon_amount = isset($couponApply['coupon_amt']) ? $couponApply['coupon_amt'] : 0;
+                        $coupon_amount = str_replace(',', '', $coupon_amount);
+                        
+                        $discount_amt = isset($couponApply['total_amt']) ? $couponApply['total_amt'] : $amount;
+                        $discount_amt = str_replace(',', '', $discount_amt);
+
+                        if ($coupon_amount != 0) {
+                            $arm_coupon_discount = $couponApply['discount'];
+                            $arm_coupon_discount_type = ($couponApply['discount_type'] != 'percentage') ? $global_currency : "%";
+                            $arm_return_coupon_data['coupon_data'] = array(
+                                'coupon_code' => $arm_coupon_code,
+                                'amount' => $coupon_amount,
+                                'arm_coupon_discount_type' => $couponApply['discount_type'],
+                                'arm_coupon_discount_unit' => $arm_coupon_discount,
+                            );
+
+                            if($new_plan->is_recurring()) {
+                                $arm_coupon_on_each_subscriptions = isset($couponApply['arm_coupon_on_each_subscriptions']) ? $couponApply['arm_coupon_on_each_subscriptions'] : 0;
+                                $arm_return_coupon_data['coupon_data']["arm_coupon_on_each_subscriptions"] = $arm_coupon_on_each_subscriptions;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return $arm_return_coupon_data;
+        }
+
+
+        function arm_calculate_webhook_tax_data($arm_payment_log_data, $plan_amount){
+            global $ARMember, $wpdb, $arm_subscription_plans;
+            $arm_return_tax_data = array();
+            if(!empty($arm_payment_log_data) && !empty($plan_amount)){
+                $user_id = !empty($arm_payment_log_data->arm_user_id) ? $arm_payment_log_data->arm_user_id : 0;
+                if(!empty($user_id)){
+                    $plan_ids = get_user_meta($user_id, 'arm_user_plan_ids', true);
+                    $plan_ids = !empty($plan_ids) ? $plan_ids : array();
+                    $plan_id = $arm_payment_log_data->arm_plan_id;
+                    $extraVars = $arm_payment_log_data->arm_extra_vars;
+                    $tax_percentage = $tax_amount = 0;
+
+                    if(isset($extraVars) && !empty($extraVars)){
+                        $unserialized_extravars = maybe_unserialize($extraVars);
+                        $tax_percentage = (isset($unserialized_extravars['tax_percentage']) && $unserialized_extravars['tax_percentage'] != '' )? $unserialized_extravars['tax_percentage'] : 0;
+                        $arm_return_tax_data['tax_data']['tax_percentage'] = $tax_percentage;
+                    }
+
+
+                    if($tax_percentage > 0 && $plan_amount != ''){
+                        $tax_amount = ($tax_percentage*$plan_amount)/100;
+                        $tax_amount = number_format((float)$tax_amount , 2, '.', '');
+                        $arm_return_tax_data['tax_data']['tax_amount'] = $tax_amount;
+                        $amount = $amount +$tax_amount;
+                        $arm_return_tax_data['tax_data']['plan_amount'] = $amount;
+                    }
+                }
+            }
+
+            return $arm_return_tax_data;
+        }
+
+
+
+        function arm_modify_payment_webhook_data($arm_webhook_save_membership_data, $arm_response_data, $arm_payment_gateway, $arm_token = '', $arm_transaction_id = '', $entry_id = 0, $arm_subscr_id = "", $arm_subscription_id_field_name = "", $arm_token_field_name = "", $arm_transaction_id_field_name = "")
+        {
+            global $ARMember, $wpdb, $arm_global_settings, $arm_subscription_plans, $arm_debug_payment_log_id;
+
+            $arm_debug_log_data = array(
+                'response_data' => $arm_response_data,
+                'arm_payment_gateway' => $arm_payment_gateway,
+                'arm_token' => $arm_token,
+                'arm_transaction_id' => $arm_transaction_id,
+                'entry_id' => $entry_id,
+                'arm_subscr_id' => $arm_subscr_id,
+                'arm_subscription_id_field_name' => $arm_subscription_id_field_name,
+                'arm_token_field_name' => $arm_token_field_name,
+                'arm_transaction_id_field_name' => $arm_transaction_id_field_name,
+            );
+
+            do_action('arm_payment_log_entry', $arm_payment_gateway, 'modify webhook request', 'payment_gateway', $arm_debug_log_data, $arm_debug_payment_log_id);
+
+            if(!empty($arm_transaction_id) && !empty($arm_payment_gateway))
+            {
+                $arm_transient_name = "arm_".$arm_payment_gateway."_trans_".$arm_transaction_id;
+                $arm_transient_status = $arm_global_settings->arm_transient_get_action($arm_transient_name);
+                if($arm_transient_status == 0)
+                {
+                    $arm_transient_time = DAY_IN_SECONDS;
+                    $arm_global_settings->arm_transient_set_action($arm_transient_name, $arm_transaction_id, $arm_transient_time);
+                }
+                else
+                {
+                    do_action('arm_payment_log_entry', $arm_payment_gateway, 'Duplicate payment transaction id received', 'payment_gateway', $arm_transaction_id, $arm_debug_payment_log_id);
+                    die();
+                }
+            }
+
+            $arm_current_datetime = current_time('mysql');
+            $arm_return_data = array();
+            if(!empty($arm_subscr_id) || !empty($entry_id)){
+                $subscription_id = $arm_subscr_id;
+                if (!empty($subscription_id)) {
+                    $arm_find_user_subs_id = $wpdb->get_row("SELECT * FROM $wpdb->usermeta WHERE meta_value LIKE '%".$subscription_id."%'");
+
+                    if(!empty($arm_find_user_subs_id))
+                    {
+                        $user_id = !empty($arm_find_user_subs_id->user_id) ? $arm_find_user_subs_id->user_id : 0;
+
+                        do_action('arm_payment_log_entry', $arm_payment_gateway, 'modify webhook user meta details', 'payment_gateway', $arm_find_user_subs_id, $arm_debug_payment_log_id);
+                    }
+                    else
+                    {
+                        $payLog = $wpdb->get_row("SELECT `arm_log_id`, `arm_user_id`, `arm_plan_id`, `arm_token`, `arm_amount`, `arm_currency`, `arm_payer_email`, `arm_extra_vars`, arm_first_name, arm_last_name, arm_coupon_code, arm_coupon_discount, arm_coupon_discount_type, arm_coupon_on_each_subscriptions FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_token`= '".$subscription_id."' ORDER BY `arm_log_id` DESC");
+
+                        if(empty($payLog))
+                        {
+                            $payLog = apply_filters('arm_get_recurring_payment_log_data', $payLog, $subscription_id, $arm_payment_gateway, $arm_response_data);
+                        }
+
+                        do_action('arm_payment_log_entry', $arm_payment_gateway, 'modify webhook payment log details', 'payment_gateway', $payLog, $arm_debug_payment_log_id);
+
+                        $arm_return_data['arm_subs_data']['paylog_data'] = $payLog;
+                        $user_id = !empty($payLog->arm_user_id) ? $payLog->arm_user_id : 0;
+                    }
+
+                    if(!empty($user_id)){
+                        //This condition will execute if any existing subscription found.
+                        $arm_payment_log_id = $this->arm_add_user_and_transaction($entry_id, $user_id, $arm_response_data, $arm_payment_gateway, $arm_subscription_id_field_name, $arm_token_field_name, $arm_transaction_id_field_name);
+                    } else if(empty($user_id) && !empty($entry_id)) {
+                        //This condition will execute if no existing subscription or user found.
+                        $arm_payment_log_id = $this->arm_add_user_and_transaction($entry_id, $user_id, $arm_response_data, $arm_payment_gateway, $arm_subscription_id_field_name, $arm_token_field_name, $arm_transaction_id_field_name);
+                    }
+                } else if(!empty($entry_id)) {
+                    $arm_log_id = "";
+                    $arm_user_id = 0;
+                    if(!empty($arm_transaction_id)){
+                        $arm_get_payment_log_data = $wpdb->get_row("SELECT * FROM `$ARMember->tbl_arm_payment_log` WHERE arm_token = '".$arm_transaction_id."'", ARRAY_A);
+
+                        $arm_log_id = !empty($arm_get_payment_log_data['arm_log_id']) ? $arm_get_payment_log_data['arm_log_id'] : '';
+
+                        $entry_data = $wpdb->get_row("SELECT * FROM `" . $ARMember->tbl_arm_entries . "` WHERE `arm_entry_id`='" . $entry_id . "' ", ARRAY_A);
+
+                        $arm_debug_log_data = array(
+                            'trans_paylog_data' => $arm_get_payment_log_data,
+                            'entry_data' => $entry_data,
+                        );
+
+                        do_action('arm_payment_log_entry', $arm_payment_gateway, 'modify payment webhook transaction details', 'payment_gateway', $arm_debug_log_data, $arm_debug_payment_log_id);
+
+                        $entry_values = maybe_unserialize($entry_data['arm_entry_value']);
+                        $entry_email = isset($entry_data['arm_entry_email']) ? $entry_data['arm_entry_email'] : '';
+
+                        if(!empty($entry_data['arm_user_id']) ) {
+                            $arm_user_id = $entry_data['arm_user_id'];
+                        }
+                        else {
+                            $user_info = get_user_by('email', $entry_email);
+                            $arm_user_id = isset($user_info->ID) ? $user_info->ID : 0;
+                        }
+                    }
+
+                    $arm_debug_log_data = array(
+                        'log_id' => $arm_log_id,
+                        'user_id' => $arm_user_id,
+                    );
+                    do_action('arm_payment_log_entry', $arm_payment_gateway, 'modify payment webhook transaction details', 'payment_gateway', $arm_debug_log_data, $arm_debug_payment_log_id);
+
+                    if($arm_log_id == ''){
+                        $arm_created_user_id = $this->arm_add_user_and_transaction($entry_id, $arm_user_id, $arm_response_data, $arm_payment_gateway, $arm_subscription_id_field_name, $arm_token_field_name, $arm_transaction_id_field_name);
+                    }else if(!empty($arm_user_id) || $arm_user_id != 0){
+                        $arm_created_user_id = $this->arm_add_user_and_transaction($entry_id, $arm_user_id, $arm_response_data, $arm_payment_gateway, $arm_subscription_id_field_name, $arm_token_field_name, $arm_transaction_id_field_name);
+                    }
+                }
+            }
+
+            $arm_webhook_save_membership_data = $arm_return_data;
+            return $arm_webhook_save_membership_data;
+        }
+
+
+        function arm_add_user_and_transaction($arm_entry_id = 0, $arm_user_id = 0, $arm_payment_gateway_response = array(), $arm_payment_gateway = '', $arm_subscription_id_field_name = '', $arm_token_field_name = '', $arm_transaction_id_field_name = ''){
+            global $wpdb, $square, $ARMember, $arm_global_settings, $arm_subscription_plans, $arm_member_forms, $arm_payment_gateways, $arm_manage_communication, $arm_manage_coupons, $payment_done, $paid_trial_square_payment_done, $arm_members_class,$arm_transaction,$arm_membership_setup, $is_multiple_membership_feature, $arm_pay_per_post_feature, $arm_debug_payment_log_id;
+
+            $arm_debug_log_data = array(
+                'arm_entry_id' => $arm_entry_id,
+                'arm_user_id' => $arm_user_id,
+                'gateway_response' => $arm_payment_gateway_response,
+                'arm_payment_gateway' => $arm_payment_gateway,
+                'subscription_id_field_name' => $arm_subscription_id_field_name,
+                'token_field_name' => $arm_token_field_name,
+                'transaction_id_field_name' => $arm_transaction_id_field_name,
+            );
+            do_action('arm_payment_log_entry', $arm_payment_gateway, 'add user and transaction data params', 'payment_gateway', $arm_debug_log_data, $arm_debug_payment_log_id);
+
+            $arm_current_datetime = current_time('mysql');
+
+            $all_payment_gateways = $arm_payment_gateways->arm_get_active_payment_gateways();
+            if (isset($all_payment_gateways[$arm_payment_gateway]) && !empty($all_payment_gateways[$arm_payment_gateway])) {
+                $options = $all_payment_gateways[$arm_payment_gateway];
+                if($arm_payment_gateway == "2checkout"){
+                    $arm_payment_gateway_mode = $options["payment_mode"];
+                }else{
+                    $arm_payment_gateway_mode = $options[$arm_payment_gateway."_payment_mode"];
+                }
+
+                $is_sandbox_mode = $arm_payment_gateway_mode == "sandbox" ? 1 : 0;
+                $currency = $arm_payment_gateways->arm_get_global_currency();
+                $defaultPlanData = $arm_subscription_plans->arm_default_plan_array();
+
+                if (!empty($arm_entry_id) ) {
+                    $entry_data = $wpdb->get_row("SELECT * FROM `" . $ARMember->tbl_arm_entries . "` WHERE `arm_entry_id`='" . $arm_entry_id . "' ", ARRAY_A);
+                    if(empty($arm_user_id) && !empty($entry_data['arm_user_id'])){
+                        $arm_user_id = $entry_data['arm_user_id'];
+                    }
+
+                    $entry_values = maybe_unserialize($entry_data['arm_entry_value']);
+                    $entry_email = isset($entry_data['arm_entry_email']) ? $entry_data['arm_entry_email'] : '';
+
+                    if(empty($arm_payment_gateway_response['arm_payer_email']))
+                    {
+                        $arm_payment_gateway_response['arm_payer_email'] = $entry_email;
+                    }
+
+                    $arm_log_plan_id = $entry_data['arm_plan_id'];
+                    $arm_log_amount = isset($entry_values['arm_total_payable_amount']) ? $entry_values['arm_total_payable_amount'] : '';
+
+                    $plan = new ARM_Plan($arm_log_plan_id);
+                    $entry_id = $arm_entry_id;
+                    $form_id = $entry_data['arm_form_id'];
+                    $armform = new ARM_Form('id', $form_id);
+
+                    $extraParam = array();
+                    $tax_percentage = isset($entry_values['tax_percentage']) ? $entry_values['tax_percentage'] : 0;
+                    $arm_payment_gateway_extraParam['tax_percentage'] = $tax_percentage;
+                    $payment_mode = $entry_values['arm_selected_payment_mode'];
+                    $payment_cycle = !empty($entry_values['arm_selected_payment_cycle']) ? $entry_values['arm_selected_payment_cycle'] : 0;
+
+                    $arm_user_old_plan = (isset($entry_values['arm_user_old_plan']) && !empty($entry_values['arm_user_old_plan'])) ? explode(",", $entry_values['arm_user_old_plan']) : array();
+                    $setup_id = $entry_values['setup_id'];
+                    $entry_plan = $entry_data['arm_plan_id'];
+                    $new_plan = new ARM_Plan($entry_plan);
+
+                    $arm_is_amount_load_from_usermeta = 0;
+                    $arm_plan_amount = $new_plan->amount;
+                    if($new_plan->is_recurring())
+                    {
+                        $arm_plan_options = $new_plan->options;
+                        $arm_plan_amount = !empty($arm_plan_options) ? $arm_plan_options['payment_cycles'][$payment_cycle]['cycle_amount'] : $arm_plan_amount;
+                    }
+
+                    if(!empty($arm_user_id) && !empty($entry_plan)){
+                        //$arm_is_recurring_payment = $arm_subscription_plans->arm_is_recurring_payment_of_user($arm_user_id, $entry_plan, $payment_mode);
+                        $arm_is_recurring_payment = $this->arm_is_recurring_payment($payment_mode, $arm_user_id, $entry_plan, $arm_payment_gateway_response[$arm_token_field_name]);
+                        if($arm_is_recurring_payment){
+                            $armUserPlanData = get_user_meta($arm_user_id, 'arm_user_plan_'.$entry_plan, true);
+                            if(!empty($armUserPlanData)){
+                                $armCurrentPlanDetails = !empty($armUserPlanData['arm_current_plan_detail']) ? $armUserPlanData['arm_current_plan_detail'] : array();
+                                if(!empty($armCurrentPlanDetails)){
+                                    $armCurrentPlanOptions = !empty($armUserPlanData['arm_subscription_plan_options']) ? maybe_unserialize($armUserPlanData['arm_subscription_plan_options']) : array();
+                                    if(!empty($armCurrentPlanOptions) && isset($armCurrentPlanOptions['payment_cycles'][$payment_cycle])){
+                                        $arm_plan_amount = $armCurrentPlanOptions['payment_cycles'][$payment_cycle]['cycle_amount'];
+                                        $arm_is_amount_load_from_usermeta = 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    $arm_display_log = '1';
+
+                    $arm_payment_gateway_extraParam['plan_amount'] = $arm_plan_amount;
+                    $discount_amt = $arm_plan_amount;
+                    $discount_amt = apply_filters('arm_modify_webhook_discount_amount', $discount_amt, $entry_plan, $entry_id, $entry_values, $arm_payment_gateway);
+
+                    $arm_coupon_discount = 0;
+                    $amount = $arm_plan_amount;
+                    $amount = apply_filters('arm_modify_webhook_discount_amount', $amount, $entry_plan, $entry_id, $entry_values, $arm_payment_gateway);
+
+                    $discount_amt = apply_filters('arm_modify_subscription_plan_amount_outside', $amount, $new_plan, $entry_id, $payment_cycle);
+
+                    $arm_coupon_on_each_subscriptions = 0;
+                    $couponCode = isset($entry_values['arm_coupon_code']) ? $entry_values['arm_coupon_code'] : '';
+                    if(!empty($couponCode)){
+                        $couponApply = $arm_manage_coupons->arm_apply_coupon_code($couponCode, $new_plan, $setup_id, $payment_cycle, $arm_user_old_plan);
+                        if($couponApply["status"] == "success") {
+                            $coupon_amount = isset($couponApply['coupon_amt']) ? $couponApply['coupon_amt'] : 0;
+                            $coupon_amount = str_replace(',', '', $coupon_amount);
+
+                            $discount_amt = isset($couponApply['total_amt']) ? $couponApply['total_amt'] : $amount;
+                            $discount_amt = str_replace(',', '', $discount_amt);
+
+                            $arm_payment_gateway_extraParam['coupon'] = array(
+                                'coupon_code' => $couponCode,
+                                'amount' => $coupon_amount,
+                            );
+
+                            $arm_coupon_on_each_subscriptions = isset($couponApply['arm_coupon_on_each_subscriptions']) ? $couponApply['arm_coupon_on_each_subscriptions'] : 0;
+
+                            $arm_coupon_discount = str_replace(",", "", $couponApply['discount']);
+                            $arm_coupon_discount_type = ($couponApply['discount_type'] != 'percentage') ? $currency : "%";
+                            $arm_payment_gateway_response['coupon_code'] = $couponCode;
+                            $arm_payment_gateway_response['arm_coupon_discount'] = $arm_coupon_discount;
+                            $arm_payment_gateway_response['arm_coupon_discount_type'] = $arm_coupon_discount_type;
+                            $arm_payment_gateway_response['arm_coupon_on_each_subscriptions'] = $arm_coupon_on_each_subscriptions;
+                        }
+                    }
+
+                    $arm_token = !empty($arm_payment_gateway_response[$arm_token_field_name]) ? $arm_payment_gateway_response[$arm_token_field_name] : '';
+                    $arm_trans_id = !empty($arm_payment_gateway_response[$arm_transaction_id_field_name]) ? $arm_payment_gateway_response[$arm_transaction_id_field_name] : '';
+                    $arm_subs_id = !empty($arm_payment_gateway_response[$arm_subscription_id_field_name]) ? $arm_payment_gateway_response[$arm_subscription_id_field_name] : '';
+
+                    $arm_payment_gateway_response['arm_payment_gateway_trans_id'] = $arm_trans_id;
+                    $arm_payment_gateway_response['arm_payment_gateway_token'] = $arm_token;
+                    $arm_payment_gateway_response['arm_payment_gateway_subs_id'] = $arm_subs_id;
+
+                    $amount_for_tax = $discount_amt;
+
+                    $recurring_data = $new_plan->prepare_recurring_data($payment_cycle);
+		    
+                    $arm_is_recurring_payment = $this->arm_is_recurring_payment($payment_mode, $arm_user_id, $entry_plan, $arm_token);
+
+                    if(!$arm_is_recurring_payment)
+                    {
+                        if (!empty($recurring_data['trial'])) {
+                            $arm_payment_gateway_extraParam['trial'] = array(
+                                'amount' => $recurring_data['trial']['amount'],
+                                'period' => $recurring_data['trial']['period'],
+                                'interval' => $recurring_data['trial']['interval'],
+                            );
+                            $arm_payment_gateway_extraParam['arm_is_trial'] = '1';
+
+                            $amount_for_tax = $recurring_data['trial']['amount'];
+                        }
+                    }
+
+
+                    if( $arm_coupon_discount > 0){
+                       $amount_for_tax = $discount_amt;
+                    }
+
+                    $amount_for_tax = str_replace(",", "", $amount_for_tax);
+
+                    $tax_amount = 0;
+                    if($tax_percentage > 0){
+                        $tax_amount =($amount_for_tax*$tax_percentage)/100;
+                        $tax_amount = number_format((float)$tax_amount, 2, '.','');
+
+                        $amount_for_tax = $amount_for_tax+$tax_amount;
+                    }
+
+                    $amount_for_tax = number_format((float)$amount_for_tax, 2, '.','');
+
+                    $arm_payment_type = $plan->payment_type;
+                    $payment_status = 'success';
+
+                    $user_info = get_user_by('email', $entry_email);
+                    $user_id = isset($user_info->ID) ? $user_info->ID : 0;
+                        
+                    $user_detail_first_name = get_user_meta( $user_id, 'first_name', true);
+                    $user_detail_last_name = get_user_meta( $user_id, 'last_name', true);
+
+                    $arm_payment_gateway_response['arm_coupon_code'] = !empty($entry_values['arm_coupon_code']) ? $entry_values['arm_coupon_code'] : '';
+                    $arm_payment_gateway_response['arm_payment_type'] = $arm_payment_type;
+                    $arm_payment_gateway_response['payment_type'] = $arm_payment_type;
+                    $arm_payment_gateway_response['payment_status'] = $payment_status;
+                    $arm_payment_gateway_response['payer_email'] = $entry_email;
+                    $arm_payment_gateway_response['arm_first_name'] = $user_detail_first_name;
+                    $arm_payment_gateway_response['arm_last_name'] = $user_detail_last_name;
+                    $arm_payment_gateway_response['arm_payment_mode'] = $payment_mode;
+
+                    $arm_payment_gateway_extraParam['payment_type'] = $arm_payment_gateway;
+                    $arm_payment_gateway_extraParam['payment_mode'] = $arm_payment_gateway_mode;
+                    $arm_payment_gateway_extraParam['arm_is_trial'] = '0';
+                    $arm_payment_gateway_extraParam['subs_id'] = $arm_payment_gateway_response['arm_payment_gateway_subs_id'];
+                    $arm_payment_gateway_extraParam['trans_id'] = $arm_payment_gateway_response['arm_payment_gateway_trans_id'];
+                    $arm_payment_gateway_extraParam['date'] = current_time('mysql');
+                    $arm_payment_gateway_extraParam['card_number'] = !empty($arm_payment_gateway_response['arm_payment_card_number']) ? $arm_payment_gateway_response['arm_payment_card_number'] : '';
+
+                    $arm_payment_gateway_response['currency'] = $currency;
+                    $arm_payment_gateway_response['payment_amount'] = $discount_amt;
+                    $arm_payment_gateway_response['plan_action'] = 'new_subscription';
+
+                    if (empty($arm_user_id) && !$user_info) {
+                        $payment_log_id = 0;
+                        if (in_array($armform->type, array('registration'))) {
+                            
+                            $arm_payment_gateway_extraParam['tax_amount'] = $tax_amount;
+                            $arm_payment_gateway_extraParam['paid_amount'] = $amount_for_tax;
+                            $arm_payment_gateway_response['payment_amount'] = $amount_for_tax;
+
+                            $entry_values['payment_done'] = '1';
+                            $entry_values['arm_entry_id'] = $entry_id;
+                            $entry_values['arm_update_user_from_profile'] = 0;
+                            $user_id = $arm_member_forms->arm_register_new_member($entry_values, $armform, '', 0);
+
+                            $arm_payment_gateway_response = apply_filters('arm_modify_subscription_outside', $arm_payment_gateway_response, $arm_payment_gateway, $user_id, $entry_plan);
+
+                            $payment_log_id = $this->arm_store_payment_log($arm_payment_gateway_response, $user_id, $entry_plan, $arm_payment_gateway_extraParam, $arm_display_log, $arm_payment_gateway);
+
+                            do_action('arm_after_register_and_store_log_data', $payment_log_id, $entry_id, $user_id, $entry_plan, $arm_payment_gateway, $arm_payment_gateway_response, $arm_payment_gateway_extraParam);
+
+                            $user_email = !empty($entry_values['user_email']) ? $entry_values['user_email'] : '';
+                            if(!empty($user_id) && !empty($user_email))
+                            {
+                                arm_new_user_notification($user_id);
+                            }
+			    
+                            $arm_debug_log_data = array(
+                                'user_id' => $user_id,
+                                'payment_log_id' => $payment_log_id,
+                            );
+
+                            do_action('arm_payment_log_entry', $arm_payment_gateway, 'adding new user data', 'payment_gateway', $arm_debug_log_data, $arm_debug_payment_log_id);
+
+                            $payment_done = array();
+                            if ($payment_log_id) {
+                                $payment_done = array('status' => TRUE, 'log_id' => $payment_log_id, 'entry_id' => $entry_id);
+                            }
+
+
+                            if (is_numeric($user_id) && !is_array($user_id)) {
+                                //if ($arm_payment_type == 'subscription') {
+
+                                $userPlanDatameta = get_user_meta($user_id, 'arm_user_plan_' . $entry_plan, true);
+                                $userPlanDataDefault = shortcode_atts($defaultPlanData, $userPlanDatameta);
+                                $userPlanData = !empty($userPlanDatameta) ? $userPlanDatameta : $userPlanDataDefault;
+
+                                if(empty($userPlanData["arm_".$arm_payment_gateway]))
+                                {
+                                    $userPlanData["arm_".$arm_payment_gateway] = array();
+                                }
+
+                                $userPlanData["arm_".$arm_payment_gateway]['transaction_id'] = $arm_token;
+                                $userPlanData["arm_".$arm_payment_gateway][$arm_subscription_id_field_name] = $arm_token;
+                                $userPlanData["arm_".$arm_payment_gateway][$arm_transaction_id_field_name] = $arm_trans_id;
+                                $userPlanData["arm_cencelled_plan"] = "";
+                                update_user_meta($user_id, 'arm_user_plan_' . $entry_plan, $userPlanData);
+                                //}
+                                update_user_meta($user_id, 'arm_entry_id', $entry_id);
+
+                                /**
+                                 * Send Email Notification for Successful Payment
+                                 */
+                                $arm_manage_communication->arm_user_plan_status_action_mail(array('plan_id' => $entry_plan, 'user_id' => $user_id, 'action' => 'new_subscription'));
+                            }
+                        }
+
+                        return $payment_log_id;
+                    }
+                    else if(!empty($arm_user_id)){
+                        
+                        if(!empty($arm_payment_gateway_response['arm_payment_gateway_trans_id']))
+                        {
+                            //If already added transaction ID data received then stop execution.
+                            $arm_existing_transaction_data = $wpdb->get_row("SELECT arm_log_id FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_transaction_id`='".$arm_payment_gateway_response['arm_payment_gateway_trans_id']."' and `arm_transaction_id`!='' ORDER BY `arm_log_id` ASC", ARRAY_A);
+                            if(!empty($arm_existing_transaction_data))
+                            {
+                                $arm_debug_log_data = array(
+                                    'transaction_id' => $arm_payment_gateway_response['arm_payment_gateway_trans_id'],
+                                    'user_id' => $arm_user_id,
+                                    'existing_transaction_data' => $arm_existing_transaction_data,
+                                );
+                                do_action('arm_payment_log_entry', $arm_payment_gateway, 'transaction data for already existing user', 'payment_gateway', $arm_debug_log_data, $arm_debug_payment_log_id);
+
+                                die();
+                            }
+                        }
+
+
+                        $user_info = get_user_by('id', $arm_user_id);
+                        $user_id = $arm_user_id;
+
+                        $arm_subscr_id = (!empty($arm_payment_gateway_response) && !empty($arm_payment_gateway_response[$arm_subscription_id_field_name])) ? $arm_payment_gateway_response[$arm_subscription_id_field_name] : '';
+
+                        $payLog = $wpdb->get_row("SELECT * FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_token` = '".$arm_subscr_id."' and `arm_token`!='' ORDER BY `arm_log_id` ASC", ARRAY_A);
+
+                        do_action('arm_payment_log_entry', $arm_payment_gateway, 'existing user subscription data', 'payment_gateway', $payLog, $arm_debug_payment_log_id);
+
+                        if(!empty($user_id) && !empty($user_info)){
+                            $arm_is_post_entry = !empty($payLog['arm_is_post_entry']) ? $payLog['arm_is_post_entry'] : 0;
+                            $arm_paid_post_id = !empty($payLog['arm_paid_post_id']) ? $payLog['arm_paid_post_id'] : 0;
+                            $arm_is_allow_multiple_purchase = apply_filters('arm_is_allow_purchase_with_multiple_plans', $payLog);
+
+                            if(!empty($payLog) && !empty($arm_subscr_id)){
+                                $entry_plan = !empty($payLog['arm_plan_id']) ? $payLog['arm_plan_id'] : 0;
+                            }
+                            $userPlanDatameta = get_user_meta($user_id, 'arm_user_plan_' . $entry_plan, true);
+
+                            $userPlanDataDefault = shortcode_atts($defaultPlanData, $userPlanDatameta);
+                            $userPlanDatameta = !empty($userPlanDatameta) ? $userPlanDatameta : $userPlanDataDefault;
+
+                            //if(!empty($userPlanDatameta['arm_payment_mode']))
+                            if(empty($payment_mode) && !empty($userPlanDatameta['arm_payment_mode']))
+                            {
+                                $payment_mode = $userPlanDatameta['arm_payment_mode'];
+                            }
+                            $arm_user_selected_payment_cycle = ($userPlanDatameta['arm_payment_cycle'] != "") ? $userPlanDatameta['arm_payment_cycle'] : $payment_cycle;
+                            $arm_token = $arm_subscr_id;
+
+                            if (!$is_multiple_membership_feature->isMultipleMembershipFeature && !$arm_is_post_entry && !$arm_is_allow_multiple_purchase ){
+
+                                $old_plan_ids = get_user_meta($user_id, 'arm_user_plan_ids', true);
+                                if($arm_pay_per_post_feature->isPayPerPostFeature)
+                                {
+	                                $user_post_ids = get_user_meta($user_id, 'arm_user_post_ids', true);
+	                                if(!empty($user_post_ids))
+	                                {
+	                                    foreach($old_plan_ids as $arm_plan_key => $arm_plan_val)
+	                                    {
+	                                        if(isset($user_post_ids[$arm_plan_val]) && in_array($user_post_ids[$arm_plan_val], $user_post_ids))
+	                                        {
+	                                            unset($old_plan_ids[$arm_plan_key]);
+	                                        }
+	                                    }
+	                                }
+				                }
+
+                                $old_plan_ids = apply_filters('arm_modify_plan_ids_externally', $old_plan_ids, $user_id);
+				
+                                $old_plan_id = !empty($old_plan_ids[0]) ? $old_plan_ids[0] : 0;
+                                $oldPlanDetail = array();
+                                $old_subscription_id = '';
+                                if(!empty($old_plan_id))
+                                {
+
+                                    $oldPlanData = get_user_meta($user_id, 'arm_user_plan_'.$old_plan_id, true);
+                                    $subscr_effective = !empty($oldPlanData['arm_expire_plan']) ? $oldPlanData['arm_expire_plan'] : $oldPlanData['arm_next_due_payment'];
+                                }
+                                if(!empty($old_plan_id) && in_array($entry_plan, $old_plan_ids)){
+                                    $oldPlanData = !empty($oldPlanData) ? $oldPlanData : array();
+                                    //$oldPlanData = shortcode_atts($defaultPlanData, $oldPlanData);
+                                    $oldPlanDetail = $oldPlanData['arm_current_plan_detail'];
+                                    $old_subscription_id = !empty($oldPlanData["arm_".$arm_payment_gateway][$arm_subscription_id_field_name]) ? $oldPlanData["arm_".$arm_payment_gateway][$arm_subscription_id_field_name] : '';
+                                    if(empty($old_subscription_id))
+                                    {
+                                        $arm_is_payment_recurring = $wpdb->get_row("SELECT * FROM ".$ARMember->tbl_arm_payment_log." WHERE arm_token = '".$arm_token."' AND arm_plan_id = ".$entry_plan."");
+                                        if(!empty($arm_is_payment_recurring))
+                                        {
+                                            $old_subscription_id = $arm_token;
+                                        }
+                                    }
+                                }
+
+                                $userPlanDatameta['arm_is_user_in_grace'] = 0;
+                                $userPlanDatameta['arm_grace_period_end'] = '';
+                                $userPlanDatameta["arm_cencelled_plan"] = "";
+
+                                $arm_user_old_plan_details = (isset($userPlanDatameta['arm_current_plan_detail']) && !empty($userPlanDatameta['arm_current_plan_detail'])) ? $userPlanDatameta['arm_current_plan_detail'] : array();
+                                $arm_user_old_plan_details['arm_user_old_payment_mode'] = $userPlanDatameta['arm_payment_mode'];
+
+
+                                if(!empty($old_subscription_id) && $payment_mode == 'auto_debit_subscription' && $old_subscription_id == $arm_token)
+                                {
+                                    $arm_payment_gateway_response['plan_action'] = 'recurring_subscription';
+
+                                    $arm_payment_gateway_extraParam['tax_amount'] = $tax_amount;
+                                    $arm_payment_gateway_extraParam['paid_amount'] = $amount_for_tax;
+                                    $arm_payment_gateway_response['payment_amount'] = $amount_for_tax;
+                                    
+                                    //For update next recurring of existing recurring subscription
+                                    $this->arm_webhook_next_recurring_update_data($entry_plan, $user_id, $arm_payment_gateway);
+                                }
+                                else
+                                {
+                                    
+                                    $now = current_time('mysql');
+                                    $arm_last_payment_status = $wpdb->get_var($wpdb->prepare("SELECT `arm_transaction_status` FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_user_id`=%d AND `arm_plan_id`=%d AND `arm_payment_date`<=%s ORDER BY `arm_log_id` DESC LIMIT 0,1", $user_id, $entry_plan, $now)); 
+
+                                    $userPlanDatameta['arm_current_plan_detail'] = $arm_user_old_plan_details;
+                                    
+                                    $userPlanDatameta['arm_payment_mode'] = $payment_mode;
+                                    $userPlanDatameta['arm_payment_cycle'] = $arm_user_selected_payment_cycle;
+
+                                    $userPlanDatameta["arm_".$arm_payment_gateway][$arm_subscription_id_field_name] = $arm_token;
+                                    $userPlanDatameta["arm_".$arm_payment_gateway][$arm_transaction_id_field_name] = $arm_trans_id;
+
+                                    if (!empty($oldPlanDetail)) {
+                                        $old_plan = new ARM_Plan(0);
+                                        $old_plan->init((object) $oldPlanDetail);
+                                    } else {
+                                        $old_plan = new ARM_Plan($old_plan_id);
+                                    }
+                                    $is_update_plan = true;
+                                    /* Coupon Details */
+
+                                    $arm_payment_gateway_extraParam['tax_amount'] = $tax_amount;
+                                    $arm_payment_gateway_extraParam['paid_amount'] = $amount_for_tax;
+                                    $arm_payment_gateway_response['payment_amount'] = $amount_for_tax;
+                                    if ($old_plan->exists()) {
+                                        if ($old_plan->is_lifetime() || $old_plan->is_free() || ($old_plan->is_recurring() && $new_plan->is_recurring())) {
+                                            $is_update_plan = true;
+                                        } else {
+                                            $change_act = 'immediate';
+                                            if ($old_plan->enable_upgrade_downgrade_action == 1) {
+                                                if (!empty($old_plan->downgrade_plans) && in_array($new_plan->ID, $old_plan->downgrade_plans)) {
+                                                    $change_act = $old_plan->downgrade_action;
+                                                }
+                                                if (!empty($old_plan->upgrade_plans) && in_array($new_plan->ID, $old_plan->upgrade_plans)) {
+                                                    $change_act = $old_plan->upgrade_action;
+                                                }
+                                            }
+                                            if ($change_act == 'on_expire' && !empty($subscr_effective)) {
+                                                $is_update_plan = false;
+                                                $oldPlanData['arm_subscr_effective'] = $subscr_effective;
+                                                $oldPlanData['arm_change_plan_to'] = $entry_plan;
+                                                update_user_meta($user_id, 'arm_user_plan_' . $old_plan_id, $oldPlanData);
+                                            }
+                                        }
+                                    }
+
+                                    update_user_meta($user_id, 'arm_entry_id', $entry_id);
+                                    $userPlanDatameta['arm_user_gateway'] = $arm_payment_gateway;
+
+                                    if (!empty($arm_token)) {
+                                        $userPlanDatameta["arm_".$arm_payment_gateway]['transaction_id'] = $arm_token;
+                                    }
+
+                                    update_user_meta($user_id, 'arm_user_plan_' . $entry_plan, $userPlanDatameta);
+
+                                    $arm_payment_gateway_response = apply_filters('arm_modify_subscription_outside', $arm_payment_gateway_response, $arm_payment_gateway, $user_id, $entry_plan);
+
+                                    if ($is_update_plan) {
+                                        $arm_payment_gateway_response['plan_action'] = 'renew_subscription';
+
+                                        $payment_log_id = $this->arm_store_payment_log($arm_payment_gateway_response, $user_id, $entry_plan, $arm_payment_gateway_extraParam, $arm_display_log, $arm_payment_gateway);
+
+                                        $arm_subscription_plans->arm_update_user_subscription($user_id, $entry_plan, '', true, $arm_last_payment_status);
+
+                                    } else {
+                                        $arm_subscription_plans->arm_add_membership_history($user_id, $entry_plan, 'change_subscription');
+                                    }
+                                }
+                            }
+                            else{
+                                $now = current_time('mysql');
+                                $arm_last_payment_status = $wpdb->get_var($wpdb->prepare("SELECT `arm_transaction_status` FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_user_id`=%d AND `arm_plan_id`=%d AND `arm_payment_date`<=%s ORDER BY `arm_log_id` DESC LIMIT 0,1", $user_id, $entry_plan, $now));
+                                $old_plan_ids = get_user_meta($user_id, 'arm_user_plan_ids', true);
+
+                                if($arm_pay_per_post_feature->isPayPerPostFeature)
+                                {
+                                    $user_post_ids = get_user_meta($user_id, 'arm_user_post_ids', true);
+                                    if(!empty($user_post_ids))
+                                    {
+                                        foreach($old_plan_ids as $arm_plan_key => $arm_plan_val)
+                                        {
+                                            if(isset($user_post_ids[$arm_plan_val]) && in_array($user_post_ids[$arm_plan_val], $user_post_ids))
+                                            {
+                                                unset($old_plan_ids[$arm_plan_key]);
+                                            }
+                                        }
+                                    }
+                                }
+                                $oldPlanDetail = array();
+                                $old_subscription_id = '';
+
+                                if(!empty($old_plan_ids) && in_array($entry_plan, $old_plan_ids))
+                                {
+                                    $oldPlanData = get_user_meta($user_id, 'arm_user_plan_'.$entry_plan, true);
+                                    $oldPlanData = !empty($oldPlanData) ? $oldPlanData : array();
+                                    $oldPlanDetail = $oldPlanData['arm_current_plan_detail'];
+                                    $subscr_effective = $oldPlanData['arm_expire_plan'];
+                                    $old_subscription_id = !empty($oldPlanData["arm_".$arm_payment_gateway][$arm_subscription_id_field_name]) ? $oldPlanData["arm_".$arm_payment_gateway][$arm_subscription_id_field_name] : '';
+                                    if(empty($old_subscription_id))
+                                    {
+                                        $arm_is_payment_recurring = $wpdb->get_row("SELECT `arm_log_id` FROM ".$ARMember->tbl_arm_payment_log." WHERE arm_token = '".$arm_token."' AND arm_plan_id = ".$entry_plan."");
+                                        if(!empty($arm_is_payment_recurring))
+                                        {
+                                            $old_subscription_id = $arm_token;
+                                        }
+                                    }
+                                }
+
+                                $userPlanDatameta['arm_is_user_in_grace'] = 0;
+                                $userPlanDatameta['arm_grace_period_end'] = '';
+                                $userPlanDatameta["arm_cencelled_plan"] = "";
+
+                                if(!empty($old_subscription_id) && $payment_mode == 'auto_debit_subscription' && $old_subscription_id == $arm_token)
+                                {
+                                    $arm_payment_gateway_response['plan_action'] = 'recurring_subscription';
+                                    
+                                    $arm_payment_gateway_extraParam['tax_amount'] = $tax_amount;
+                                    $arm_payment_gateway_extraParam['paid_amount'] = $amount_for_tax;
+                                    $arm_payment_gateway_response['payment_amount'] = $amount_for_tax;
+
+                                    //For update next recurring of existing recurring subscription
+                                    $this->arm_webhook_next_recurring_update_data($entry_plan, $user_id, $arm_payment_gateway);
+                                }
+                                else
+                                {
+                                    $userPlanDatameta['arm_payment_mode'] = $payment_mode;
+                                    $userPlanDatameta['arm_payment_cycle'] = $arm_user_selected_payment_cycle;
+
+                                    $is_update_plan = true;
+                                    /* Coupon Details */
+
+                                    $recurring_data = $new_plan->prepare_recurring_data($payment_cycle);
+                                    if (!empty($recurring_data['trial']) && empty($arm_user_old_plan)) {
+                                        $arm_payment_gateway_extraParam['trial'] = array(
+                                            'amount' => $recurring_data['trial']['amount'],
+                                            'period' => $recurring_data['trial']['period'],
+                                            'interval' => $recurring_data['trial']['interval'],
+                                        );
+                                        $amount_for_tax = $recurring_data['trial']['amount']; 
+                                    }
+
+                                    $arm_payment_gateway_extraParam['tax_amount'] = $tax_amount;
+                                    $arm_payment_gateway_extraParam['paid_amount'] = $amount_for_tax;
+                                    $arm_payment_gateway_response['payment_amount'] = $amount_for_tax;
+
+                                    update_user_meta($user_id, 'arm_entry_id', $entry_id);
+                                    $userPlanDatameta['arm_user_gateway'] = $arm_payment_gateway;
+
+                                    if (!empty($arm_token)) {
+                                        $userPlanDatameta["arm_".$arm_payment_gateway]['transaction_id'] = $arm_token;
+                                    }
+
+                                    update_user_meta($user_id, 'arm_user_plan_' . $entry_plan, $userPlanDatameta);
+				    
+				    $arm_payment_gateway_response = apply_filters('arm_modify_subscription_outside', $arm_payment_gateway_response, $arm_payment_gateway, $user_id, $entry_plan);
+				    
+                                    if ($is_update_plan) {
+                                        $arm_payment_gateway_response['plan_action'] = 'renew_subscription';
+                                        $arm_subscription_plans->arm_update_user_subscription($user_id, $entry_plan,'', true, $arm_last_payment_status);
+                                    } else {
+                                       $arm_subscription_plans->arm_add_membership_history($user_id, $entry_plan, 'new_subscription');
+                                    }
+                                }
+                            }
+
+
+                            $payment_log_id = $this->arm_store_payment_log($arm_payment_gateway_response, $user_id, $entry_plan, $arm_payment_gateway_extraParam, $arm_display_log, $arm_payment_gateway);
+                        }
+                    }
+
+                }
+            }
+        }
+
+
+        function arm_store_payment_log($arm_payment_gateway_response = array(), $user_id = 0, $plan_id = 0, $arm_payment_gateway_extra_vars = array(), $arm_display_log = '1', $arm_payment_gateway = ''){
+            global $wpdb, $ARMember, $arm_global_settings, $arm_member_forms, $arm_payment_gateways, $arm_debug_payment_log_id, $arm_subscription_plans, $arm_manage_coupons;
+
+            $arm_debug_log_data = array(
+                'gateway_response' => $arm_payment_gateway_response,
+                'user_id' => $user_id,
+                'plan_id' => $plan_id,
+                'extra_vars' => $arm_payment_gateway_extra_vars,
+                'payment_gateway' => $arm_payment_gateway,
+            );
+            do_action('arm_payment_log_entry', $arm_payment_gateway, 'store payment log params', 'payment_gateway', $arm_debug_log_data, $arm_debug_payment_log_id);
+
+            $payment_log_table = $ARMember->tbl_arm_payment_log;
+
+            $transaction = $wpdb->get_row($wpdb->prepare("SELECT arm_token,arm_transaction_id,arm_extra_vars,arm_payer_email,arm_transaction_payment_type FROM `{$payment_log_table}` WHERE `arm_transaction_id`=%s AND `arm_transaction_id`!=%s ORDER BY `arm_created_date` DESC LIMIT 0,1", $arm_payment_gateway_response['arm_payment_gateway_trans_id'],'') );
+
+            do_action('arm_payment_log_entry', $arm_payment_gateway, 'store payment log transaction data', 'payment_gateway', $transaction, $arm_debug_payment_log_id);
+
+            if(!empty($arm_payment_gateway_response) && empty($transaction)){
+                $arm_user_details = get_user_by('id', $user_id);
+
+                $arm_user_email = !empty($arm_user_details->data->user_email) ? $arm_user_details->data->user_email : '';
+                if(!empty($arm_payment_gateway_response['arm_payer_email'])){
+                    $arm_user_email = $arm_payment_gateway_response['arm_payer_email'];
+                }
+
+                if(!empty($user_id))
+                {
+                    $user_detail_first_name = get_user_meta($user_id, 'first_name', true);
+                    $user_detail_last_name = get_user_meta($user_id, 'last_name', true);
+                }
+                else
+                {
+                    $user_detail_first_name = !empty($arm_payment_gateway_response['arm_first_name']) ? $arm_payment_gateway_response['arm_first_name'] : '';
+                    $user_detail_last_name = !empty($arm_payment_gateway_response['arm_last_name']) ? $arm_payment_gateway_response['arm_last_name'] : '';
+                }
+
+                $payment_data = array(
+                    'arm_user_id' => $user_id,
+                    'arm_first_name'=> $user_detail_first_name,
+                    'arm_last_name'=> $user_detail_last_name,
+                    'arm_plan_id' => (!empty($plan_id) ? $plan_id : 0),
+                    'arm_payment_gateway' => $arm_payment_gateway,
+                    'arm_payment_type' => $arm_payment_gateway_response['arm_payment_type'],
+                    'arm_token' => $arm_payment_gateway_response['arm_payment_gateway_token'],
+                    'arm_payer_email' => $arm_user_email,
+                    'arm_receiver_email' => '',
+                    'arm_transaction_id' => $arm_payment_gateway_response['arm_payment_gateway_trans_id'],
+                    'arm_transaction_payment_type' => $arm_payment_gateway_response['payment_type'],
+                    'arm_transaction_status' => $arm_payment_gateway_response['payment_status'],
+                    'arm_payment_date' => current_time('mysql'),
+                    'arm_payment_mode' => $arm_payment_gateway_response['arm_payment_mode'],
+                    'arm_amount' => $arm_payment_gateway_response['payment_amount'],
+                    'arm_currency' => $arm_payment_gateway_response['currency'],
+                    'arm_coupon_code' => $arm_payment_gateway_response['arm_coupon_code'],
+                    'arm_coupon_discount' => (isset($arm_payment_gateway_response['arm_coupon_discount']) && !empty($arm_payment_gateway_response['arm_coupon_discount'])) ? $arm_payment_gateway_response['arm_coupon_discount'] : 0,
+                    'arm_coupon_discount_type' => isset($arm_payment_gateway_response['arm_coupon_discount_type']) ? $arm_payment_gateway_response['arm_coupon_discount_type'] : '',
+                    'arm_extra_vars' => maybe_serialize($arm_payment_gateway_extra_vars),
+                    'arm_is_trial' => isset($arm_payment_gateway_response['arm_is_trial']) ? $arm_payment_gateway_response['arm_is_trial'] : 0,
+                    'arm_display_log' => $arm_display_log,
+                    'arm_created_date' => current_time('mysql'),
+                    'arm_coupon_on_each_subscriptions' => !empty($arm_payment_gateway_response['arm_coupon_on_each_subscriptions']) ? $arm_payment_gateway_response['arm_coupon_on_each_subscriptions'] : 0,
+                );
+
+                do_action('arm_payment_log_entry', $arm_payment_gateway, 'store payment log save data', 'payment_gateway', $payment_data, $arm_debug_payment_log_id);
+
+                $payment_log_id = $arm_payment_gateways->arm_save_payment_log($payment_data);
+
+
+                $plan_payment_mode = !empty($arm_payment_gateway_response['arm_payment_mode']) ? $arm_payment_gateway_response['arm_payment_mode'] : 'manual_subscription';
+                //$is_recurring_payment = $arm_subscription_plans->arm_is_recurring_payment_of_user($user_id, $plan_id, $plan_payment_mode);
+                $is_recurring_payment = $this->arm_is_recurring_payment($arm_payment_gateway_response['arm_payment_mode'], $user_id, $plan_id, $arm_payment_gateway_response['arm_payment_gateway_token']);
+
+                $plan_action = !empty($arm_payment_gateway_response['plan_action']) ? $arm_payment_gateway_response['plan_action'] : 'new_subscription';
+
+                if($is_recurring_payment){
+                    do_action('arm_after_recurring_payment_success_outside', $user_id, $plan_id, $arm_payment_gateway, $plan_payment_mode);
+                }else{
+                    if($arm_payment_gateway_response['arm_coupon_on_each_subscriptions'] == '1')
+                    {
+                        $userPlanData = get_user_meta($user_id, 'arm_user_plan_' . $plan_id, true);
+                        $arm_manage_coupons->arm_coupon_apply_to_subscription($user_id, $payment_log_id, $arm_payment_gateway, $userPlanData);
+                    }
+                }
+
+                return $payment_log_id;
+            }
+            return false;
+        }
+
+
+        function arm_webhook_next_recurring_update_data($arm_plan_id, $arm_user_id, $payment_gateway){
+            global $wpdb, $arm_members_class, $arm_subscription_plans, $ARMember;
+            if(!empty($arm_plan_id) && !empty($arm_user_id) && !empty($payment_gateway))
+            {
+                $plan_id = $arm_plan_id;
+                $user_id = $arm_user_id;
+
+                $plan = new ARM_Plan($plan_id);
+                $defaultPlanData = $arm_subscription_plans->arm_default_plan_array();
+
+                $userPlanDatameta = get_user_meta($user_id, 'arm_user_plan_'.$plan_id, true);
+                $planDataDefault = shortcode_atts($defaultPlanData, $userPlanDatameta);
+
+                $planData = !empty($userPlanDatameta) ? $userPlanDatameta : $planDataDefault;
+
+
+                $arm_next_due_payment_date = $planData['arm_next_due_payment'];
+
+                if(!empty($arm_next_due_payment_date)){
+                    $total_completed_recurrence = $planData['arm_completed_recurring'];
+                    $total_completed_recurrence++;
+                    $planData['arm_completed_recurring'] = $total_completed_recurrence;
+
+                    update_user_meta($user_id, 'arm_user_plan_'.$plan_id, $planData);
+                    $payment_cycle = $planData['arm_payment_cycle'];
+
+                    if($payment_gateway == "stripe")
+                    {
+                        $arm_subscription_id = $planData['arm_stripe']['transaction_id'];
+                        if(substr($arm_subscription_id, 0, 3) != "sub"){
+                            $arm_subscription_id = $planData['arm_stripe']['customer_id'];
+                        }
+                        if(!empty($arm_subscription_id))
+                        {
+                            global $arm_stripe;
+                            $arm_next_due_payment = $arm_stripe->arm_retrieve_next_recurring_date_from_subs_id($arm_subscription_id);
+
+                            if(empty($arm_next_due_payment)){
+                                $arm_next_payment_date = $arm_members_class->arm_get_next_due_date($user_id, $plan_id, false, $payment_cycle);
+                            }
+                            else{
+                                $arm_next_payment_date = $arm_next_due_payment; 
+                            }
+                        }
+                    }
+                    else{
+                        $arm_next_payment_date = $arm_members_class->arm_get_next_due_date($user_id, $plan_id, false, $payment_cycle);
+                    }
+                    
+                    $planData['arm_next_due_payment'] = $arm_next_payment_date;
+                    $planData["arm_cencelled_plan"] = "";
+                    update_user_meta($user_id, 'arm_user_plan_'.$plan_id, $planData);
+
+                    //delete this flag if exists while failed payment status.
+                    delete_user_meta($user_id, 'arm_user_failed_payment_plan_status_'.$plan_id);
+                }
+                
+                $suspended_plan_ids = get_user_meta($user_id, 'arm_user_suspended_plan_ids', true);
+                $suspended_plan_id = (isset($suspended_plan_ids) && !empty($suspended_plan_ids)) ? $suspended_plan_ids :  array(); 
+
+                if(in_array($plan_id, $suspended_plan_id)){
+                     unset($suspended_plan_id[array_search($plan_id,$suspended_plan_id)]);
+                     update_user_meta($user_id, 'arm_user_suspended_plan_ids', array_values($suspended_plan_id));
+                }
+            }
+        }
+
+        function arm_is_recurring_payment($payment_mode, $arm_user_id, $entry_plan, $arm_token = ''){
+            global $wpdb, $ARMember, $arm_subscription_plans;
+            $arm_is_recurring_payment = 0;
+            if($payment_mode == "manual_subscription" && !empty($arm_user_id) && !empty($entry_plan)){
+                $arm_is_recurring_payment = $arm_subscription_plans->arm_is_recurring_payment_of_user($arm_user_id, $entry_plan, $payment_mode);
+            } else if($payment_mode == "auto_debit_subscription"){
+                $arm_is_payment_recurring = $wpdb->get_row("SELECT * FROM ".$ARMember->tbl_arm_payment_log." WHERE arm_token='".$arm_token."' AND arm_token!='' ");
+                $arm_is_recurring_payment = !empty($arm_is_payment_recurring) ? 1 : 0;
+            }
+
+            return $arm_is_recurring_payment;
         }
     }
 }

@@ -56,6 +56,10 @@ jQuery(document).ready(function () {
 			{"bVisible": false, "aTargets": []},
 			{"bSortable": false, "aTargets": [1]}
 		],
+		"language":{
+            "searchPlaceholder": "Search",
+            "search":"",
+        },
 		"oColVis": {
 			"aiExclude": [0]
 		},
@@ -94,6 +98,10 @@ function arm_load_communication_messages_list_grid() {
 			{"bVisible": false, "aTargets": []},
 			{"bSortable": false, "aTargets": [0, 2, 5]}
 		],
+		"language":{
+            "searchPlaceholder": "Search",
+            "search":"",
+        },
 		"oColVis": {
 			"aiExclude": [0, 5]
 		},
@@ -115,10 +123,10 @@ function ChangeID(id) {
 </script>
 <div class="arm_email_notifications_main_wrapper">
 	<div class="page_sub_content">
-		<div class="page_sub_title" style="margin-bottom: 10px;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" ><?php _e('Standard Email Responses','ARMember');?></div>
+		<div class="page_sub_title" style="float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" ><?php _e('Standard Email Responses','ARMember');?></div>
 		<?php if(empty($messages)):?>
 		<div class="arm_add_new_item_box" style="margin: 0 0 20px 0;">			
-			<a class="greensavebtn arm_add_new_message_btn" href="javascript:void(0);" style="margin-right:20px;"><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add New Response', 'ARMember') ?></span></a>
+			<a class="greensavebtn arm_add_new_message_btn arm_margin_right_20" href="javascript:void(0);" ><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add New Response', 'ARMember') ?></span></a>
 		</div>
 		<?php endif;?>
 		<div class="armclear"></div>
@@ -134,8 +142,8 @@ function ChangeID(id) {
 						<tr>
 							<!--<th class="center"><?php _e('ID', 'ARMember');?></th>-->
 							<th><?php _e('Template Name', 'ARMember'); ?></th>
-							<th class="center" style="width:100px;"><?php _e('Active', 'ARMember'); ?></th>
-							<th style="padding-left: 10px;text-align: <?php echo (is_rtl()) ? 'right' : 'left';?>;"><?php _e('Subject', 'ARMember'); ?></th>
+							<th class="arm_text_align_center arm_width_100" ><?php _e('Active', 'ARMember'); ?></th>
+							<th class="arm_padding_left_10" style="text-align: <?php echo (is_rtl()) ? 'right' : 'left';?>;"><?php _e('Subject', 'ARMember'); ?></th>
 							<th class="armGridActionTD"></th>
 						</tr>
 					</thead>
@@ -205,8 +213,8 @@ function ChangeID(id) {
 			<div class="arm_datatable_filters_options">
 				<div class='sltstandard'>
 					<input type="hidden" id="arm_communication_bulk_action1" name="action1" value="-1" />
-					<dl class="arm_selectbox column_level_dd">
-						<dt style="width: 120px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+					<dl class="arm_selectbox column_level_dd arm_width_250">
+						<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 						<dd>
 							<ul data-id="arm_communication_bulk_action1">
 								<li data-label="<?php _e('Bulk Actions','ARMember');?>" data-value="-1"><?php _e('Bulk Actions','ARMember');?></li>
@@ -219,17 +227,17 @@ function ChangeID(id) {
 			</div>
 		</div>
 	<div class="page_sub_content">
-		<div class="page_sub_title" style="margin-bottom: 10px;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" ><?php _e('Automated Email Messages','ARMember');?></div>
+		<div class="page_sub_title" style="float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" ><?php _e('Automated Email Messages','ARMember');?></div>
 		<div class="arm_add_new_item_box" style="margin: 0 0 20px 0;">			
-			<a class="greensavebtn arm_add_new_message_btn" href="javascript:void(0);" style="margin-right:20px;"><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add New Response', 'ARMember') ?></span></a>
+			<a class="greensavebtn arm_add_new_message_btn arm_margin_right_40" href="javascript:void(0);" ><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add New Response', 'ARMember') ?></span></a>
 		</div>
 		<div class="armclear"></div>
 		<div class="arm_filter_wrapper" id="arm_filter_wrapper" style="display:none;">
 			<div class="arm_datatable_filters_options">
 				<div class='sltstandard'>
 					<input type="hidden" id="arm_communication_bulk_action1" name="action1" value="-1" />
-					<dl class="arm_selectbox column_level_dd">
-						<dt style="width: 120px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+					<dl class="arm_selectbox column_level_dd arm_width_120">
+						<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 						<dd>
 							<ul data-id="arm_communication_bulk_action1">
 								<li data-label="<?php _e('Bulk Actions','ARMember');?>" data-value="-1"><?php _e('Bulk Actions','ARMember');?></li>
@@ -248,9 +256,9 @@ function ChangeID(id) {
 				<table cellpadding="0" cellspacing="0" border="0" class="display" id="armember_datatable_1">
 					<thead>
 						<tr>
-							<th class="center cb-select-all-th" style="max-width:60px;"><input id="cb-select-all-1" type="checkbox" class="chkstanard"></th>
+							<th class="center cb-select-all-th arm_max_width_60" ><input id="cb-select-all-1" type="checkbox" class="chkstanard"></th>
 							<th style="text-align: <?php echo (is_rtl()) ? 'right' : 'left';?>;"><?php _e('Message Subject', 'ARMember');?></th>
-							<th style="width:100px;"><?php _e('Active', 'ARMember');?></th>
+							<th class="arm_width_100 arm_text_align_center"><?php _e('Active', 'ARMember');?></th>
 							<th style="text-align: <?php echo (is_rtl()) ? 'right' : 'left';?>;"><?php _e('Subscription', 'ARMember');?></th>
 							<th style="text-align: <?php echo (is_rtl()) ? 'right' : 'left';?>;"><?php _e('Type', 'ARMember');?></th>
 							<th class="armGridActionTD"></th>
@@ -264,7 +272,7 @@ function ChangeID(id) {
 						$edit_link = admin_url('admin.php?page=' . $arm_slugs->email_notifications . '&action=edit_communication&message_id=' . $messageID);
 						?>
 						<tr class="arm_message_tr_<?php echo $messageID;?> row_<?php echo $messageID;?>">
-							<td class="center">
+							<td class="arm_padding_left_17">
 								<input class="chkstanard arm_bulk_select_single" type="checkbox" value="<?php echo $messageID;?>" name="item-action[]">
 							</td>
 							<td>
@@ -371,7 +379,7 @@ function ChangeID(id) {
 									break;
 								case 'on_expire_post':
                                     $msge_type = __('On Expire paid post', 'ARMember');
-									break;									
+									break;
 								default:
                                     $msge_type = apply_filters('arm_notification_get_list_msg_type',$rc->arm_message_type);
 									break;
@@ -428,7 +436,7 @@ function ChangeID(id) {
 <?php endif;?>
 </div>
 <!--./******************** Add New Member Form ********************/.-->
-<div class="add_new_message_wrapper popup_wrapper" style="width: 860px;margin-top: 40px;">
+<div class="add_new_message_wrapper popup_wrapper" >
 	<form method="post" action="#" id="<?php echo $form_id;?>" class="arm_admin_form arm_communication_message_wrapper_frm">
 		<table cellspacing="0">
 			<tr class="popup_wrapper_inner">	
@@ -441,8 +449,8 @@ function ChangeID(id) {
 							<td>
 								<div class="arm_message_period_post">
 									<input type='hidden' id='arm_message_type' class="arm_message_select_box" name="arm_message_type" value='<?php echo $msg_type;?>' />
-									<dl class="arm_selectbox column_level_dd">
-										<dt style="width: 512px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+									<dl class="arm_selectbox column_level_dd arm_width_512">
+										<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 										<dd>
 											<ul data-id="arm_message_type">
 											<?php foreach($message_types as $type => $label):?>
@@ -452,12 +460,12 @@ function ChangeID(id) {
 										</dd>
 									</dl>
 								</div>
-								<div class="arm_message_period_section" style="margin-top:10px;">
+								<div class="arm_message_period_section arm_margin_top_10" >
 								<span class=""><?php _e('Send Message before', 'ARMember'); ?></span>
-                                                                        <div class="arm_message_periodunit_type" style="margin-left: 10px;">
+                                                                        <div class="arm_message_periodunit_type arm_margin_left_10" >
                                                                             <input type='hidden' id="arm_message_period_unit" class="arm_message_select_box_unit" name="arm_message_period_unit" value="1" />
-                                                                            <dl class="arm_selectbox column_level_dd">
-                                                                                <dt style="width:80px;"><span id="arm_message_period_unit_span"></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                            <dl class="arm_selectbox column_level_dd arm_width_100">
+                                                                                <dt><span id="arm_message_period_unit_span"></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                                 <dd>
                                                                                     <ul data-id="arm_message_period_unit">
                                                                                         <?php for ($i = 1; $i <= 5; $i++) { ?>
@@ -469,8 +477,8 @@ function ChangeID(id) {
                                                                         </div>
 									<div class="arm_message_periodunit_type">
 										<input type='hidden' id="arm_message_period_type" class="arm_message_select_box_type" name="arm_message_period_type" value="day" />
-										<dl class="arm_selectbox column_level_dd">
-											<dt style="width:80px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+										<dl class="arm_selectbox column_level_dd arm_width_120">
+											<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 											<dd>
 												<ul data-id="arm_message_period_type">
 													<li data-label="<?php _e('Day(s)', 'ARMember');?>" data-value="day"><?php _e('Day(s)', 'ARMember');?></li>
@@ -482,12 +490,12 @@ function ChangeID(id) {
 										</dl>
 									</div>
 								</div>
-                                                                <div class="arm_message_period_section_form_manual_subscription" style="margin-top: 10px;">
+                                                                <div class="arm_message_period_section_form_manual_subscription arm_margin_top_10" >
                                                                 <span><?php _e('Send Message Before', 'ARMember'); ?></span>
-                                    <div class="arm_message_periodunit_type" style="margin-left: 10px;">
+                                    <div class="arm_message_periodunit_type arm_margin_left_10" >
                                         <input type='hidden' id="arm_message_period_unit_manual_subscription" class="arm_message_select_box_unit_manual_subscription" name="arm_message_period_unit_manual_subscription" value="1" />
-                                        <dl class="arm_selectbox column_level_dd">
-                                            <dt style="width:80px;"><span id="arm_message_period_unit_span_manual_subscription"></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dl class="arm_selectbox column_level_dd arm_width_100">
+                                            <dt><span id="arm_message_period_unit_span_manual_subscription"></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_message_period_unit_manual_subscription">
                                                     <?php for ($i = 1; $i <= 5; $i++) { ?>
@@ -499,8 +507,8 @@ function ChangeID(id) {
                                     </div>
                                     <div class="arm_message_periodunit_type">
                                         <input type='hidden' id="arm_message_period_type_manual_subscription" class="arm_message_select_box_type_manual_subscription" name="arm_message_period_type_manual_subscription" value="day" />
-                                        <dl class="arm_selectbox column_level_dd">
-                                            <dt style="width:80px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dl class="arm_selectbox column_level_dd arm_width_120">
+                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_message_period_type_manual_subscription">
                                                     <li data-label="<?php _e('Day(s)', 'ARMember'); ?>" data-value="day"><?php _e('Day(s)', 'ARMember'); ?></li>
@@ -512,12 +520,12 @@ function ChangeID(id) {
                                         </dl>
                                     </div>
                                 </div>
-                                                            <div class="arm_message_period_section_for_dripped_content" style="margin-top: 10px;">
+                                                            <div class="arm_message_period_section_for_dripped_content arm_margin_top_10" >
                                                             <span><?php _e('Send Message Before', 'ARMember'); ?></span>
-                                    <div class="arm_message_periodunit_type" style="margin-left: 10px;">
+                                    <div class="arm_message_periodunit_type arm_margin_left_10" >
                                         <input type='hidden' id="arm_message_period_unit_dripped_content" class="arm_message_select_box_unit_dripped_content" name="arm_message_period_unit_dripped_content" value="1" />
-                                        <dl class="arm_selectbox column_level_dd">
-                                            <dt style="width:80px;"><span id="arm_message_period_unit_span_dripped_content"></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dl class="arm_selectbox column_level_dd arm_width_100">
+                                            <dt><span id="arm_message_period_unit_span_dripped_content"></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_message_period_unit_dripped_content">
                                                     <?php for ($i = 0; $i <= 5; $i++) { ?>
@@ -529,8 +537,8 @@ function ChangeID(id) {
                                     </div>
                                     <div class="arm_message_periodunit_type">
                                         <input type='hidden' id="arm_message_period_type_dripped_content" class="arm_message_select_box_type_dripped_content" name="arm_message_period_type_dripped_content" value="day" />
-                                        <dl class="arm_selectbox column_level_dd">
-                                            <dt style="width:80px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dl class="arm_selectbox column_level_dd arm_width_120">
+                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_message_period_type_dripped_content">
                                                     <li data-label="<?php _e('Day(s)', 'ARMember'); ?>" data-value="day"><?php _e('Day(s)', 'ARMember'); ?></li>
@@ -547,7 +555,7 @@ function ChangeID(id) {
 						<tr class="arm_membership_plan_selection_row">
 							<th><?php _e('Select Membership Plan', 'ARMember');?></th>
 							<td>
-								<select id="arm_message_subscription" class="arm_chosen_selectbox" data-msg-required="<?php _e('Subscription Plan Required', 'ARMember');?>" name="arm_message_subscription[]" data-placeholder="<?php _e('Select Plan(s)..', 'ARMember');?>" multiple="multiple" style="width:532px;" required>
+								<select id="arm_message_subscription" class="arm_chosen_selectbox arm_width_532" data-msg-required="<?php _e('Subscription Plan Required', 'ARMember');?>" name="arm_message_subscription[]" data-placeholder="<?php _e('Select Plan(s)..', 'ARMember');?>" multiple="multiple"  required>
 								<?php $subs_data = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscription_plan_id, arm_subscription_plan_name');?>
 								<?php if (!empty($subs_data)): $c_subs = (!empty($c_subs)) ? $c_subs : array('-1');?>
 									<?php foreach ($subs_data as $sd): ?>
@@ -703,30 +711,31 @@ function ChangeID(id) {
 
 
 					<div class="arm_shortcode_row armhelptip" title="<?php echo __("To Display User's meta field value.", 'ARMember') . ' (' . __("Where", 'ARMember') . ' `meta_key` ' . __("is meta field name.", 'ARMember') . ')'; ?>">
-											<span class="arm_variable_code arm_communication_email_code" data-code="{ARM_USERMETA_meta_key}"><?php _e("User Meta Key", 'ARMember');?></span>
-										</div>
+						<span class="arm_variable_code arm_communication_email_code" data-code="{ARM_USERMETA_meta_key}"><?php _e("User Meta Key", 'ARMember');?></span>
+					</div>
 
-										<?php
-											$arm_other_custom_shortcode_arr = array();
-											$arm_other_custom_shortcode_arr = apply_filters('arm_email_notification_shortcodes_outside', $arm_other_custom_shortcode_arr);
-											if(count($arm_other_custom_shortcode_arr)>0)
-											{
-												foreach ($arm_other_custom_shortcode_arr as $arm_other_custom_shortcode_key => $arm_other_custom_shortcode_value) {
-													if(is_array($arm_other_custom_shortcode_value))
-													{
-														$arm_en_title_on_hover = isset($arm_other_custom_shortcode_value['title_on_hover']) ? $arm_other_custom_shortcode_value['title_on_hover'] : '';
-														$arm_en_shortcode = isset($arm_other_custom_shortcode_value['shortcode']) ? $arm_other_custom_shortcode_value['shortcode'] : '';
-														$arm_en_shortcode_label = isset($arm_other_custom_shortcode_value['shortcode_label']) ? $arm_other_custom_shortcode_value['shortcode_label'] : '';
+					<?php
+						$arm_other_custom_shortcode_arr = array();
+						$arm_other_custom_shortcode_arr = apply_filters('arm_email_notification_shortcodes_outside', $arm_other_custom_shortcode_arr);
+						if(count($arm_other_custom_shortcode_arr)>0)
+						{
+							foreach ($arm_other_custom_shortcode_arr as $arm_other_custom_shortcode_key => $arm_other_custom_shortcode_value) {
+								if(is_array($arm_other_custom_shortcode_value))
+								{
+									$arm_en_title_on_hover = isset($arm_other_custom_shortcode_value['title_on_hover']) ? $arm_other_custom_shortcode_value['title_on_hover'] : '';
+									$arm_en_shortcode = isset($arm_other_custom_shortcode_value['shortcode']) ? $arm_other_custom_shortcode_value['shortcode'] : '';
+									$arm_en_shortcode_label = isset($arm_other_custom_shortcode_value['shortcode_label']) ? $arm_other_custom_shortcode_value['shortcode_label'] : '';
+									$arm_en_shortcode_class = isset($arm_other_custom_shortcode_value['shortcode_class']) ? ' '.$arm_other_custom_shortcode_value['shortcode_class'].' ' : '';
 
-														echo '<div class="arm_shortcode_row armhelptip" title="'.$arm_en_title_on_hover.'">';
-															echo '<span class="arm_variable_code arm_communication_email_code" data-code="'.$arm_en_shortcode.'">'.$arm_en_shortcode_label.'</span>';
-														echo '</div>';
-													}
-												}
-												
-											}
-											
-										?>
+									echo '<div class="arm_shortcode_row armhelptip'.$arm_en_shortcode_class.'" title="'.$arm_en_title_on_hover.'">';
+										echo '<span class="arm_variable_code arm_communication_email_code" data-code="'.$arm_en_shortcode.'">'.$arm_en_shortcode_label.'</span>';
+									echo '</div>';
+								}
+							}
+							
+						}
+						
+					?>
 									</div>
 								</div>
                             </td>
@@ -735,17 +744,17 @@ function ChangeID(id) {
                         <tr>
                         	<th></th>
                         	<td>
-                        		<span style="color:#ff0000;"><?php printf( esc_html__('NOTE : Please add %sbr%s to use line break in plain text.','ARMember'),'&lt;','&gt;'); ?></span>
+                        		<span class="arm-note-message --warning"><?php printf( esc_html__('NOTE : Please add %sbr%s to use line break in plain text.','ARMember'),'&lt;','&gt;'); ?></span>
 							</td>
 						</tr>
                                                 <tr>
                                                     <th></th>
                                                     <td>
                                                         <div class="arm_email_content_area_left">
-                                                            <div class="arm_send_one_copy_to_admin_div" style="float: left; width: 53%;">
+                                                            <div class="arm_send_one_copy_to_admin_div arm_float_left arm_width_280" >
                                                                 <?php _e('Send email to admin for this event', 'ARMember'); ?>
                                                             </div>
-                                                            <div class="arm_send_one_copy_to_admin_right" style="float: left; margin-top: 3px; ">
+                                                            <div class="arm_send_one_copy_to_admin_right arm_float_left" style="margin-top: 3px; ">
                                                                 <div class="armswitch">
 										<input type="checkbox" class="armswitch_input arm_email_send_to_admin" id="arm_email_send_to_admin" name="arm_email_send_to_admin">
 										<label class="armswitch_label" for="arm_email_send_to_admin"></label>
@@ -760,10 +769,10 @@ function ChangeID(id) {
                                                     <th></th>
                                                     <td>
                                                         <div class="arm_email_content_area_left">
-                                                            <div class="arm_send_one_copy_to_admin_div" style="float: left; width: 53%;">
+                                                            <div class="arm_send_one_copy_to_admin_div arm_float_left arm_width_280" >
                                                                 <?php _e('Set different email content for admin?', 'ARMember'); ?>
                                                             </div>
-                                                            <div class="arm_send_one_copy_to_admin_right" style="float: left;  margin-top: 3px;">
+                                                            <div class="arm_send_one_copy_to_admin_right arm_float_left" style="margin-top: 3px;">
                                                                 <div class="armswitch">
 										<input type="checkbox" class="armswitch_input arm_email_different_content_for_admin" id="arm_email_different_content_for_admin" name="arm_email_different_content_for_admin">
 										<label class="armswitch_label" for="arm_email_different_content_for_admin"></label>
@@ -919,8 +928,9 @@ function ChangeID(id) {
 														$arm_en_title_on_hover = isset($arm_other_custom_shortcode_value['title_on_hover']) ? $arm_other_custom_shortcode_value['title_on_hover'] : '';
 														$arm_en_shortcode = isset($arm_other_custom_shortcode_value['shortcode']) ? $arm_other_custom_shortcode_value['shortcode'] : '';
 														$arm_en_shortcode_label = isset($arm_other_custom_shortcode_value['shortcode_label']) ? $arm_other_custom_shortcode_value['shortcode_label'] : '';
+														$arm_en_shortcode_class = isset($arm_other_custom_shortcode_value['shortcode_class']) ? ' '.$arm_other_custom_shortcode_value['shortcode_class'].' ' : '';
 
-														echo '<div class="arm_shortcode_row armhelptip" title="'.$arm_en_title_on_hover.'">';
+														echo '<div class="arm_shortcode_row armhelptip'.$arm_en_shortcode_class.'" title="'.$arm_en_title_on_hover.'">';
 															echo '<span class="arm_variable_code arm_admin_communication_email_code" data-code="'.$arm_en_shortcode.'">'.$arm_en_shortcode_label.'</span>';
 														echo '</div>';
 													}
@@ -935,7 +945,7 @@ function ChangeID(id) {
 						<tr class="arm_seperate_email_content_for_admin hidden_section">
                         	<th></th>
                         	<td>
-                        		<span style="color:#ff0000;"><?php printf( esc_html__('NOTE : Please add %sbr%s to use line break in plain text.','ARMember'),'&lt;','&gt;'); ?></span>
+                        		<span class="arm-note-message --warning"><?php printf( esc_html__('NOTE : Please add %sbr%s to use line break in plain text.','ARMember'),'&lt;','&gt;'); ?></span>
 							</td>
 						</tr>
 						<?php 
@@ -949,7 +959,7 @@ function ChangeID(id) {
 				</td>
 				<td class="popup_content_btn popup_footer">
 					<div class="popup_content_btn_wrapper">
-						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_loader_img" style="position: relative;top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" width="20" height="20" />
+						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_loader_img arm_submit_btn_loader" style="top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" width="20" height="20" />
 						<input type="hidden" id="arm_message_id_box" name="edit_id" value="<?php echo $mid;?>" />
 						<button class="arm_save_btn arm_button_manage_message" type="submit" data-type="add"><?php _e('Save', 'ARMember') ?></button>
 						<button class="arm_cancel_btn add_new_message_close_btn" type="button"><?php _e('Cancel','ARMember');?></button>
@@ -961,7 +971,7 @@ function ChangeID(id) {
 	</form>
 </div>
 <div class="add_edit_message_wrapper_container"></div>
-<div class="edit_email_template_wrapper popup_wrapper" style="width: 850px;margin-top: 40px;">
+<div class="edit_email_template_wrapper popup_wrapper" >
 	<form method="post" id="arm_edit_email_temp_frm" class="arm_admin_form arm_responses_message_wrapper_frm" action="#" onsubmit="return false;">
 		<input type='hidden' name="arm_template_id" id="arm_template_id" value="0"/>
 		<table cellspacing="0">
@@ -973,7 +983,7 @@ function ChangeID(id) {
 						<tr class="">
 							<th><?php _e('Subject', 'ARMember'); ?></th>
 							<td>
-								<input class="arm_input_tab" type="text" name="arm_template_subject" id="arm_template_subject" value="" data-msg-required="<?php _e('Email Subject Required.', 'ARMember');?>"/>
+								<input class="arm_input_tab arm_width_510" type="text" name="arm_template_subject" id="arm_template_subject" value="" data-msg-required="<?php _e('Email Subject Required.', 'ARMember');?>"/>
 							</td>
 						</tr>
 						<tr class="form-field">
@@ -1090,8 +1100,8 @@ function ChangeID(id) {
 						</tr>
 						<tr>
                         	<th></th>
-                        	<td>
-                        		<span style="color:#ff0000;"><?php printf( esc_html__('NOTE : Please add %sbr%s to use line break in plain text.','ARMember'),'&lt;','&gt;'); ?></span>
+                        	<td>	
+                        		<span class="arm-note-message --warning"><?php printf( esc_html__('NOTE : Please add %sbr%s to use line break in plain text.','ARMember'),'&lt;','&gt;'); ?></span>
 							</td>
 						</tr>
 						
@@ -1106,7 +1116,7 @@ function ChangeID(id) {
 				</td>
 				<td class="popup_content_btn popup_footer">
 					<div class="popup_content_btn_wrapper">
-						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_temp" class="arm_loader_img" style="position: relative;top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" width="20" height="20" />
+						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_temp" class="arm_loader_img arm_submit_btn_loader" style="top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" width="20" height="20" />
 						<button class="arm_save_btn" id="arm_email_template_submit" type="submit"><?php _e('Save', 'ARMember');?></button>
 						<button class="arm_cancel_btn edit_template_close_btn" type="button"><?php _e('Cancel','ARMember');?></button>
 					</div>

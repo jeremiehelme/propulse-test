@@ -88,6 +88,10 @@ $badgeIconStyle = "width:" . $badge_width . "px; height:" . $badge_height . "px;
             colVis: {
                 exclude: [0, 1, 2, 3]
             },
+            "language":{
+                "searchPlaceholder": "Search",
+                "search":"",
+            },
             "fnStateSave": function (oSettings, oData) {
                 oData.aaSorting = [];
                 oData.abVisCols = [];
@@ -150,11 +154,11 @@ $badgeIconStyle = "width:" . $badge_width . "px; height:" . $badge_height . "px;
     }
 // ]]>				
 </script>
-<div class="arm_global_settings_main_wrapper">
-	<div class="page_sub_content">	
-        <div class="arm_add_new_item_box" style="margin: 0 0 20px 0;">			
-            <a class="greensavebtn arm_add_user_badges_btn" href="javascript:void(0);" style="margin-right:20px;"><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add User Badges', 'ARMember');?></span></a>
-        </div>
+<div class="arm_global_settings_main_wrapper arm_margin_0">
+	<div class="page_sub_content arm_padding_0">	
+        <?php /* <div class="arm_add_new_item_box arm_margin_bottom_20" >			
+            <a class="greensavebtn arm_add_user_badges_btn arm_margin_right_20" href="javascript:void(0);" ><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add User Badges', 'ARMember');?></span></a>
+        </div> */ ?>
         <form method="GET" id="achive_badges_list_form" class="data_grid_list arm_user_badges_grid_form">
             <input type="hidden" name="page" value="<?php echo $_GET['page'] ?>" />
             <input type="hidden" name="armaction" value="list" />
@@ -164,8 +168,8 @@ $badgeIconStyle = "width:" . $badge_width . "px; height:" . $badge_height . "px;
                     <thead>
                         <tr>
                             <th><?php _e('Username', 'ARMember'); ?></th>
-                            <th style="padding-left: 10px;text-align: left;"><?php _e('Email Address', 'ARMember'); ?></th>
-                            <th style="padding-left: 10px;text-align: left;min-width:250px;"><?php _e('Badges', 'ARMember'); ?></th>
+                            <th class="arm_padding_left_10 arm_text_align_center" ><?php _e('Email Address', 'ARMember'); ?></th>
+                            <th class="arm_padding_left_10 arm_text_align_center arm_min_width_250" ><?php _e('Badges', 'ARMember'); ?></th>
                             <th data-key="armGridActionTD" class="armGridActionTD" style="display: none;"></th>
                         </tr>
                     </thead>
@@ -190,7 +194,7 @@ $badgeIconStyle = "width:" . $badge_width . "px; height:" . $badge_height . "px;
 	</div>
 </div>
 <!--./******************** Add User Badges Form ********************/.-->
-<div class="add_new_user_badges_wrapper popup_wrapper" style="width: 650px;margin-top: 40px;">
+<div class="add_new_user_badges_wrapper popup_wrapper" >
 	<form method="post" action="#" id="arm_add_user_badges_wrapper_frm" class="arm_admin_form arm_add_user_badges_wrapper_frm">
 		<table cellspacing="0">
 			<tr class="popup_wrapper_inner">	
@@ -201,7 +205,7 @@ $badgeIconStyle = "width:" . $badge_width . "px; height:" . $badge_height . "px;
                         <tr class="form-field">
 							<th><?php _e('Select Badge Icon','ARMember'); ?></th>
                             <td>
-                                <div class="arm_badge_icon_lists arm_required_wrapper">
+                                <div class="arm_badge_icon_lists arm_required_wrapper arm_width_100_pct">
 								<?php 
 								foreach ($badges_list as $badge) {
                             if(file_exists(strstr($badge->arm_badges_icon, "//"))){
@@ -221,7 +225,7 @@ $badgeIconStyle = "width:" . $badge_width . "px; height:" . $badge_height . "px;
                         <tr class="form-field">
 							<th><?php _e('Select Users','ARMember'); ?></th>
                             <td class="arm_required_wrapper arm_multiauto_user_field">
-                                <input id="arm_user_multi_auto_selection" type="text" name="arm_user_ids_text" value="" placeholder="<?php _e('Search by username or email...', 'ARMember');?>" data-msg-required="<?php _e('Please select user.', 'ARMember');?>" required>
+                                <input id="arm_user_multi_auto_selection" class="arm_max_width_100_pct arm_width_100_pct" type="text" name="arm_user_ids_text" value="" placeholder="<?php _e('Search by username or email...', 'ARMember');?>" data-msg-required="<?php _e('Please select user.', 'ARMember');?>" required>
                                 <div class="arm_users_multiauto_items arm_required_wrapper" id="arm_users_multiauto_items" style="display: none;"></div>
                                 <input type="hidden" name="arm_display_admin_user" id="arm_display_admin_user" value="<?php echo $display_admin_user;?>">
 								<?php /*?><select id="arm_user_ids_select" class="arm_chosen_selectbox arm_user_badges_add_achievement" data-msg-required="<?php _e('Please select atleast one user.', 'ARMember');?>" name="arm_user_ids[]" data-placeholder="<?php _e('Select User(s)..', 'ARMember');?>" multiple="multiple" style="width:500px;">
@@ -240,7 +244,7 @@ $badgeIconStyle = "width:" . $badge_width . "px; height:" . $badge_height . "px;
 				</td>
 				<td class="popup_content_btn popup_footer">
 					<div class="popup_content_btn_wrapper">
-						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" class="arm_loader_img" style="position: relative;top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" width="20" height="20" />
+						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" class="arm_loader_img arm_submit_btn_loader" style="top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;" width="20" height="20" />
 						<button class="arm_save_btn arm_add_user_badges_save" type="submit" data-type="add"><?php _e('Save', 'ARMember') ?></button>
 						<button class="arm_cancel_btn arm_add_user_badges_close_btn" type="button"><?php _e('Cancel','ARMember');?></button>
                         <?php wp_nonce_field( 'arm_wp_nonce' );?>

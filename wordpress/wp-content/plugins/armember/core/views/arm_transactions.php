@@ -7,16 +7,15 @@ global $check_sorting;
 $setact = $arm_members_activity->$check_sorting();
 ?>
 <div class="wrap arm_page arm_transactions_main_wrapper">
-	<div class="content_wrapper arm_transactions_container" id="content_wrapper">
-		<div class="page_title">
-			<?php _e('Payment History','ARMember');?>
-            <?php
+	<?php
     if ($setact != 1) {
         $admin_css_url = admin_url('admin.php?page=arm_manage_license');
         ?>
-
-        <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
     <?php } ?>
+	<div class="content_wrapper arm_transactions_container" id="content_wrapper">
+		<div class="page_title">
+			<?php _e('Payment History','ARMember');?>
 			<div class="arm_add_new_item_box">
 				<a class="greensavebtn" href="<?php echo admin_url('admin.php?page='.$arm_slugs->transactions.'&action=new');?>"><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add Manual Payment', 'ARMember') ?></span></a>
 			</div>
@@ -66,17 +65,15 @@ $setact = $arm_members_activity->$check_sorting();
 	<div class="armclear"></div>
 	<br>
 	<?php if($arm_pay_per_post_feature->isPayPerPostFeature){ ?>
-	<div class="arm_solid_divider"></div>
 	<div class="content_wrapper arm_transactions_container" id="content_wrapper">
-		<div class="page_title">
-			<?php _e('Paid Post Payment History','ARMember');?>
-            <?php
+		<?php
     if ($setact != 1) {
         $admin_css_url = admin_url('admin.php?page=arm_manage_license');
         ?>
-
-        <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
     <?php } ?>
+		<div class="page_title">
+			<?php _e('Paid Post Payment History','ARMember');?>
 			<div class="armclear"></div>
 		</div>
 		<div class="armclear"></div>
@@ -132,23 +129,49 @@ $setact = $arm_members_activity->$check_sorting();
 jQuery(window).on("load", function () {
 	document.onkeypress = stopEnterKey;
 });
-jQuery(document).on('click', ".ColVis_Button:not(.ColVis_MasterButton)", function () {
-	var form_id = jQuery('#arm_form_filter').val();
+jQuery(document).on('click', "#armember_datatable_wrapper .ColVis_Button:not(.ColVis_MasterButton)", function () {
 	var column_list = "";
-	jQuery(this).parent('.ColVis_collection').find('button').each(function (x) {
-		if (jQuery(this).find('input').is(':checked'))
+	var _wpnonce = jQuery('input[name="_wpnonce"]').val();
+	var column_list_str = '';
+	jQuery('#armember_datatable_wrapper .ColVis_Button:not(.ColVis_MasterButton)').each(function(){
+		if(jQuery(this).hasClass('active'))
 		{
-			column_list = column_list + 1 + ',';
-		} else {
-			column_list = column_list + 0 + ',';
+			column_list_str += '1,';
+		}
+		else {
+			column_list_str += '0,';
 		}
 	});
-	column_list = column_list.substr(0, column_list.length - 1);
-	var _wpnonce = jQuery('input[name="_wpnonce"]').val();
+	column_list_str += '1';
+	column_list = [[ column_list_str ]];
 	jQuery.ajax({
 		type:"POST",
 		url:__ARMAJAXURL,
-		data:"action=arm_transaction_hide_show_columns&column_list="+column_list+"&_wpnonce="+_wpnonce,
+		data:"action=arm_transaction_hide_show_columns&column_list="+column_list+"&_wpnonce="+_wpnonce+"&transaction_history_type=plan",
+		success: function (msg) {
+			return false;
+		}
+	});
+});
+jQuery(document).on('click', "#armember_datatable_1_wrapper .ColVis_Button:not(.ColVis_MasterButton)", function () {
+	var column_list = "";
+	var _wpnonce = jQuery('input[name="_wpnonce"]').val();
+	var column_list_str = '';
+	jQuery('#armember_datatable_1_wrapper .ColVis_Button:not(.ColVis_MasterButton)').each(function(){
+		if(jQuery(this).hasClass('active'))
+		{
+			column_list_str += '1,';
+		}
+		else {
+			column_list_str += '0,';
+		}
+	});
+	column_list_str += '1';
+	column_list = [[ column_list_str ]];
+	jQuery.ajax({
+		type:"POST",
+		url:__ARMAJAXURL,
+		data:"action=arm_transaction_hide_show_columns&column_list="+column_list+"&_wpnonce="+_wpnonce+"&transaction_history_type=paid_post",
 		success: function (msg) {
 			return false;
 		}
@@ -156,3 +179,6 @@ jQuery(document).on('click', ".ColVis_Button:not(.ColVis_MasterButton)", functio
 });
 // ]]>
 </script>
+<?php
+	echo $ARMember->arm_get_need_help_html_content('member-payment-history');
+?>

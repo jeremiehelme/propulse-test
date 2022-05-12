@@ -5,7 +5,7 @@ $page_settings = $arm_all_global_settings['page_settings'];
 ?>
 <div class="arm_global_settings_main_wrapper">
 	<div class="page_sub_content">
-		<div style="margin-bottom: 10px;">
+		<div class="arm_margin_bottom_10">
 			<strong><?php _e('Please map default pages for all common actions.', 'ARMember'); ?></strong>
 		</div>
         <form  method="post" action="#" id="arm_page_settings" class="arm_page_settings arm_admin_form">
@@ -182,7 +182,7 @@ $page_settings = $arm_all_global_settings['page_settings'];
             </table>
 			<?php do_action('arm_after_page_settings_html', $page_settings);?>
 			<div class="arm_submit_btn_container">
-				<button class="arm_save_btn" type="submit" id="arm_page_setup_btn" name="arm_global_settings_btn"><?php _e('Save', 'ARMember') ?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" style="position:relative;top:8px;display:none;" width="24" height="24" />
+				<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_submit_btn_loader" style="display:none;" width="24" height="24" />&nbsp;<button class="arm_save_btn" type="submit" id="arm_page_setup_btn" name="arm_global_settings_btn"><?php _e('Save', 'ARMember') ?></button>
 				<?php wp_nonce_field( 'arm_wp_nonce' );?>
 			</div>
         </form>

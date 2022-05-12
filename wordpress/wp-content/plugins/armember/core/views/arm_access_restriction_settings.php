@@ -32,7 +32,7 @@ $all_roles = $arm_global_settings->arm_get_all_roles();
 					<th class="arm-form-table-label"><?php _e('Exclude role for restriction','ARMember'); ?></th>
                                         <td class="arm-form-table-content">
                                             <?php $arm_exclude_role_for_restrict_admin = isset($general_settings['arm_exclude_role_for_restrict_admin']) ? explode(',', $general_settings['arm_exclude_role_for_restrict_admin']) : array(); ?>
-                                            <select id="arm_access_page_for_restrict_site" class="arm_chosen_selectbox" name="arm_general_settings[arm_exclude_role_for_restrict_admin][]" data-placeholder="<?php _e('Select Role(s)..', 'ARMember');?>" multiple="multiple" style="width:500px;">
+                                            <select id="arm_access_page_for_restrict_site" class="arm_chosen_selectbox arm_width_500" name="arm_general_settings[arm_exclude_role_for_restrict_admin][]" data-placeholder="<?php _e('Select Role(s)..', 'ARMember');?>" multiple="multiple" >
                                                     <?php
                                                         if (!empty($all_roles)):
                                                             foreach ($all_roles as $role_key => $role_value) {
@@ -43,7 +43,7 @@ $all_roles = $arm_global_settings->arm_get_all_roles();
                                                             <option value=""><?php _e('No Pages Available', 'ARMember');?></option>
                                                     <?php endif;?>
                                             </select>
-                                            <span class="arm_info_text" style="margin: 10px 0 0; display:block;">
+                                            <span class="arm_info_text arm_info_text_style" >
                                                 (<?php _e('Selected roles will be able to access admin.','ARMember'); ?>)
                                             </span>
                                         </td>
@@ -70,14 +70,14 @@ $all_roles = $arm_global_settings->arm_get_all_roles();
 							<label for="restrict_site_access" class="armswitch_label"></label>
 						</div>
 						<div class="restrict_site_access <?php echo ($general_settings['restrict_site_access'] == 1) ? '':'hidden_section';?>">
-							<div class="arm_info_text" style=""><?php _e('If website is restricted, redirect visitor to following page','ARMember');?>:</div>
+							<div class="arm_info_text arm_margin_bottom_20" style=""><?php _e('If website is restricted, redirect visitor to following page','ARMember');?>:</div>
 							<?php
 							$arm_global_settings->arm_wp_dropdown_pages(
 								array(
 									'selected'              => isset($page_settings['guest_page_id']) ? $page_settings['guest_page_id'] : 0,
 									'name'                  => 'arm_page_settings[guest_page_id]',
 									'id'                    => 'guest_page_id',
-									'show_option_none'      => 'Select Page',
+									'show_option_none'      => __('Select Page','ARMember'),
 									'option_none_value'     => '0',
 									'class'     => 'arm_regular_select',
 								)
@@ -111,7 +111,7 @@ $all_roles = $arm_global_settings->arm_get_all_roles();
                                         $global_setting_page = $arm_global_settings->arm_get_single_global_settings('page_settings');
                                         $allow_page_ids = $arm_restriction->arm_filter_allow_page_ids($global_setting_page);
                                         ?>
-                                        <select id="arm_access_page_for_restrict_site" class="arm_chosen_selectbox" name="arm_general_settings[arm_access_page_for_restrict_site][]" data-placeholder="<?php _e('Select Page(s)..', 'ARMember');?>" multiple="multiple" style="width:500px;">
+                                        <select id="arm_access_page_for_restrict_site" class="arm_chosen_selectbox arm_width_500" name="arm_general_settings[arm_access_page_for_restrict_site][]" data-placeholder="<?php _e('Select Page(s)..', 'ARMember');?>" multiple="multiple" >
                                                 <?php
                                                     if (!empty($pages)):
                                                         foreach ($pages as $p) {
@@ -123,7 +123,7 @@ $all_roles = $arm_global_settings->arm_get_all_roles();
                                                         <option value=""><?php _e('No Pages Available', 'ARMember');?></option>
                                                 <?php endif;?>
                                         </select>
-                                        <span class="arm_info_text" style="margin: 10px 0 0; display:block;">
+                                        <span class="arm_info_text arm_info_text_style">
                                             (<?php _e('Selected pages will be accessible to users without login.','ARMember'); ?>)
                                         </span>
                                     </td>
@@ -136,7 +136,7 @@ $all_roles = $arm_global_settings->arm_get_all_roles();
                                                     <input type="checkbox" id="arm_allow_content_listing" value="1" class="armswitch_input" name="arm_default_rules[arm_allow_content_listing]" <?php checked(isset($default_rules['arm_allow_content_listing']) ? $default_rules['arm_allow_content_listing'] : 0, 1);?>/>
                                                     <label for="arm_allow_content_listing" class="armswitch_label"></label>
                                             </div>
-                                            <span class="arm_info_text" style="margin: 10px 0 0; display:block;">
+                                            <span class="arm_info_text arm_info_text_style">
                                                 (<?php _e('If you enable this switch than, restricted content will be displayed in listing only.','ARMember'); ?>)
                                             </span>
                                         </td>
@@ -179,7 +179,7 @@ $all_roles = $arm_global_settings->arm_get_all_roles();
                                         {
                                 ?>
                                             <tr class="form-field">
-                                                <td align="right" colspan="">
+                                                <td colspan="">
                                                     <span class="arm_failed_login_sub_title">
                                                         <strong>
                                                             <?php _e('Custom Post type, Taxonomy, Tag', 'ARMember'); ?>
@@ -206,17 +206,17 @@ $all_roles = $arm_global_settings->arm_get_all_roles();
                                     <tr class="form-field">
                                         <th><?php echo $rtitle; ?></th>
                                         <td>
-                                            <label style="min-width: 100px;">
+                                            <label  class="arm_min_width_100">
                                                     <input type="radio" name="arm_default_restriction_option[<?php echo $rtype; ?>]" value="" class="arm_default_restriction_option arm_iradio" <?php checked($arm_default_restriction_option, '');?>  data-cntr="<?php echo $arm_default_ar_cntr; ?>">
-                                                    <?php _e('Everyone','ARMember');?>
+                                                    <span><?php _e('Everyone','ARMember');?></span>
                                             </label>
-                                            <label style="min-width: 150px;">
+                                            <label class="arm_min_width_150">
                                                     <input type="radio" name="arm_default_restriction_option[<?php echo $rtype; ?>]" value="-2" class="arm_default_restriction_option arm_iradio" <?php checked($arm_default_restriction_option, '-2');?>  data-cntr="<?php echo $arm_default_ar_cntr; ?>">
-                                                   <?php _e('Only logged in member (Everyone)','ARMember');?>
+                                                   <span><?php _e('Only logged in member (Everyone)','ARMember');?></span>
                                             </label>
-                                            <label style="min-width: 150px;">
+                                            <label class="arm_min_width_150">
                                                     <input type="radio" name="arm_default_restriction_option[<?php echo $rtype; ?>]" value="1" class="arm_default_restriction_option arm_iradio" <?php checked($arm_default_restriction_option, '1');?> data-cntr="<?php echo $arm_default_ar_cntr; ?>">
-                                                    <?php _e('Selected Plan(s) Only','ARMember');?><br>
+                                                    <span><?php _e('Selected Plan(s) Only','ARMember');?></span><br>
                                             </label>
                                         </td>
                                     </tr>
@@ -250,7 +250,7 @@ $all_roles = $arm_global_settings->arm_get_all_roles();
                         
 			<?php do_action('arm_after_access_restriction_settings_html', $general_settings);?>
 			<div class="arm_submit_btn_container">
-				<button id="arm_access_restriction_settings_btn" class="arm_save_btn" name="arm_access_restriction_settings_btn" type="submit"><?php _e('Save', 'ARMember') ?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" style="position:relative;top:8px;display:none;" width="24" height="24" />
+				<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" class="arm_submit_btn_loader" id="arm_loader_img" style="display:none;" width="24" height="24" />&nbsp;<button id="arm_access_restriction_settings_btn" class="arm_save_btn" name="arm_access_restriction_settings_btn" type="submit"><?php _e('Save', 'ARMember') ?></button>
                 <?php wp_nonce_field( 'arm_wp_nonce' );?>
 			</div>
 		</form>

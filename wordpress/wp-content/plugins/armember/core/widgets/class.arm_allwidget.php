@@ -417,7 +417,7 @@ if (!class_exists('ARM_Social_Login_Widget')) {
 				"arm_member_form_widget_social_login",
 				__("ARMember Social Login", "ARMember"),
 				array(
-					"description" => __("Allow users to login through social media like Facebook, Twitter, LinkedIn, Google+, VK, Instagram.", "ARMember")
+					"description" => __("Allow users to login through social media like Facebook, Twitter, LinkedIn, Google+, VK, Instagram, Tumblr.", "ARMember")
 				)
 			);
 		}
@@ -585,9 +585,12 @@ if (!class_exists('ARM_Social_Login_Widget')) {
 			register_widget("ARM_Social_Login_Widget");	
 		}
 		global $arm_social_feature;
-		$social_options = $arm_social_feature->arm_get_active_social_options();
-		if (isset($arm_social_feature->isSocialLoginFeature) && $arm_social_feature->isSocialLoginFeature == 1 && !empty($social_options)) {
-			add_action("widgets_init", "arm_register_Social_Login_widget");
+		if(!empty($arm_social_feature) && isset($arm_social_feature->isSocialLoginFeature) && $arm_social_feature->isSocialLoginFeature == 1) {
+			$social_options = $arm_social_feature->arm_get_active_social_options();
+			if( !empty($social_options) )
+			{
+				add_action("widgets_init", "arm_register_Social_Login_widget");
+			}
 		}
 	}
 }

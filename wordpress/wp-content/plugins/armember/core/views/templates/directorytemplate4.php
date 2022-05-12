@@ -7,13 +7,15 @@ if (isset($user) && !empty($user))
     $wrapperClass = $userFollowBtn = '';
 	$fileContent .= '<div class="arm_user_block '.$wrapperClass.'">';
 		$fileContent .= '<div class="arm_user_avatar">'.$user['profile_picture'].'</div>';
-		$fileContent .= '<a class="arm_user_link" href="' . $user['user_link'] . '">' . $user['full_name'];
-		$fileContent .= '</a>';
+		
 		$fileContent .= "<div class='arm_user_block_inner_container'>";
 		$fileContent .= "<div class='arm_badges_detail'>";
 		$fileContent .= $user['arm_badges_detail'];
 		$fileContent .= "</div>";
-        $fileContent .= $arm_members_directory->arm_template_display_member_details($tempopt,$user,1);
+		$member_field_detail_content = $arm_members_directory->arm_template_display_member_details($tempopt,$user,1);
+		$fileContent .= '<div class="arm_user_name">'. $user['full_name'].'</div>';
+        $fileContent .= '<div class="arm_user_joined">'.  $member_field_detail_content['member_joining_date_content'].'</div>';
+        //$fileContent .= $member_field_detail_content['member_detail_content'];
 		/*$fileContent .= '<div class="armclear"></div>';
                 if(isset($tempopt['show_joining']) && $tempopt['show_joining'] == true)
                 {

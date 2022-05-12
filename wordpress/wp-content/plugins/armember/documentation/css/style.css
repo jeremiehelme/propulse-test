@@ -396,6 +396,28 @@ table tr:last-child{border-bottom:none;}
 
 table.top_align td{vertical-align: top !important;}
 
+.arm_api_field_name, .arm_api_field_label {
+    width: 180px;
+    display: inline-block;
+    padding: 5px 2px;
+}
+.arm_api_fields {
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+.arm_api_field_optional {
+    width: 100px;
+    display: inline-block;
+    padding: 5px 2px;
+}
+.arm_api_field_default {
+    width: 200px;
+    display: inline-block;
+    padding: 5px 2px;
+}
+
 /***** Media Queries *******/
 
 a:not([href]){cursor:pointer;}

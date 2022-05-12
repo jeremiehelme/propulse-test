@@ -46,7 +46,7 @@ if (!is_dir($icon_upload_dir)) {
 }
 $armUploadDir = wp_upload_dir();
 ?>
-<div class="arm_save_social_network_wrapper popup_wrapper" style="width: 800px;margin-top: 40px;">
+<div class="arm_save_social_network_wrapper popup_wrapper">
 	<form method="post" action="#" id="arm_save_social_network_wrapper_frm" class="arm_admin_form arm_save_social_network_wrapper_frm">
 		<table cellspacing="0">
 			<tr class="popup_wrapper_inner">	
@@ -169,9 +169,26 @@ $armUploadDir = wp_upload_dir();
                                                 </li>
                                                 <?php
                                                 break;
+                                            case 'tumblr':
+                                                ?>
+                                                <li class="arm_social_network_list_li arm_social_network_list_li_tumblr" data-sn_type="tumblr">
+                                                    <?php 
+                                                    $tu_status = isset($social_options['tumblr']['chk_status']) ? $social_options['tumblr']['chk_status'] : 0;
+                                                    $tu_active_status = isset($social_options['tumblr']['active']) ? $social_options['tumblr']['active'] : 0;
+                                                    ?>
+                                                    <div class="arm_sn_heading_wrapper">
+                                                        <label>
+                                                            <input type="checkbox" class="arm_icheckbox arm_sn_active_checkbox" data-sn_type="tumblr" value="1" name="arm_social_settings[options][tumblr][status]" id="arm_sn_tu_status" <?php checked($tu_status, 1)?> <?php echo ($tu_active_status != 1) ? 'disabled="disabled"' : '';?>>
+                                                            <span><?php _e('Tumblr', 'ARMember');?></span>
+                                                        </label>
+                                                        <div class="arm_list_sortable_icon"></div>
+                                                    </div>                                                    
+                                                </li>
+                                                <?php
+                                            break;                                                         
                                             default:
-                                                break;
-                                        }
+                                            break;
+                                        } 
                                     }
                                     ?>
                                 </ul>
@@ -260,7 +277,7 @@ $armUploadDir = wp_upload_dir();
                                                 <div class="armbar" style="width:0%;"></div>
                                             </div>-->
                                             <div class="armFileUploadProgressBar" style="display: none;">
-                                                <div class="armbar" style="width:0%;"></div>
+                                                <div class="armbar arm_width_0" ></div>
                                             </div>
                                             <div class="armFileUploadProgressInfo"></div>
                                             <div id="armFileUploadMsg_arm_social_login_fb_custom_icon" class="armFileMessages"></div>
@@ -347,7 +364,7 @@ $armUploadDir = wp_upload_dir();
                                             }
                                             ?></div>
                                             <div class="armFileUploadProgressBar" style="display: none;">
-                                                <div class="armbar" style="width:0%;"></div>
+                                                <div class="armbar arm_width_0" ></div>
                                             </div>
                                             <div class="armFileUploadProgressInfo"></div>
                                             <div id="armFileUploadMsg_arm_social_login_tw_custom_icon" class="armFileMessages"></div>
@@ -435,7 +452,7 @@ $armUploadDir = wp_upload_dir();
                                             ?></div>
                                             
                                             <div class="armFileUploadProgressBar" style="display: none;">
-                                                <div class="armbar" style="width:0%;"></div>
+                                                <div class="armbar arm_width_0"></div>
                                             </div>
                                             <div class="armFileUploadProgressInfo"></div>
                                             <div id="armFileUploadMsg_arm_social_login_li_custom_icon" class="armFileMessages"></div>
@@ -523,7 +540,7 @@ $armUploadDir = wp_upload_dir();
                                             ?></div>
                                             
                                             <div class="armFileUploadProgressBar" style="display: none;">
-                                                <div class="armbar" style="width:0%;"></div>
+                                                <div class="armbar arm_width_0"></div>
                                             </div>
                                             <div class="armFileUploadProgressInfo"></div>
                                             <div id="armFileUploadMsg_arm_social_login_google_custom_icon" class="armFileMessages"></div>
@@ -610,7 +627,7 @@ $armUploadDir = wp_upload_dir();
                                             }
                                             ?></div>
                                             <div class="armFileUploadProgressBar" style="display: none;">
-                                                <div class="armbar" style="width:0%;"></div>
+                                                <div class="armbar arm_width_0" ></div>
                                             </div>
                                             <div class="armFileUploadProgressInfo"></div>
                                             <div id="armFileUploadMsg_arm_social_login_vk_custom_icon" class="armFileMessages"></div>
@@ -692,7 +709,7 @@ $armUploadDir = wp_upload_dir();
                                             }
                                             ?></div>
                                             <div class="armFileUploadProgressBar" style="display: none;">
-                                                <div class="armbar" style="width:0%;"></div>
+                                                <div class="armbar arm_width_0"></div>
                                             </div>
                                             <div class="armFileUploadProgressInfo"></div>
                                             <div id="armFileUploadMsg_arm_social_login_insta_custom_icon" class="armFileMessages"></div>
@@ -701,6 +718,93 @@ $armUploadDir = wp_upload_dir();
                                              $social_options['insta']['custom_icon'] = (!empty($social_options)) ? ((!empty($social_options['insta']['custom_icon'])) ? $social_options['insta']['custom_icon'] : '') : '';
                                             ?>
                                             <input class="arm_file_url" type="hidden" data-file_type="social_icon" data-msg-invalid="Invalid file selected" data-msg-required="<?php _e('Please Select Icon.', 'ARMember'); ?>" data-icon="" value="<?php echo $social_options['insta']['custom_icon']; ?>" name="arm_social_settings[options][insta][custom_icon]">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="arm_social_network_icons_block">
+                                    <label><?php _e('Tumblr Icon', 'ARMember');?></label>
+                                    <?php 
+                                    $tu_icons = $arm_social_feature->arm_get_social_network_icons('tumblr');
+                                    $tuCustomIcons = $arm_social_feature->arm_get_social_network_custom_icons('tumblr');
+                                    $social_options['tumblr']['icon'] = (!empty($social_options['tumblr']['icon'])) ? $social_options['tumblr']['icon'] : 'tu_1.png';
+                                    ?>
+                                    <?php if(!empty($tu_icons)):?>
+                                    <?php foreach($tu_icons as $icon => $url):?>
+                                        <div class="arm_social_login_icon_container">
+                                            <label>
+                                                <input type="radio" class="arm_iradio arm_input_tu arm_icon_tumblr" name="arm_social_settings[options][tumblr][icon]" value="<?php echo $icon;?>" <?php checked($social_options['tumblr']['icon'], $icon); ?> data-url="<?php echo $url;?>">
+                                                    <?php
+                                                    if(file_exists(strstr($url, "//"))){
+                                                            $url_icon =strstr($url, "//");
+                                                        }else if(file_exists($url)){
+                                                           $url_icon = $url;
+                                                        }else{
+                                                             $url_icon = $url;
+                                                        }
+                                                    ?>  
+                                                <img class="arm_social_login_image" src="<?php echo ($url_icon);?>"/>
+                                            </label>
+                                            <?php if (in_array($icon, array_keys($tuCustomIcons))): ?>
+                                            <a href="javascript:void(0)" class="arm_remove_social_network_icon armhelptip" title="<?php _e('Delete Icon', 'ARMember');?>" data-sn_type="tumblr" data-file_name="<?php echo $icon;?>" data-file_url="<?php echo $url;?>" ><i class="armfa armfa-remove armfa-1x"></i></a>
+                                            <?php endif;?>
+                                        </div>
+                                    <?php endforeach;?>
+                                    <?php endif;?>
+                                    <div class="armclear"></div>
+                                    <label class="arm_custom_image_label"><?php _e('Custom Image', 'ARMember');?></label>
+                                    <div class="arm_social_login_icon_container1">
+                                      <!--   <div class="arm_social_login_label_container">
+                                           <label>
+                                                <input type="radio" class="arm_iradio arm_input_tu arm_icon_tumblr" name="arm_social_settings[options][twitter][icon]" value="custom" <?php checked($social_options['tumblr']['icon'], 'custom'); ?>>
+                                            </label>
+                                        </div>   -->                                                                     
+                                        <?php
+                                        $tu_icon_type = 'type="file"';
+                                        $tu_icon_class = '';
+                                        if ($browser_name == 'Internet Explorer' && $browser_version <= 9) {
+                                            $tw_icon_type = 'type="text" data-iframe="arm_tumblrs_icon"';
+                                            $tw_icon_class = ' armIEFileUpload';
+                                            echo '<div id="arm_tumblrs_icon_iframe_div" class="arm_iframe_wrapper" style="display:none;"><iframe id="arm_tumblrs_icon_iframe" src="' . MEMBERSHIP_VIEWS_URL . '/iframeupload.php"></iframe></div>';
+                                        }
+                                        ?>
+                                        <div class="armFileUploadWrapper arm_social_login_custom_icon_container" data-iframe="arm_tumblrs_icon">   
+                                            <?php
+                                            if ($social_options['tumblr']['icon'] == 'custom' && !empty($social_options['tumblr']['custom_icon'])) {
+                                                $isIconExists = !empty($social_options['tumblr']['custom_icon']) && file_exists(MEMBERSHIP_UPLOAD_DIR.'/social_icon/'.basename($social_options['tumblr']['custom_icon'])) ? true : false;
+                                                if ($isIconExists) {
+                                                    $tu_icon_upload_btn_display = "style='display:none;'";
+                                                    $tu_icon_remove_btn_display = "style='display:block;'";
+                                                    $tu_icon_file_exists = 1;
+                                                } else {
+                                                    $tu_icon_upload_btn_display = "style='display:block;'";
+                                                    $tu_icon_remove_btn_display = "style='display:none;'";
+                                                    $tu_icon_file_exists = 0;
+                                                }
+                                            } else {
+                                                $tu_icon_upload_btn_display = "style='display:block;'";
+                                                $tu_icon_remove_btn_display = "style='display:none;'";
+                                                $tu_icon_file_exists = 0;
+                                            }
+                                            ?>
+                                            <div class="armFileUploadContainer">
+                                                <div class="armFileUpload-icon"></div><?php _e('Upload', 'ARMember');?>
+                                                <input <?php echo $tu_icon_type; ?> id="arm_social_login_tu_custom_icon" class="arm_input_tu armFileUpload <?php echo $tu_icon_class; ?>" data-file_type="social_icon" data-file_size="2" accept=".jpg,.jpeg,.png,.gif,.bmp"/>
+                                            </div>
+                                            <div class="arm_old_uploaded_file"><?php
+                                            if ($social_options['tumblr']['icon'] == 'custom' && $tw_icon_file_exists == 1) {
+                                                echo '<img class="arm_social_login_custom_image arm_fildrag_file" src="' . $social_options['tumblr']['custom_icon'] . '" id="arm_tumblr_custom_icon"/>';
+                                            }
+                                            ?></div>
+                                            <div class="armFileUploadProgressBar" style="display: none;">
+                                                <div class="armbar arm_width_0" ></div>
+                                            </div>
+                                            <div class="armFileUploadProgressInfo"></div>
+                                            <div id="armFileUploadMsg_arm_social_login_tu_custom_icon" class="armFileMessages"></div>
+                                            <div class="arm_old_file"></div>
+                                            <?php 
+                                             $social_options['tumblr']['custom_icon'] = (!empty($social_options)) ? ((!empty($social_options['tumblr']['custom_icon'])) ? $social_options['tumblr']['custom_icon'] : '') : '';
+                                            ?>
+                                            <input class="arm_file_url" type="hidden" data-file_type="social_icon" data-msg-invalid="Invalid file selected" data-msg-required="<?php _e('Please Select Icon.', 'ARMember');?>" data-icon="" value="<?php echo $social_options['tumblr']['custom_icon']; ?>" name="arm_social_settings[options][tumblr][custom_icon]" >
                                         </div>
                                     </div>
                                 </div>

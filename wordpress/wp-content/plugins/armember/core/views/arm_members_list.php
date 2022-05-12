@@ -1,5 +1,4 @@
-<?php global $wpdb, $ARMember, $arm_slugs, $arm_members_class, $arm_member_forms, $arm_global_settings, $arm_subscription_plans; ?>
-<?php
+<?php global $wpdb, $ARMember, $arm_slugs, $arm_members_class, $arm_member_forms, $arm_global_settings, $arm_subscription_plans; 
 
 global $arm_members_activity;
 $setact = 0;
@@ -7,16 +6,18 @@ global $check_sorting;
 $setact = $arm_members_activity->$check_sorting();
 ?>
 <div class="wrap arm_page arm_manage_members_main_wrapper">
-	<div class="content_wrapper" id="content_wrapper">
-		<div class="page_title">
-			<?php _e('Manage Members', 'ARMember');?>
-            <?php
+	<?php
     if ($setact != 1) {
         $admin_css_url = admin_url('admin.php?page=arm_manage_license');
         ?>
-
-        <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
     <?php } ?>
+	<div class="content_wrapper" id="content_wrapper">
+		<div class="page_title">
+	<?php 
+			_e('Manage Members', 'ARMember');
+	?>
+    		
 			<div class="arm_add_new_item_box">
 				<a class="greensavebtn" href="<?php echo admin_url('admin.php?page='.$arm_slugs->manage_members.'&action=new');?>"><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add Member', 'ARMember') ?></span></a>
 			</div>
@@ -35,30 +36,22 @@ $setact = $arm_members_activity->$check_sorting();
 		/* **********./Begin Bulk Delete Member Popup/.********** */
 		$bulk_delete_member_popup_content = '<span class="arm_confirm_text">'.__("Are you sure you want to delete this member(s)?",'ARMember' );
 		$bulk_delete_member_popup_content .= '<br/>'.__("If you will delete these member(s), their subscription will be removed.",'ARMember' ).'</span>';
+		$bulk_delete_member_popup_content .= '<span class="arm_change_plan_confirm_text">'.__("This action cannot be reverted, Are you sure you want to change membership plan of selected member(s)?",'ARMember' ).'</span>';
+		$bulk_delete_member_popup_content .= '<span class="arm_change_status_confirm_text">'.__( "Are you sure you want to change status of selected member(s)?", 'ARMember' ).'</span>';
 		$bulk_delete_member_popup_content .= '<input type="hidden" value="false" id="bulk_delete_flag"/>';
+		$bulk_delete_member_popup_title = '<span class="arm_confirm_text">'.__('Delete Member(s)', 'ARMember').'</span>';
+		$bulk_delete_member_popup_title .= '<span class="arm_change_plan_confirm_text">'.__('Change Plan', 'ARMember').'</span>';
+		$bulk_delete_member_popup_title .= '<span class="arm_change_status_confirm_text">'.__('Change Status', 'ARMember').'</span>';
 		$bulk_delete_member_popup_arg = array(
 			'id' => 'delete_bulk_form_message',
 			'class' => 'delete_bulk_form_message',
-			'title' => __('Delete Member(s)', 'ARMember'),
+			'title' => $bulk_delete_member_popup_title,
 			'content' => $bulk_delete_member_popup_content,
 			'button_id' => 'arm_bulk_delete_member_ok_btn',
 			'button_onclick' => "apply_member_bulk_action('bulk_delete_flag');",
 		);
 		echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_member_popup_arg);
 		/* **********./End Bulk Delete Member Popup/.********** */
-		/* **********./Begin Bulk Member Change To Plan Popup/.********** */
-		$bulk_member_change_plan_popup_content = '<span class="arm_confirm_text">'.__("This action cannot be reverted, Are you sure you want to change membership plan of selected member(s)?",'ARMember' ).'</span>';
-		$bulk_member_change_plan_popup_content .= '<input type="hidden" value="false" id="bulk_change_plan_flag"/>';
-		$bulk_member_change_plan_popup_arg = array(
-			'id' => 'change_plan_bulk_message',
-			'class' => 'change_plan_bulk_message',
-            'title' => __('Change Plan', 'ARMember'),
-			'content' => $bulk_member_change_plan_popup_content,
-			'button_id' => 'arm_bulk_member_change_plan_ok_btn',
-			'button_onclick' => "apply_member_bulk_action('bulk_change_plan_flag');",
-		);
-		echo $arm_global_settings->arm_get_bpopup_html($bulk_member_change_plan_popup_arg);
-		/* **********./End Bulk Member Change To Plan Popup/.********** */
 		?>
 	</div>
 </div>
@@ -93,13 +86,19 @@ jQuery(document).on('click', "#armember_datatable_wrapper .ColVis_Button:not(.Co
 	var column_list = "";
 	var _wpnonce = jQuery('input[name="_wpnonce"]').val();
 
-    var column_list = jQuery('#armember_datatable_wrapper .ColVis_Button:not(.ColVis_MasterButton)').find('input[type="checkbox"]').map(function () {
-        return [[ encodeURIComponent(jQuery(this).parent().next('.ColVis_title').text()), this.checked ? 'visibile' : 'hidden']];
-    }).get();
-
-    if (form_id == '') {
-        return false;
-    }
+	var column_list_str = '';
+	jQuery('#armember_datatable_wrapper .ColVis_Button:not(.ColVis_MasterButton)').each(function(){
+		if(jQuery(this).hasClass('active'))
+		{
+			column_list_str += '1,';
+		}
+		else {
+			column_list_str += '0,';
+		}
+		
+	});
+    var column_list = [[ column_list_str ]];
+    if (form_id=='') { return false; }
 	jQuery.ajax({
 		type:"POST",
 		url:__ARMAJAXURL,
@@ -132,3 +131,7 @@ function ChangeID(id) {
         </div>
     </form>
 </div>
+
+<?php
+	echo $ARMember->arm_get_need_help_html_content('started-armember');
+?>

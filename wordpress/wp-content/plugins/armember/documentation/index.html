@@ -87,6 +87,8 @@
                   <li><a class="panel" href="#redirection_options">Redirection Rules</a></li>
                   <li><a class="panel" href="#common_messages">Common Messages</a></li>
                   <li><a class="panel" href="#invoice">Invoice & Tax</a></li>
+                  <li><a class="panel" href="#debug_log">Debug Log Settings</a></li>
+				  <li><a class="panel" href="#api_service">API Services</a></li>
                 </ul>
         <ul>
                   <li><a class="panel" href="#membership_options"><strong>Single vs. Multiple Membership</strong></a></li>
@@ -194,9 +196,9 @@
             </div>
     <div id="content">
               <div>
-        <h1>ARMember - Exclusive Wordpress Membership Plugin ( Version: 4.1.4)</h1>
+        <h1>ARMember - Exclusive Wordpress Membership Plugin ( Version: 5.1)</h1>
         <div class="card">
-                  <p><span class="icon_clock"></span><strong>Created:</strong> 01/03/2020</p>
+                  <p><span class="icon_clock"></span><strong>Created:</strong> 25/03/2022</p>
                   <p><span class="icon_by"></span><strong>By:</strong>&nbsp;<a href="http://www.reputeinfosystems.com" target="_blank">Repute Infosystems</a> </p>
                   <p><span class="icon_email"></span><strong> Email: </strong><a href="mailto:info@reputeinfosystems.com">info@reputeinfosystems.com</a></p>
                   <hr>
@@ -258,9 +260,9 @@
             </div>
     <div class="nonecontent" style="display: none;">
               <div id="intro">
-        <h1>ARMember - Exclusive Wordpress Membership Plugin ( Version: 4.1.4 )</h1>
+        <h1>ARMember - Exclusive Wordpress Membership Plugin ( Version: 5.1 )</h1>
         <div class="card">
-                  <p><span class="icon_clock"></span><strong>Created:</strong> 01/03/2020</p>
+                  <p><span class="icon_clock"></span><strong>Created:</strong> 25/03/2022</p>
                   <p><span class="icon_by"></span><strong>By:</strong>&nbsp;<a href="http://www.reputeinfosystems.com" target="_blank">Repute Infosystems</a> </p>
                   <p><span class="icon_email"></span><strong> Email: </strong><a href="mailto:info@reputeinfosystems.com">info@reputeinfosystems.com</a></p>
                   <hr>
@@ -364,7 +366,7 @@
                       <p>To get more detail about this section, please <a class="panel" href="#setup_plans">click here</a></p>
                     </li>
             <li>
-                      <p>You must need to setup <code>payment gateway(s)</code> if you want to charge user for paid plans. We provide most popular payment gateways support. <code>Paypal</code>, <code>Stripe</code>, <code>Authorize.Net</code>, <code>2Checkout</code>, and <code>Bank Transfer</code> Payment Method.</p>
+                      <p>You must need to setup <code>payment gateway(s)</code> if you want to charge user for paid plans. We provide most popular payment gateways support. <code>Paypal</code>, <code>Stripe</code>, <code>Authorize.Net</code>, <code>2Checkout</code>, <code>Bank Transfer</code>, and <code>Woocommerce</code> Payment Method.</p>
                       <p>To get more detail about this section, please <a class="panel" href="#payment_gateways">click here</a></p>
                     </li>
             <li>
@@ -449,7 +451,7 @@
                   <p class="alert alert_info"><i class="ts_icon ts_icon_info_circle"></i>Only Active will be allowed to login to site. Users with <code>Pending</code>, <code>Inactive</code> or <code>Terminated</code> status will not be able to login to site.</p>
                   <p class="alert alert_info"><i class="ts_icon ts_icon_info_circle"></i>Each user that exists before plugin has been activated will be treated as an approved ( Active ) user .</p>
                   <h3 id="default_currency">Default Currency</h3>
-                  <p>Here you can select payment currency out of 25 available currencies for payment processes.</p>
+                  <p>Here you can select payment currency out of 168 available currencies for payment processes.</p>
                   <p>ARMember provides you facility to add your custom currency by clicking on <strong>Add Custom Currency</strong>.</p>
                   <h3 id="sales_tax">Sales Tax</h3>
                   <p class="doc_image"><a href="images/ARMember_sales_tax1.png" rel="lightbox"><img src="images/ARMember_sales_tax1.png" alt="ARMember - Sales Tax" title="ARMember - Sales Tax"/></a></p>
@@ -589,7 +591,7 @@
         <div class="card">
                   <p>Go to the <strong>Payment Gateways</strong> Tab at <strong>General Settings</strong> to activate and configure payment gateways.</p>
                   <p class="alert alert_info"><i class="ts_icon ts_icon_info_circle"></i>All payments done by below payment gateways will be in selected default currency. ARMember supports 25 default currencies. You can change default currency at <a class="panel" href="#general_options">general options</a>.</p>
-                  <p>You need to configure Payment Gateway setting to accept payments. ARMember supports most popular payment gateways like <code>Paypal</code>, <code>Stripe</code>, <code>Authorize.Net</code>, <code>2Checkout</code> and <code>Bank Transfer</code> payment method.</p>
+                  <p>You need to configure Payment Gateway setting to accept payments. ARMember supports most popular payment gateways like <code>Paypal</code>, <code>Stripe</code>, <code>Authorize.Net</code>, <code>2Checkout</code>, <code>Bank Transfer</code>, and <code>Woocommerce</code> payment method.</p>
                   <p>ARMember integrates PCI compliant billing vendors to make sure your customer data is always safe and secure.</p>
                   <p class="alert alert_info"><i class="ts_icon ts_icon_info_circle"></i>You need to activate one of the payment gateway in order to accept payments for paid membership plans.</p>
                   <p class="alert alert_info"><i class="ts_icon ts_icon_info_circle"></i><strong>Important Note:</strong> If in any case <strong>Payment Amount is zero</strong> (Ex: 100% Coupon Discount, Free Trail case etc..) then user will not be redirected to related payment gateway sites and directly get added as member to site as soon as signup process get completed. (It will not work in case of <strong>Automatic Subscription</strong>)</p>
@@ -710,7 +712,7 @@
                   <p>In case of any error at setup form you may display actual error returned from Authorize.Net payment gateway by enabling <code>Display actual error returned from payment gateway</code> switch as you can see in screenshot.</p>
                   <hr/>
                   <h3>2Checkout</h3>
-                  <p>To activate 2Checkout gateway, you must requires API Username, API Password, Seller Id, Private Key, Publishable Key and Secret Word.</p>
+                  <p>To activate 2Checkout gateway, you must requires API Username, API Password, Seller Id, Private Key, and Secret Word.</p>
                   <ul class="large_bottom_margin bottom_margin">
             <li>
                       <h4>API Username and API Password</h4>
@@ -734,15 +736,26 @@
                       <p>Your 2Checkout account number (also known as: Seller Id (SID), vendor ID, merchant ID, account ID) can be found within your vendor area, and is located in the upper-right corner of the screen.</p>
                     </li>
             <li>
-                      <h4>Publishable and Private keys</h4>
-                      <p>Follow below steps to get Publishable and Private keys:</p>
+                      <h4>Private key</h4>
+                      <p>Follow below steps to get Private key:</p>
                       <ul>
-                <li>Log in to your 2Checkout account.</li>
-                <li>Click the <strong>API</strong> tab.</li>
-                <li>Here You will find your Publishable and Private keys.</li>
-                <li><strong>Note:</strong> If you do not see your Publishable and Private keys under the API tab, this indicates your account is not approved to use the Payment API.</li>
-              </ul>
-                      <p>For more detail about publishable and private keys, please <a href="http://help.2checkout.com/articles/FAQ/Where-do-I-find-the-Publishable-and-Private-keys/" target="_blank">click here</a>.</p>
+                        <li>Log in to your 2Checkout account.</li>
+                        <li>Click the <strong>API</strong> tab.</li>
+                        <li>Here You will find your Private key.</li>
+                        <li><strong>Note:</strong> If you do not see your Private key under the API tab, this indicates your account is not approved to use the Payment API.</li>
+                      </ul>
+
+                      <p>For more detail about private keys, please <a href="http://help.2checkout.com/articles/FAQ/Where-do-I-find-the-Publishable-and-Private-keys/" target="_blank">click here</a>.</p>
+                    </li>
+                    <li>
+                      <h4>API Secret Key</h4>
+                      <p>Follow below steps to get API Secret key:</p>
+                      <ul>
+                        <li>Log in to your 2Checkout account.</li>
+                        <li>Navigate to <strong>Integrations -> Webhooks & API</strong> tab.</li>
+                        <li>Here You will find API Secret key in the API section.</li>
+                      </ul>
+
                     </li>
             <li>
                       <h4>Secret Word</h4>
@@ -818,6 +831,17 @@
                   WHen this feature is Enabled then Members will not be able to purchase membership plan which is already purchased using <strong>Bank Transfer</strong> Payment Gateway and their payment transaction status for that particular plan status is "Pending".
                   </p>
                   <p class="doc_image"> <a href="images/ARMember_payment_gateways_bank_transfer_settings.png" rel="lightbox"><img src="images/ARMember_payment_gateways_bank_transfer_settings.png" alt="ARMember General Settings ( Payment Gateways )" title="ARMember General Settings ( Payment Gateways )"/></a> </p>
+
+
+
+                  <h3 id="woocommerce_payment_gateway">Woocommerce</h3>
+                  <p>This payment gateway option provides facility to purchase ARMember membership plan using woocommerce checkout payment methods. </p>
+                  <p class="alert alert_error"><i class="ts_icon ts_icon_info_circle"></i>This payment gateway requires <strong>'Woocommerce'</strong> installed and <strong>'Woocommerce Integration'</strong> addon enabled from add-ons page of ARMember.</p>
+                  <p class="doc_image"> <a href="images/ARMember_woocommerce_integration.png" rel="lightbox"><img src="images/ARMember_woocommerce_integration.png" alt="ARMember General Settings ( Payment Gateways )" title="ARMember General Settings ( Payment Gateways )"/></a> </p>
+                  <p>So after enabling 'Woocommerce' and 'Woocommerce Integration' addon, 'Woocommerce' payment gateway option will display at <strong>'ARMember General Settings' -> 'Payment Gateways'</strong> page.</p>
+                  <p class="doc_image"> <a href="images/ARMember_woocommerce_gateway_option.png" rel="lightbox"><img src="images/ARMember_woocommerce_gateway_option.png" alt="ARMember General Settings ( Payment Gateways )" title="ARMember General Settings ( Payment Gateways )"/></a> </p>
+                  <p>When this payment gateway enables, it automatically displays as payment gateway option in 'Configure Plan + Signup Page'.</p>
+                  <p class="doc_image"> <a href="images/ARMember_woocommerce_configure_setup_option.png" rel="lightbox"><img src="images/ARMember_woocommerce_configure_setup_option.png" alt="ARMember General Settings ( Payment Gateways )" title="ARMember General Settings ( Payment Gateways )"/></a> </p>
                 </div>
       </div>
               <div id="page_setup">
@@ -871,7 +895,7 @@
                   <ol class="large_bottom_margin">
             <li>Please Enter your "API Key" obtained from your Mailchimp account.</li>
             <li>Click on "Verify" link.</li>
-            <li>That's all!! System will verify your account and fetch all list names from your account.  Select default List name to add subscribes.</li>
+            <li>That's all!! System will verify your account and fetch all list names from your account. Select default List name to add subscribes.</li>
             <li>If you want to enable double opt-in method for Mailchimp, then select "Enable double opt-in" checkbox.</li>
           </ol>
                   <ul>
@@ -899,7 +923,7 @@
                   <ol class="large_bottom_margin">
             <li>Please Enter your "API key" and "Access Token" obtained from your Constant Contact account.</li>
             <li>Click on "Verify" link.</li>
-            <li>That's all!! System will verify your account and fetch all list names from your account.  Select default List name to add subscribes.</li>
+            <li>That's all!! System will verify your account and fetch all list names from your account. Select default List name to add subscribes.</li>
           </ol>
                   <ul>
             <li>
@@ -933,7 +957,7 @@
                   <ol class="large_bottom_margin">
             <li>Please Enter your "API Key" obtained from your GetResponse account.</li>
             <li>Click on "Verify" link.</li>
-            <li>That's all!! System will verify your account and fetch all campaign names from your account.  Select default campaign name to add subscribes.</li>
+            <li>That's all!! System will verify your account and fetch all campaign names from your account. Select default campaign name to add subscribes.</li>
           </ol>
                   <ul>
             <li>
@@ -956,7 +980,7 @@
                   <ol class="large_bottom_margin">
             <li>Please Enter your "Email" and "API Key" obtained from your Mad Mimi account.</li>
             <li>Click on "Verify" link.</li>
-            <li>That's all!! System will verify your account and fetch all list names from your account.  Select default List name to add subscribes.</li>
+            <li>That's all!! System will verify your account and fetch all list names from your account. Select default List name to add subscribes.</li>
           </ol>
                   <ul>
             <li>
@@ -980,7 +1004,7 @@
                   <ol class="large_bottom_margin">
             <li>Please Enter "API Key" obtained from your Mailer Lite account.</li>
             <li>Click on "Verify" link.</li>
-            <li>That's all!! System will verify your account and fetch all group names from your account.  Select default Group name to add subscribes.</li>
+            <li>That's all!! System will verify your account and fetch all group names from your account. Select default Group name to add subscribes.</li>
           </ol>
                   <ul>
             <li>
@@ -998,6 +1022,31 @@
             <li>You can Deactivate the integration of your account with your system by clicking the link "Delete Configuration".</li>
           </ul>
 
+          <hr>
+          <h3>Sendinblue</h3>
+          <p>Please follow the below steps to configure Sendinblue API</p>
+          <p class="doc_image"> <a href="images/ARMember_sendinblue.png" rel="lightbox"><img src="images/ARMember_sendinblue.png" alt="ARMember General Settings ( Opt-ins )" title="ARMember General Settings ( Opt-ins )"/></a> </p>
+          <ol class="large_bottom_margin">
+            <li>Please Enter "API Key" obtained from your <strong>Sendinblue</strong> account.</li>
+            <li>Click on "Verify" link.</li>
+            <li>That's all!! System will verify your account and fetch all group names from your account. Select default List ID to add subscribes.</li>
+          </ol>
+          <ul>
+            <li>
+              <p><strong>Get API Key from Sendinblue account</strong></p>
+            </li>
+            <li><a href="https://app.sendinblue.com/account/login" target="_blank">Login</a> to your <strong>Sendinblue</strong> Account</li>
+            <li>Click on the "User Account" link on the top right corner of the screen. and then you will see the <code>SMTP & API</code> menu. Click on that menu.</li>
+            <li>Then click on the <code>CREATE A NEW API KEY</code> button at the top right side.</li>
+            <li>Fill the detail and click on <strong>GENERATE</strong> button. that's it.</li>
+            <li>After that, you can see API Key</li>
+          </ul>
+          <ul class="italic" style="list-style:none;">
+            <li><p><strong>Note:</strong></p></li>
+            <li>You can refresh your group names anytime by clicking the link "Refresh List"</li>
+            <li>You can Deactivate the integration of your account with your system by clicking the link "Delete Configuration".</li>
+          </ul>
+          <hr>
             <p>If ARMember "Opt-in" module is activated, you will get option in SignUp form settings page - in right side bottom as shown in following image:</p>
             <p class="doc_image"><a href="images/ARMember_mymail_support.png" rel="lightbox"><img src="images/ARMember_mymail_support.png" alt="ARMember BuddyPress/BuddyBoss Supprot" title="ARMember Mymail Support"/></a></p>
 
@@ -1344,9 +1393,6 @@
 
                   <hr>
 
-
-                  
-
                   <h3>Instagram</h3>
                   <p>In order to get keys required for Instagram API integration please go through following instructions.</p>
                   <h4>Create Instagram Client</h4>
@@ -1368,8 +1414,29 @@
           </div>
                   <p class="doc_image"><a href="images/ARMember_General_Settings_social_instagram.png" rel="lightbox"><img src="images/ARMember_General_Settings_social_instagram.png" alt="ARMember General Settings ( Social Login )" title="ARMember General Settings ( Social Login )"/></a></p>
                   
-                  <hr>
+          <hr>
 
+          <h3>Tumblr</h3>
+          <p>In order to get the keys required for Tumblr API integration please go through the following instructions.</p>
+          <h4>Create Tumblr Client</h4>
+          <p>The following steps will help you to get your Tumblr Application Consumer Key and Consumer Secret.</p>
+          <ol class="large_bottom_margin bottom_margin">
+            <li>Login to your account to create a new client from <a target="_blank" href="https://www.tumblr.com/login">here</a>.</li>
+            <li>Click on <strong>User Account</strong> icon -> Click on <strong>Edit Appearance</strong> menu link.</li>
+            <li>After that, you will see the <strong>Apps</strong> menu link on the right side of the screen.</li>
+            <li>You will see the <strong>Register</strong> link at the bottom of the screen to register new App. link look like <strong>"Wanna make an app? Cool. <u>Register</u> to use the <u>Tumblr API</u>, then have at it."</strong></li>
+            <li>Then Fill the detail to register the Tumblr app. there you will see the <strong>"Default callback URL:"</strong> option, there you need to add the <strong>"Callback URL"</strong> display at <code>ARMember</code> -> <code>General Settings</code> -> <code>Social Connect</code> tab at the left side -> <code>Tumblr</code> section.</li>
+            <li>Click on <strong>Register</strong> button.</li>
+            <li>
+                <p>After creating an App, you will see the <code>Consumer Key</code> and <code>Consumer Secret</code> in Apps listing on the <strong>"Apps"</strong> menu page that screen looks like as you can see in the below screenshot.</p>
+                <p class="doc_image"><a href="images/armember_tumblr_application_screenshot.png" rel="lightbox"><img src="images/armember_tumblr_application_screenshot.png" alt="Tumblr Application credentials on Tumblr account" title="Tumblr Application credentials on Tumblr account"/></a></p>
+            </li>
+            <li>
+                <p>After creating Tumblr Application, enable tumblr application and add application credentials at <code>ARMember</code> -> <code>General Settings</code> -> <code>Social Connect</code> page at Tumblr section.</p>
+                <p class="doc_image"><a href="images/ARMember_General_Settings_social_tumblr.png" rel="lightbox"><img src="images/ARMember_General_Settings_social_tumblr.png" alt="ARMember General Settings ( Social Login )" title="ARMember General Settings ( Social Login )"/></a></p>
+            </li>
+          </ol>
+            <hr>
                   <h3>Social Connect Icons and formatting</h3>
                   <p>ARMember provides formatting options of a social icon in login form with its preview. You can set it from <code>Manage Forms > Other Forms (set of forms)</code> You will find settings, shown in below screenshot </p>
                   <p class="doc_image"><a href="images/ARMsocialconnect_options.png" rel="lightbox"><img src="images/ARMsocialconnect_options.png" alt="ARMember Forms Social Icon Settings ( Social Login )" title="ARMember Form Settings ( Social Login )"/></a></p>
@@ -1456,7 +1523,7 @@
             <li>
                       <p>Fixed Redirection</p>
                       <p class="doc_image" > <a href="images/ARMember_signup_redirection1.png" rel="lightbox"><img src="images/ARMember_signup_redirection1.png" title="ARMember_signup_redirection" alt="ARMember General Settings ( Redirection )"/></a> </p>
-                      <p>You can redirect user to a page/ specific URL  after signup.</p>
+                      <p>You can redirect user to a page/ specific URL / back to referrer after signup.</p>
                     </li>
             <li>
                       <p>Form Wise Redirection</p>
@@ -1575,7 +1642,7 @@
         <h1>Invoice &Tax</h1>
         <div class="card">
                   <p class="alert alert_error"><i class="ts_icon ts_icon_info_circle"></i>Invoice & Tax will only available if you activate <strong>Invoice & Tax</strong> from <strong>Add-ons</strong>.</p>
-                  <p class="doc_image"><a href="images/ARMember_addons_drip_content.png" rel="lightbox"><img src="images/ARMember_invoice_tax.png" alt="ARMember - Invoice Tax" title="ARMember - Invoice Tax"/></a></p>
+                  <p class="doc_image"><a href="images/ARMember_invoice_tax.png" rel="lightbox"><img src="images/ARMember_invoice_tax.png" alt="ARMember - Invoice Tax" title="ARMember - Invoice Tax"/></a></p>
                   <p>After activating this module, you will able to add sales tax in plan+signup page and generate Invoice of each order.</p>
                   <h3>Invoice</h3>
                   <p>Go to the <strong>Invoice Template</strong> tab at <strong>General Settings</strong> page. Where you can change in default template for invoice which can be directly print out by admin from <code>ARMemebr</code>-><code>Payment History</code>.</p>
@@ -1607,6 +1674,399 @@
                   <p class="doc_image"><a href="images/ARMember_invoice_number_format.png" rel="lightbox"><img src="images/ARMember_invoice_number_format.png" alt="ARMember - Invoice Number Format" title="ARMember - Invoice Number Format"/></a></p>
                 </div>
       </div>
+
+      <div id="debug_log">
+        <h1>Debug Log Settings</h1>
+        <div class="card">
+          <p>ARMember does provide a facility to view/download/clear the Log file that is generated by the ARMember. so from the log file you can check that what request is occurs OR what response coming from the Payment Gateway OR Opt-ins that you are using in ARMember plugin OR what process done by the ARMember.</p>
+          <p>You can see the Debug Log option from the <code>ARMember</code>-><code>General Settings</code>-><code>Debug Log Settings</code></p>
+          <p>You can enable the log for the <strong>Payment Gateway</strong> process, <strong>Opt-in</strong> process, and <strong>Cron</strong> process as like the below screenshot.</p>
+          <p class="doc_image"><a href="images/armember_debug_log_settings.png" rel="lightbox"><img src="images/armember_debug_log_settings.png" alt="ARMember - Debug Log Settings" title="ARMember - Debug Log Settings"/></a></p>
+          <h3>View Log</h3>
+          <p>By click on the <code>View Log</code> link, you will see the popup screen as like below screenshot, which shows the log for the selected Payment Gateway, Opt-ins, Cron and Email Notification in Debug Log Settings.</p>
+          <p class="doc_image"><a href="images/armember_log_for_paypal.png" rel="lightbox"><img src="images/armember_log_for_paypal.png" alt="ARMember - Log for payment gateway" title="ARMember - Log for payment gateway"/></a></p>
+          <h3>Download Log</h3>
+          <p>By click on the <code>Download Log</code> link, you will get the all logs in a zip folder(if zip extension is enabled in your PHP) OR text file in JSON format.</p>
+          <h3>Clear Log</h3>
+          <p>By click on the <code>Clear Log</code> link, your all log will be cleared from the database.</p>
+						</div>
+					</div>
+					<div id="api_service">
+						<h1>API Services</h1>
+						<div class="card">
+							<p class="alert alert_error"><i class="ts_icon ts_icon_info_circle"></i>API Services will only available if you activate <strong>API Services</strong> from <strong>Add-ons</strong>.</p>
+							<p class="doc_image"><a href="images/ARMember_api_service_feature.png" rel="lightbox"><img src="images/ARMember_api_service_feature.png" alt="ARMember - API Services" title="ARMember - API Services"/></a></p>
+							<p>After activating this module, you will able to use API to get membership plans, membership plan details, member details, member's purchase plan/post, member's plan/post payment transactions, check coupon code, add transaction, cancel member's plan, and check members plan.</p>
+							<h3>API Service</h3>
+							<p>You can check API services and details from ARMember -> General Settings -> API Services page</p>
+							<p class="doc_image"><a href="images/ARMember_General_Settings_API_Services.png" rel="lightbox"><img src="images/ARMember_General_Settings_API_Services.png" alt="ARMember General Settings ( API Service )" title="ARMember General Settings ( API Service )"/></a></p>
+							<ul class="large_bottom_margin bottom_margin">
+								<li>
+									<h3>Security Key</h3>
+									<p>For API security need to generate security key. Security key is required for API call.</p>
+								</li>
+								<li>
+									<h3>List of Membership Plans</h3>
+									<p>This API get all membership plans. Return JSON array with if success then status 1 and response with all plans id, name, and description.</p>
+								</li>
+							</ul>
+							<p class="doc_image"><a href="images/ARMember_General_Settings_API_Services_Plan_Details.png" rel="lightbox"><img src="images/ARMember_General_Settings_API_Services_Plan_Details.png" alt="API Service Membership Plan Details" title="API Service Membership Plan Details"/></a></p>
+							<ul class="large_bottom_margin bottom_margin">
+								<li>
+									<h3>Membership Plan Details</h3>
+									<p>Get membership plan details with a given plan id, plan id is required. Return JSON array with if success then status 1 and response plan details plan id, plan name, subscription type, plan amount, trial, etc.</p>
+									<div class="arm_info_text">
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name"><strong>Field Name</strong></span>
+											<span class="arm_api_field_label"><strong>Parameters</strong></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Plan ID</span>
+											<span class="arm_api_field_label"><code>arm_plan_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<p class="doc_image"><a href="images/ARMember_General_Settings_API_Services_Member_Details.png" rel="lightbox"><img src="images/ARMember_General_Settings_API_Services_Member_Details.png" alt="API Service Member Details" title="API Service Member Details"/></a></p>
+							<ul class="large_bottom_margin bottom_margin">
+								<li>
+									<h3>Member Details</h3>
+									<p>Get member details with a given user id and for get custom field value pass fields metakeys parameter <code>arm_metakeys</code>, user id is required parameter and fields metakeys is optional parameter and multiple Metakeys with comma separated. Return JSON array with if success then status 1 and response member details username, email, display name, first name, last name, status, and registretion date.</p>
+									<div class="arm_info_text">
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name"><strong>Field Name</strong></span>
+											<span class="arm_api_field_label"><strong>Parameters</strong></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Member ID</span>
+											<span class="arm_api_field_label"><code>arm_user_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Field Metakeys</span>
+											<span class="arm_api_field_label"><code>arm_metakeys</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<p class="doc_image"><a href="images/ARMember_General_Settings_API_Services_Member_Plans.png" rel="lightbox"><img src="images/ARMember_General_Settings_API_Services_Member_Plans.png" alt="API Service Member's Membership Plans" title="API Service Member's Membership Plans"/></a></p>
+							<ul class="large_bottom_margin bottom_margin">
+								<li>
+									<h3>Member's Membership Plans</h3>
+									<p>Get member's purchased membership plans and details with a given user id. User id is required parameter, Per Page record is default 5 and optional, and page number is default 1 and optional. Return JSON array with response member's plans detail plan id, plan name, start date, renew date, end date, and etc.</p>
+									<div class="arm_info_text">
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name"><strong>Field Name</strong></span>
+											<span class="arm_api_field_label"><strong>Parameters</strong></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Member ID</span>
+											<span class="arm_api_field_label"><code>arm_user_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Per Page</span>
+											<span class="arm_api_field_label"><code>arm_perpage</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 5)</span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Page Number</span>
+											<span class="arm_api_field_label"><code>arm_page</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 1)</span>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<p class="doc_image"><a href="images/ARMember_General_Settings_API_Services_Member_Paid_Post.png" rel="lightbox"><img src="images/ARMember_General_Settings_API_Services_Member_Paid_Post.png" alt="API Service Member's Paid Posts" title="API Service Member's Paid Posts"/></a></p>
+							<ul class="large_bottom_margin bottom_margin">
+								<li>
+									<h3>Member's Paid Posts</h3>
+									<p>Get member's purachased pay per posts and details with a given user id. User id is required parameter, Per Page record is default 5 and optional, and page number is default 1 and optional. Return JSON array with response member's paid posts details post name, start date, renew date, end date, and etc.</p>
+									<div class="arm_info_text">
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name"><strong>Field Name</strong></span>
+											<span class="arm_api_field_label"><strong>Parameters</strong></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Member ID</span>
+											<span class="arm_api_field_label"><code>arm_user_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Per Page</span>
+											<span class="arm_api_field_label"><code>arm_perpage</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 5)</span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Page Number</span>
+											<span class="arm_api_field_label"><code>arm_page</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 1)</span>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<p class="doc_image"><a href="images/ARMember_General_Settings_API_Services_Member_Plan_Transaction.png" rel="lightbox"><img src="images/ARMember_General_Settings_API_Services_Member_Plan_Transaction.png" alt="API Service Member's Plan Payment Transactions" title="API Service Member's Plan Payment Transactions"/></a></p>
+							<ul class="large_bottom_margin bottom_margin">
+								<li>
+									<h3>Member's Plan Payment Transactions</h3>
+									<p>Get member's purchased plan payment transaction details with a given user id. User id is required parameter, Per Page record is default 5 and optional, and page number is default 1 and optional. Return JSON array with response member's transactions detail log id, transaction id, plan name, payment gateway name, payment type, status, plan amount, paid amount, tax, discount, and etc.</p>
+									<div class="arm_info_text">
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name"><strong>Field Name</strong></span>
+											<span class="arm_api_field_label"><strong>Parameters</strong></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Member ID</span>
+											<span class="arm_api_field_label"><code>arm_user_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Per Page</span>
+											<span class="arm_api_field_label"><code>arm_perpage</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 5)</span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Page Number</span>
+											<span class="arm_api_field_label"><code>arm_page</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 1)</span>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<p class="doc_image"><a href="images/ARMember_General_Settings_API_Services_Member_Paid_Post_Transaction.png" rel="lightbox"><img src="images/ARMember_General_Settings_API_Services_Member_Paid_Post_Transaction.png" alt="API Service Member's Paid Post Payment Transactions" title="API Service Member's Paid Post Payment Transactions"/></a></p>
+							<ul class="large_bottom_margin bottom_margin">
+								<li>
+									<h3>Member's Paid Post Payment Transactions</h3>
+									<p>Get member's purchased pay per post payment transaction details with a given user id. User id is required parameter, Per Page record is default 5 and optional, and page number is default 1 and optional. Return JSON array with response member's transactions detail log id, transaction id, plan name, payment gateway name, payment type, status, plan amount, paid amount, tax, discount, and etc.</p>
+									<div class="arm_info_text">
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name"><strong>Field Name</strong></span>
+											<span class="arm_api_field_label"><strong>Parameters</strong></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Member ID</span>
+											<span class="arm_api_field_label"><code>arm_user_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Per Page</span>
+											<span class="arm_api_field_label"><code>arm_perpage</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 5)</span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Page Number</span>
+											<span class="arm_api_field_label"><code>arm_page</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 1)</span>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<p class="doc_image"><a href="images/ARMember_General_Settings_API_Services_Check_Coupon_Code.png" rel="lightbox"><img src="images/ARMember_General_Settings_API_Services_Check_Coupon_Code.png" alt="API Service Check Coupon Code" title="API Service Check Coupon Code"/></a></p>
+							<ul class="large_bottom_margin bottom_margin">
+								<li>
+									<h3>Check Coupon Code</h3>
+									<p>Check the coupon code is available for plan and discount amount of plan. Return JSON array with response discount amount, total plan amount after discount, type of discount, discount, and coupon apply for each subscriptions.</p>
+									<div class="arm_info_text">
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name"><strong>Field Name</strong></span>
+											<span class="arm_api_field_label"><strong>Parameters</strong></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Coupon Code</span>
+											<span class="arm_api_field_label"><code>coupon_code</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Plan ID</span>
+											<span class="arm_api_field_label"><code>plan_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Payment Gateway</span>
+											<span class="arm_api_field_label"><code>gateway</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<p class="doc_image"><a href="images/ARMember_General_Settings_API_Services_Member_Add_Plan.png" rel="lightbox"><img src="images/ARMember_General_Settings_API_Services_Member_Add_Plan.png" alt="API Service Add Plan to Member" title="API Service Add Plan to Member"/></a></p>
+							<ul class="large_bottom_margin bottom_margin">
+								<li>
+									<h3>Add Plan to Member</h3>
+									<p>Add plan to member with given user id and plan id. User id is require parameter, and plan id is require parameter. Return 1 if successfully add plan to member.</p>
+									<div class="arm_info_text">
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name"><strong>Field Name</strong></span>
+											<span class="arm_api_field_label"><strong>Parameters</strong></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Member ID</span>
+											<span class="arm_api_field_label"><code>arm_user_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Plan ID</span>
+											<span class="arm_api_field_label"><code>arm_plan_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<p class="doc_image"><a href="images/ARMember_General_Settings_API_Services_Add_Transaction.png" rel="lightbox"><img src="images/ARMember_General_Settings_API_Services_Add_Transaction.png" alt="API Service Add Transaction" title="API Service Add Transaction"/></a></p>
+							<ul class="large_bottom_margin bottom_margin">
+								<li>
+									<h3>Add Transaction</h3>
+									<p>Add membership plan and pay par post purchase transaction with given user id. User id is require parameter, plan id is require parameter, and other parameter as per below. Status parameter default is pending or allows status success, canceled, and failed. Amount paramter pass value without tax amount. Total parameter pass value with tax amount.</p>
+									<div class="arm_info_text">
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name"><strong>Field Name</strong></span>
+											<span class="arm_api_field_label"><strong>Parameters</strong></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Member ID</span>
+											<span class="arm_api_field_label"><code>arm_user_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Plan ID</span>
+											<span class="arm_api_field_label"><code>plan_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Transaction ID</span>
+											<span class="arm_api_field_label"><code>arm_trans_id</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Payment Gateway</span>
+											<span class="arm_api_field_label"><code>gateway</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: manual)</span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Status</span>
+											<span class="arm_api_field_label"><code>arm_status</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: pending)
+											</span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Amount</span>
+											<span class="arm_api_field_label"><code>arm_amount</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 0)</span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Total</span>
+											<span class="arm_api_field_label"><code>arm_total</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 0)</span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Tax Amount</span>
+											<span class="arm_api_field_label"><code>arm_tax_amount</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 0)</span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Coupon Code</span>
+											<span class="arm_api_field_label"><code>coupon_code</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Paid Post Payment</span>
+											<span class="arm_api_field_label"><code>is_post_payment</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 0)</span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Paid Post ID</span>
+											<span class="arm_api_field_label"><code>is_post_id</code></span>
+											<span class="arm_api_field_optional">(Optional)</span>
+											<span class="arm_api_field_default">(Default: 0)</span>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<p class="doc_image"><a href="images/ARMember_General_Settings_API_Services_Member_Cancel_Plan.png" rel="lightbox"><img src="images/ARMember_General_Settings_API_Services_Member_Cancel_Plan.png" alt="API Service Cancel Member's plan" title="API Service Cancel Member's plan"/></a></p>
+							<ul class="large_bottom_margin bottom_margin">
+								<li>
+									<h3>Cancel Member's plan</h3>
+									<p>Cancel membership plan for member with given user id and plan id. User id is require parameter, and plan id is require parameter. Return 1 if successfully cancel plan to member.</p>
+									<div class="arm_info_text">
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name"><strong>Field Name</strong></span>
+											<span class="arm_api_field_label"><strong>Parameters</strong></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Member ID</span>
+											<span class="arm_api_field_label"><code>arm_user_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Plan ID</span>
+											<span class="arm_api_field_label"><code>arm_plan_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+									</div>
+								</li>
+							</ul>
+							<p class="doc_image"><a href="images/ARMember_General_Settings_API_Services_Member_Check_Plan.png" rel="lightbox"><img src="images/ARMember_General_Settings_API_Services_Member_Check_Plan.png" alt="API Service Check Member's Membership" title="API Service Check Member's Membership"/></a></p>
+							<ul class="large_bottom_margin bottom_margin">
+								<li>
+									<h3>Check Member's Membership</h3>
+									<p>Check member's membership plan is Active/Suspend with given user id and plan id. User id is require parameter, and plan id is require parameter. Return status 1 if there was plan found with member id and response is_plan is 1 and if suspended then is_suspended is 1.</p>
+									<div class="arm_info_text">
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name"><strong>Field Name</strong></span>
+											<span class="arm_api_field_label"><strong>Parameters</strong></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Member ID</span>
+											<span class="arm_api_field_label"><code>arm_user_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+										<div class="arm_api_fields">
+											<span class="arm_api_field_name">Plan ID</span>
+											<span class="arm_api_field_label"><code>arm_plan_id</code></span>
+											<span class="arm_api_field_optional">(Required)</span>
+											<span class="arm_api_field_default"></span>
+										</div>
+									</div>
+								</li>
+							</ul>
+        </div>
+      </div>
+
               <div id="membership_options">
         <h1>Single vs. Multiple Membership</h1>
         <div class="card">
@@ -1646,8 +2106,13 @@
                       <p>Select number of rows that you want to delete and select Delete Bulk Action then click on <strong>Go</strong> button.</p>
                     </li>
             <li>
-                      <h3>Change Plan To</h3>
-                      <p>This option will not come if <strong> Multiple Membership</strong> is enabled. Same as Delete action, To change subscription plan of members very easily, select members and select plan that you want to assign to all selected members and click on <strong>Go</strong> button. </p>
+              <h3>Change Status To</h3>
+              <p>If you want to change member status more then one member then select user and select status that you want to change to all selected members then click on <strong>Go</strong> button.</p>
+                    </li>
+            <li>
+                      <h3>Change Plan To/Add Plan To</h3>
+                      <p>To change subscription plan of members very easily, select members and select plan that you want to assign to all selected members and click on <strong>Go</strong> button. </p>
+                      <p>If you have activate 'Multiple Membership/Plans' module from <code>ARMember</code> -> <code>Add-ons</code> page. So its display 'Add Plan To' and you select member and select plan that you want to add to all selected members click on Go button.</p>
                       <p class="alert alert_info bottom_margin"><i class="ts_icon ts_icon_info_circle"></i>When member's plan changed by <strong>Admin</strong>, Membership History will be added as <strong>New Subscription</strong> with <code>Manual</code> payment.</p>
                     </li>
           </ul>
@@ -2361,8 +2826,13 @@
                   <p class="doc_image"> <a href="images/ARMember_custom_drip_rule.png" rel="lightbox"><img src="images/ARMember_custom_drip_rule.png" alt="ARMember - Drip Content" title="ARMember - Drip Content"/></a> </p>
                   <p>You can also add drip shortcode using <strong>Shortcode Editor Popup</strong> when you are adding or editing any post / page / custom post. You will find <strong>Drip Content</strong> tab in shortcode editor popup as you can see in below picture.</p>
                   <p class="doc_image"> <a href="images/ARMember_drip_rules_add_custom_content_shortcode.png" rel="lightbox"><img src="images/ARMember_drip_rules_add_custom_content_shortcode.png" alt="ARMember - Drip Content" title="ARMember - Drip Content"/></a> </p>
-                </div>
-      </div>
+            <h3>"Before Dripped Content Available" Email Notification for the dripped content.</h3>
+            <p>You can send email message for "Before Dripped Content Available" from Email Notifications. In order to send Drip content URL to user or admin you can add "User Drip Content URL" Template Tag inside Email.</p>
+            <p class="doc_image"> 
+                <a href="images/ARMember_drip_content_email_notification.png" rel="lightbox"><img src="images/ARMember_drip_content_email_notification.png" alt="ARMember - Drip Content Email Notification" title="ARMember - Drip Content Email Notification"/></a>
+            </p>
+        </div>
+    </div>
               <div id="payment_history">
         <h1>Payment History</h1>
         <div class="card">
@@ -2506,6 +2976,10 @@
                     <h2>Paid Post Report</h2>
                     <p class="doc_image"><a href="images/ARMember_paid_post_report.png" rel="lightbox"><img src="images/ARMember_paid_post_report.png" alt="ARMember Login History Reports" title="ARMember Login History Reports"/></a></p>
                     <p>From here you can view the number of payments done for Paid Post with different filter option. You can also filter the reports by applying the filter option given to you. Mainly 3 tab given to you. Hourly, Daily and Monthly. you can also export the Paid Post payment data in CSV file.</p>
+
+                    <h2>Coupon Report</h2>
+                    <p class="doc_image"><a href="images/armember_coupon_report.png" rel="lightbox"><img src="images/armember_coupon_report.png" alt="ARMember Coupon Report" title="ARMember Coupon Report"/></a></p>
+                    <p>From here you can view the coupon used while purchasing membership plan in ARMember plugin. You can also filter the reports by applying the filter option given to you. Mainly 3 tab given to you. Hourly, Daily and Monthly. you can also export the Coupon data in CSV file.</p>
                   </div>  
               </div>
 
@@ -2756,6 +3230,13 @@
                   <p class="doc_image"><a href="images/ARM_enable_coupon.png" rel="lightbox"><img src="images/ARM_enable_coupon.png" alt="ARMember - Enable Coupon" title="ARMember - Enable Coupon"/></a></p>
                   <p>Select <code>Yes</code> to enable coupon code for users to use in front end <strong>Configure Plan + Sign up</strong> page.</p>
                   <p>If <code>Use coupon as invitation code?</code> is enabled, then coupon field will be compulsory field in Configure Plan + Sign up page. So, if you want to make a system to allow registration only with some specific invitation code then this option will be helpful. Once user get logged into system, this code will work normally as coupon code.</p>
+                  <h3>Coupon with Paid Post</h3>
+                  <p>If paid post addon enabled then ARMember does provides facility to add coupon for paid post also.</p>
+                  <p>While adding new coupon code, there is an option of 'Coupon Type' will added if paid post enabled.</p>
+                  <p class="doc_image"><a href="images/paid_post_coupon_code.png" rel="lightbox"><img src="images/paid_post_coupon_code.png" alt="ARMember - Paid Post Coupon Code" title="ARMember - Paid Post Coupon Code"/></a></p>
+                  <p>If 'Coupon Type' selected to 'Membership Plan' then created coupon will apply only for membership plans.</p>
+                  <p>If 'Coupon Type' selected to 'Paid Posts' then created coupon will appply only for paid posts.</p>
+                  <p>If 'Coupon Type' selected to 'Both' then created coupon can apply to membership plan and paid post both.</p>
                 </div>
       </div>
               <div id="profiles_directories">
@@ -2781,41 +3262,37 @@
                   <h3>Members Directory Templates</h3>
                   <p>You can add directory templates as many as you want, by clicking on <strong>Add Template</strong> box.</p>
                   <p>You can <code>Preview</code>, <code>Edit Template Options</code> & <code>Delete Template</code> from here. You will find those options by hovering on specific template.</p>
-                  <p class="doc_image"><a href="images/ARM_directory_templates.png" rel="lightbox"><img src="images/ARM_directory_templates.png" alt="ARMember - Directory Templates" title="ARMember - Directory Templates"/></a></p>
                   <ul>
             <li>
-                      <h4>Add Template</h4>
-                      <p>You can add directory template by clicking on <strong>Add Template</strong> box in <strong>Members Directory Templates</strong> section.</p>
-                      <p>All options to set template are dynamic. You can set by your own that whether you want to display Administrator Users, display Member badges, Redirect To Author Archive Page, sorting option, search box etc.</p>
-                      <p>Here you can select template layout from different template layouts. Also you can set color scheme, font setting & other options like whether to display member badges or not, display specific plan(s) members, which filters to display, pagination style & custom CSS.</p>
-                      <p>Also, ARMember does provide a two types of searching facility. <code>Single Search Field</code> and <code>Multi Search Field</code>.</p>
-                      <p>If you select <code>Single Search Field</code> then it will display only single textbox to searching result. and it will search the members based on single value matched as entered in textbox.</p>
-                      <p class="doc_image"><a href="images/ARMember_single_field_search_directory.png" rel="lightbox"><img src="images/ARMember_single_field_search_directory.png" alt="ARMember - Profile Directory" title="ARMember - Profile Directory"/></a></p>
-                      <p>If you select <code>Multi Search Field</code> then it will displays the list of selected fields to search the members with multiple value matched.</p>
-                      <p class="doc_image"><a href="images/ARMember_multiple_field_search_directory.png" rel="lightbox"><img src="images/ARMember_multiple_field_search_directory.png" alt="ARMember - Profile Directory" title="ARMember - Profile Directory"/></a></p>
-                      <ul>
-                <li>First Name (Selected by default)</li>
-                <li>Last Name (Selected by default)</li>
-                <li>Profile Display Name</li>
-                <li>Username</li>
-                <li>Email Address</li>
-                <li>Gender</li>
-                <li>Website (URL)</li>
-                <li>Country/Region</li>
-                <li>Biography</li>
-                <li>Textarea</li>
-                <li>Radio Button</li>
-                <li>Date</li>
-                <li>Roles</li>
-              </ul>
-                      <p>These are the fields through which user can do search in directory listing.</p>
-                    </li>
+                <h4>Add Template</h4>
+                <p>You can add directory template by clicking on <strong>Add Template</strong> box in <strong>Members Directory Templates</strong> section.</p>
+                <p class="doc_image"><a href="images/ARMember_add_directory_template.png" rel="lightbox"><img src="images/ARMember_add_directory_template.png" alt="ARMember - Profile Directory" title="ARMember - Profile Directory"/></a></p>
+                <p>All options to set template are dynamic. You can set by your own that whether you want to display Administrator Users, display Member badges, Redirect To Author Archive Page, sorting option, search box etc.</p>
+                <p>Here you can select template layout from different template layouts. Also you can set color scheme, font setting & other options like whether to display member badges or not, display specific plan(s) members, which filters to display, pagination style & custom CSS.</p>
+                <p>Also, ARMember does provide a two types of searching facility. <code>Single Search Field</code> and <code>Multi Search Field</code>.</p>
+                <p>If you select <code>Single Search Field</code> then it will display only single textbox to searching result. and it will search the members based on single value matched as entered in textbox.</p>
+                <p class="doc_image"><a href="images/ARMember_single_field_search_directory.png" rel="lightbox"><img src="images/ARMember_single_field_search_directory.png" alt="ARMember - Profile Directory" title="ARMember - Profile Directory"/></a></p>
+                <p>If you select <code>Multi Search Field</code> then it will displays the list of selected fields to search the members with multiple value matched.</p>
+                <p class="doc_image"><a href="images/ARMember_multiple_field_search_directory.png" rel="lightbox"><img src="images/ARMember_multiple_field_search_directory.png" alt="ARMember - Profile Directory" title="ARMember - Profile Directory"/></a></p>
+                <p>You will get following search parameter options:</p>
+                <code>First Name (Selected by default)</code>,
+                <code>Last Name (Selected by default)</code>,
+                <code>Profile Display Name</code>,
+                <code>Username</code>,
+                <code>Email Address</code>,
+                <code>Gender</code>,
+                <code>Website (URL)</code>,
+                <code>Country/Region</code>,
+                <code>Biography</code>
+                <code>Textarea</code>,
+                <code>Radio Button</code>,
+                <code>Date</code>,
+                <code>Roles</code>.
+            </li>
             <li>
-                      <h4>Edit Template</h4>
-                      <p>You can edit template options anytime from profile template listing. Hover on specific template & click on edit icon to edit template options to change settings.</p>
-                      <p>You will get many options to edit : like: Display Administrator Users, Display Badges, Redirect To Author Archive Page, display plan specific members in list, Search options and sorting option, pagination settings, select allowed parameter for search, select social field to be displayed, color scheme, font settings, custom CSS etc. </p>
-                      <p class="doc_image"><a href="images/ARMember_directory_template.png" rel="lightbox"><img src="images/ARMember_directory_template.png" alt="ARMember - Profile Directory" title="ARMember - Profile Directory"/></a></p>
-                    </li>
+                <h4>Edit Template</h4>
+                <p>You can edit template options anytime from profile template listing. Hover on specific template & click on edit icon to edit template options to change settings.</p>
+            </li>
             <li>
                       <h4>Preview Template</h4>
                       <p>You can have preview of template to see how template will look in front-end. Also you can check responsive view of template. As you can see in below screenshot, responsive options are available in top belt.</p>
@@ -2850,7 +3327,7 @@
                   <p class="doc_image"><a href="images/ARMember_edit_membership_card_template1.png" rel="lightbox"><img src="images/ARMember_edit_membership_card_template1.png" alt="ARMember - Edit Membership card Templates" title="ARMember - Edit Membership card Templates"/></a></p>
                   <p class="doc_image"><a href="images/ARMember_edit_membership_card_template2.png" rel="lightbox"><img src="images/ARMember_edit_membership_card_template2.png" alt="ARMember - Edit Membership card Templates" title="ARMember - Edit Membership card Templates"/></a></p>
                   <p><strong>Step 4: Preview Membership card Template</strong></p>
-                  <p>You can have preview of template to see how template will look in front-end. Also you can check responsive view of template. As you can see in below screenshot, responsive options are available in top belt.</p>
+                  <p>You can have preview of template to see how template will look in front-end.</p>
                   <p class="doc_image"><a href="images/ARMember_preview_membership_card_template.png" rel="lightbox"><img src="images/ARMember_preview_membership_card_template.png" alt="ARMember - Preview Membership card Templates" title="ARMember - Preview Membership card Templates"/></a></p>
               </div>
               
@@ -2990,6 +3467,8 @@
                 <li>Google Signin</li>
                 <li>LinkedIn</li>
                 <li>VKontakte</li>
+				<li>Instagram</li>
+                <li>Tumblr</li>
               </ul>
                     </li>
             <li>
@@ -3423,7 +3902,7 @@
                     </tr>
             <tr>
                       <td><code>network</code></td>
-                      <td>Social network name(ex: facebook/twitter/linkedin/google/vk)</td>
+                      <td>Social network name(ex: facebook/twitter/linkedin/google/instagram/vk/tumblr)</td>
                     </tr>
             <tr>
                       <td><code>icon</code></td>
@@ -4595,7 +5074,7 @@
           </ul>
                   <p class="doc_image"> <a href="images/ARMember_woocommerce_integration_2.png" rel="lightbox"><img src="images/ARMember_woocommerce_integration_2.png" alt="ARMember WooCommerce add-on Supprot" title="ARMember WooCommerce add-on Supprot"/></a> </p>
                   <!--<p class="alert alert_info bottom_margin"><i class="ts_icon ts_icon_info_circle"></i>Above functionality will only work if guest checkout is disabled or registration is allowed on checkout page.</p>--> 
-                </div>
+                
             <p>Also, ARMember does provide a facility to integrate Paid Post in Woocomerce.</p>
             <ul>
             <li>Mark every product as virtual product.</li>
@@ -4608,6 +5087,14 @@
             <p class="doc_image"> <a href="images/ARMember_woocommerce_integration_with_paid_post.png" rel="lightbox"><img src="images/ARMember_woocommerce_integration_with_paid_post.png" alt="ARMember WooCommerce add-on Supprot" title="ARMember WooCommerce add-on Supprot"/></a> </p>
           </ul>
 
+          <p>Also, ARMember does provides facility to purchase ARMember membership plan using woocommerce checkout payment methods when this addon enables.</p>
+          <ul>
+            <li><p>After enabling 'Woocommerce' and 'Woocommerce Integration' addon, 'Woocommerce' payment gateway option will display at <strong>'ARMember General Settings' -> 'Payment Gateways'</strong> page.</p>
+            <p class="doc_image"> <a href="images/ARMember_woocommerce_gateway_option.png" rel="lightbox"><img src="images/ARMember_woocommerce_gateway_option.png" alt="ARMember General Settings ( Payment Gateways )" title="ARMember General Settings ( Payment Gateways )"/></a> </p></li>
+            <li><p>When this payment gateway enables, it automatically displays as payment gateway option in 'Configure Plan + Signup Page'.</p>
+            <p class="doc_image"> <a href="images/ARMember_woocommerce_configure_setup_option.png" rel="lightbox"><img src="images/ARMember_woocommerce_configure_setup_option.png" alt="ARMember General Settings ( Payment Gateways )" title="ARMember General Settings ( Payment Gateways )"/></a> </p></li>
+          </ul>
+          </div>
       </div>
               <div id="buddypress_support">
         <h1>BuddyPress/BuddyBoss Support</h1>
@@ -4660,10 +5147,98 @@
                   <p>In this way you can user ARMember with ARPrice for beautifully presenting your membership plans.</p>
                 </div>
       </div>
-              <div id="changelog">
-        <h1>Changelog</h1>
-        <div class="card">
-    <h2>Version 4.1.4 (01 Mar, 2020)</h2>
+  <div id="changelog">
+  <h1>Changelog</h1>
+  <div class="card">
+    <h2>Version 5.1 (25 March, 2022)</h2>
+    <ul>
+        <li>Added new Member Directory template</li>
+        <li>Added new Member Profile template</li>
+		<li>Revamp existing Member Directory and Profile templates</li>
+        <li>Added New debug log Facility for all email notifications</li>
+        <li>Other minor bug fixes.</li>
+    </ul>
+  	<h2>Version 5.0.2 (02 March, 2022)</h2>
+    <ul>
+	  <li>Added Compatibility for ARMember Gift Membership Addon.</li>
+	  <li>Added Facility to display User ID in Member directory.</li>
+      <li>Other minor bug fixes.</li>
+    </ul>
+  	<h2>Version 5.0.1 (26 Jan, 2022)</h2>
+    <ul>
+      <li>Minor bug fixes.</li>
+    </ul> 
+    <h2>Version 5.0 (28 Dec, 2021)</h2>
+    <ul>
+      <li>A complete revamp of ARMember Admin panel UI</li>
+      <li>CSS Optimization</li>
+      <li>Other Minor bug fixes</li>
+    </ul> 
+    <h2>Version 4.6.1 (04 Dec, 2021)</h2>
+    <ul>
+      <li>Minor bug fixes.</li>
+    </ul> 
+  <h2>Version 4.6 (08 Oct, 2021)</h2>
+    <ul>
+      <li>Added New API Module for external calls.</li>
+      <li>Added New Facility to redirect to the Referrer Page after signup.</li>
+      <li>Added New Facility to apply coupon for Pay Per Post.</li>
+      <li>Updated Stripe SCA payment method.</li>
+      <li>Added New Currencies for Bank Transfer Payment Gateway.</li>
+      <li>Improved Payment Reports and Paid Post Reports</li>
+      <li>Other minor bug fixes.</li>
+    </ul> 
+    <h2>Version 4.5.1 (05 October, 2021)</h2>
+    <ul>
+      <li>Security update</li>
+      <li>Minor bug fixes</li>
+    </ul>
+    <h2>Version 4.5 (19 June, 2021)</h2>
+    <ul>
+      <li>Added New Facility to set debug log Settings for Payment Gateway and Opt-ins</li>
+      <li>Added New Report: Coupon Reports</li>
+      <li>Other minor bug fixes.</li>
+    </ul>
+	<h2>Version 4.4.1 (14 June, 2021)</h2>
+    <ul>
+      <li>Minor bug fixes.</li>
+    </ul>
+    <h2>Version 4.4 (04 June, 2021)</h2>
+    <ul>
+      <li>Added New Social Login: Tumblr.</li>
+      <li>Added New Opt-ins: Send in Blue.</li>
+      <li>Other minor bug fixes.</li>
+    </ul>
+    <h2>Version 4.3.3 (20 May, 2021)</h2>
+    <ul>
+      <li>Minor bug fixes.</li>
+    </ul>
+    <h2>Version 4.3.2 (11 May, 2021)</h2>
+    <ul>
+      <li>Minor bug fixes.</li>
+    </ul>
+    <h2>Version 4.3.1 (03 May, 2021)</h2>
+    <ul>
+      <li>Minor bug fixes.</li>
+    </ul>
+
+    <h2>Version 4.3 (29 Apr, 2021)</h2>
+    <ul>
+      <li>Added new method to integrate WooCommerce with ARMember.</li>
+      <li>Added new facility to change user status in bulk.</li>
+      <li>Added new facility to assign membership plan in bulk.</li>
+      <li>Added new facility to allow duplicate Profile and Member Directory Template.</li>
+	  <li>Code improvement of all payment gateways integrations.</li>
+      <li>Fixed: Stripe Payment Gateway issue.</li>
+	  <li>Other minor bug fixes.</li>
+    </ul>
+		<h2>Version 4.2 (19 Apr, 2021)</h2>
+      <ul>
+	    <li>Added Facility to rotate cover and avatar photo.</li>
+		<li>Fixed: Display actual badge title when Badge is assigned by administrator</li>
+        <li>Other minor bug fixes.</li>
+      </ul>
+    <h2>Version 4.1.4 (01 Mar, 2021)</h2>
       <ul>
 	    <li>Updated Getresponse Opt-ins version to V3</li>
 		<li>Fixed: Allowed 100% coupon discount with Stripe payment gateway</li>
@@ -5150,7 +5725,7 @@
                   <p>Please follow us on,</p>
                   <ul style="list-style: none;">
             <li><i class="ts_icon ts_icon_facebook clear_blue small_right_margin"></i><a title="RepunteInfosystems Facebook" href="http://facebook.com/reputeinfosystems/" target="_blank">Facebook</a></li>
-            <li><i class="ts_icon ts_icon_twitter clear_blue  small_right_margin"></i><a title="RepunteInfosystems Twitter" href="https://twitter.com/reputeinfosys" target="_blank">Twitter</a></li>
+            <li><i class="ts_icon ts_icon_twitter clear_blue small_right_margin"></i><a title="RepunteInfosystems Twitter" href="https://twitter.com/reputeinfosys" target="_blank">Twitter</a></li>
           </ul>
                   <hr>
                   <p><strong>Thanks,</strong><br>

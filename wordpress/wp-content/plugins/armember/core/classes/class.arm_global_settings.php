@@ -38,71 +38,72 @@ if (!class_exists('ARM_global_settings')) {
                 $this->blog_path = str_replace($this->sub_folder, '', $current_blog->path);
             }
             /* ====================================/.End Set Global Settings For Class./==================================== */
-            add_action('wp_ajax_arm_send_test_mail', array(&$this, 'arm_send_test_mail'));
-            add_action('wp_ajax_arm_update_global_settings', array(&$this, 'arm_update_all_settings'));
-            add_action('wp_ajax_arm_update_block_settings', array(&$this, 'arm_update_all_settings'));
-            add_action('wp_ajax_arm_update_redirect_settings', array(&$this, 'arm_update_all_settings'));
-            add_action('wp_ajax_arm_page_settings', array(&$this, 'arm_update_all_settings'));
-            add_action('wp_ajax_arm_update_common_message_settings', array(&$this, 'arm_update_all_settings'));
-            add_action('wp_ajax_arm_update_invoice_settings', array(&$this, 'arm_update_all_settings'));
-            add_action('wp_ajax_arm_update_access_restriction_settings', array(&$this, 'arm_update_all_settings'));
+            add_action('wp_ajax_arm_send_test_mail', array($this, 'arm_send_test_mail'));
+            add_action('wp_ajax_arm_update_global_settings', array($this, 'arm_update_all_settings'));
+            add_action('wp_ajax_arm_update_block_settings', array($this, 'arm_update_all_settings'));
+            add_action('wp_ajax_arm_update_redirect_settings', array($this, 'arm_update_all_settings'));
+            add_action('wp_ajax_arm_page_settings', array($this, 'arm_update_all_settings'));
+            add_action('wp_ajax_arm_update_common_message_settings', array($this, 'arm_update_all_settings'));
+            add_action('wp_ajax_arm_update_invoice_settings', array($this, 'arm_update_all_settings'));
+            add_action('wp_ajax_arm_update_access_restriction_settings', array($this, 'arm_update_all_settings'));
             
-            add_action('wp_ajax_arm_shortcode_exist_in_page', array(&$this, 'arm_shortcode_exist_in_page'));
-            add_action('wp_ajax_arm_social_form_exist_in_page', array(&$this, 'arm_social_form_exist_in_page'));
-            add_action('wp_ajax_arm_update_feature_settings', array(&$this, 'arm_update_feature_settings'));
-            add_action('wp_ajax_arm_update_pay_per_post_settings', array(&$this, 'arm_update_all_settings'));
+            add_action('wp_ajax_arm_shortcode_exist_in_page', array($this, 'arm_shortcode_exist_in_page'));
+            add_action('wp_ajax_arm_social_form_exist_in_page', array($this, 'arm_social_form_exist_in_page'));
+            add_action('wp_ajax_arm_update_feature_settings', array($this, 'arm_update_feature_settings'));
+            add_action('wp_ajax_arm_update_pay_per_post_settings', array($this, 'arm_update_all_settings'));
+            add_action('wp_ajax_arm_update_api_service_feature', array(&$this, 'arm_update_all_settings'));
 
             /* Apply Global Setting Action */
-            //add_action('init', array(&$this, 'arm_apply_global_settings'), 200);
-            add_action('login_init', array(&$this, 'arm_check_ip_block_before_login'), 1);
-            add_action('login_head', array(&$this, 'arm_login_enqueue_assets'), 50);
-            add_filter('option_users_can_register', array(&$this, 'remove_registration_link'));
+            //add_action('init', array($this, 'arm_apply_global_settings'), 200);
+            add_action('login_init', array($this, 'arm_check_ip_block_before_login'), 1);
+            add_action('login_head', array($this, 'arm_login_enqueue_assets'), 50);
+            add_filter('option_users_can_register', array($this, 'arm_remove_registration_link'));
             /* Enable Shortcodes in Widgets */
             add_filter('widget_text', 'do_shortcode');
             /* Filter Post Excerpt for plugin shortcodes */
-            add_filter("the_excerpt", array(&$this, 'arm_filter_the_excerpt'));
-            add_filter("the_excerpt_rss", array(&$this, 'arm_filter_the_excerpt'));
+            add_filter("the_excerpt", array($this, 'arm_filter_the_excerpt'));
+            add_filter("the_excerpt_rss", array($this, 'arm_filter_the_excerpt'));
 
             /* Rewrite Rules */
-            add_action('admin_notices', array(&$this, 'arm_admin_notices'));
-            add_action('updated_option', array(&$this, 'arm_updated_option'), 10, 3);
+            add_action('admin_notices', array($this, 'arm_admin_notices'));
+            add_action('updated_option', array($this, 'arm_updated_option'), 10, 3);
 
-            add_filter('arm_display_admin_notices', array(&$this, 'arm_global_settings_notices'));
+            add_filter('arm_display_admin_notices', array($this, 'arm_global_settings_notices'));
             /* Filter `get_avatar` */
-            add_filter('get_avatar', array(&$this, 'arm_filter_get_avatar'), 20, 5);
+            add_filter('get_avatar', array($this, 'arm_filter_get_avatar'), 20, 5);
 	    /* Filter `get_avatar_url` */
-            add_filter('get_avatar_url', array(&$this, 'arm_filter_get_avatar_url'), 20, 3);
-            add_filter('arm_check_member_status_before_login', array(&$this, 'arm_check_member_status'), 10, 2);
-            /* add_filter('arm_check_member_status_before_login', array(&$this, 'arm_check_block_settings'), 5, 2); */
+            add_filter('get_avatar_url', array($this, 'arm_filter_get_avatar_url'), 20, 3);
+            add_filter('arm_check_member_status_before_login', array($this, 'arm_check_member_status'), 10, 2);
+            /* add_filter('arm_check_member_status_before_login', array($this, 'arm_check_block_settings'), 5, 2); */
             /* Delete Term Action Hook */
-            add_action('delete_term', array(&$this, 'arm_after_delete_term'), 10, 4);
+            add_action('delete_term', array($this, 'arm_after_delete_term'), 10, 4);
             /* Added From Name And Form Email Hook */
-            //add_action('admin_enqueue_scripts', array(&$this, 'arm_add_page_label_css'), 20);
-            add_filter('display_post_states', array(&$this, 'arm_add_set_page_label'), 999, 2);
+            //add_action('admin_enqueue_scripts', array($this, 'arm_add_page_label_css'), 20);
+            add_filter('display_post_states', array($this, 'arm_add_set_page_label'), 999, 2);
 
-            add_action('wp_ajax_arm_custom_css_detail', array(&$this, 'arm_custom_css_detail'));
-            add_action('wp_ajax_arm_section_custom_css_detail', array(&$this, 'arm_section_custom_css_detail'));
+            add_action('wp_ajax_arm_custom_css_detail', array($this, 'arm_custom_css_detail'));
+            add_action('wp_ajax_arm_section_custom_css_detail', array($this, 'arm_section_custom_css_detail'));
             /* Set Global Profile URL */
-            add_filter('query_vars', array(&$this, 'arm_user_query_vars'), 10, 1);
-            add_action('wp_ajax_arm_clear_form_fields', array(&$this, 'arm_clear_form_fields'));
-            add_action('wp_ajax_arm_failed_login_lockdown_clear', array(&$this, 'arm_failed_login_lockdown_clear'));
+            add_filter('query_vars', array($this, 'arm_user_query_vars'), 10, 1);
+            add_action('wp_ajax_arm_clear_form_fields', array($this, 'arm_clear_form_fields'));
+            add_action('wp_ajax_arm_failed_login_lockdown_clear', array($this, 'arm_failed_login_lockdown_clear'));
 
-            add_action('wp_ajax_arm_failed_login_history_clear', array(&$this, 'arm_failed_login_history_clear'));
+            add_action('wp_ajax_arm_failed_login_history_clear', array($this, 'arm_failed_login_history_clear'));
 
 
             /* bbpress change forum author link */
-            add_filter('bbp_get_topic_author_url', array(&$this, 'arm_bbpress_change_topic_author_url'), 10, 2);
-            add_filter('bbp_get_reply_author_url', array(&$this, 'arm_bbpress_change_reply_author_url'), 10, 2);
+            add_filter('bbp_get_topic_author_url', array($this, 'arm_bbpress_change_topic_author_url'), 10, 2);
+            add_filter('bbp_get_reply_author_url', array($this, 'arm_bbpress_change_reply_author_url'), 10, 2);
 
-            add_action('after_switch_theme',array(&$this,'arm_set_permalink_for_profile_page'),10);
-            add_action('permalink_structure_changed', array(&$this,'arm_set_session_for_permalink'));
-            //add_action('admin_footer',array(&$this,'arm_rewrite_rules_for_profile_page'),100);
+            add_action('after_switch_theme',array($this,'arm_set_permalink_for_profile_page'),10);
+            add_action('permalink_structure_changed', array($this,'arm_set_session_for_permalink'));
+            //add_action('admin_footer',array($this,'arm_rewrite_rules_for_profile_page'),100);
 
-            add_filter( 'generate_rewrite_rules', array(&$this,'arm_generate_rewrite_rules'),10 );
+            add_filter( 'generate_rewrite_rules', array($this,'arm_generate_rewrite_rules'),10 );
 
-            add_action('wp_ajax_arm_reset_invoice_to_default', array(&$this, 'arm_reset_invoice_to_default'));
+            add_action('wp_ajax_arm_reset_invoice_to_default', array($this, 'arm_reset_invoice_to_default'));
 
-            //add_action('admin_init',array(&$this,'arm_plugin_add_suggested_privacy_content'),20);
+            //add_action('admin_init',array($this,'arm_plugin_add_suggested_privacy_content'),20);
 
             add_action('wp_ajax_arm_check_setup_payment_gateway_fields', array($this, 'arm_check_setup_payment_fields'));
         }
@@ -279,7 +280,7 @@ if (!class_exists('ARM_global_settings')) {
             {
                 return $selected_date_format;
             }
-            else if($selected_date_format == 'd/m/Y' || $selected_date_format == 'd-m-Y' || $selected_date_format == 'd m Y')
+            else if($selected_date_format == 'd/m/Y' || $selected_date_format == 'd-m-Y' || $selected_date_format == 'd m Y' || $selected_date_format == 'j. F Y')
             {
                 return 'm/d/Y';
             }
@@ -673,7 +674,9 @@ if (!class_exists('ARM_global_settings')) {
             if (@$arm_plain_text) {
                 $armPMailer->AltBody = $message;
             }
-            /* Send Email */
+            /* Send Email */            
+
+            $arm_email_content  = '';            
             if ($email_server == 'smtp_server' || $email_server == 'phpmailer') {
 
 
@@ -701,25 +704,36 @@ if (!class_exists('ARM_global_settings')) {
                         'log' => $popup
                         )
                     );
-                    
+                    $return = false;
+
                 } else {
                     $smtp_debug_log = ob_get_clean();
-                    echo json_encode(array('success' => 'true', 'msg' => ''));
+                    echo json_encode(array('success' => 'true', 'msg' => ''));                    
+                    $return = true;
                 }
             } else {
                 if (!wp_mail($recipient, $subject, $message, $header, $attachments)) {
 
                     if (!$armPMailer->send()) {
 
-                        return false;
+                        $return  = false;
                     } else {
 
-                        return true;
+                        $return = true;
                     }
                 } else {
 
-                    return true;
-                }
+                    $return = true;
+                }                
+            }
+	    
+            $is_mail_send = ($return == true ) ? 'Yes' : 'No';
+            $arm_email_content .= 'Email Sent Successfully: '.$is_mail_send.', To Email: '.$recipient.', From Email: '.$reply_to.'{ARMNL}';
+            $arm_email_content .= 'Subject: '.$subject.'{ARMNL}';
+            $arm_email_content .= 'Content: {ARMNL}'.$message.'{ARMNL}';
+            do_action('arm_general_log_entry','email','send test email detail','armember', $arm_email_content);
+            if ($email_server != 'smtp_server' && $email_server != 'phpmailer') {
+                return $return;           
             }
         }
 
@@ -853,7 +867,7 @@ if (!class_exists('ARM_global_settings')) {
                     $new_admin_path = trim($new_wp_admin_path, ' /');
                     $new_non_wp_rules[$new_admin_path . '/(.*)'] = $rel_admin_path . '/$1';
                 }
-                add_filter('mod_rewrite_rules', array(&$this, 'arm_mod_rewrite_rules'), 10, 1);
+                add_filter('mod_rewrite_rules', array($this, 'arm_mod_rewrite_rules'), 10, 1);
             }
             if (isset($new_non_wp_rules) && $this->is_permalink()) {
                 $wp_rewrite->non_wp_rules = array_merge($wp_rewrite->non_wp_rules, $new_non_wp_rules);
@@ -994,8 +1008,8 @@ if (!class_exists('ARM_global_settings')) {
             /* Hide admin bar for non-admin users. */
             $allow_access_admin_roles = array();
             $hide_admin_bar = isset($all_settings['hide_admin_bar']) ? $all_settings['hide_admin_bar'] : 0;
-            remove_all_filters('show_admin_bar');
             if ($hide_admin_bar == 1) {
+                remove_all_filters('show_admin_bar');
                 if(isset($all_settings['arm_exclude_role_for_hide_admin']) && is_array($all_settings['arm_exclude_role_for_hide_admin']))
                 {
                     $allow_access_admin_roles = $all_settings['arm_exclude_role_for_hide_admin'];
@@ -1088,7 +1102,7 @@ if (!class_exists('ARM_global_settings')) {
             if($disable_wp_login_style == 0)
             {
                 /* Remove Label For Custom Style. */
-                add_filter('gettext', array(&$this, 'remove_loginpage_label_text'), 50);
+                add_filter('gettext', array($this, 'remove_loginpage_label_text'), 50);
             }
             $block_list = $this->block_settings;
             /* Get Visitor's IP Address. */
@@ -1353,6 +1367,9 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                         'font_decoration' => '',
                     ),
                 ),
+                'arm_pay_per_post_buynow_var' => '',
+                'arm_pay_per_post_allow_fancy_url' => '',
+                'arm_pay_per_post_default_content' => '',
             );
             /* Page Settings */
             $default_global_settings['page_settings'] = array(
@@ -1369,6 +1386,25 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
             );
             if(!empty($arm_pay_per_post_feature->isPayPerPostFeature)){
                 $default_global_settings['page_settings']['paid_post_page_id'] = 0;
+            }
+
+
+            if(!empty($arm_api_service_feature->isAPIServiceFeature)){
+                $default_global_settings['api_service'] = array(
+                    'arm_api_service_security_key' => '',
+                    'arm_list_membership_plans' => 0,
+                    'arm_membership_plan_details' => 0,
+                    'arm_member_details' => 0,
+                    'arm_member_memberships' => 0,
+                    'arm_member_paid_posts' => 0,
+                    'arm_member_payments' => 0,
+                    'arm_member_paid_post_payments' => 0,
+                    'arm_check_coupon_code' => 0,
+                    'arm_member_add_membership' => 0,
+                    'arm_member_cancel_membership' => 0,
+                    'arm_check_member_membership' => 0,
+                    'arm_create_transaction' => 0,
+                );
             }
             
             $default_global_settings = apply_filters('arm_default_global_settings', $default_global_settings);
@@ -1911,6 +1947,7 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                     $profileUrl = get_permalink($this->global_settings['edit_profile_page_id']);
                 }
             }
+            $profileUrl = apply_filters('arm_after_get_user_profile_url', $profileUrl, $userid);
             return $profileUrl;
         }
 
@@ -2573,6 +2610,7 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
 
 
                 $new_global_settings['page_settings'] = $old_global_settings['page_settings'];
+                $new_global_settings['api_service'] = isset($old_global_settings['api_service']) ? $old_global_settings['api_service'] : array();
                 
                 $arm_exclude_role_for_hide_admin = ( isset($_POST['arm_general_settings']['arm_exclude_role_for_hide_admin']) && !empty($_POST['arm_general_settings']['arm_exclude_role_for_hide_admin']) )? implode(',',$_POST['arm_general_settings']['arm_exclude_role_for_hide_admin']) : '';
                 $new_general_settings['arm_exclude_role_for_hide_admin'] = $arm_exclude_role_for_hide_admin;
@@ -2583,6 +2621,9 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                 $new_global_settings['general_settings']['restrict_admin_panel'] = isset($old_global_settings['general_settings']['restrict_admin_panel']) ? $old_global_settings['general_settings']['restrict_admin_panel'] : 0;
                 $new_global_settings['general_settings']['hide_feed'] = isset($old_global_settings['general_settings']['hide_feed']) ? $old_global_settings['general_settings']['hide_feed'] : 0;
                 $new_global_settings['general_settings']['restrict_site_access'] = isset($old_global_settings['general_settings']['restrict_site_access']) ? $old_global_settings['general_settings']['restrict_site_access'] : 0;
+                $new_global_settings['general_settings']['arm_pay_per_post_buynow_var'] = isset($old_global_settings['general_settings']['arm_pay_per_post_buynow_var']) ? $old_global_settings['general_settings']['arm_pay_per_post_buynow_var'] : '';
+                $new_global_settings['general_settings']['arm_pay_per_post_allow_fancy_url'] = isset($old_global_settings['general_settings']['arm_pay_per_post_allow_fancy_url']) ? $old_global_settings['general_settings']['arm_pay_per_post_allow_fancy_url'] : '';
+                $new_global_settings['general_settings']['arm_pay_per_post_default_content'] = isset($old_global_settings['general_settings']['arm_pay_per_post_default_content']) ? $old_global_settings['general_settings']['arm_pay_per_post_default_content'] : '';
                 $new_global_settings['page_settings']['guest_page_id'] = isset($old_global_settings['page_settings']['guest_page_id']) ? $old_global_settings['page_settings']['guest_page_id'] : 0;
                 $new_global_settings['page_settings']['arm_access_page_for_restrict_site'] = isset($old_global_settings['page_settings']['arm_access_page_for_restrict_site']) ? $old_global_settings['page_settings']['arm_access_page_for_restrict_site'] : '';
                 
@@ -2639,6 +2680,7 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                     $new_global_settings['page_settings']['paid_post_page_id'] = $_POST['arm_page_settings']['paid_post_page_id'];
                 }
 
+                $new_global_settings['api_service'] = isset($old_global_settings['api_service']) ? $old_global_settings['api_service'] : array();
                 $new_global_settings['general_settings'] = $old_global_settings['general_settings'];
                 $new_global_settings = apply_filters('arm_before_update_page_settings', $new_global_settings, $_POST);
                 update_option('arm_global_settings', $new_global_settings);
@@ -2725,6 +2767,7 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                 $new_global_settings['page_settings'] = $old_global_settings['page_settings'];
                 $new_global_settings['general_settings'] = $new_general_settings;
                 $new_global_settings = apply_filters('arm_before_update_invoice_settings', $new_global_settings, $_POST);
+                $new_global_settings['api_service'] = isset($old_global_settings['api_service']) ? $old_global_settings['api_service'] : array();
                 update_option('arm_global_settings', $new_global_settings);
                 $response = array('type' => 'success', 'msg' => __('Global Settings Saved Successfully.', 'ARMember'));
             }
@@ -2769,9 +2812,37 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                 $new_global_settings['page_settings'] = $old_global_settings['page_settings'];
                 $new_global_settings['general_settings'] = $new_general_settings;
                 $new_global_settings = apply_filters('arm_before_update_invoice_settings', $new_global_settings, $_POST);
+                $new_global_settings['api_service'] = isset($old_global_settings['api_service']) ? $old_global_settings['api_service'] : array();
                 update_option('arm_global_settings', $new_global_settings);
                 $response = array('type' => 'success', 'msg' => __('Global Settings Saved Successfully.', 'ARMember'));
             }
+
+            if (isset($_POST['action']) && $_POST['action'] == 'arm_update_api_service_feature') {
+                $ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_general_settings'], '1');
+                $default_global_settings = $this->arm_default_global_settings();
+                $new_general_settings = shortcode_atts($default_global_settings['general_settings'], $old_global_settings['general_settings']);
+                $api_service['arm_api_service_security_key'] = isset($_POST['arm_general_settings']['arm_api_security_key']) ? $_POST['arm_general_settings']['arm_api_security_key'] : '';
+
+                $api_service['arm_list_membership_plans'] = isset($_POST['arm_general_settings']['arm_list_membership_plans']) ? $_POST['arm_general_settings']['arm_list_membership_plans'] : 0;
+                $api_service['arm_membership_plan_details'] = isset($_POST['arm_general_settings']['arm_membership_plan_details']) ? $_POST['arm_general_settings']['arm_membership_plan_details'] : 0;
+                $api_service['arm_member_details'] = isset($_POST['arm_general_settings']['arm_member_details']) ? $_POST['arm_general_settings']['arm_member_details'] : 0;
+                $api_service['arm_member_memberships'] = isset($_POST['arm_general_settings']['arm_member_memberships']) ? $_POST['arm_general_settings']['arm_member_memberships'] : 0;
+                $api_service['arm_member_paid_posts'] = isset($_POST['arm_general_settings']['arm_member_paid_posts']) ? $_POST['arm_general_settings']['arm_member_paid_posts'] : 0;
+                $api_service['arm_member_payments'] = isset($_POST['arm_general_settings']['arm_member_payments']) ? $_POST['arm_general_settings']['arm_member_payments'] : 0;
+                $api_service['arm_member_paid_post_payments'] = isset($_POST['arm_general_settings']['arm_member_paid_post_payments']) ? $_POST['arm_general_settings']['arm_member_paid_post_payments'] : 0;
+                $api_service['arm_check_coupon_code'] = isset($_POST['arm_general_settings']['arm_check_coupon_code']) ? $_POST['arm_general_settings']['arm_check_coupon_code'] : 0;
+                $api_service['arm_member_add_membership'] = isset($_POST['arm_general_settings']['arm_member_add_membership']) ? $_POST['arm_general_settings']['arm_member_add_membership'] : 0;
+                $api_service['arm_create_transaction'] = isset($_POST['arm_general_settings']['arm_create_transaction']) ? $_POST['arm_general_settings']['arm_create_transaction'] : 0;
+                $api_service['arm_member_cancel_membership'] = isset($_POST['arm_general_settings']['arm_member_cancel_membership']) ? $_POST['arm_general_settings']['arm_member_cancel_membership'] : 0;
+                $api_service['arm_check_member_membership'] = isset($_POST['arm_general_settings']['arm_check_member_membership']) ? $_POST['arm_general_settings']['arm_check_member_membership'] : 0;
+
+                $new_global_settings['api_service'] = $api_service;
+                $new_global_settings['page_settings'] = $old_global_settings['page_settings'];
+                $new_global_settings['general_settings'] = $new_general_settings;
+                update_option('arm_global_settings', $new_global_settings);
+                $response = array('type' => 'success', 'msg' => __('API settings Saved Successfully.', 'ARMember'));
+            }
+
             echo json_encode($response);
             die();
         }
@@ -2894,7 +2965,7 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
             return $text;
         }
 
-        function remove_registration_link($value) {
+        function arm_remove_registration_link($value) {
             global $wpdb, $ARMember, $arm_members_class, $arm_member_forms, $pagenow;
             $hideRegister = isset($this->global_settings['hide_register_link']) ? $this->global_settings['hide_register_link'] : 0;
             if ($hideRegister == 1) {
@@ -2914,9 +2985,6 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
             if($disable_wp_login_style == 0)
             {
                 wp_enqueue_style('arm_wp_login', MEMBERSHIP_URL . '/css/arm_wp_login.css', array(), MEMBERSHIP_VERSION);
-                if (version_compare($GLOBALS['wp_version'], '3.8', '<')) {
-                    wp_enqueue_style('arm_login_css_lt_3.8', MEMBERSHIP_URL . '/css/arm_login_lt_3.8.css', array(), MEMBERSHIP_VERSION);
-                }
                 ?>
                 <script data-cfasync="false" type="text/javascript">
                     jQuery.fn.outerHTML = function (s) {
@@ -3295,9 +3363,11 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
 	    $armPMailer->setFrom($from_email, $from_name);
             $armPMailer->addReplyTo($reply_to, $from_name);
             $armPMailer->addAddress($recipient);
+            $arm_attachment_urls = "";
             if (isset($attachments) && !empty($attachments)) {
                 foreach ($attachments as $attachment) {
                     $armPMailer->addAttachment($attachment);
+                    $arm_attachment_urls .= $attachment.', ';
                 }
             }
             
@@ -3318,9 +3388,17 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                 }
             }
             /* Send Email */
+            $email_server_name = "WordPress Server";
             if ($email_server == 'smtp_server' || $email_server == 'phpmailer') {
                 if ($armPMailer->send()) {
                     $return = true;
+                }
+                if($email_server=='smtp_server')
+                {
+                    $email_server_name = "SMTP Server";
+                }
+                else {
+                    $email_server_name = "PHP Mailer";
                 }
             } else {
                 add_filter('wp_mail_content_type', array($this, 'arm_mail_content_type'));
@@ -3333,6 +3411,21 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                 }
                 remove_filter('wp_mail_content_type', array($this, 'arm_mail_content_type'));
             }
+
+            /* arm_email_log_entry */
+            $is_mail_send = ($return == true ) ? 'Yes' : 'No';
+            $arm_email_content  = '';
+            $arm_email_content .= 'Email Sent Successfully: '.$is_mail_send.', To Email: '.$recipient.', From Email: '.$from. ', Email Server:'.$email_server_name.'{ARMNL}';   
+            $arm_email_content .= 'Subject: '.$subject.'{ARMNL}';
+            $arm_email_content .= 'Content: {ARMNL}'.$message.'{ARMNL}';
+
+            if(!empty($arm_attachment_urls))
+            {
+                $arm_attachment_urls = rtrim($arm_attachment_urls, ',');
+                $arm_email_content .= '{ARMNL}Attachment URL(s): {ARMNL}'.$arm_attachment_urls.'{ARMNL}';
+            }
+            do_action('arm_general_log_entry','email','send email detail','armember', $arm_email_content);
+
             do_action('arm_after_send_email_notification', $from, $recipient, $subject, $message, $attachments);
             return $return;
         }
@@ -3424,6 +3517,7 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                 $u_tax_percentage = '-';
                 $u_tax_amount = '-';
                 $u_payment_date = '-';
+                $u_coupon_code = '-';
 
              
                 if (!empty($plan_detail)) {
@@ -3560,7 +3654,6 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                             }
                         }
 
-                        $u_coupon_code = "";
                         if ($arm_user_payment_gateway == 'bank_transfer') {
 
                             $userplanObj = new ARM_Plan($arm_subscription_plan);
@@ -3662,6 +3755,8 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
 
                     $content = str_replace('{ARM_RESET_PASSWORD_LINK}', '', $content);
                 }
+
+                $u_payable_amount = $arm_payment_gateways->arm_amount_set_separator($arm_currency, $u_payable_amount);
 
                 $content = str_replace('{ARM_USER_ID}', $user_id, $content);
                 $content = str_replace('{ARM_USERNAME}', $u_username, $content);
@@ -4237,19 +4332,20 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                 $arm_features_status = (!empty($_POST['arm_features_status'])) ? intval($_POST['arm_features_status']) : 0;
 
                 $arm_default_module_array = array(
-                                                    'arm_is_user_private_content_feature',
-                                                    'arm_is_social_feature', 
-                                                    'arm_is_opt_ins_feature', 
-                                                    'arm_is_drip_content_feature', 
-                                                    'arm_is_social_login_feature', 
-                                                    'arm_is_coupon_feature', 
-                                                    'arm_is_buddypress_feature', 
-                                                    'arm_is_invoice_tax_feature', 
-                                                    'arm_is_woocommerce_feature', 
-                                                    'arm_is_multiple_membership_feature', 
-                                                    'arm_is_mycred_feature',
-                                                    'arm_is_pay_per_post_feature',
-                                                );
+                    'arm_is_user_private_content_feature',
+                    'arm_is_social_feature', 
+                    'arm_is_opt_ins_feature', 
+                    'arm_is_drip_content_feature', 
+                    'arm_is_social_login_feature', 
+                    'arm_is_coupon_feature', 
+                    'arm_is_buddypress_feature', 
+                    'arm_is_invoice_tax_feature', 
+                    'arm_is_woocommerce_feature', 
+                    'arm_is_multiple_membership_feature', 
+                    'arm_is_mycred_feature',
+                    'arm_is_pay_per_post_feature',
+                    'arm_is_api_service_feature',
+                );
                 if(in_array($features_options, $arm_default_module_array))
                 {
                     if ($arm_features_status == 1) {
@@ -4365,7 +4461,7 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                             echo json_encode($response);
                             die();
 
-                        } else {
+                        }  else {                            
                             $arm_features_status = (!empty($_POST['arm_features_status'])) ? $_POST['arm_features_status'] : 0;
                             update_option($features_options, $arm_features_status);
                             $response = array('type' => 'success', 'msg' => __('Features Settings Updated Successfully.', 'ARMember'));
@@ -4442,7 +4538,7 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
             $arm_custom_css_arr = arm_custom_css_class_info();
             if (!empty($arm_custom_css_arr)) {
                 ?>
-                <div class="arm_custom_css_detail_popup popup_wrapper arm_custom_css_detail_popup_wrapper" style="width:900px;">
+                <div class="arm_custom_css_detail_popup popup_wrapper arm_custom_css_detail_popup_wrapper">
                     <div class="popup_wrapper_inner" style="overflow: hidden;">
                         <div class="popup_header">
                             <span class="popup_close_btn arm_popup_close_btn arm_custom_css_detail_close_btn"></span>
@@ -4520,7 +4616,7 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                                     if (!empty($arm_custom_css_arr[$css_section])) {
                                         $css_detail = $arm_custom_css_arr[$css_section];
                                         ?>
-                <div class="arm_section_custom_css_detail_popup popup_wrapper arm_section_custom_css_detail_popup_wrapper" style="width:700px;">
+                <div class="arm_section_custom_css_detail_popup popup_wrapper arm_section_custom_css_detail_popup_wrapper">
                     <div class="popup_wrapper_inner" style="overflow: hidden;">
                         <div class="popup_header">
                             <span class="popup_close_btn arm_popup_close_btn arm_section_custom_css_detail_close_btn"></span>
@@ -4577,6 +4673,35 @@ $arm_default_invoice_template .= '<div class="ms-invoice-details ms-status-paid"
                                 }
                                 $frontfontstyle['frontOptions'] = $frontOptions;
                                 return $frontfontstyle;
+                            }
+
+
+
+
+                            function arm_transient_set_action($arm_transient_name, $arm_transient_value, $arm_transient_time)
+                            {
+                                $arm_return_transient_status = 0;
+                                if(!empty($arm_transient_name) && !empty($arm_transient_value) && !empty($arm_transient_time))
+                                {
+                                    set_transient($arm_transient_name, $arm_transient_value, $arm_transient_time);
+                                    $arm_return_transient_status = 1;
+                                }
+                                return $arm_return_transient_status;
+                            }
+
+                            function arm_transient_get_action($arm_transient_name)
+                            {
+                                global $ARMember;
+                                $arm_return_transient_status = 0;
+                                if(!empty($arm_transient_name))
+                                {
+                                    $arm_get_transient_value = get_transient($arm_transient_name);
+                                    if(!empty($arm_get_transient_value))
+                                    {
+                                        $arm_return_transient_status = 1;
+                                    }
+                                }
+                                return $arm_return_transient_status;
                             }
 
                         }

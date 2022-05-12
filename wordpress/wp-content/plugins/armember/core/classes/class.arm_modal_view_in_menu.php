@@ -10,25 +10,27 @@ if (!class_exists('ARM_modal_view_in_menu'))
             $all_items_array = array();
 			$all_parent_array = array();
 
-            add_action( 'admin_head-nav-menus.php', array(&$this, 'arm_add_nav_menu_metabox'), 10 );
-            add_filter('wp_nav_menu',array(&$this,'arm_wp_loaded_walker_menu'),10,2);
+            add_action( 'admin_head-nav-menus.php', array($this, 'arm_add_nav_menu_metabox'), 10 );
+            if( !isset($_GET['uxb_iframe'] ) ){
+                add_filter('wp_nav_menu',array($this,'arm_wp_loaded_walker_menu'),10,2);
+            }
 			
-			add_filter('wp_nav_menu',array(&$this,'arm_main_hook_for_exclude'),11,2);
-add_action('wp_footer', array(&$this, 'arm_nav_menu_add_javascript'));
-            //add_action('wp_footer',array(&$this,'arm_add_modal_popups_after_theme_loaded'));
+			add_filter('wp_nav_menu',array($this,'arm_main_hook_for_exclude'),11,2);
+add_action('wp_footer', array($this, 'arm_nav_menu_add_javascript'));
+            //add_action('wp_footer',array($this,'arm_add_modal_popups_after_theme_loaded'));
 
             
-            add_action('check_admin_referer', array(&$this, 'logout_without_confirm'), 10, 2);
-            add_filter( 'wp_nav_menu_objects', array(&$this, 'arm_exclude_menu_items'), 11, 3 );
+            add_action('check_admin_referer', array($this, 'logout_without_confirm'), 10, 2);
+            add_filter( 'wp_nav_menu_objects', array($this, 'arm_exclude_menu_items'), 11, 3 );
 			
-	    add_filter( 'wp_nav_menu_objects', array(&$this, 'arm_exclude_menu_items_2'), 100, 3 );
+	    add_filter( 'wp_nav_menu_objects', array($this, 'arm_exclude_menu_items_2'), 100, 3 );
 
             /* Custom Field for Wordpress Menu Item */
-            add_action('wp_update_nav_menu_item',array(&$this,'arm_add_nav_menu_meta_box'),10,3);
-            add_filter('wp_setup_nav_menu_item',array(&$this,'arm_setup_nav_menu_item'));
-            //add_action('admin_footer',array(&$this,'arm_edit_nav_menu'),10);
-            add_action('wp_ajax_arm_get_post_meta_for_menu',array(&$this,'arm_get_post_meta_for_menu'));
-            //add_action('init', array(&$this,'logout_from_menu_link'));
+            add_action('wp_update_nav_menu_item',array($this,'arm_add_nav_menu_meta_box'),10,3);
+            add_filter('wp_setup_nav_menu_item',array($this,'arm_setup_nav_menu_item'));
+            //add_action('admin_footer',array($this,'arm_edit_nav_menu'),10);
+            add_action('wp_ajax_arm_get_post_meta_for_menu',array($this,'arm_get_post_meta_for_menu'));
+            //add_action('init', array($this,'logout_from_menu_link'));
 		}
 
 function get_nav_menu_item_children( $parent_id, $nav_menu_items, $depth = true ) {
@@ -163,15 +165,15 @@ function arm_main_hook_for_exclude($nav_menu,$args)
             }
         }
         function arm_add_nav_menu_metabox(){
-            add_meta_box( 'armformnav', __( 'ARMember Forms','ARMember' ), array(&$this, 'arm_from_menu_metabox'), 'nav-menus', 'side', 'default' );
-            add_meta_box( 'armsetupnav', __( 'ARMember Configure Plan & Setup','ARMember' ), array(&$this, 'arm_setup_menu_metabox'), 'nav-menus', 'side', 'default' );
-            add_meta_box( 'armlogout', __( 'ARMember Logout','ARMember' ), array(&$this, 'arm_logout_menu_metabox'), 'nav-menus', 'side', 'default' );
+            add_meta_box( 'armformnav', __( 'ARMember Forms','ARMember' ), array($this, 'arm_from_menu_metabox'), 'nav-menus', 'side', 'default' );
+            add_meta_box( 'armsetupnav', __( 'ARMember Configure Plan & Setup','ARMember' ), array($this, 'arm_setup_menu_metabox'), 'nav-menus', 'side', 'default' );
+            add_meta_box( 'armlogout', __( 'ARMember Logout','ARMember' ), array($this, 'arm_logout_menu_metabox'), 'nav-menus', 'side', 'default' );
             ?>
             <style type="text/css">
                 .armformnav .accordion-section-title.hndle, .armlogout .accordion-section-title.hndle, .armsetupnav .accordion-section-title.hndle,
                 .armformnav.open .accordion-section-title.hndle, .armlogout.open .accordion-section-title.hndle, .armsetupnav.open .accordion-section-title.hndle {
-                    background: #00b2f0 !important;
-                    background-color: #00b2f0 !important;
+                    background: #005aee !important;
+                    background-color: #005aee !important;
                     border-top: 1px solid #ffffff !important;
                     color: #ffffff;
                     margin: -6px 0 0;
@@ -185,7 +187,7 @@ function arm_main_hook_for_exclude($nav_menu,$args)
                 .armlogout .accordion-section-title.hndle:hover,
                 .armsetupnav .accordion-section-title.hndle:hover
                 {
-                    background-color: #00b2f0;
+                    background-color: #005aee;
                     color: white;
                     margin: -6px 0 0;
                     position: relative;
@@ -222,6 +224,9 @@ function arm_main_hook_for_exclude($nav_menu,$args)
                 #menu-settings-column .armlogout .inside,
                 #menu-settings-column .armsetupnav .inside{
                     margin: 0;
+                }
+                .arm_color_red {
+                    color: #ff0000 !important ;
                 }
             </style>
         <?php }
@@ -305,7 +310,7 @@ function arm_main_hook_for_exclude($nav_menu,$args)
             );
             ?>
             <div id="arm-login-links" class="loginlinksdiv posttypediv">
-                <div><?php _e("<p style='color:red;'>NOTE: This feature will only work with those themes which has support of wordpress' navigation menu core hooks.</p>", 'ARMember');?></div>
+                <div><?php _e("<p class='arm_color_red'>NOTE: This feature will only work with those themes which has support of wordpress' navigation menu core hooks.</p>", 'ARMember');?></div>
                 <p><?php _e("This navigation menu link will open Armember form in Modal Window.", 'ARMember');?></p>
                 <div id="tabs-panel-arm-login-links-all" class="tabs-panel tabs-panel-view-all tabs-panel-active">
                     <ul id="arm-login-linkschecklist" class="list:arm-login-links categorychecklist form-no-clear">
@@ -384,7 +389,7 @@ function arm_main_hook_for_exclude($nav_menu,$args)
             '_wpnonce',
         ); ?>
         <div id="arm-login-links-setup" class="loginlinksdiv posttypediv">
-            <div><?php _e("<p style='color:red;'>NOTE: This feature will only work with those themes which has support of wordpress' navigation menu core hooks.</p>", 'ARMember');?></div>
+            <div><?php _e("<p class='arm_color_red'>NOTE: This feature will only work with those themes which has support of wordpress' navigation menu core hooks.</p>", 'ARMember');?></div>
             <p><?php _e("This navigation menu link will open Armember Setup Form in Modal Window.", 'ARMember');?></p>
             <div id="tabs-panel-arm-login-links-setup-all" class="tabs-panel tabs-panel-view-all tabs-panel-active">
                 <ul id="arm-login-links-setupchecklist" class="list:arm-login-links-setup categorychecklist form-no-clear">
@@ -458,7 +463,7 @@ function arm_logout_menu_metabox($object)
             ); 
             ?>
             <div id="arm-logout-links" class="loginlinksdiv posttypediv">
-                <div><?php _e("<p style='color:red;'>NOTE: This feature will only work with those themes which has support of wordpress' navigation menu core hooks.</p>", 'ARMember');?></div>
+                <div><?php _e("<p class='arm_color_red'>NOTE: This feature will only work with those themes which has support of wordpress' navigation menu core hooks.</p>", 'ARMember');?></div>
                 <p><?php _e("This navigation menu link is to set Logout Link.", 'ARMember');?></p>
                 <div id="tabs-panel-arm-logout-links-all" class="tabs-panel tabs-panel-view-all tabs-panel-active">
                     <ul id="arm-logout-linkschecklist" class="list:arm-logout-links categorychecklist form-no-clear">
@@ -561,6 +566,9 @@ function arm_logout_menu_metabox($object)
                                 if (isset($arm_menu_array['nav_menu']) && $arm_menu_array['nav_menu'] == 1 ) {
                                     $formAttr .= " nav_menu=\"1\"";
                                 }
+                                if (!empty($arm_menu_array['assign_default_plan'])) {
+                                    $formAttr .= " assign_default_plan=\"".$arm_menu_array['assign_default_plan']."\"";
+                                }
                                 $onClick = "arm_open_modal_box_in_nav_menu('$menu_id','arm_form_link_".$formRandomID."');return false;";
                                 $arm_data_id = "arm_form_link_".$formRandomID;
                                 $shortcode = "[arm_form ".$formAttr."]";
@@ -658,7 +666,7 @@ function arm_logout_menu_metabox($object)
                     .arm-menu-item-hide-show{
                         float:left;
                         width:100%;
-                        background: #00B2F0;
+                        background: #005aee;
                         color:#ffffff;
                         position: relative;
                         padding:5px 0 5px 10px;
@@ -673,6 +681,8 @@ function arm_logout_menu_metabox($object)
                         right: 8px;
                         top:5px;
                         background-repeat: no-repeat;
+                    }.arm_font_size_16 {
+                        font-size: 16px !important;
                     }
                 </style>
                 <script type="text/javascript">
@@ -701,7 +711,7 @@ function arm_logout_menu_metabox($object)
                         meta_box_html += '<br/>';
 
                         meta_box_html += '<span id="arm_access_rule_for_menu-[ARM_MENU_ITEM_ID]" style="display:none;padding-top:10px;">';
-                        meta_box_html += '<b style="font-size:16px;"><?php echo addslashes(__('Select Plan(s) whose users can access this menu item.','ARMember')); ?></b><br/>';
+                        meta_box_html += '<b class="arm_font_size_16"><?php echo addslashes(__('Select Plan(s) whose users can access this menu item.','ARMember')); ?></b><br/>';
                         var all_plans = jQuery.parseJSON(jQuery('#armember_all_plan_lists').val());
                         jQuery(all_plans).each(function (i) {
                             meta_box_html += '<input type="checkbox" id="arm_access_rule_for_menu-[ARM_MENU_ITEM_ID]-' + all_plans[i]['id'] + '" name="arm_access_rule_menu[[ARM_MENU_ITEM_ID]][]" value="' + all_plans[i]['id'] + '" />';

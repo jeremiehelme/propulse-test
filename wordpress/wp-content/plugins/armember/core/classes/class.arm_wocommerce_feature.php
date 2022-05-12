@@ -9,57 +9,371 @@ if (!class_exists('ARM_wocommerce_feature')) {
            
             $is_woocommerce_feature = get_option('arm_is_woocommerce_feature');
             $this->isWocommerceFeature = ($is_woocommerce_feature == '1') ? true : false;
-            //add_action('admin_enqueue_scripts', array(&$this, 'arm_enqueue_woocommerce_stylesheet'));
+            //add_action('admin_enqueue_scripts', array($this, 'arm_enqueue_woocommerce_stylesheet'));
             /* Update "arm_is_woocommerce_feature" option when woocommerce activation/deactivation */
-            add_action('woocommerce_installed', array(&$this, 'arm_woomcommerce_activation'));
-            add_action('deactivated_plugin', array(&$this, 'arm_woomcommerce_deactivation'), 10, 2);
-            
-          /* To Add Woocommerce in payment gateway array */
-            add_filter('arm_filter_gateway_names', array(&$this, 'arm_woocommerce_add_payment_gateway_name'), 10, 1);
-            add_filter('arm_get_payment_gateways_in_filters', array(&$this, 'arm_woocommerce_add_payment_gateway'), 10, 1);
-            
-            add_action('arm_update_feature_settings', array(&$this, 'arm_woocommerece_update_feature_seetings'), 10, 1);
-            add_filter('arm_add_currency_in_default_list', array(&$this, 'arm_woocommerce_add_currency'));
+            add_action('woocommerce_installed', array($this, 'arm_woomcommerce_activation'));
+            add_action('deactivated_plugin', array($this, 'arm_woomcommerce_deactivation'), 10, 2);
             
             /* Restrict product for woocommerce */
-            
             if ($this->isWocommerceFeature) {
+                /* To Add Woocommerce in payment gateway array */
+                add_filter('arm_filter_gateway_names', array($this, 'arm_woocommerce_add_payment_gateway_name'), 10, 1);
+                add_filter('arm_get_payment_gateways_in_filters', array($this, 'arm_woocommerce_add_payment_gateway'), 10, 1);
+                
+                add_action('arm_update_feature_settings', array($this, 'arm_woocommerece_update_feature_seetings'), 10, 1);
+                add_filter('arm_add_currency_in_default_list', array($this, 'arm_woocommerce_add_currency'));
+
                 /* To add ARMember Plan tab in product data metabox of woocommerce */
                 
-                add_action('woocommerce_product_write_panel_tabs', array(&$this, 'arm_woocommerce_armember_plan_tab')); //3.0.2 - 3.0.6
+                add_action('woocommerce_product_write_panel_tabs', array($this, 'arm_woocommerce_armember_plan_tab')); //3.0.2 - 3.0.6
 
                 /* To add ARmember Plans Dropdown in ARMember Plan tab in product data metabox of woocommerce */
-                add_action('woocommerce_product_data_panels', array(&$this, 'arm_woocommerce_armember_plan_tab_options')); //3.0.2 - 3.0.6
+                add_action('woocommerce_product_data_panels', array($this, 'arm_woocommerce_armember_plan_tab_options')); //3.0.2 - 3.0.6
 
-                add_action('wp_ajax_woocommerce_get_plan_cycle', array(&$this, 'arm_woocommerce_plan_cycle_func'));
+                add_action('wp_ajax_woocommerce_get_plan_cycle', array($this, 'arm_woocommerce_plan_cycle_func'));
 
                 /* To save data of ARmember Plans Dropdown in ARMember Plan tab in product data metabox of woocommerce */
-                add_action('woocommerce_process_product_meta', array(&$this, 'arm_woocommerce_process_armember_plan_tab_meta')); //3.0.2
+                add_action('woocommerce_process_product_meta', array($this, 'arm_woocommerce_process_armember_plan_tab_meta')); //3.0.2
 
                 /* To make cart empty when add To cart button clicked in front end */
-                add_filter('woocommerce_add_cart_item_data', array(&$this, 'arm_woocommerce_empty_then_add_to_cart'), 10, 3); //3.0.2 - 3.0.6
+                add_filter('woocommerce_add_cart_item_data', array($this, 'arm_woocommerce_empty_then_add_to_cart'), 10, 3); //3.0.2 - 3.0.6
 
                 /* To remove Quantity change option in cart in front end */
-                add_filter('woocommerce_is_sold_individually', array(&$this, 'arm_woocommerce_remove_all_quantity_fields'), 10, 2); //3.0.2
+                add_filter('woocommerce_is_sold_individually', array($this, 'arm_woocommerce_remove_all_quantity_fields'), 10, 2); //3.0.2
 
                 /* To add product id as a order meta when ordered is placed */
-                add_action('woocommerce_checkout_update_order_meta', array(&$this, 'arm_woocommerce_update_order_meta')); //3.0.2 - 3.0.6
+                add_action('woocommerce_checkout_update_order_meta', array($this, 'arm_woocommerce_update_order_meta')); //3.0.2 - 3.0.6
 
                 /* Process when order status is either refunded, failed, on_hold */
-                add_action("woocommerce_order_status_refunded", array(&$this, 'arm_woocommerce_cancel_membership_from_order'));
-                add_action("woocommerce_order_status_failed", array(&$this, 'arm_woocommerce_cancel_membership_from_order'));
-                add_action("woocommerce_order_status_cancelled", array(&$this, 'arm_woocommerce_cancel_membership_from_order'));
+                add_action("woocommerce_order_status_refunded", array($this, 'arm_woocommerce_cancel_membership_from_order'));
+                add_action("woocommerce_order_status_failed", array($this, 'arm_woocommerce_cancel_membership_from_order'));
+                add_action("woocommerce_order_status_cancelled", array($this, 'arm_woocommerce_cancel_membership_from_order'));
 
                 /* Assign plan to registered order owner when order is completed */
-                add_action("woocommerce_order_status_completed", array(&$this, 'arm_woocommerce_add_member')); 
+                add_action("woocommerce_order_status_completed", array($this, 'arm_woocommerce_add_member')); 
                                 
                 /* Set order status by default to complete if product is virtual, Here all products will be virtual */
-                add_filter( 'woocommerce_payment_complete_order_status', array(&$this, 'arm_woocommerce_make_order_status_complete_for_virtual_products'), 10, 2); //3.0.2 -3.0.6
+                add_filter( 'woocommerce_payment_complete_order_status', array($this, 'arm_woocommerce_make_order_status_complete_for_virtual_products'), 10, 2); //3.0.2 -3.0.6
                 
-                add_action('woocommerce_checkout_order_processed', array(&$this, 'arm_woocommerce_after_checkout_validation'), 50, 2); //3.0.2-3.0.6
+                add_action('woocommerce_checkout_order_processed', array($this, 'arm_woocommerce_after_checkout_validation'), 50, 2); //3.0.2-3.0.6
+
+                // Woocommerce Payment Gateway Hooks
+
+                //Filter for display woocommerce option in payment gateway section.
+                add_filter('arm_get_payment_gateways', array($this, 'arm_woocommerce_add_payment_gateway'));
+
+                //Filter for submit form details and add product to cart
+                add_action('arm_payment_gateway_validation_from_setup', array($this, 'arm2_payment_gateway_form_submit_action'), 10, 4);
+
+                //Action for create woocommerce products after add/update setup details.
+                add_action('arm_saved_membership_setup', array($this, 'arm_setup_plans_create_product'), 10, 2);
+
+                //Woocommerce hook for modify cart price
+                add_filter('woocommerce_before_calculate_totals', array($this, 'arm_modify_cart_price'), 10, 1);
+
+                //Woocommerce hook for remove cart id from entry table when product remove from cart
+                add_action('woocommerce_cart_item_removed', array($this, 'arm_remove_entry_cart_id'), 10, 2);
+
+                //For remove auto-debit option from admin and front side.
+                add_filter('arm_not_display_payment_mode_setup', array($this, 'arm_not_display_payment_mode_setup_func'), 10, 1);
+
+                add_action('woocommerce_checkout_order_processed', array($this, 'arm_modify_order_meta_for_woocommerce_payment_gateway'), 10, 3);
             }
         }
-        
+
+        function arm_modify_order_meta_for_woocommerce_payment_gateway($order_id, $posted_data, $order){
+            global $wpdb, $woocommerce, $ARMember;
+            $arm_woocommerce_cart_key = "";
+            foreach ($woocommerce->cart->get_cart() as $wc_key => $wc_item) {
+                $arm_woocommerce_cart_key = $wc_item['key'];
+            }
+
+            if(!empty($arm_woocommerce_cart_key)){
+                $arm_entry_data = $wpdb->get_row("SELECT * FROM `" . $ARMember->tbl_arm_entries . "` WHERE `arm_entry_value` LIKE '%".$arm_woocommerce_cart_key."%' ORDER BY arm_entry_id DESC", ARRAY_A);
+                if(!empty($arm_entry_data)){
+
+                    do_action('arm_woocommerce_add_woocommerce_meta_from_outside', $arm_entry_data, $order_id, $order, $posted_data);
+
+                    if($arm_entry_data['arm_is_post_entry'] == 1 && !empty($arm_entry_data['arm_paid_post_id']))
+                    {
+                        $arm_plan_id = $arm_entry_data['arm_plan_id'];
+
+                        //Update paid post id in product meta
+                        /*
+                        $arm_woo_order_obj = wc_get_order($order_id);
+                        $arm_woo_order_items = $order->get_items();
+                        foreach($arm_woo_order_items as $item_key => $item_val){
+                             $product_id = $item_val->get_product_id();
+                             update_post_meta($product_id, '_arm_woocommerce_membership_post', $arm_plan_id);
+                        }
+                        */
+                        $arm_user_id = get_current_user_id();
+                        if(!empty($arm_plan_id)){
+                            $arm_paid_post_meta_value[] = $arm_plan_id;
+                            update_post_meta($order_id, 'arm_mapped_order_product_post', maybe_serialize($arm_paid_post_meta_value));
+                        }
+                        $arm_entry_value = maybe_unserialize($arm_entry_data['arm_entry_value']);
+                        $arm_selected_plan_cycle = $arm_entry_value['arm_selected_payment_cycle'];
+                        update_post_meta($order_id, 'arm_woo_payment_post_selected_cycle', $arm_selected_plan_cycle);
+                    }
+                    else
+                    {
+                        $arm_plan_id[] = $arm_entry_data['arm_plan_id'];
+                        update_post_meta($order_id, 'arm_mapped_order_product_plans', maybe_serialize($arm_plan_id));
+                        $arm_entry_value = maybe_unserialize($arm_entry_data['arm_entry_value']);
+                        $arm_selected_plan_cycle = $arm_entry_value['arm_selected_payment_cycle'];
+                        update_post_meta($order_id, 'arm_woo_payment_selected_cycle', $arm_selected_plan_cycle);
+                    }
+                }
+            }
+        }
+
+        function arm_not_display_payment_mode_setup_func($gateway_name_arr){
+            $gateway_name_arr[] = 'woocommerce';
+            return $gateway_name_arr;
+        }
+
+        function arm_remove_entry_cart_id($cart_item_key, $instance){
+            global $wpdb, $woocommerce, $ARMember;
+            if(!empty($instance) && !empty($cart_item_key)){
+                $arm_entry_data = $wpdb->get_row("SELECT * FROM `" . $ARMember->tbl_arm_entries . "` WHERE `arm_entry_value` LIKE '%".$arm_woocommerce_cart_key."%' ORDER BY arm_entry_id DESC", ARRAY_A);
+                if(!empty($arm_entry_data)){
+                    $arm_entry_id = $arm_entry_data['arm_entry_id'];
+                    $arm_entry_value = maybe_unserialize($arm_entry_data['arm_entry_value']);
+                    $arm_entry_value['arm_woocommerce_gateway_cart_key'] = '';
+                    unset($arm_entry_value['arm_woocommerce_gateway_cart_key']);
+                    $arm_entry_value = maybe_serialize($arm_entry_value);
+
+                    $arm_entry_update_data = array( 'arm_entry_value' => $arm_entry_value );
+                    $arm_entry_update_where_condition = array( 'arm_entry_id' => $arm_entry_id );
+                    $arm_update_entry_data = $wpdb->update($ARMember->tbl_arm_entries, $arm_entry_update_data, $arm_entry_update_where_condition);
+                }
+            }
+        }
+
+        function arm_modify_cart_price($cart_obj){
+            global $wpdb, $woocommerce, $ARMember, $arm_payment_gateways;
+
+            $all_payment_gateways = $arm_payment_gateways->arm_get_active_payment_gateways();
+            $payment_gateway_options = isset($all_payment_gateways['woocommerce'] ) ? $all_payment_gateways['woocommerce'] : array();
+            if(!empty($payment_gateway_options)) {
+                foreach ($woocommerce->cart->get_cart() as $wc_key => $wc_item) {
+                    $arm_woocommerce_cart_key = $wc_item['key'];
+                    if(!empty($arm_woocommerce_cart_key)){
+                        $arm_entry_data = $wpdb->get_row("SELECT * FROM `" . $ARMember->tbl_arm_entries . "` WHERE `arm_entry_value` LIKE '%".$arm_woocommerce_cart_key."%' ORDER BY arm_entry_id DESC", ARRAY_A);
+                        if(!empty($arm_entry_data)){
+                            $arm_entry_id = $arm_entry_data['arm_entry_id'];
+                            $arm_plan_id = $arm_entry_data['arm_plan_id'];
+                            $arm_entry_value = maybe_unserialize($arm_entry_data['arm_entry_value']);
+
+                            $arm_return_data = array();
+                            $arm_return_data = apply_filters('arm_calculate_payment_gateway_submit_data', $arm_return_data, 'woocommerce', $payment_gateway_options, $arm_entry_value, $arm_entry_id);
+                            if(!empty($arm_return_data))
+                            {
+                                $arm_total_payable_amount = !empty($arm_return_data['arm_payable_amount']) ? $arm_return_data['arm_payable_amount'] : 0;
+
+                                if(!empty($arm_return_data['arm_recurring_data']['trial']))
+                                {
+                                    //If trial enable then enable it for subscription.
+                                    $arm_total_payable_amount = number_format((float)$arm_return_data['arm_recurring_data']['trial']['amount'], 2);
+                                }
+                                
+                                $wc_item['data']->set_price($arm_total_payable_amount);
+
+                                if(!empty($arm_plan_id)){
+                                    $arm_plan_name = $arm_return_data['arm_plan_obj']->name;
+                                    $wc_item['data']->set_name($arm_plan_name);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        function arm_setup_plans_create_product($setup_id, $db_data){
+            global $wpdb, $ARMember, $woocommerce;
+            if($this->isWocommerceFeature && is_plugin_active('woocommerce/woocommerce.php')){
+                $arm_setup_modules = maybe_unserialize($db_data['arm_setup_modules']);
+                if(!empty($arm_setup_modules['modules']['gateways']) && in_array('woocommerce', $arm_setup_modules['modules']['gateways'])){
+                    $arm_setup_plans = $arm_setup_modules['modules']['plans'];
+
+                    $arm_created_product_ids = array();
+
+                    $arm_woocommerce_product_exist = $this->arm2_woo_product_find_product();
+                    if(empty($arm_woocommerce_product_exist)){
+                        $this->arm_create_woocommerce_product();
+                    }
+                }
+            }
+        }
+
+        function arm_create_woocommerce_product(){
+            $arm_product_name = __('Membership Product', 'ARMember');
+
+            $arm_product_array = array(
+                'post_author'  => get_current_user(),
+                'post_title'  => $arm_product_name,
+                'post_content' => '',
+                'post_status' => 'publish',
+                'post_type' => 'product',
+            ); 
+
+            $arm_product_id = wp_insert_post($arm_product_array);
+
+            wp_set_object_terms($arm_product_id, 'simple', 'product_type');
+            wp_set_object_terms($arm_product_id, ['exclude-from-catalog', 'exclude-from-search'], 'product_visibility');
+            update_post_meta($arm_product_id, '_visibility', 'hidden');
+            update_post_meta($arm_product_id, '_stock_status', 'instock');
+            update_post_meta($arm_product_id, 'total_sales', '0');
+            update_post_meta($arm_product_id, '_downloadable', 'no');
+            update_post_meta($arm_product_id, '_virtual', 'yes' );
+            update_post_meta($arm_product_id, '_price', 0);
+            update_post_meta($arm_product_id, '_regular_price', 0);
+            update_post_meta($arm_product_id, '_sale_price', '');
+            update_post_meta($arm_product_id, '_featured', 'no');
+            update_post_meta($arm_product_id, '_weight', '');
+            update_post_meta($arm_product_id, '_length', '');
+            update_post_meta($arm_product_id, '_width', '');
+            update_post_meta($arm_product_id, '_height', '');
+            update_post_meta($arm_product_id, '_sku', '');
+            update_post_meta($arm_product_id, '_product_attributes', array());
+            update_post_meta($arm_product_id, '_sale_price_dates_from', '');
+            update_post_meta($arm_product_id, '_sale_price_dates_to', '');
+            update_post_meta($arm_product_id, '_sold_individually', 'yes');
+            update_post_meta($arm_product_id, '_manage_stock', 'no');
+            update_post_meta($arm_product_id, '_backorders', 'no');
+            update_post_meta($arm_product_id, '_stock', '');
+            update_post_meta($arm_product_id, '_arm_woocommerce_membership_product', '1');
+        }
+
+        function arm2_woo_product_find_product(){
+            $arm_find_plan_exist_product_args = array(
+                'post_type'  => 'product',
+                'meta_query' => array(
+                    'relation' => 'AND',
+                    array(
+                        'key' => '_arm_woocommerce_membership_product',
+                        'value' => '1'
+                    )
+                ),
+            );
+
+            $arm_find_plan_exist_product_qry = new WP_Query($arm_find_plan_exist_product_args);
+
+            $arm_find_plan_exist_product = $arm_find_plan_exist_product_qry->have_posts();
+
+            $arm_existing_product_id = "";
+            if($arm_find_plan_exist_product){
+                $arm_find_plan_exist_product_qry->the_post();
+                $arm_existing_product_id = $arm_find_plan_exist_product_qry->post->ID;
+            }
+
+            return $arm_existing_product_id;
+        }
+
+        function arm2_payment_gateway_form_submit_action($payment_gateway, $payment_gateway_options, $posted_data, $entry_id = 0){
+            global $wpdb, $ARMember, $woocommerce, $arm_global_settings, $arm_member_forms, $arm_payment_gateways;
+            if($payment_gateway == "woocommerce" && $this->isWocommerceFeature && is_plugin_active('woocommerce/woocommerce.php')){
+                $arm_entry_id = $posted_data['arm_entry_id'];
+                $arm_plan_id = !empty($posted_data['subscription_plan']) ? $posted_data['subscription_plan'] : 0;
+                $arm_plan_obj = new ARM_Plan($arm_plan_id);
+                $arm_is_recurring = $arm_plan_obj->is_recurring();
+
+                $arm_product_id = 0;
+
+                $arm_product_id = $this->arm2_woo_product_find_product();
+
+                if(!empty($arm_product_id))
+                {
+                    $arm_post_status = get_post_status($arm_product_id);
+                    if($arm_post_status != "publish"){
+                        $arm_product_id = 0;
+                    }
+                
+                    //If user is not registered then first register and then starts session.
+                    //----------------------------------------------------
+                        $arm_user_id = 0;
+                        $arm_user_login = !empty($posted_data['user_login']) ? $posted_data['user_login'] : '';
+                        if(!empty($arm_user_login) && !username_exists($arm_user_login)){
+                            $entry_data = $wpdb->get_row("SELECT `arm_entry_id`, `arm_entry_email`, `arm_entry_value`, `arm_form_id`, `arm_user_id`, `arm_plan_id` FROM `" . $ARMember->tbl_arm_entries . "` WHERE `arm_entry_id`='" . $arm_entry_id . "'", ARRAY_A);
+                            $entry_values = maybe_unserialize($entry_data['arm_entry_value']);
+                            if(!empty($entry_values['subscription_plan'])){
+                                unset($entry_values['subscription_plan']);
+                            }
+
+                            if(!empty($entry_values['_subscription_plan'])){
+                                unset($entry_values['_subscription_plan']);
+                            }
+                            $setup_id = $entry_values['setup_id'];
+                            $form_id = $entry_data['arm_form_id'];
+                            $armform = new ARM_Form('id', $form_id);
+                            if(in_array($armform->type, array('registration'))){
+                                $arm_user_id = $arm_member_forms->arm_register_new_member($entry_values, $armform);
+                            }
+                        }else{
+                            if(is_user_logged_in()){
+                                $arm_user_id = get_current_user_id();
+                            }else{
+                                $arm_user_obj = get_user_by('login', $arm_user_login);
+                                $arm_user_id = $arm_user_obj->ID;
+                            }
+                        }
+                    //----------------------------------------------------
+
+                    update_user_meta($arm_user_id, 'arm_wooc_gateway_entry_id', $arm_entry_id);  
+
+                    //If tax applied then store applied tax_amount for that entry id
+                    if(!empty($posted_data['arm_common_tax_amount'])){
+                        update_user_meta($arm_user_id, 'arm_wooc_gateway_tax_'.$arm_entry_id, $posted_data['arm_common_tax_amount']);
+                    }
+
+                    //If coupon applied then store applied coupon data for that entry id
+                    $arm_applied_coupon_code = !empty($posted_data['arm_coupon_code']) ? $posted_data['arm_coupon_code'] : '';
+                    if(!empty($arm_applied_coupon_code)){
+                        update_user_meta($arm_user_id, 'arm_wooc_gateway_coupon_'.$arm_entry_id, $arm_applied_coupon_code);
+                    }
+
+                    //After get product ID, now add product to woocommerce cart if not exist into cart
+                    $woocommerce->cart->empty_cart();
+                    $woocommerce->cart->add_to_cart($arm_product_id);
+
+                    //Get cart Key for store into entries table.
+                    $arm_woocommerce_cart_obj = $woocommerce->cart->get_cart();
+                    $arm_woocommerce_cart_key = '';
+                    foreach($arm_woocommerce_cart_obj as $arm_woo_key => $arm_woo_val){
+                        $arm_woocommerce_cart_key = $arm_woo_val['key'];
+                    }
+
+                    //Save woocommerce cart key in entry table
+                    $arm_get_entry_data = $arm_payment_gateways->arm_get_entry_data_by_id($arm_entry_id);
+                    $arm_entry_value = maybe_unserialize($arm_get_entry_data['arm_entry_value']);
+                    $arm_entry_value['arm_woocommerce_gateway_cart_key'] = $arm_woocommerce_cart_key;
+
+                    $arm_entry_value = maybe_serialize($arm_entry_value);
+                    $arm_entry_update_data = array( 'arm_entry_value' => $arm_entry_value );
+                    $arm_entry_update_where_condition = array( 'arm_entry_id' => $arm_entry_id );
+                    $arm_update_entry_data = $wpdb->update($ARMember->tbl_arm_entries, $arm_entry_update_data, $arm_entry_update_where_condition);
+
+                    //Get woocommerce checkout URL.
+                    $arm_woo_checkout_url = wc_get_checkout_url();
+
+                    $arm_woo_redirect_checkout = '<script data-cfasync="false" type="text/javascript" language="javascript">window.location.href="' . $arm_woo_checkout_url . '";</script>';
+                    $return = array('status' => 'success', 'type' => 'redirect', 'message' => $arm_woo_redirect_checkout);
+                    echo json_encode($return);
+                    die;
+                }
+                else
+                {
+                    $err_msg = (!empty($err_msg)) ? $err_msg : __('Sorry, No Woocommerce product found for selected plan', 'ARMember');
+                    $err_msg = '<div class="arm_error_msg"><ul><li>' . $err_msg . '</li></ul></div>';
+                    $return = array('status' => 'error', 'type' => 'message', 'message' => $err_msg);
+                    echo json_encode($return);
+                    die;
+                }
+            }
+        }
+
         function arm_woocommerce_exclude_restrict_item_for_widget($query_args){
             global $wp, $wpdb, $ARMember, $arm_access_rules;
 
@@ -365,7 +679,7 @@ if (!class_exists('ARM_wocommerce_feature')) {
                         <br/>
                         <span class="arm_map_plan_description"><?php _e('If user has already one ARMember plan, then it would be updated when he will purchase this product.','ARMember'); ?></span>
                         <br/>
-                        <span style="color: red;"><?php _e('Important Note:','ARMember'); ?></span>
+                        <span class="arm_color_red"><?php _e('Important Note:','ARMember'); ?></span>
                         <br/>  
                         <span class="arm_map_plan_description"><?php _e('If you will select any plan which is having "subscription/recurring payment" type, then it will be considered as "semi automatic subscription" always.','ARMember'); ?></span>
                         <br/>
@@ -440,7 +754,7 @@ if (!class_exists('ARM_wocommerce_feature')) {
                         <br/>
                         <span class="arm_map_plan_description"><?php _e('If user has already one ARMember paid post, then it would be updated when he will purchase this product.','ARMember'); ?></span>
                         <br/>
-                        <span style="color: red;"><?php _e('Important Note:','ARMember'); ?></span>
+                        <span class="arm_color_red"><?php _e('Important Note:','ARMember'); ?></span>
                         <br/>  
                         <span class="arm_map_plan_description"><?php _e('If you will select any paid post which is having "subscription/recurring payment" type, then it will be considered as "semi automatic subscription" always.','ARMember'); ?></span>
                         <br/>
@@ -533,7 +847,7 @@ if (!class_exists('ARM_wocommerce_feature')) {
             }
 
 
-            if($arm_pay_per_post_feature->isPayPerPostFeature)
+            /*if($arm_pay_per_post_feature->isPayPerPostFeature)
             {
                 $mapped_product_id_array = array();
                 $arm_mapped_plan_var = get_post_meta($product_id, '_arm_woocommerce_membership_post', true);
@@ -553,8 +867,7 @@ if (!class_exists('ARM_wocommerce_feature')) {
                         $woocommerce->cart->remove_cart_item($item);
                     }
                 }
-            }
-
+            }*/
 
             // Do nothing with the data and return
             return $cart_item_data;
@@ -612,7 +925,11 @@ if (!class_exists('ARM_wocommerce_feature')) {
                     $arm_mapped_plan_var = get_post_meta($pid, '_arm_woocommerce_membership_post', true);
                     $arm_mapped_plan = (isset($arm_mapped_plan_var) && $arm_mapped_plan_var != 0) ? $arm_mapped_plan_var : 0;
                     if ($arm_mapped_plan != 0) {
-                        $arm_mapped_product_post[] = get_post_meta($pid, '_arm_woocommerce_membership_post', true);
+		    	$_arm_woocommerce_membership_post = get_post_meta($pid, '_arm_woocommerce_membership_post', true);
+			if(!empty($_arm_woocommerce_membership_post))
+			{
+                        	$arm_mapped_product_post[] = $_arm_woocommerce_membership_post;
+			}
                     }
                 }
 
@@ -623,7 +940,7 @@ if (!class_exists('ARM_wocommerce_feature')) {
         }
 
         function arm_woocommerce_add_member($order_id) {
-            global $arm_subscription_plans, $wpdb, $ARMember, $is_multiple_membership_feature, $arm_pay_per_post_feature;
+            global $arm_subscription_plans, $wpdb, $ARMember, $is_multiple_membership_feature, $arm_pay_per_post_feature, $arm_debug_payment_log_id;
 
             $order = new WC_Order($order_id);
             $customer_id = $order->get_customer_id();
@@ -723,14 +1040,22 @@ if (!class_exists('ARM_wocommerce_feature')) {
                             }
 
                             $woo_sel_pro_plan_cycle = 0;
+                            $arm_get_plan_selected_cycle = get_post_meta($order_id, 'arm_woo_payment_selected_cycle', true);
+                            if($arm_get_plan_selected_cycle != ""){
+                                //If payment done with woocommerce payment gateway then get selected payment cycle from order meta.
+                                $woo_sel_pro_plan_cycle = $arm_get_plan_selected_cycle;
+                            }
 
-                            foreach ($product_id as $pid) {
-                                $woo_sel_pro_plan_cycle_tmp = get_post_meta($pid, '_arm_woocommerce_membership_plan_subscription_id', true);
-                                if($woo_sel_pro_plan_cycle_tmp != "") {
-                                    $woo_sel_pro_plan_cycle = $woo_sel_pro_plan_cycle_tmp;
-                                    break;
+                            if($woo_sel_pro_plan_cycle == ""){
+                                foreach ($product_id as $pid) {
+                                    $woo_sel_pro_plan_cycle_tmp = get_post_meta($pid, '_arm_woocommerce_membership_plan_subscription_id', true);
+                                    if($woo_sel_pro_plan_cycle_tmp != "") {
+                                        $woo_sel_pro_plan_cycle = $woo_sel_pro_plan_cycle_tmp;
+                                        break;
+                                    }
                                 }
                             }
+
                             $userPlanData['arm_payment_cycle'] = $woo_sel_pro_plan_cycle;
                         }
                         
@@ -802,6 +1127,14 @@ if (!class_exists('ARM_wocommerce_feature')) {
                         $entry_id = $wpdb->get_row( $wpdb->prepare( 'SELECT arm_entry_id FROM '.$entry_tbl.' WHERE arm_entry_email = %s and arm_name = %s and arm_form_id = %d order by arm_entry_id desc', $user_email, 'woocommerce', $order_id ), ARRAY_A );
                         update_user_meta($user_id, 'arm_entry_id', $entry_id['arm_entry_id']);
                         
+                        $arm_debug_log_data = array(
+                            'userid' => $user_id,
+                            'entryplan' => $entry_plan,
+                            'orderid' => $order_id,
+                            'plantype' => $plan_type,
+                        );
+                        do_action('arm_payment_log_entry', 'woocommerce', 'order'.$order_id.' payment log entry data', 'armember', $arm_debug_log_data, $arm_debug_payment_log_id);
+
                         $this->arm_store_woocommerce_log($user_id, $entry_plan, $order_id, $plan_type, $mapped_product_amt_total);
                     }
                 }
@@ -819,7 +1152,7 @@ if (!class_exists('ARM_wocommerce_feature')) {
 
 
         function arm_woocommerce_add_paid_post($order_id) {
-            global $arm_subscription_plans, $wpdb, $ARMember, $is_multiple_membership_feature, $is_woocommerce_feature, $arm_pay_per_post_feature;
+            global $arm_subscription_plans, $wpdb, $ARMember, $is_multiple_membership_feature, $is_woocommerce_feature, $arm_pay_per_post_feature, $arm_debug_payment_log_id;
 
             $order = new WC_Order($order_id);
             $customer_id = $order->get_customer_id();
@@ -858,8 +1191,8 @@ if (!class_exists('ARM_wocommerce_feature')) {
                 }
                 
                 $arm_mapped_product_plans_serialized = get_post_meta($order_id, 'arm_mapped_order_product_post', true);
-
                 $arm_mapped_product_plans = maybe_unserialize($arm_mapped_product_plans_serialized);
+                $arm_mapped_product_plans = array_filter($arm_mapped_product_plans);
                 $member_user_id = $order->get_customer_id();
                 $member_email = $order->get_billing_email();
 
@@ -879,8 +1212,7 @@ if (!class_exists('ARM_wocommerce_feature')) {
                 }
 
                 $arm_mapped_product_plans_arr = array();
-                $arm_mapped_product_plans_arr[] = $arm_mapped_product_plans[0];
-
+                $arm_mapped_product_plans_arr = $arm_mapped_product_plans;
                 $user_id = $member_user_id;
 
                 foreach ($arm_mapped_product_plans_arr as $arm_mapped_product_plan) 
@@ -918,12 +1250,20 @@ if (!class_exists('ARM_wocommerce_feature')) {
                         }
 
                         $woo_sel_pro_plan_cycle = 0;
+                        $arm_get_plan_selected_cycle = get_post_meta($order_id, 'arm_woo_payment_post_selected_cycle', true);
+                        if($arm_get_plan_selected_cycle != ""){
+                            //If payment done with woocommerce payment gateway then get selected payment cycle from order meta for paid post.
+                            $woo_sel_pro_plan_cycle = $arm_get_plan_selected_cycle;
+                        }
 
-                        foreach ($product_id as $pid) {
-                            $woo_sel_pro_plan_cycle_tmp = get_post_meta($pid, '_arm_woocommerce_membership_post_subscription_id', true);
-                            if($woo_sel_pro_plan_cycle_tmp != "") {
-                                $woo_sel_pro_plan_cycle = $woo_sel_pro_plan_cycle_tmp;
-                                break;
+                        if($woo_sel_pro_plan_cycle == "")
+                        {
+                            foreach ($product_id as $pid) {
+                                $woo_sel_pro_plan_cycle_tmp = get_post_meta($pid, '_arm_woocommerce_membership_post_subscription_id', true);
+                                if($woo_sel_pro_plan_cycle_tmp != "") {
+                                    $woo_sel_pro_plan_cycle = $woo_sel_pro_plan_cycle_tmp;
+                                    break;
+                                }
                             }
                         }
                         $userPlanData['arm_payment_cycle'] = $woo_sel_pro_plan_cycle;
@@ -931,8 +1271,7 @@ if (!class_exists('ARM_wocommerce_feature')) {
                     
                     $is_update_plan = true;
                     $arm_last_payment_status = $wpdb->get_var($wpdb->prepare("SELECT `arm_transaction_status` FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_user_id`=%d AND `arm_plan_id`=%d AND `arm_created_date`<=%s ORDER BY `arm_log_id` DESC LIMIT 0,1", $user_id, $entry_plan, current_time('mysql')));
-                    
-                    
+
                     $old_plan_ids = get_user_meta($user_id, 'arm_user_plan_ids', true);
                     $old_plan_ids = !empty($old_plan_ids) ? $old_plan_ids : array();
                     $old_plan_id = isset($old_plan_ids[0]) ? $old_plan_ids[0] : 0;
@@ -949,7 +1288,7 @@ if (!class_exists('ARM_wocommerce_feature')) {
 
                     if ($old_plan->exists()) {  
                         if ($old_plan->is_lifetime() || $old_plan->is_free() || ($old_plan->is_recurring() && $new_plan->is_recurring())) {
-                                $is_update_plan = true;
+                            $is_update_plan = true;
                         } 
                         else {
                             $change_act = 'immediate';
@@ -992,13 +1331,21 @@ if (!class_exists('ARM_wocommerce_feature')) {
                     $entry_id = $wpdb->get_row( $wpdb->prepare( 'SELECT arm_entry_id FROM '.$entry_tbl.' WHERE arm_entry_email = %s and arm_name = %s and arm_form_id = %d order by arm_entry_id desc', $user_email, 'woocommerce', $order_id ), ARRAY_A );
                     update_user_meta($user_id, 'arm_entry_id', $entry_id['arm_entry_id']);
                     
+                    $arm_debug_log_data = array(
+                        'userid' => $user_id,
+                        'plan' => $entry_plan,
+                        'orderid' => $order_id,
+                        'plantype' => $plan_type,
+                    );
+                    do_action('arm_payment_log_entry', 'woocommerce', 'order'.$order_id.' paid post store log data', 'armember', $arm_debug_log_data, $arm_debug_payment_log_id);
+
                     $is_woocommerce_feature->arm_store_woocommerce_log($user_id, $entry_plan, $order_id, $plan_type, $mapped_product_amt_total);
                 }
             }
         }
 
         function arm_woocommerce_cancel_membership_from_order($order_id) {
-            global $ARMember, $arm_subscription_plans, $arm_members_class, $woocommerce, $is_multiple_membership_feature, $arm_pay_per_post_feature;
+            global $ARMember, $arm_subscription_plans, $arm_members_class, $woocommerce, $is_multiple_membership_feature, $arm_pay_per_post_feature, $arm_debug_payment_log_id;
 
             $order = new WC_Order($order_id);
             $member_user_id = $order->get_customer_id();
@@ -1149,16 +1496,40 @@ if (!class_exists('ARM_wocommerce_feature')) {
                         }
                     }
                 }
+		
+		$arm_debug_log_data = array(
+                    'user_id' => $member_user_id,
+                    'order_id' => $order_id,
+                );
+                do_action('arm_payment_log_entry', 'woocommerce', 'order'.$order_id.' cancel membership order data', 'armember', $arm_debug_log_data, $arm_debug_payment_log_id);
             }
         }
 
         function arm_store_woocommerce_log($user_id = 0, $plan_id = 0, $order_id = 0, $plan_type = '', $product_or_order_amt='0') {
-            global $arm_payment_gateways;
+            global $wpdb, $ARMember, $arm_payment_gateways;
 
             $order = new WC_Order($order_id);
             $user_info = get_userdata($user_id);
             $user_email = $user_info->user_email;
 
+            $arm_entry_id = get_user_meta($user_id, 'arm_wooc_gateway_entry_id', true);
+            $arm_tax_percentage = get_user_meta($user_id, 'arm_wooc_gateway_tax_'.$arm_entry_id, true);
+            $arm_coupon_code = get_user_meta($user_id, 'arm_wooc_gateway_coupon_'.$arm_entry_id, true);
+
+            $arm_extra_vars = array();
+
+            if(!empty($arm_tax_percentage)){
+                $arm_plan = new ARM_Plan($plan_id);
+                $arm_plan_amount = $arm_plan->amount;
+
+                $arm_tax_amount = ($arm_plan_amount * $arm_tax_percentage) / 100;
+
+                $arm_extra_vars = array(
+                    'tax_amount' => number_format($arm_tax_amount, 2),
+                    'tax_percentage' => number_format($arm_tax_percentage, 2),
+                );
+            }
+            
             $payment_data = array(
                 'arm_user_id' => $user_id,
                 'arm_first_name' => $user_info->first_name,
@@ -1175,11 +1546,26 @@ if (!class_exists('ARM_wocommerce_feature')) {
                 'arm_payment_date' => $order->order_date,
                 'arm_amount' => $product_or_order_amt,
                 'arm_currency' => $order->get_currency(),
-                'arm_coupon_code' => '',
-                'arm_response_text' => '',
-                'arm_extra_vars' => '',
+                'arm_coupon_code' => $arm_coupon_code,
+                'arm_extra_vars' => maybe_serialize($arm_extra_vars),
                 'arm_created_date' => current_time('mysql')
             );
+
+            if(!empty($arm_coupon_code)){
+                //Get coupon details
+                global $arm_manage_coupons;
+                $arm_coupon_details = $arm_manage_coupons->arm_get_coupon($arm_coupon_code);
+                if(!empty($arm_coupon_details))
+                {
+                    $arm_coupon_discount = $arm_coupon_details['arm_coupon_discount'];
+                    $arm_coupon_discount_type = $arm_coupon_details['arm_coupon_discount_type'];
+                    $arm_coupon_on_each_subs = $arm_coupon_details['arm_coupon_on_each_subscriptions'];
+
+                    $payment_data['arm_coupon_discount'] = $arm_coupon_discount;
+                    $payment_data['arm_coupon_discount_type'] = $arm_coupon_discount_type;
+                    $payment_data['arm_coupon_on_each_subscriptions'] = $arm_coupon_on_each_subs;
+                }
+            }
 
             $arm_payment_gateways->arm_save_payment_log($payment_data);
         }
@@ -1194,7 +1580,7 @@ if (!class_exists('ARM_wocommerce_feature')) {
         
         function arm_woocommerce_add_payment_gateway_name($gatewayNames)
         {
-            $gatewayNames['woocommerce'] =  __('Woocommerce', 'ARMember');
+            $gatewayNames['woocommerce'] =  __('WooCommerce', 'ARMember');
             return $gatewayNames;
         }
         
@@ -1262,174 +1648,174 @@ if (!class_exists('ARM_wocommerce_feature')) {
         
         function arm_woocommerce_add_currency($all_currency)
         {
-               $arm_woocommerce_currency_array =  apply_filters( 'woocommerce_currency_symbols', array(
-		'AED' => '&#x62f;.&#x625;',
-		'AFN' => '&#x60b;',
-		'ALL' => 'L',
-		'AMD' => 'AMD',
-		'ANG' => '&fnof;',
-		'AOA' => 'Kz',
-		'ARS' => '&#36;',
-		'AUD' => '&#36;',
-		'AWG' => '&fnof;',
-		'AZN' => 'AZN',
-		'BAM' => 'KM',
-		'BBD' => '&#36;',
-		'BDT' => '&#2547;&nbsp;',
-		'BGN' => '&#1083;&#1074;.',
-		'BHD' => '.&#x62f;.&#x628;',
-		'BIF' => 'Fr',
-		'BMD' => '&#36;',
-		'BND' => '&#36;',
-		'BOB' => 'Bs.',
-		'BRL' => '&#82;&#36;',
-		'BSD' => '&#36;',
-		'BTC' => '&#3647;',
-		'BTN' => 'Nu.',
-		'BWP' => 'P',
-		'BYR' => 'Br',
-		'BZD' => '&#36;',
-		'CAD' => '&#36;',
-		'CDF' => 'Fr',
-		'CHF' => '&#67;&#72;&#70;',
-		'CLP' => '&#36;',
-		'CNY' => '&yen;',
-		'COP' => '&#36;',
-		'CRC' => '&#x20a1;',
-		'CUC' => '&#36;',
-		'CUP' => '&#36;',
-		'CVE' => '&#36;',
-		'CZK' => '&#75;&#269;',
-		'DJF' => 'Fr',
-		'DKK' => 'DKK',
-		'DOP' => 'RD&#36;',
-		'DZD' => '&#x62f;.&#x62c;',
-		'EGP' => 'EGP',
-		'ERN' => 'Nfk',
-		'ETB' => 'Br',
-		'EUR' => '&euro;',
-		'FJD' => '&#36;',
-		'FKP' => '&pound;',
-		'GBP' => '&pound;',
-		'GEL' => '&#x10da;',
-		'GGP' => '&pound;',
-		'GHS' => '&#x20b5;',
-		'GIP' => '&pound;',
-		'GMD' => 'D',
-		'GNF' => 'Fr',
-		'GTQ' => 'Q',
-		'GYD' => '&#36;',
-		'HKD' => '&#36;',
-		'HNL' => 'L',
-		'HRK' => 'Kn',
-		'HTG' => 'G',
-		'HUF' => '&#70;&#116;',
-		'IDR' => 'Rp',
-		'ILS' => '&#8362;',
-		'IMP' => '&pound;',
-		'INR' => '&#8377;',
-		'IQD' => '&#x639;.&#x62f;',
-		'IRR' => '&#xfdfc;',
-		'ISK' => 'kr.',
-		'JEP' => '&pound;',
-		'JMD' => '&#36;',
-		'JOD' => '&#x62f;.&#x627;',
-		'JPY' => '&yen;',
-		'KES' => 'KSh',
-		'KGS' => '&#x441;&#x43e;&#x43c;',
-		'KHR' => '&#x17db;',
-		'KMF' => 'Fr',
-		'KPW' => '&#x20a9;',
-		'KRW' => '&#8361;',
-		'KWD' => '&#x62f;.&#x643;',
-		'KYD' => '&#36;',
-		'KZT' => 'KZT',
-		'LAK' => '&#8365;',
-		'LBP' => '&#x644;.&#x644;',
-		'LKR' => '&#xdbb;&#xdd4;',
-		'LRD' => '&#36;',
-		'LSL' => 'L',
-		'LYD' => '&#x644;.&#x62f;',
-		'MAD' => '&#x62f;. &#x645;.',
-		'MAD' => '&#x62f;.&#x645;.',
-		'MDL' => 'L',
-		'MGA' => 'Ar',
-		'MKD' => '&#x434;&#x435;&#x43d;',
-		'MMK' => 'Ks',
-		'MNT' => '&#x20ae;',
-		'MOP' => 'P',
-		'MRO' => 'UM',
-		'MUR' => '&#x20a8;',
-		'MVR' => '.&#x783;',
-		'MWK' => 'MK',
-		'MXN' => '&#36;',
-		'MYR' => '&#82;&#77;',
-		'MZN' => 'MT',
-		'NAD' => '&#36;',
-		'NGN' => '&#8358;',
-		'NIO' => 'C&#36;',
-		'NOK' => '&#107;&#114;',
-		'NPR' => '&#8360;',
-		'NZD' => '&#36;',
-		'OMR' => '&#x631;.&#x639;.',
-		'PAB' => 'B/.',
-		'PEN' => 'S/.',
-		'PGK' => 'K',
-		'PHP' => '&#8369;',
-		'PKR' => '&#8360;',
-		'PLN' => '&#122;&#322;',
-		'PRB' => '&#x440;.',
-		'PYG' => '&#8370;',
-		'QAR' => '&#x631;.&#x642;',
-		'RMB' => '&yen;',
-		'RON' => 'lei',
-		'RSD' => '&#x434;&#x438;&#x43d;.',
-		'RUB' => '&#8381;',
-		'RWF' => 'Fr',
-		'SAR' => '&#x631;.&#x633;',
-		'SBD' => '&#36;',
-		'SCR' => '&#x20a8;',
-		'SDG' => '&#x62c;.&#x633;.',
-		'SEK' => '&#107;&#114;',
-		'SGD' => '&#36;',
-		'SHP' => '&pound;',
-		'SLL' => 'Le',
-		'SOS' => 'Sh',
-		'SRD' => '&#36;',
-		'SSP' => '&pound;',
-		'STD' => 'Db',
-		'SYP' => '&#x644;.&#x633;',
-		'SZL' => 'L',
-		'THB' => '&#3647;',
-		'TJS' => '&#x405;&#x41c;',
-		'TMT' => 'm',
-		'TND' => '&#x62f;.&#x62a;',
-		'TOP' => 'T&#36;',
-		'TRY' => '&#8378;',
-		'TTD' => '&#36;',
-		'TWD' => '&#78;&#84;&#36;',
-		'TZS' => 'Sh',
-		'UAH' => '&#8372;',
-		'UGX' => 'UGX',
-		'USD' => '&#36;',
-		'UYU' => '&#36;',
-		'UZS' => 'UZS',
-		'VEF' => 'Bs F',
-		'VND' => '&#8363;',
-		'VUV' => 'Vt',
-		'WST' => 'T',
-		'XAF' => 'Fr',
-		'XCD' => '&#36;',
-		'XOF' => 'Fr',
-		'XPF' => 'Fr',
-		'YER' => '&#xfdfc;',
-		'ZAR' => '&#82;',
-		'ZMW' => 'ZK',
-	) );
-	
-             $all_currency = array_merge($all_currency, $arm_woocommerce_currency_array); 
-         
-             return $all_currency; 
+            $arm_woocommerce_currency_array =  apply_filters( 'woocommerce_currency_symbols', array(
+            'AED' => '&#x62f;.&#x625;',
+            'AFN' => '&#x60b;',
+            'ALL' => 'L',
+            'AMD' => 'AMD',
+            'ANG' => '&fnof;',
+            'AOA' => 'Kz',
+            'ARS' => '&#36;',
+            'AUD' => '&#36;',
+            'AWG' => '&fnof;',
+            'AZN' => 'AZN',
+            'BAM' => 'KM',
+            'BBD' => '&#36;',
+            'BDT' => '&#2547;&nbsp;',
+            'BGN' => '&#1083;&#1074;.',
+            'BHD' => '.&#x62f;.&#x628;',
+            'BIF' => 'Fr',
+            'BMD' => '&#36;',
+            'BND' => '&#36;',
+            'BOB' => 'Bs.',
+            'BRL' => '&#82;&#36;',
+            'BSD' => '&#36;',
+            'BTC' => '&#3647;',
+            'BTN' => 'Nu.',
+            'BWP' => 'P',
+            'BYR' => 'Br',
+            'BZD' => '&#36;',
+            'CAD' => '&#36;',
+            'CDF' => 'Fr',
+            'CHF' => '&#67;&#72;&#70;',
+            'CLP' => '&#36;',
+            'CNY' => '&yen;',
+            'COP' => '&#36;',
+            'CRC' => '&#x20a1;',
+            'CUC' => '&#36;',
+            'CUP' => '&#36;',
+            'CVE' => '&#36;',
+            'CZK' => '&#75;&#269;',
+            'DJF' => 'Fr',
+            'DKK' => 'DKK',
+            'DOP' => 'RD&#36;',
+            'DZD' => '&#x62f;.&#x62c;',
+            'EGP' => 'EGP',
+            'ERN' => 'Nfk',
+            'ETB' => 'Br',
+            'EUR' => '&euro;',
+            'FJD' => '&#36;',
+            'FKP' => '&pound;',
+            'GBP' => '&pound;',
+            'GEL' => '&#x10da;',
+            'GGP' => '&pound;',
+            'GHS' => '&#x20b5;',
+            'GIP' => '&pound;',
+            'GMD' => 'D',
+            'GNF' => 'Fr',
+            'GTQ' => 'Q',
+            'GYD' => '&#36;',
+            'HKD' => '&#36;',
+            'HNL' => 'L',
+            'HRK' => 'Kn',
+            'HTG' => 'G',
+            'HUF' => '&#70;&#116;',
+            'IDR' => 'Rp',
+            'ILS' => '&#8362;',
+            'IMP' => '&pound;',
+            'INR' => '&#8377;',
+            'IQD' => '&#x639;.&#x62f;',
+            'IRR' => '&#xfdfc;',
+            'ISK' => 'kr.',
+            'JEP' => '&pound;',
+            'JMD' => '&#36;',
+            'JOD' => '&#x62f;.&#x627;',
+            'JPY' => '&yen;',
+            'KES' => 'KSh',
+            'KGS' => '&#x441;&#x43e;&#x43c;',
+            'KHR' => '&#x17db;',
+            'KMF' => 'Fr',
+            'KPW' => '&#x20a9;',
+            'KRW' => '&#8361;',
+            'KWD' => '&#x62f;.&#x643;',
+            'KYD' => '&#36;',
+            'KZT' => 'KZT',
+            'LAK' => '&#8365;',
+            'LBP' => '&#x644;.&#x644;',
+            'LKR' => '&#xdbb;&#xdd4;',
+            'LRD' => '&#36;',
+            'LSL' => 'L',
+            'LYD' => '&#x644;.&#x62f;',
+            'MAD' => '&#x62f;. &#x645;.',
+            'MAD' => '&#x62f;.&#x645;.',
+            'MDL' => 'L',
+            'MGA' => 'Ar',
+            'MKD' => '&#x434;&#x435;&#x43d;',
+            'MMK' => 'Ks',
+            'MNT' => '&#x20ae;',
+            'MOP' => 'P',
+            'MRO' => 'UM',
+            'MUR' => '&#x20a8;',
+            'MVR' => '.&#x783;',
+            'MWK' => 'MK',
+            'MXN' => '&#36;',
+            'MYR' => '&#82;&#77;',
+            'MZN' => 'MT',
+            'NAD' => '&#36;',
+            'NGN' => '&#8358;',
+            'NIO' => 'C&#36;',
+            'NOK' => '&#107;&#114;',
+            'NPR' => '&#8360;',
+            'NZD' => '&#36;',
+            'OMR' => '&#x631;.&#x639;.',
+            'PAB' => 'B/.',
+            'PEN' => 'S/.',
+            'PGK' => 'K',
+            'PHP' => '&#8369;',
+            'PKR' => '&#8360;',
+            'PLN' => '&#122;&#322;',
+            'PRB' => '&#x440;.',
+            'PYG' => '&#8370;',
+            'QAR' => '&#x631;.&#x642;',
+            'RMB' => '&yen;',
+            'RON' => 'lei',
+            'RSD' => '&#x434;&#x438;&#x43d;.',
+            'RUB' => '&#8381;',
+            'RWF' => 'Fr',
+            'SAR' => '&#x631;.&#x633;',
+            'SBD' => '&#36;',
+            'SCR' => '&#x20a8;',
+            'SDG' => '&#x62c;.&#x633;.',
+            'SEK' => '&#107;&#114;',
+            'SGD' => '&#36;',
+            'SHP' => '&pound;',
+            'SLL' => 'Le',
+            'SOS' => 'Sh',
+            'SRD' => '&#36;',
+            'SSP' => '&pound;',
+            'STD' => 'Db',
+            'SYP' => '&#x644;.&#x633;',
+            'SZL' => 'L',
+            'THB' => '&#3647;',
+            'TJS' => '&#x405;&#x41c;',
+            'TMT' => 'm',
+            'TND' => '&#x62f;.&#x62a;',
+            'TOP' => 'T&#36;',
+            'TRY' => '&#8378;',
+            'TTD' => '&#36;',
+            'TWD' => '&#78;&#84;&#36;',
+            'TZS' => 'Sh',
+            'UAH' => '&#8372;',
+            'UGX' => 'UGX',
+            'USD' => '&#36;',
+            'UYU' => '&#36;',
+            'UZS' => 'UZS',
+            'VEF' => 'Bs F',
+            'VND' => '&#8363;',
+            'VUV' => 'Vt',
+            'WST' => 'T',
+            'XAF' => 'Fr',
+            'XCD' => '&#36;',
+            'XOF' => 'Fr',
+            'XPF' => 'Fr',
+            'YER' => '&#xfdfc;',
+            'ZAR' => '&#82;',
+            'ZMW' => 'ZK',
+            ) );
+
+            $all_currency = array_merge($all_currency, $arm_woocommerce_currency_array); 
+
+            return $all_currency; 
         }
 
     }

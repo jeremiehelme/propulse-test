@@ -82,15 +82,14 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
 
 ?>
 <div class="wrap arm_page arm_subscription_plan_main_wrapper armPageContainer">
+    <?php
+    if ($setact != 1) {
+        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
+        ?>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+    <?php } ?>
     <div class="content_wrapper arm_subscription_plan_content" id="content_wrapper">
         <div class="page_title"><?php echo $form_mode; ?></div>
-        <?php
-        if ($setact != 1) {
-            $admin_css_url = admin_url('admin.php?page=arm_manage_license');
-            ?>
-
-            <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
-        <?php } ?>
         <div class="armclear"></div>
 
         <form  method="post" id="arm_add_edit_plan_form" class="arm_add_edit_plan_form arm_admin_form">
@@ -106,7 +105,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                             <input name="plan_name" id="plan_name" type="text" size="50" class="arm_subscription_plan_form_input" title="Plan name" value="<?php echo $plan_name; ?>" data-msg-required="<?php _e('Plan name can not be left blank.', 'ARMember'); ?>" required />
                         </td>
                     </tr>
-                    <tr>
+                    <tr class="form-field">
                         <th>
                             <label for="plan_description"><?php _e('Plan Description', 'ARMember'); ?></label>
                         </th>
@@ -129,11 +128,11 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                 <div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_member_role" id="arm_confirm_box_member_role">
                                     <div class="arm_confirm_box_body">
                                         <div class="arm_confirm_box_arrow"></div>
-                                        <div class="arm_confirm_box_text arm_custom_currency_fields" style="text-align: left;">
+                                        <div class="arm_confirm_box_text arm_custom_currency_fields arm_text_align_left" >
                                             <input type='hidden' id="arm_plan_role" class="arm_plan_role_change_input" name="plan_role" data-old="<?php echo $plan_role; ?>" value="<?php echo $plan_role; ?>" data-type="<?php echo $role_name; ?>"/>
 
-                                            <dl class="arm_selectbox arm_subscription_plan_form_dropdown" style="margin-right:0px;">
-                                                <dt style="width: 210px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                            <dl class="arm_selectbox arm_subscription_plan_form_dropdown arm_margin_right_0 arm_width_210" >
+                                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                 <dd>
                                                     <ul data-id="arm_plan_role">
                                                         <?php if (!empty($user_roles)): ?>
@@ -146,7 +145,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                             </dl>
                                         </div>
                                         <div class='arm_confirm_box_btn_container'>
-                                            <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_member_plan_role_btn" style="margin-right: 5px;"><?php _e('Ok', 'ARMember'); ?></button>
+                                            <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_member_plan_role_btn arm_margin_right_5 " ><?php _e('Ok', 'ARMember'); ?></button>
                                             <button type="button" class="arm_confirm_box_btn armcancel"onclick="hidePlanRoleChangeBoxCallback();"><?php _e('Cancel', 'ARMember'); ?></button>
                                         </div>
                                     </div>
@@ -220,10 +219,16 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                     $global_currency_sym_pos_suf = (!empty($global_currency_sym_pos) && $global_currency_sym_pos == 'suffix' ? '' : 'hidden_section');
                                     ?>
                                     <span class="arm_prefix_currency_symbol <?php echo $global_currency_sym_pos_pre; ?>"><?php echo $global_currency_sym; ?></span>
-                                    <input type="text" name="arm_subscription_plan_amount" id="arm_subscription_plan_amount" value="<?php echo (!empty($plan_data['arm_subscription_plan_amount']) ? $plan_data['arm_subscription_plan_amount'] : '') ?>" data-msg-required="<?php _e('Amount should not be blank.', 'ARMember'); ?>" onkeypress="javascript:return ArmNumberValidation(event, this)" class="arm_no_paste" />
+                                    <input type="text" name="arm_subscription_plan_amount" id="arm_subscription_plan_amount" value="<?php echo (isset($plan_data['arm_subscription_plan_amount']) ? $plan_data['arm_subscription_plan_amount'] : '') ?>" data-msg-required="<?php _e('Amount should not be blank.', 'ARMember'); ?>" onkeypress="javascript:return ArmNumberValidation(event, this)" class="arm_no_paste" />
                                     <span class="arm_suffix_currency_symbol <?php echo $global_currency_sym_pos_suf; ?>"><?php echo $global_currency_sym; ?></span>
                                 </td>
                             </tr>
+                            <?php 
+                                $arm_add_plan_amount_html_for_paid_plan = '';
+                                $plan_type = 'paid_plan';
+                                $arm_payment_cycle_num = '';
+                                echo apply_filters('arm_admin_membership_plan_html_after_amount', $arm_add_plan_amount_html_for_paid_plan, $plan_data, $plan_type, $arm_payment_cycle_num);
+                            ?>
                           
                             <tr class="form-field paid_subscription_options_finite <?php echo ($subscription_type == 'paid_finite') ? '' : 'hidden_section'; ?>">
                                 <th><label><?php _e('Plan Duration', 'ARMember'); ?></label></th>
@@ -237,8 +242,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                         <div class="arm_expiry_joined_date_box" id="arm_expiry_joined_date_box">
                                             <div id="arm_eopa_D" class="arm_eopa_select" style="<?php echo (isset($plan_options["eopa"]["type"]) && ($plan_options["eopa"]["type"] != "D" || $plan_options["eopa"]["type"] == "")) ? "display:none;" : ''; ?>">
                                                 <input type='hidden' id='arm_eopa_days' name="arm_subscription_plan_options[eopa][days]" value='<?php echo (!empty($plan_options["eopa"]["days"])) ? $plan_options["eopa"]["days"] : 1; ?>' />
-                                                <dl class="arm_selectbox column_level_dd">
-                                                    <dt style="width: 70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                <dl class="arm_selectbox column_level_dd arm_width_120">
+                                                    <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                     <dd>
                                                         <ul data-id="arm_eopa_days">
                                                             <?php for ($i = 1; $i <= 90; $i++) { ?>
@@ -251,8 +256,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                             </div>
                                             <div id="arm_eopa_W" class="arm_eopa_select" style="<?php echo (isset($plan_options["eopa"]["type"]) && $plan_options["eopa"]["type"] != "W") ? "display:none;" : ''; ?>">
                                                 <input type='hidden' id='arm_eopa_weeks' name="arm_subscription_plan_options[eopa][weeks]" value="<?php echo!empty($plan_options["eopa"]["weeks"]) ? $plan_options["eopa"]["weeks"] : 1; ?>" />
-                                                <dl class="arm_selectbox column_level_dd">
-                                                    <dt style="width: 70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                <dl class="arm_selectbox column_level_dd arm_width_120">
+                                                    <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                     <dd>
                                                         <ul data-id="arm_eopa_weeks">
                                                             <?php for ($i = 1; $i <= 52; $i++) { ?>
@@ -265,8 +270,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                             </div>
                                             <div id="arm_eopa_M" class="arm_eopa_select" style="<?php echo (isset($plan_options["eopa"]["type"]) && $plan_options["eopa"]["type"] != "M") ? "display:none;" : ''; ?>">
                                                 <input type='hidden' id='arm_eopa_months' name="arm_subscription_plan_options[eopa][months]" value="<?php echo!empty($plan_options["eopa"]["months"]) ? $plan_options["eopa"]["months"] : 1; ?>" />
-                                                <dl class="arm_selectbox column_level_dd">
-                                                    <dt style="width: 70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                <dl class="arm_selectbox column_level_dd arm_width_120">
+                                                    <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                     <dd>
                                                         <ul data-id="arm_eopa_months">
                                                             <?php for ($i = 1; $i <= 24; $i++) { ?>
@@ -279,8 +284,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                             </div>
                                             <div id="arm_eopa_Y" class="arm_eopa_select" style="<?php echo (isset($plan_options["eopa"]["type"]) && $plan_options["eopa"]["type"] != "Y") ? "display:none;" : ''; ?>">
                                                 <input type='hidden' id='arm_eopa_years' name="arm_subscription_plan_options[eopa][years]" value="<?php echo!empty($plan_options["eopa"]["years"]) ? $plan_options["eopa"]["years"] : 1; ?>"/>
-                                                <dl class="arm_selectbox column_level_dd">
-                                                    <dt style="width: 70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                <dl class="arm_selectbox column_level_dd arm_width_120">
+                                                    <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                     <dd>
                                                         <ul data-id="arm_eopa_years">
                                                             <?php for ($i = 1; $i <= 15; $i++) { ?>
@@ -293,8 +298,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                             </div>
                                             <div id="arm_eopa_type_main" class="arm_eopa_type_main" >
                                             <input type='hidden' id='arm_eopa_type' name="arm_subscription_plan_options[eopa][type]" value="<?php echo $plan_options["eopa"]['type']; ?>" onChange="arm_subscription_plan_duration_select();" />
-                                            <dl class="arm_selectbox column_level_dd">
-                                                <dt style="width: 70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                            <dl class="arm_selectbox column_level_dd arm_width_120">
+                                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                 <dd>
                                                     <ul data-id="arm_eopa_type">
                                                         <li data-label="<?php _e('Day(s)', 'ARMember'); ?>" data-value="D"><?php _e('Day(s)', 'ARMember'); ?></li>
@@ -314,9 +319,9 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                             <label for="arm_plan_finite_expiry_fix_date"><?php _e('Fix Expiration Date', 'ARMember'); ?></label>
                                             <i class="arm_helptip_icon armfa armfa-question-circle" title='<?php _e('User will be expired after the certain date selected here. No matter when he joined. For example if date is set 31 Dec, 2017 then all users having this plan will be expired on that date no matter when he registered.', 'ARMember'); ?>'></i>
                                         </div>
-                                        <div class="arm_expiry_fix_date_box" id="arm_expiry_fix_date_box" style="position: relative;">
+                                        <div class="arm_expiry_fix_date_box arm_position_relative" id="arm_expiry_fix_date_box" >
                                             <input type="hidden" name="wordpress_date_format" id="arm_finite_plan_expiry_format" value="<?php echo get_option( 'date_format' ); ?>">
-                                            <input type="text" id="arm_finite_plan_expiry_date" value="<?php echo ( (isset($plan_options['expiry_date']) && !empty($plan_options['expiry_date'])) ? date($arm_common_date_format, strtotime($plan_options['expiry_date'])) : ''); ?>" data-date_format="<?php echo $arm_common_date_format; ?>" name="arm_subscription_plan_options[expiry_date]" class="arm_finite_plan_expiry_date" data-editmode="<?php echo ($edit_mode) ? '1' : '0'; ?>" data-msg-required="<?php _e('Please select expiry date.', 'ARMember'); ?>" required/>
+                                            <input type="text" id="arm_finite_plan_expiry_date" value="<?php echo ( (isset($plan_options['expiry_date']) && !empty($plan_options['expiry_date'])) ? date($arm_common_date_format, strtotime($plan_options['expiry_date'])) : ''); ?>" data-date_format="<?php echo $arm_common_date_format; ?>" name="arm_subscription_plan_options[expiry_date]" class="arm_finite_plan_expiry_date" data-editmode="<?php echo ($edit_mode) ? '1' : '0'; ?>" data-msg-required="<?php _e('Please select expiry date.', 'ARMember'); ?>"/>
                                         </div>
                                     </div>
                                     
@@ -386,16 +391,20 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                                         <label class="arm_plan_payment_cycle_amount_text"><?php _e('Amount', 'ARMember'); ?></label>
                                                         <div class="arm_plan_payment_cycle_amount_input">
                                                         <span class="arm_prefix_currency_symbol <?php echo $global_currency_sym_pos_pre; ?>"><?php echo $global_currency_sym; ?></span>
-                                                         <input type="text" name="arm_subscription_plan_options[payment_cycles][<?php echo $arm_pc; ?>][cycle_amount]" value="<?php echo (!empty($arm_value['cycle_amount'])) ? $arm_value['cycle_amount'] : ''; ?>" class="paid_subscription_options_recurring_payment_cycle_amount" data-msg-required="<?php _e('Amount should not be blank.', 'ARMember'); ?>" onkeypress="javascript:return ArmNumberValidation(event, this)" />
+                                                         <input type="text" name="arm_subscription_plan_options[payment_cycles][<?php echo $arm_pc; ?>][cycle_amount]" value="<?php echo (isset($arm_value['cycle_amount'])) ? $arm_value['cycle_amount'] : ''; ?>" class="paid_subscription_options_recurring_payment_cycle_amount" data-msg-required="<?php _e('Amount should not be blank.', 'ARMember'); ?>" onkeypress="javascript:return ArmNumberValidation(event, this)" />
                                                          <span class="arm_suffix_currency_symbol <?php echo $global_currency_sym_pos_suf; ?>"><?php echo $global_currency_sym; ?></span>
                                                         </div>
                                                     </div>
-
+                                                    <?php 
+                                                        $arm_add_plan_amount_html_for_plan = '';
+                                                        $plan_type = 'recurring';
+                                                        echo apply_filters('arm_admin_membership_plan_html_after_amount', $arm_add_plan_amount_html_for_plan, $plan_data, $plan_type, $arm_pc);
+                                                    ?>
                                                     <div class="arm_plan_payment_cycle_billing_cycle"><label class="arm_plan_payment_cycle_billing_text"><?php _e('Billing Cycle', 'ARMember'); ?></label>
                                                       <div class="arm_plan_payment_cycle_billing_input">
                                                           <input type='hidden' id='arm_ipc_billing<?php echo $arm_pc; ?>' name="arm_subscription_plan_options[payment_cycles][<?php echo $arm_pc; ?>][billing_cycle]" value='<?php echo (!empty($arm_value['billing_cycle'])) ? $arm_value['billing_cycle'] : 1; ?>' />
-                                                                 <dl class="arm_selectbox column_level_dd" style="margin: 0px;">
-                                                                     <dt style="width: 60px; min-width: 50px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                 <dl class="arm_selectbox column_level_dd arm_margin_0 arm_width_60 arm_min_width_50">
+                                                                     <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                      <dd>
                                                                          <ul data-id="arm_ipc_billing<?php echo $arm_pc; ?>">
                                                                              <?php for ($i = 1; $i <= 90; $i++) { ?>
@@ -406,8 +415,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                                                  </dl>
 
                                                                 <input type='hidden' id='arm_ipc_billing_type<?php echo $arm_pc; ?>' name="arm_subscription_plan_options[payment_cycles][<?php echo $arm_pc; ?>][billing_type]" value='<?php echo (!empty($arm_value['billing_type'])) ? $arm_value['billing_type'] : "D"; ?>' />
-                                                                 <dl class="arm_selectbox column_level_dd" style=" margin: 0px;">
-                                                                     <dt style="width: 83px; min-width: 75px; "><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                 <dl class="arm_selectbox column_level_dd arm_margin_0 arm_width_120 arm_min_width_120" >
+                                                                     <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                      <dd>
                                                                          <ul data-id="arm_ipc_billing_type<?php echo $arm_pc; ?>">
 
@@ -425,8 +434,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                                     <div class="arm_plan_payment_cycle_recurring_time">
                                                           <label class="arm_plan_payment_cycle_recurring_text"><?php _e('Recurring Time', 'ARMember'); ?></label>
                                                           <input type='hidden' id='arm_ipc_recurring<?php echo $arm_pc; ?>' name="arm_subscription_plan_options[payment_cycles][<?php echo $arm_pc; ?>][recurring_time]" value='<?php echo (!empty($arm_value['recurring_time'])) ? $arm_value['recurring_time'] : 'infinite'; ?>' />
-                                                                 <dl class="arm_selectbox column_level_dd">
-                                                                     <dt style="width: 70px; min-width: 70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                 <dl class="arm_selectbox column_level_dd arm_width_100 arm_min_width_100">
+                                                                     <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                      <dd>
                                                                          <ul data-id="arm_ipc_recurring<?php echo $arm_pc; ?>">
                                                                              <li data-label="<?php _e('Infinite', 'ARMember'); ?>" data-value="infinite"><?php _e('Infinite', 'ARMember'); ?></li>
@@ -470,12 +479,18 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                                          <span class="arm_suffix_currency_symbol <?php echo $global_currency_sym_pos_suf; ?>"><?php echo $global_currency_sym; ?></span>
                                                         </div>
                                                     </div>
+                                                    <?php 
+                                                        $arm_add_plan_amount_html_for_plan = '';
+                                                        $plan_type = 'recurring';
+                                                        $arm_payment_cycle_num = 0;
+                                                        echo apply_filters('arm_admin_membership_plan_html_after_amount', $arm_add_plan_amount_html_for_plan, $plan_data, $plan_type, $arm_payment_cycle_num);
+                                                    ?>
 
                                                     <div class="arm_plan_payment_cycle_billing_cycle"><label class="arm_plan_payment_cycle_billing_text"><?php _e('Billing Cycle', 'ARMember'); ?></label>
                                                       <div class="arm_plan_payment_cycle_billing_input">
                                                           <input type='hidden' id='arm_ipc_billing0' name="arm_subscription_plan_options[payment_cycles][0][billing_cycle]" value='<?php echo (!empty($arm_value['billing_cycle'])) ? $arm_value['billing_cycle'] : 1; ?>' />
-                                                                 <dl class="arm_selectbox column_level_dd" style="margin: 0px;">
-                                                                     <dt style="width: 60px; min-width: 50px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                 <dl class="arm_selectbox column_level_dd arm_margin_0 arm_width_60 arm_min_width_50" >
+                                                                     <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                      <dd>
                                                                          <ul data-id="arm_ipc_billing0">
                                                                              <?php for ($i = 1; $i <= 90; $i++) { ?>
@@ -486,8 +501,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                                                  </dl>
 
                                                                 <input type='hidden' id='arm_ipc_billing_type0' name="arm_subscription_plan_options[payment_cycles][0][billing_type]" value='<?php echo (!empty($arm_value['billing_type'])) ? $arm_value['billing_type'] : "D"; ?>' />
-                                                                 <dl class="arm_selectbox column_level_dd" style="margin: 0px;">
-                                                                     <dt style="width: 83px; min-width: 75px; "><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                 <dl class="arm_selectbox column_level_dd arm_margin_0 arm_width_120 arm_min_width_120" >
+                                                                     <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                      <dd>
                                                                          <ul data-id="arm_ipc_billing_type0">
 
@@ -505,8 +520,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                                     <div class="arm_plan_payment_cycle_recurring_time">
                                                           <label class="arm_plan_payment_cycle_recurring_text"><?php _e('Recurring Time', 'ARMember'); ?></label>
                                                           <input type='hidden' id='arm_ipc_recurring0' name="arm_subscription_plan_options[payment_cycles][0][recurring_time]" value='<?php echo (!empty($arm_value['recurring_time'])) ? $arm_value['recurring_time'] : 'infinite'; ?>' />
-                                                                 <dl class="arm_selectbox column_level_dd" style="margin-right: 0px;">
-                                                                     <dt style="width: 70px; min-width: 70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                 <dl class="arm_selectbox column_level_dd arm_margin_right_0 arm_width_120 arm_min_width_120" >
+                                                                     <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                      <dd>
                                                                          <ul data-id="arm_ipc_recurring0">
                                                                              <li data-label="<?php _e('Infinite', 'ARMember'); ?>" data-value="infinite"><?php _e('Infinite', 'ARMember'); ?></li>
@@ -548,7 +563,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                     <?php $is_trial_period = (isset($plan_options["trial"]['is_trial_period'])) ? $plan_options["trial"]['is_trial_period'] : 0; ?>
                                     <div class="armswitch arm_global_setting_switch">
                                         <input type="checkbox" id="trial_period" name="arm_subscription_plan_options[trial][is_trial_period]" value="1" class="armswitch_input trial_period_chk" onclick="arm_hide_show_trial_options(this);" <?php checked($is_trial_period, '1'); ?> />
-                                        <label for="trial_period" class="armswitch_label" style="min-width:40px;"></label>
+                                        <label for="trial_period" class="armswitch_label arm_min_width_40" ></label>
                                     </div>
                                 </td>
                             </tr>
@@ -556,7 +571,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                 <th><label><?php _e('Trial amount', 'ARMember'); ?></label></th>
                                 <td>
                                     <span class="arm_prefix_currency_symbol <?php echo $global_currency_sym_pos_pre; ?>"><?php echo $global_currency_sym; ?></span>
-                                    <input type="text" name="arm_subscription_plan_options[trial][amount]" id="trial_amount" onkeypress="javascript:return ArmNumberValidation(event, this);" value="<?php echo (!empty($plan_options["trial"]['amount'])) ? $plan_options["trial"]['amount'] : 0; ?>" class="arm_no_paste" style="width: 235px;">
+                                    <input type="text" name="arm_subscription_plan_options[trial][amount]" id="trial_amount" onkeypress="javascript:return ArmNumberValidation(event, this);" value="<?php echo (!empty($plan_options["trial"]['amount'])) ? $plan_options["trial"]['amount'] : 0; ?>" class="arm_no_paste arm_width_235" >
                                     <span class="arm_suffix_currency_symbol <?php echo $global_currency_sym_pos_suf; ?>"><?php echo $global_currency_sym; ?></span>
                                 </td>
                             </tr>
@@ -565,8 +580,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                 <td>
                                     <div id="arm_plan_trial_recurring_days_main" class="arm_trial_select" style="<?php echo (isset($plan_options["trial"]["type"]) && ($plan_options["trial"]["type"] != "D" || $plan_options["trial"]["type"] == "")) ? "display:none;" : ''; ?>">
                                         <input type='hidden' id='arm_trial_days' name="arm_subscription_plan_options[trial][days]" value="<?php echo!empty($plan_options["trial"]["days"]) ? $plan_options["trial"]["days"] : 1; ?>" />
-                                        <dl class="arm_selectbox column_level_dd">
-                                            <dt style="width: 70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dl class="arm_selectbox column_level_dd arm_width_120">
+                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_trial_days">
                                                     <?php for ($i = 1; $i <= 365; $i++) { ?>
@@ -578,8 +593,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                     </div>
                                     <div id="arm_plan_trial_recurring_months_main" class="arm_trial_select" style="<?php echo (isset($plan_options["trial"]["type"]) && $plan_options["trial"]["type"] != "M") ? "display:none;" : ''; ?>">
                                         <input type='hidden' id='arm_trial_months' name="arm_subscription_plan_options[trial][months]" value="<?php echo!empty($plan_options["trial"]["months"]) ? $plan_options["trial"]["months"] : 1; ?>" />
-                                        <dl class="arm_selectbox column_level_dd">
-                                            <dt style="width: 70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dl class="arm_selectbox column_level_dd arm_width_120">
+                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_trial_months">
                                                     <?php for ($i = 1; $i <= 24; $i++) { ?>
@@ -592,8 +607,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                     </div>
                                     <div id="arm_plan_trial_recurring_years_main" class="arm_trial_select" style="<?php echo (isset($plan_options["trial"]["type"]) && $plan_options["trial"]["type"] != "Y") ? "display:none;" : ''; ?>">
                                         <input type='hidden' id='arm_trial_years' name="arm_subscription_plan_options[trial][years]" value="<?php echo!empty($plan_options["trial"]["years"]) ? $plan_options["trial"]["years"] : 1; ?>" />
-                                        <dl class="arm_selectbox column_level_dd">
-                                            <dt style="width: 70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dl class="arm_selectbox column_level_dd arm_width_120">
+                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_trial_years">
                                                     <?php for ($i = 1; $i <= 5; $i++) { ?>
@@ -606,8 +621,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                     </div>
                                     <div id="arm_plan_recurring_type_main" class="arm_plan_recurring_type_main" >
                                         <input type='hidden' id='arm_plan_trial_recurring_type' name="arm_subscription_plan_options[trial][type]" value="<?php echo $plan_options["trial"]['type']; ?>" onChange="arm_multiple_subscription_paypal_trial_recurring_type_select();" />
-                                        <dl class="arm_selectbox column_level_dd">
-                                            <dt style="width: 70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dl class="arm_selectbox column_level_dd arm_width_120">
+                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_plan_trial_recurring_type">
                                                     <li data-label="<?php _e('Day(s)', 'ARMember'); ?>" data-value="D"><?php _e('Day(s)', 'ARMember'); ?></li>
@@ -620,11 +635,11 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                 </td>
                             </tr>
                             <tr class="form-field arm_subscription_payment_mode <?php echo ($subscription_type == 'recurring') ? '' : 'hidden_section'; ?>">
-                                <th><label><?php _e('Billing Cycle Starts From', 'ARMember'); ?></label><br/><span style="font-size:13px;">(<?php _e('Possible only in the case of semi-automatic / manual subscription','ARMember'); ?>)</span></th>
+                                <th><label><?php _e('Billing Cycle Starts From', 'ARMember'); ?></label><br/><span class="arm_font_size_13">(<?php _e('Possible only in the case of semi-automatic / manual subscription','ARMember'); ?>)</span></th>
                                 <td>
                                     <input type='hidden' id='arm_manual_subscription_start_from' name="arm_subscription_plan_options[recurring][manual_billing_start]" value="<?php echo !empty($plan_options['recurring']['manual_billing_start']) ? $plan_options['recurring']['manual_billing_start'] : 'transaction_day'; ?>" />
-                                    <dl class="arm_selectbox column_level_dd">
-                                        <dt style="width: 250px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                    <dl class="arm_selectbox column_level_dd arm_width_250">
+                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                         <dd>
                                             <ul data-id="arm_manual_subscription_start_from">
                                                 <li data-label="<?php echo __('From Transaction Day', 'ARMember'); ?>" data-value="transaction_day"><?php echo __('From Transaction Day', 'ARMember'); ?></li>
@@ -667,7 +682,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                 ?>
                                <tr class="form-field paid_subscription_options_recurring <?php echo ($subscription_type == 'recurring') ? '' : 'hidden_section'; ?>">
                                 <th><label><?php _e('Cancel Subscription Action', 'ARMember'); ?><br>(<?php _e('By User', 'ARMember'); ?>)</label></th>
-                                <td style="vertical-align: top;">
+                                <td class="arm_vertical_align_top">
                                     <?php
                                     $cancel_action = (!empty($plan_options["cancel_action"])) ? $plan_options["cancel_action"] : 'block';
                                     if ($cancel_action != 'block') {
@@ -678,8 +693,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                     ?>
                                     <div>
                                         <input type='hidden' id='arm_plan_cancel_action' name="arm_subscription_plan_options[cancel_action]" value="<?php echo $cancel_action; ?>" />
-                                        <dl class="arm_selectbox column_level_dd">
-                                            <dt style="width: 370px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dl class="arm_selectbox column_level_dd arm_width_370">
+                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_plan_cancel_action"><?php echo '<li data-label="' . __('Remove this plan from user', 'ARMember') . '" data-value="block">' . __('Remove this plan from user', 'ARMember') . '</li>'.$cancel_eot_options; ?></ul>
                                             </dd>
@@ -693,14 +708,15 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                 <th></th>
                                 <td>
                                     <?php $cancel_plan_action = (isset($plan_options["cancel_plan_action"])) ? $plan_options["cancel_plan_action"] : 'immediate'; ?>
-                                    <span><?php _e("When user's subscription plan should be cancelled", 'ARMember'); ?></span>
+                                    <span class="arm_margin_bottom_5"><?php _e("When user's subscription plan should be cancelled", 'ARMember'); ?></span>
                                     <div class="arm_clear"></div>
                                     <label class="arm_cancel_action_on_expire">
                                         <input type="radio" class="arm_iradio arm_cancel_action_radio" name="arm_subscription_plan_options[cancel_plan_action]" value="on_expire" <?php checked($cancel_plan_action, 'on_expire') ?>/>
                                         <span><?php _e('Do not cancel subscription until plan expired', 'ARMember'); ?></span>
-                                        <span class="arm_current_plan_warning error"><?php _e('In case of infinite subscription plan cancelled, then that plan will be cancelled after current cycle completes.', 'ARMember'); ?></span>
 
-                                    </label>  <br/>
+                                    </label>
+                                    <span class="arm-note-message --warning arm_badge_size_field_label arm_margin_top_10"><?php _e('In case of infinite subscription plan cancelled, then that plan will be cancelled after current cycle completes.', 'ARMember'); ?></span>
+                                    <br/><br/>
                                     <label class="arm_cancel_action_immediate">
                                         <input type="radio" class="arm_iradio arm_cancel_action_radio" name="arm_subscription_plan_options[cancel_plan_action]" value="immediate" <?php checked($cancel_plan_action, 'immediate') ?>/>
                                         <span><?php _e('Cancel Subscription Immediately', 'ARMember'); ?></span>
@@ -721,7 +737,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                     ?>
                                     <input type='hidden' id='arm_end_of_term_action' name="arm_subscription_plan_options[eot]" value="<?php echo $eot_action; ?>" />
                                     <dl class="arm_selectbox column_level_dd arm_subscription_plan_options_eot">
-                                        <dt style="width: 370px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                         <dd>
                                             <ul data-id="arm_end_of_term_action"><?php echo '<li data-label="' . __('Remove this plan from user', 'ARMember') . '" data-value="block">' . __('Remove this plan from user', 'ARMember') . '</li>'.$cancel_eot_options; ?></ul>
                                         </dd>
@@ -730,12 +746,12 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                     <?php
                                     global $arm_global_settings;
 
-                                    $payment_gateway_notices = "<span class='arm_invalid' style='margin-bottom:25px;font-size: 16px;;'>" . __("Please consider following limitations of various payment gateways while configuring automatic subscription plan.", 'ARMember') . "</span>";
-                                    $payment_gateway_notices .= "<span style='margin-bottom:10px;'><b>" . __('Paypal (if paypal payment gateway is enabled)', 'ARMember') . "</b><br/><ol style='margin-left:30px;'><li>" . __('If your plan is Automatic Subscription and you have enabled Coupon Module then.', 'ARMember') . "<br/>" . __('- Due to paypal limitation it would be considered as a Trial Period of first installment.', 'ARMember') . "<br/>" . __('So, it would affect ( Your Recurring Time MINUS 1 ) number of occurance unless you have infinite duration.', 'ARMember') . " " . __('So, Please make sure you have set proper recurring time ( occurance ) in such case.', 'ARMember') . "</li><li>".__('Paypal supports maximum 90 days of trial duration for Auto Debit Subscription method.', 'ARMember')."</li></ol></span>";
+                                    $payment_gateway_notices = "<span class='arm_invalid arm_margin_bottom_25 arm_font_size_16' >" . __("Please consider following limitations of various payment gateways while configuring automatic subscription plan.", 'ARMember') . "</span>";
+                                    $payment_gateway_notices .= "<span class='arm_margin_bottom_10'><b>" . __('Paypal (if paypal payment gateway is enabled)', 'ARMember') . "</b><br/><ol class='arm_margin_left_30'><li>" . __('If your plan is Automatic Subscription and you have enabled Coupon Module then.', 'ARMember') . "<br/>" . __('- Due to paypal limitation it would be considered as a Trial Period of first installment.', 'ARMember') . "<br/>" . __('So, it would affect ( Your Recurring Time MINUS 1 ) number of occurance unless you have infinite duration.', 'ARMember') . " " . __('So, Please make sure you have set proper recurring time ( occurance ) in such case.', 'ARMember') . "</li><li>".__('Paypal supports maximum 90 days of trial duration for Auto Debit Subscription method.', 'ARMember')."</li></ol></span>";
                                     
-                                    $payment_gateway_notices .= "<span style='margin-bottom:10px;'><b>" . __('Stripe (if Stripe payment gateway is enabled)', 'ARMember') . "</b><br/><ol style='margin-left:30px;'><li>" . __('Stripe payment gateway supports only "Days" in Trial Duration Unit.', 'ARMember') . "</li></ol></span>";
-                                    $payment_gateway_notices .= "<span style='margin-bottom:10px;'><b>" . __('Authorize.net (if Authorize.net payment gateway is enabled)', 'ARMember') . "</b><br/><ol style='margin-left:30px;'><li>" . __('Authorize.net does not support billing cycle less than 7 Days. Also you can not set "Year" in billing cycle, as it is not supported in authorize.net.', 'ARMember') . "</li></ol></span>";
-                                    $payment_gateway_notices .= "<span style='margin-bottom:10px;'><b>" . __('2Checkout (if 2Checkout payment gateway is enabled)', 'ARMember') . "</b><br/><ol style='margin-left:30px;'><li>" . __('2Checkout does not support "Day" in billing cycle and free trial.', 'ARMember') . "<li>" . __('2checkout supports only first occurence of billing cycle as trial duration. So if you want to give trial,then set same parameters in "Billing cycle" and "Trial Period Duration", otherwise plan expiration willnot work properly with 2checkout.', 'ARMember') . "</li><li>" . __('In Case of Automatic subscription, If total payable amount will be 0 (Zero), then 2checkout gateway will not work.', 'ARMember') . "</li></ol></span>";
+                                    $payment_gateway_notices .= "<span class='arm_margin_bottom_10'><b>" . __('Stripe (if Stripe payment gateway is enabled)', 'ARMember') . "</b><br/><ol class='arm_margin_left_30'><li>" . __('Stripe payment gateway supports only "Days" in Trial Duration Unit.', 'ARMember') . "</li></ol></span>";
+                                    $payment_gateway_notices .= "<span class='arm_margin_bottom_10'><b>" . __('Authorize.net (if Authorize.net payment gateway is enabled)', 'ARMember') . "</b><br/><ol class='arm_margin_left_30'><li>" . __('Authorize.net does not support billing cycle less than 7 Days. Also you can not set "Year" in billing cycle, as it is not supported in authorize.net.', 'ARMember') . "</li></ol></span>";
+                                    $payment_gateway_notices .= "<span class='arm_margin_bottom_10'><b>" . __('2Checkout (if 2Checkout payment gateway is enabled)', 'ARMember') . "</b><br/><ol class='arm_margin_left_30'><li>" . __('2Checkout does not support "Day" in billing cycle and free trial.', 'ARMember') . "<li>" . __('2checkout supports only first occurence of billing cycle as trial duration. So if you want to give trial,then set same parameters in "Billing cycle" and "Trial Period Duration", otherwise plan expiration willnot work properly with 2checkout.', 'ARMember') . "</li><li>" . __('In Case of Automatic subscription, If total payable amount will be 0 (Zero), then 2checkout gateway will not work.', 'ARMember') . "</li></ol></span>";
 
 
                                     $payment_gateway_notices = apply_filters('arm_set_gateway_warning_in_plan_with_recurring', $payment_gateway_notices);
@@ -762,7 +778,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                     <div>
                                         <input type='hidden' id='arm_plan_grace_period_eot' name="arm_subscription_plan_options[grace_period][end_of_term]" value="<?php echo $grace_period_eot; ?>" />
                                         <dl class="arm_selectbox column_level_dd" data-id="arm_plan_grace_period_eot" <?php //echo $style_arm_plan_grace_period_eot; ?>>
-                                            <dt style="width: 35px;min-width:35px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" style="text-align:left;"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete arm_text_align_left" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_plan_grace_period_eot">
                                                     <?php
@@ -796,8 +812,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                     ?>
                                     <div>
                                         <input type='hidden' id='arm_plan_payment_failed_action' name="arm_subscription_plan_options[payment_failed_action]" value="<?php echo $payment_failed_action; ?>" />
-                                        <dl class="arm_selectbox column_level_dd">
-                                            <dt style="width: 370px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dl class="arm_selectbox column_level_dd arm_width_370">
+                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_plan_payment_failed_action"><?php echo '<li data-label="' . __('Block all access of this plan', 'ARMember') . '" data-value="block">' . __('Block all access of this plan', 'ARMember') . '</li>'.$cancel_eot_options; ?></ul>
                                             </dd>
@@ -810,12 +826,12 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                 <th><label><?php _e('Grace Period Failed Payment', 'ARMember'); ?></label></th>
                                 <td>
                                     <?php
-                                    $grace_period_faild_payment = (!empty($plan_options["grace_period"]['failed_payment'])) ? $plan_options["grace_period"]['failed_payment'] : '0';
+                                    $grace_period_faild_payment = (isset($plan_options["grace_period"]['failed_payment'])) ? $plan_options["grace_period"]['failed_payment'] : '2';
                                     ?>
                                     <div>
                                         <input type='hidden' id='arm_plan_grace_period_failed_payment' name="arm_subscription_plan_options[grace_period][failed_payment]" value="<?php echo $grace_period_faild_payment; ?>" />
-                                        <dl class="arm_selectbox column_level_dd">
-                                            <dt style="width: 35px;min-width:35px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" style="text-align:left;"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dl class="arm_selectbox column_level_dd arm_width_75 arm_min_width_75">
+                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg arm_text_align_left"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_plan_grace_period_failed_payment">
                                                     <?php
@@ -847,16 +863,16 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                 <th><label><?php _e('Enable Upgrade / Downgrade Action', 'ARMember'); ?></label></th>
                                 <td>
                                     <div class="armclear"></div>
-                                    <div class="armswitch arm_global_setting_switch" style="vertical-align: middle;">
+                                    <div class="armswitch arm_global_setting_switch arm_vertical_align_middle" >
                                         <input type="checkbox" id="enable_upgrade_downgrade_action" <?php checked($enable_up_down_action, 1); ?> value="1" class="armswitch_input" name="arm_subscription_plan_options[enable_upgrade_downgrade_action]"/>
-                                        <label for="enable_upgrade_downgrade_action" class="armswitch_label" style="min-width:40px;"></label>
+                                        <label for="enable_upgrade_downgrade_action" class="armswitch_label arm_min_width_40" ></label>
                                     </div>&nbsp;<i class="arm_helptip_icon armfa armfa-question-circle" title="<?php _e('Upgrade / Downgrade action will be applied when users will change their plan from frontend. Select appropriate plan level which is higher/lower than current plan and action will be performed accordingly.', 'ARMember'); ?>"></i>
                                     <span style="float:left;width:100%;position:relative;top:5px;left:5px;"><?php _e('Action to be performed when user upgrade / downgrade membership from current plan.', 'ARMember'); ?></span>
                                     <div class="armclear"></div>
                                     <br/>
                                     <div class="arm_enable_up_down_action <?php echo ($enable_up_down_action != '1') ? 'hidden_section' : ''; ?>">
                                         <span><strong><?php _e('Upgrade Plan', 'ARMember'); ?></strong></span>
-                                        <table>
+                                        <table width="100%">
                                             <tr>
                                                 <td>
                                                     <span><?php _e('Select plan(s) which level is higher than current plan', 'ARMember'); ?></span><br/>
@@ -901,7 +917,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                                         </table>
                                         <div class="armclear"></div>
                                         <span><strong><?php _e('Downgrade Plan', 'ARMember'); ?></strong></span>
-                                        <table>
+                                        <table width="100%">
                                             <tr>
                                                 <td>
                                                     <span><?php _e('Select plan(s) which level is lower than current plan', 'ARMember'); ?></span><br/>
@@ -956,8 +972,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                 <?php
                 $totalPlanMembers = $arm_subscription_plans->arm_get_total_members_in_plan($plan_id);
                 if (isset($_GET['action']) && $_GET['action'] == 'edit_plan' && $totalPlanMembers > 0) {
-                    ?><div class="arm_submit_btn_container" style="margin:0px;padding:20px 0px 0px 275px;">
-                        <span class="arm_current_plan_warning error" style="padding-left:0px;"><?php _e('One or more members has already subscribed to this plan. Any changes made to plan type & price will be applied (affect) to new users but not existing ones.', 'ARMember'); ?></span>
+                    ?><div class="arm_submit_btn_container arm_margin_0" style="padding:20px 0px 0px 275px;">
+                        <span class="arm_current_plan_warning error arm_padding_left_0" ><?php _e('One or more members has already subscribed to this plan. Any changes made to plan type & price will be applied (affect) to new users but not existing ones.', 'ARMember'); ?></span>
                     </div><?php
                 }
                 do_action('arm_display_field_add_membership_plan', $plan_options);
@@ -969,6 +985,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                 </div>
                 <div class="armclear"></div>
             </div>
+            <?php wp_nonce_field( 'arm_wp_nonce' ); ?>
         </form>
         <div class="armclear"></div>
     </div>
@@ -994,4 +1011,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
         var ADDCYCLE = "<?php _e('Add Payment Cycle', 'ARMember'); ?>";
         var REMOVECYCLE = "<?php _e('Remove Payment Cycle', 'ARMember'); ?>";
         </script>
-        
+
+<?php
+    echo $ARMember->arm_get_need_help_html_content('membership-plan-add');
+?>

@@ -68,44 +68,44 @@ $setact = $arm_members_activity->$check_sorting();
     }
 </style>
 <div class="wrap arm_page arm_access_rules_main_wrapper">
+	<?php
+    if ($setact != 1) {
+        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
+        ?>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+    <?php } ?>
 	<div class="content_wrapper arm_access_rules_container" id="content_wrapper">
 		<div class="page_title">
 			<?php _e('Content Access Rules','ARMember');?>
-            <?php
-    if ($setact != 1) {
-       $admin_css_url = admin_url('admin.php?page=arm_manage_license');
-        ?>
-
-        <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
-    <?php } ?>
 			<a class="arm_add_new_item_box arm_page_title_link arm_ref_info_links" href="<?php echo admin_url('admin.php?page=' . $arm_slugs->general_settings . '&action=access_restriction');?>" target="_blank"><?php _e('Check Default Access Rule', 'ARMember');?></a>
 			<div class="armclear"></div>
 		</div>
 		<div class="armclear"></div>
-        <span class="arm_info_text" style="margin-bottom: 15px;"><?php _e('By default all content items will be accessible for all users. Once you turn ON the Default Restriction rule and select any plan(s) then it will be accessible for that selected plan(s) only.', 'ARMember');?></span>
-        <span class="arm_info_text" style="margin-bottom: 15px;"><?php _e('Note: If you are using any caching plugin/mechanism on your site, then please clear your site cache after updating access rules table.', 'ARMember');?></span>
+        <span class="arm_info_text arm-note-message --warning arm_max_width_100_pct"><?php _e('By default all content items will be accessible for all users. Once you turn ON the Default Restriction rule and select any plan(s) then it will be accessible for that selected plan(s) only.', 'ARMember');?></span>
+        <span class="arm_info_text arm-note-message --warning arm_max_width_100_pct"><?php _e('Note: If you are using any caching plugin/mechanism on your site, then please clear your site cache after updating access rules table.', 'ARMember');?></span>
         <?php if(!empty($all_plans)) { ?>
-        <div class="arm_add_new_item_box">
+        <div class="arm_add_new_item_box arm_margin_right_20">
 			<a href="javascript:void(0)" id="arm_update_rules" class="arm_save_btn"><?php _e('Update Rules', 'ARMember') ?></a>
 		</div>
         <?php 
         }
         ?>
 		<div class="armclear"></div>
-		<div id="arm_access_rules_grid_wrapper" class="arm_access_rules_grid_wrapper" style="min-height:400px;position:relative;top:16px;">
+		<div id="arm_access_rules_grid_wrapper" class="arm_access_rules_grid_wrapper" >
 			<?php if(!empty($all_plans)):?>
 			<div class="arm_datatable_filters arm_rules_filters">
 				<form method="get" action="<?php echo admin_url('admin.php');?>" class="arm_rules_filter_form">
 					<input type="hidden" name="page" value="<?php echo $arm_slugs->access_rules;?>"/>
 					<div class="arm_dt_filter_block">
-						<div class="arm_rules_filter_item arm_datatable_filter_item">
-							<span><?php _e('Type', 'ARMember')?>:</span>
+						<div class="arm_rules_filter_item arm_datatable_filter_item arm_margin_left_0">
+							
 							<input type="hidden" id="arm_rule_type_filter" name="type" value="<?php echo $cur_type;?>"/>
 							<input type="hidden" id="arm_rule_slug_filter" name="slug" data-type="<?php echo $cur_type;?>" value="<?php echo $cur_slug;?>"/>
-							<dl class="arm_selectbox column_level_dd">
-								<dt style="width: 150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+							<dl class="arm_selectbox column_level_dd arm_width_200">
+								<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 								<dd>
 									<ul data-id="arm_rule_slug_filter">
+										<li data-label="<?php _e('Select Type', 'ARMember');?>" data-value="page" data-type="page"><?php _e('Select Type', 'ARMember');?></li>
 										<?php 
 					    if (!empty($rule_types)) {
 						foreach ($rule_types as $type => $opts) {
@@ -123,13 +123,12 @@ $setact = $arm_members_activity->$check_sorting();
 							</dl>
 						</div>
 						<div class="arm_rules_filter_item arm_datatable_filter_item">
-							<span><?php _e('Default Restriction:', 'ARMember')?></span>
 							<input type="hidden" id="arm_rule_protection_filter" class="arm_rules_filter_input" name="protection" value="<?php echo $cur_protection;?>"/>
-							<dl class="arm_selectbox column_level_dd">
-								<dt style="width: 100px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+							<dl class="arm_selectbox column_level_dd arm_width_250">
+								<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 								<dd>
 									<ul data-id="arm_rule_protection_filter">
-										<li data-label="<?php _e('All','ARMember');?>" data-value="all"><?php _e('All','ARMember');?></li>
+										<li data-label="<?php _e('Select Default Restriction','ARMember');?>" data-value="all"><?php _e('Select Default Restriction','ARMember');?></li>
 										<li data-label="<?php _e('On','ARMember');?>" data-value="1"><?php _e('On','ARMember');?></li>
 										<li data-label="<?php _e('Off','ARMember');?>" data-value="0"><?php _e('Off','ARMember');?></li>
 									</ul>
@@ -137,10 +136,9 @@ $setact = $arm_members_activity->$check_sorting();
 							</dl>
 						</div>
 						<div class="arm_rules_filter_item arm_datatable_filter_item">
-							<span><?php _e('Plan', 'ARMember')?>:</span>
 							<input type="hidden" id="arm_rule_plan_filter" class="arm_rules_filter_input" name="plan" value="<?php echo $cur_plan;?>"/>
-							<dl class="arm_multiple_selectbox">
-								<dt style="width: 230px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+							<dl class="arm_multiple_selectbox arm_width_250">
+								<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 								<dd>
 									<ul data-id="arm_rule_plan_filter" data-placeholder="<?php _e('Select Plans', 'ARMember');?>">
 										<?php
@@ -209,20 +207,21 @@ $setact = $arm_members_activity->$check_sorting();
 			    }
 			}
 			?>
-    		    <table cellpadding="0" cellspacing="0" border="0" class="display arm_datatable" id="armember_datatable" width="100%">
+				<div class="arm_loading_grid" style="display: none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/loader.gif" alt="Loading.."></div>
+    		    <table cellpadding="0" cellspacing="0" border="0" class="display arm_datatable<?php if (!empty($rule_records)) { echo ' arm_hide_datatable'; } ?>" id="armember_datatable" width="100%">
     			<thead>
 				<?php
 				$title_cols = $filter_cols = '';
 				if ($all_plans) {
-                                    $title_cols .= '<th class="arm-no-sort center">'.__('Users Having No Plan', 'ARMember').'</th>';
-                                    $filter_cols .= '<th class="arm-no-sort center"><input type="checkbox" class="arm_all_rules_checkbox_-2 arm_all_rule_plan_chks" data-plan_id="-2" /><br/><label>' . __('Allow Access', 'ARMember') . '</label></th>';
+                                    $title_cols .= '<th class="arm-no-sort center arm_text_align_center">'.__('Users Having No Plan', 'ARMember').'</th>';
+                                    $filter_cols .= '<th class="arm-no-sort center arm_text_align_center"><input type="checkbox" class="arm_all_rules_checkbox_-2 arm_all_rule_plan_chks" data-plan_id="-2" /><br/><label>' . __('Allow Access', 'ARMember') . '</label></th>';
 				    $i = 3;
 				    foreach ($all_plans as $sp) {
 					$plan_id = $sp['arm_subscription_plan_id'];
 					$plan_title = stripslashes($sp['arm_subscription_plan_name']);
 
-									$title_cols .= '<th class="arm-no-sort center">'.$plan_title.'</th>';
-                                        $filter_cols .= '<th class="arm-no-sort center"><input type="checkbox" class="arm_all_rules_checkbox_' . $plan_id . ' arm_all_rule_plan_chks" data-plan_id="' . $plan_id . '" /><br/><label>' . __('Allow Access', 'ARMember') . '</label></th>';
+									$title_cols .= '<th class="arm-no-sort center arm_text_align_center">'.$plan_title.'</th>';
+                                        $filter_cols .= '<th class="arm-no-sort center arm_text_align_center"><input type="checkbox" class="arm_all_rules_checkbox_' . $plan_id . ' arm_all_rule_plan_chks" data-plan_id="' . $plan_id . '" /><br/><label>' . __('Allow Access', 'ARMember') . '</label></th>';
 									$not_sortable .= "$i,";
 									$i++;
 								}
@@ -230,17 +229,17 @@ $setact = $arm_members_activity->$check_sorting();
 							?>
 							<?php if (!empty($rule_records)) {?>
 							<tr class="arm_grid_main_header">
-								<th><?php _e('Title','ARMember');?></th>
-                                    <th class="arm-no-sort center"><?php _e('Default Restriction', 'ARMember'); ?></th>
+								<th class="arm_text_align_center"><?php _e('Title','ARMember');?></th>
+                                    <th class="arm-no-sort center arm_text_align_center"><?php _e('Default Restriction', 'ARMember'); ?></th>
 								<?php echo $title_cols;?>
 							</tr>
 							<tr class="arm_grid_filter_header">
 								<th class="arm-no-sort center" id="arm_title_search_box_th">
-									<div class="armGridSearchBox_filter arm_datatable_searchbox" id="armGridSearchBox_filter" style="float: left;">
+									<div class="armGridSearchBox_filter arm_datatable_searchbox arm_float_left" id="armGridSearchBox_filter" >
 										<input type="text" placeholder="Search" id="armGridSearchBox" class="armGridSearchBox" aria-controls="armember_datatable">
 									</div>
 								</th>
-								<th class="arm-no-sort center">
+								<th class="arm-no-sort center arm_text_align_center">
 									<input class="arm_all_restriction" type="checkbox"><i class="arm_helptip_icon_ui arm_fixed_column_icon armfa armfa-question-circle" title="<?php _e("If you enable Default Restriction, that item will be restricted for visitors and all the loggedin users except for those users whose plan are allowed here.", 'ARMember');?>"></i></th>
 								<?php echo $filter_cols;?>
 							</tr>
@@ -262,8 +261,8 @@ $setact = $arm_members_activity->$check_sorting();
 					<input type="hidden" name="filter_grid" id="filter_grid" value="<?php _e('filtered from','ARMember');?>"/>
 					<input type="hidden" name="totalwd_grid" id="totalwd_grid" value="<?php _e('total','ARMember');?>"/>
                     <input type="hidden" name="original_access_rules" id="original_access_rules" value=""/>
-					<div class="actions2">
-						<div style="position: relative;float: <?php echo (is_rtl()) ? 'left' : 'right';?>;">
+					<div class="actions2 arm_margin_right_20 arm_padding_bottom_35">
+						<div class="arm_position_relative" style="float: <?php echo (is_rtl()) ? 'left' : 'right';?>;">
 							<a href="javascript:void(0)" id="arm_update_rules" class="arm_save_btn"><?php _e('Update Rules', 'ARMember') ?></a>
 							<a href="javascript:void(0)" id="arm_reset_rules" class="arm_cancel_btn"><?php _e('Reset', 'ARMember') ?></a>
 						</div>
@@ -354,9 +353,16 @@ jQuery(document).ready(function ($){
 				});
 			});
 		},
-                "fnDrawCallback": function () {
-                    jQuery(".arm_all_rule_plan_chks").prop("checked", false);
-                },
+		"fnPreDrawCallback": function () {
+            jQuery('.arm_loading_grid').show();
+        },
+        "fnDrawCallback": function () {
+        	setTimeout(function(){
+				jQuery('.arm_loading_grid').hide();
+				arm_show_data();
+			}, 1000);
+            jQuery(".arm_all_rule_plan_chks").prop("checked", false);
+        },
 	});
 	var oFC = new FixedColumns(DTable, {
                 "iLeftColumns": 3,
@@ -569,3 +575,6 @@ jQuery(window).on("load", function() {
 });
 // ]]>
 </script>
+<?php
+    echo $ARMember->arm_get_need_help_html_content('content-access-rules');
+?>

@@ -3899,7 +3899,7 @@
 
 		
 		if ( data.action == 'get_member_details' ) {
-			var filtered_data = "action=" + data.action + "&data=" + JSON.stringify( data );
+			var filtered_data = "action=" + data.action + "&_wpnonce=" + data._wpnonce + "&data=" + JSON.stringify( data );
 			data = filtered_data;
 		}
 

@@ -59,8 +59,8 @@ $check_buddyp_buddyb = $arm_buddypress_feature->arm_check_buddypress_buddyboss()
                                                     <div class="arm_buddypress_settings_column arm_bp_tabel_td">
                                                         <div class="arm_bp_fields_input">
                                                             <input type='hidden' id="arm_map_buddypress_field_<?php echo $i; ?>"  value="<?php echo $arm_from_field_bp_field_id; ?>" name="arm_buddypress_field_id[<?php echo $arm_form_field_id; ?>]" />
-                                                            <dl class="arm_selectbox column_level_dd">
-                                                                <dt style="width:200px;"><span><?php echo __('Select','ARMember').' '. $check_buddyp_buddyb['arm_title'] .' '. __('Field', 'ARMember'); ?></span>
+                                                            <dl class="arm_selectbox column_level_dd arm_width_200">
+                                                                <dt><span><?php echo __('Select','ARMember').' '. $check_buddyp_buddyb['arm_title'] .' '. __('Field', 'ARMember'); ?></span>
                                                                 <input type="text" style="display:none;" value="" class="arm_autocomplete"  />
                                                                 <i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                 <dd>
@@ -138,13 +138,13 @@ $check_buddyp_buddyb = $arm_buddypress_feature->arm_check_buddypress_buddyboss()
                                 );
                                 ?>
                                 <?php $arm_bp_profile_tooltip = __('Select page to redirect at custom profile page instead','ARMember').' '. $check_buddyp_buddyb['arm_title'].' '.__('default profile page.', 'ARMember'); ?>
-                                <i class="arm_helptip_icon armfa armfa-question-circle" title="<?php echo $arm_bp_profile_tooltip; ?>"></i>                                            <span class="arm_info_text" style="margin: 10px 0 0; display:block;">(<?php echo __('Choose ARMember profile page to replace','ARMember').' '. $check_buddyp_buddyb['arm_title'] .' '. __('profile page.','ARMember'); ?>)</span>
+                                <i class="arm_helptip_icon armfa armfa-question-circle" title="<?php echo $arm_bp_profile_tooltip; ?>"></i>                                            <span class="arm_info_text arm_info_text_style" >(<?php echo __('Choose ARMember profile page to replace','ARMember').' '. $check_buddyp_buddyb['arm_title'] .' '. __('profile page.','ARMember'); ?>)</span>
                             </td>
                     </tr>   
                 </table>
                     
                     <div class="arm_submit_btn_container arm_buddypress_submit_btn">
-				<button class="arm_save_btn arm_buddypress_settings_btn" type="submit" id="arm_buddypress_settings_btn" name="arm_buddypress_settings_btn"><?php _e('Save', 'ARMember') ?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" style="position:relative;top:8px;display:none;" width="24" height="24" />
+				<button class="arm_save_btn arm_buddypress_settings_btn" type="submit" id="arm_buddypress_settings_btn" name="arm_buddypress_settings_btn"><?php _e('Save', 'ARMember') ?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_submit_btn_loader" style="display:none;" width="24" height="24" />
                     </div>
                     <?php wp_nonce_field( 'arm_wp_nonce' );?>
                 </form>
@@ -157,11 +157,11 @@ $check_buddyp_buddyb = $arm_buddypress_feature->arm_check_buddypress_buddyboss()
                         <th>
                             <?php echo __('How to sync with', 'ARMember') . $check_buddyp_buddyb['arm_title'] .__('?', 'ARMember'); ?>
                         </th>
-                        <td style="vertical-align: top; padding-top: 15px;">
-                            <input type="radio" name="arm_bp_sync" id="arm_by_sync_pull" value="pull"  class="arm_iradio"><label for="arm_by_sync_pull" style="width: 230px;"><?php echo __('Pull Data from', 'ARMember').' '. $check_buddyp_buddyb['arm_title']; ?></label>
+                        <td  class="arm_vertical_align_top arm_padding_top_15">
+                            <input type="radio" name="arm_bp_sync" id="arm_by_sync_pull" value="pull"  class="arm_iradio"><label class="arm_width_230" for="arm_by_sync_pull" ><?php echo __('Pull Data from', 'ARMember').' '. $check_buddyp_buddyb['arm_title']; ?></label>
                             <input type="radio" name="arm_bp_sync" id="arm_by_sync_push" value="push" checked="checked" class="arm_iradio"><label for="arm_by_sync_push"><?php _e('Pull Data from ARMember', 'ARMember'); ?></label>
                             <div class="arm_submit_btn_container arm_buddypress_sync_btn_div">
-				<button class="arm_save_btn arm_buddypress_sync_btn" data-total-users="<?php echo $totalUsersToSync; ?>" type="button" id="arm_buddypress_sync_btn" name="arm_buddypress_sync_btn"><?php _e('Sync', 'ARMember') ?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_sync" style="position:relative;top:8px;display:none;" width="24" height="24" />
+				<button class="arm_save_btn arm_buddypress_sync_btn" data-total-users="<?php echo $totalUsersToSync; ?>" type="button" id="arm_buddypress_sync_btn" name="arm_buddypress_sync_btn"><?php _e('Sync', 'ARMember') ?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_sync" class="arm_submit_btn_loader" style="display:none;" width="24" height="24" />
                                 <div class="armclear"></div>
                                 <div class="arm_buddypress_sync_progressbar">
                                     <div class="arm_buddypress_sync_progressbar_inner"></div>

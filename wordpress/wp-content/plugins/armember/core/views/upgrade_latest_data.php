@@ -1035,8 +1035,212 @@ if(version_compare($arm_newdbversion, '4.0', '<')) {
 
     
 }
+if (version_compare($arm_newdbversion, '4.2', '<')) {
+    //Add Capabilities to administrator users
+    global $ARMember, $wpdb, $updated_with_badges;
+    $update_db_tables = $ARMember->arm_update_badges();
+	if($update_db_tables == 1)
+	{
+		$updated_with_badges = 'latest';
+	}
 
+}
+if (version_compare($arm_newdbversion, '4.3', '<')) {
+	delete_site_transient('notice-three');
+}
 
+if(version_compare($arm_newdbversion, '4.3.2', '<'))
+{
+    global $wpdb, $ARMember;
+    $updt_payment_data_qury = "UPDATE " . $ARMember->tbl_arm_payment_log . " a INNER JOIN " . $ARMember->tbl_arm_payment_log . " b ON a.arm_log_id = b.arm_log_id SET a.arm_token=b.arm_transaction_id WHERE a.arm_payment_gateway=%s and a.arm_payment_type=%s and a.arm_transaction_status=%s and a.arm_transaction_id like %s ";
+
+    $wpdb->query( $wpdb->prepare( $updt_payment_data_qury, 'stripe', 'subscription', 'success', '%sub_%' ) );
+}
+
+if(version_compare($arm_newdbversion, '4.3', '>=') && version_compare($arm_newdbversion, '4.3.3', '<') )
+{
+    global $wpdb, $ARMember;
+    $check_payment_date_after = "2021-04-28 00:00:00";
+
+    $get_payment_data = $wpdb->get_results( $wpdb->prepare("SELECT `arm_log_id`,`arm_transaction_id`,`arm_token`,`arm_user_id`,`arm_plan_id` FROM `" . $ARMember->tbl_arm_payment_log . "` 
+        WHERE (`arm_payment_gateway`=%s || `arm_payment_gateway`=%s || `arm_payment_gateway`=%s || `arm_payment_gateway`=%s ) 
+        and arm_payment_type=%s and arm_created_date>=%s and arm_token NOT like %s and arm_token!=%s", 
+        'paypal','stripe','2checkout', 'authorize_net', 'subscription', $check_payment_date_after, '%-%', ''), 
+    ARRAY_A ); 
+
+    $arm_total_payment_data = count($get_payment_data);
+    if($arm_total_payment_data>0)
+    {
+        foreach ($get_payment_data as $get_payment_data_arr ) 
+        {
+            $arm_payment_log_user_id = $get_payment_data_arr['arm_user_id'];
+            $arm_payment_log_plan_id = $get_payment_data_arr['arm_plan_id'];
+            if( !empty($arm_payment_log_user_id) && !empty($arm_payment_log_plan_id) )
+            {
+                $arm_update_plan_data_check = get_user_meta($arm_payment_log_user_id, 'arm_user_plan_' . $arm_payment_log_plan_id, true);
+                if(!empty($arm_update_plan_data_check) && is_array($arm_update_plan_data_check) )
+                {
+                    if(!empty($arm_update_plan_data_check['arm_payment_mode']) && $arm_update_plan_data_check['arm_payment_mode']!="auto_debit_subscription")
+                    {
+                        update_user_meta($arm_payment_log_user_id, 'arm_user_plan_backup_'.$arm_payment_log_plan_id, $arm_update_plan_data_check);
+                        //manual_subscription set for automatic payments
+                        $arm_update_plan_data_check['arm_payment_mode'] = 'auto_debit_subscription'; 
+                        update_user_meta($arm_payment_log_user_id, 'arm_user_plan_'.$arm_payment_log_plan_id, $arm_update_plan_data_check);
+                    }
+                }
+            }
+        }
+    }
+}
+
+if(version_compare($arm_newdbversion, '4.4', '<'))
+{
+    global $wpdb, $ARMember;
+    $updt_payment_data_qury = "UPDATE " . $ARMember->tbl_arm_payment_log . " a INNER JOIN " . $ARMember->tbl_arm_payment_log . " b ON a.arm_log_id = b.arm_log_id SET a.arm_token=b.arm_transaction_id WHERE a.arm_payment_gateway=%s and a.arm_payment_type=%s and a.arm_transaction_id like %s and a.arm_token!=a.arm_transaction_id";
+
+    $wpdb->query( $wpdb->prepare( $updt_payment_data_qury, 'stripe', 'subscription', '%sub_%' ) );
+}
+
+if(version_compare($arm_newdbversion, '4.5', '<'))
+{
+	global $wpdb, $ARMember;
+
+    require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+    $charset_collate = '';
+    if ($wpdb->has_cap('collation')) {
+        if (!empty($wpdb->charset)) {
+            $charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
+        }
+        if (!empty($wpdb->collate)) {
+            $charset_collate .= " COLLATE $wpdb->collate";
+        }
+    }
+    
+    $tbl_arm_debug_payment_log = $ARMember->tbl_arm_debug_payment_log;
+    $sql_table = "DROP TABLE IF EXISTS `{$tbl_arm_debug_payment_log}`;
+    CREATE TABLE IF NOT EXISTS `{$tbl_arm_debug_payment_log}`(
+        `arm_payment_log_id` int(11) NOT NULL AUTO_INCREMENT,
+        `arm_payment_log_ref_id` int(11) NOT NULL DEFAULT '0',
+        `arm_payment_log_gateway` varchar(255) DEFAULT NULL,
+        `arm_payment_log_event` varchar(255) DEFAULT NULL,
+        `arm_payment_log_event_from` varchar(255) DEFAULT NULL,
+        `arm_payment_log_status` TINYINT(1) DEFAULT '1',
+        `arm_payment_log_raw_data` TEXT,
+        `arm_payment_log_added_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+        PRIMARY KEY (`arm_payment_log_id`)
+    ) {$charset_collate};";
+    $arm_dbtbl_create[$tbl_arm_debug_payment_log] = dbDelta($sql_table);
+
+    $tbl_arm_debug_general_log = $ARMember->tbl_arm_debug_general_log;
+    $sql_table = "DROP TABLE IF EXISTS `{$tbl_arm_debug_general_log}`;
+    CREATE TABLE IF NOT EXISTS `{$tbl_arm_debug_general_log}`(
+        `arm_general_log_id` int(11) NOT NULL AUTO_INCREMENT,
+        `arm_general_log_event` varchar(255) DEFAULT NULL,
+        `arm_general_log_event_name` varchar(255) DEFAULT NULL,
+        `arm_general_log_event_from` varchar(255) DEFAULT NULL,
+        `arm_general_log_raw_data` TEXT,
+        `arm_general_log_added_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+        PRIMARY KEY (`arm_general_log_id`)
+    ) {$charset_collate};";
+    $arm_dbtbl_create[$tbl_arm_debug_general_log] = dbDelta($sql_table);
+}
+
+if(version_compare($arm_newdbversion, '4.6', '<'))
+{
+    global $wpdb, $ARMember;
+    $arm_tbl_coupon = $ARMember->tbl_arm_coupons;
+
+    $arm_paid_post_type_row = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='".DB_NAME."' AND TABLE_NAME = '".$arm_tbl_coupon."' AND column_name = 'arm_coupon_paid_posts'");
+    if( empty($arm_paid_post_type_row) ){
+        $wpdb->query("ALTER TABLE `{$arm_tbl_coupon}` ADD `arm_coupon_paid_posts` TEXT DEFAULT NULL AFTER `arm_coupon_subscription`");
+    }
+    
+    //Add coupon type column to coupons table.
+    $arm_coupon_type_row = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='".DB_NAME."' AND TABLE_NAME = '".$arm_tbl_coupon."' AND column_name = 'arm_coupon_type'");
+    if( empty($arm_coupon_type_row) ){
+        $wpdb->query("ALTER TABLE `{$arm_tbl_coupon}` ADD `arm_coupon_type` TINYINT(1) DEFAULT '0' AFTER `arm_coupon_expire_date`");
+    }
+    
+    $payment_gateway_options = maybe_unserialize( get_option('arm_payment_gateway_settings') );
+    if( !empty($payment_gateway_options['stripe']['status']) )
+    {
+        update_option('arm-stripe-dismiss-admin-notice', true);
+    }
+}
+if(version_compare($arm_newdbversion, '5.0', '<'))
+{
+    global $ARMember;
+    
+    //update form style as new design
+    $arm_form_style_settings = $ARMember->arm_update_template_style_armember_5();
+    
+}
+if(version_compare($arm_newdbversion, '5.0.2', '<'))
+{    
+    global $wpdb, $ARMember;
+
+    $arm_subscription_plans_table = $ARMember->tbl_arm_subscription_plans;
+    $arm_activity_table = $ARMember->tbl_arm_activity;
+    $arm_pt_log_table = $ARMember->tbl_arm_payment_log;
+    $arm_entries_table = $ARMember->tbl_arm_entries;
+
+    //Add the arm_subscription_plan_gift_status for the Gift
+    $arm_add_subscription_plan_gift_status_column = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='".DB_NAME."' AND TABLE_NAME = '".$arm_subscription_plans_table."' AND column_name = 'arm_subscription_plan_gift_status'");
+    if(empty($arm_add_subscription_plan_gift_status_column)) {
+        $wpdb->query("ALTER TABLE `{$arm_subscription_plans_table}` ADD `arm_subscription_plan_gift_status` INT(1) NOT NULL DEFAULT '0' AFTER `arm_subscription_plan_post_id`");
+    }    
+
+    //Add the arm_gift_plan_id for the Gift 
+    $arm_add_activity_column = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='".DB_NAME."' AND TABLE_NAME = '".$arm_activity_table."' AND column_name = 'arm_gift_plan_id'");
+    if( empty($arm_add_activity_column) ) {
+        $wpdb->query("ALTER TABLE `{$arm_activity_table}` ADD `arm_gift_plan_id` BIGINT(20) NOT NULL DEFAULT '0' AFTER `arm_paid_post_id`");
+    }
+
+    // Add column arm_is_gift_payment for gift.
+    $arm_add_payment_log_col = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='".DB_NAME."' AND TABLE_NAME = '".$arm_pt_log_table."' AND column_name = 'arm_is_gift_payment'");
+    if(empty($arm_add_payment_log_col)) {
+        $wpdb->query("ALTER TABLE `{$arm_pt_log_table}` ADD `arm_is_gift_payment` TINYINT(1) NOT NULL DEFAULT '0' AFTER `arm_paid_post_id`");
+    }
+
+    $arm_add_entries_col = $wpdb->get_results("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='".DB_NAME."' AND TABLE_NAME = '".$arm_entries_table."' AND column_name = 'arm_is_gift_entry'");
+    if(empty($arm_add_entries_col)) {
+        $wpdb->query("ALTER TABLE `{$arm_entries_table}` ADD `arm_is_gift_entry` TINYINT(1) NOT NULL DEFAULT '0' AFTER `arm_paid_post_id`");
+    }
+
+}
+
+if(version_compare($arm_newdbversion, '5.1', '<'))
+{
+    global $wpdb, $ARMember, $arm_members_directory;
+    $data = $wpdb->get_results("SELECT * FROM `" . $ARMember->tbl_arm_member_templates . "` WHERE arm_type = 'profile' ", ARRAY_A);
+
+    if(!empty($data))
+    {
+        foreach ($data as $data_key => $data_value) {
+            $_POST['arm_profile_template_name'] = isset($data_value['arm_title']) ? $data_value['arm_title'] : '';
+            $_POST['arm_profile_template'] = isset($data_value['arm_slug']) ? $data_value['arm_slug'] : 'profiletemplate1';
+
+            $plans = explode(',', $data_value['arm_subscription_plan']);
+            $_POST['template_options']['plans'] = $plans;
+            $_POST['arm_before_profile_fields_content'] = isset($data_value['arm_html_before_fields']) ? $data_value['arm_html_before_fields'] : '';
+            $_POST['show_admin_users'] = isset($data_value['arm_enable_admin_profile']) ? intval($data_value['arm_enable_admin_profile']) : 0;
+            $_POST['arm_after_profile_fields_content'] = isset($data_value['arm_html_after_fields']) ? $data_value['arm_html_after_fields'] : '';
+            $_POST['arm_profile_template_id'] = isset($data_value['arm_ref_template']) ? $data_value['arm_ref_template'] : 1;
+            $_POST['template_id'] = isset($data_value['arm_id'] ) ? intval($data_value['arm_id']) : 0;
+
+            $options = maybe_unserialize($data_value['arm_options']);
+            $options['plans'] = $plans;
+            $_POST['template_options'] =$options;
+            $_POST['arf_profile_action'] = 'edit_profile';
+            $_POST['arm_new_profile_update'] = 'yes';
+            $arm_members_directory->arm_save_profile_template_func();
+        } 
+    }
+}
+$arm_newdbversion = '5.1';
 update_option('arm_new_version_installed',1);
-update_option('arm_version', '4.1.4');
-$arm_newdbversion = '4.1.4';
+update_option('arm_version', $arm_newdbversion);
+
+$arm_version_updated_date_key = 'arm_version_updated_date_'.$arm_newdbversion;
+$arm_version_updated_date = current_time('mysql');
+update_option($arm_version_updated_date_key, $arm_version_updated_date);

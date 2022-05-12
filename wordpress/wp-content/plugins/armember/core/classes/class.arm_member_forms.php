@@ -5,65 +5,65 @@ if (!class_exists('ARM_member_forms')) {
 
         function __construct() {
             global $wpdb, $ARMember, $arm_slugs;
-            add_action('wp_ajax_save_member_forms', array(&$this, 'save_member_forms')); 
-            add_action('wp_ajax_add_new_member_form', array(&$this, 'arm_add_new_member_form'));
-            add_action('wp_ajax_check_unique_set_name', array(&$this, 'arm_check_unique_set_name'));
-            add_action('wp_ajax_arm_delete_form', array(&$this, 'arm_delete_form'));
-            add_action('wp_ajax_arm_delete_form_field', array(&$this, 'arm_delete_form_field'));
-            add_action('wp_ajax_arm_create_new_field', array(&$this, 'arm_create_new_field'));
-            add_action('wp_ajax_arm_get_updated_social_profile_fields_html', array(&$this, 'arm_get_updated_social_profile_fields_html'));
-            add_action('wp_ajax_arm_get_updated_field_html', array(&$this, 'arm_get_updated_field_html'));
-            add_action('wp_ajax_arm_roles_field_options', array(&$this, 'arm_roles_field_options'));
-            add_action('wp_ajax_arm_prefix_suffix_field_html', array(&$this, 'arm_prefix_suffix_field_html'));
-            add_action('wp_ajax_arm_ajax_generate_form_styles', array(&$this, 'arm_ajax_generate_form_styles'));
+            add_action('wp_ajax_save_member_forms', array($this, 'save_member_forms')); 
+            add_action('wp_ajax_add_new_member_form', array($this, 'arm_add_new_member_form'));
+            add_action('wp_ajax_check_unique_set_name', array($this, 'arm_check_unique_set_name'));
+            add_action('wp_ajax_arm_delete_form', array($this, 'arm_delete_form'));
+            add_action('wp_ajax_arm_delete_form_field', array($this, 'arm_delete_form_field'));
+            add_action('wp_ajax_arm_create_new_field', array($this, 'arm_create_new_field'));
+            add_action('wp_ajax_arm_get_updated_social_profile_fields_html', array($this, 'arm_get_updated_social_profile_fields_html'));
+            add_action('wp_ajax_arm_get_updated_field_html', array($this, 'arm_get_updated_field_html'));
+            add_action('wp_ajax_arm_roles_field_options', array($this, 'arm_roles_field_options'));
+            add_action('wp_ajax_arm_prefix_suffix_field_html', array($this, 'arm_prefix_suffix_field_html'));
+            add_action('wp_ajax_arm_ajax_generate_form_styles', array($this, 'arm_ajax_generate_form_styles'));
             /* Member Forms Shortcode Ajax Action */
-            add_action('wp_ajax_arm_shortcode_form_ajax_action', array(&$this, 'arm_shortcode_form_ajax_action'));
-            add_action('wp_ajax_nopriv_arm_shortcode_form_ajax_action', array(&$this, 'arm_shortcode_form_ajax_action'));
+            add_action('wp_ajax_arm_shortcode_form_ajax_action', array($this, 'arm_shortcode_form_ajax_action'));
+            add_action('wp_ajax_nopriv_arm_shortcode_form_ajax_action', array($this, 'arm_shortcode_form_ajax_action'));
             /* Check Already Exist Field Value */
-            add_action('wp_ajax_arm_check_exist_field', array(&$this, 'arm_check_exist_field'));
-            add_action('wp_ajax_nopriv_arm_check_exist_field', array(&$this, 'arm_check_exist_field'));
+            add_action('wp_ajax_arm_check_exist_field', array($this, 'arm_check_exist_field'));
+            add_action('wp_ajax_nopriv_arm_check_exist_field', array($this, 'arm_check_exist_field'));
             /* Remove Uploaded File */
-            add_action('wp_ajax_arm_remove_uploaded_file', array(&$this, 'arm_remove_uploaded_file'));
-            add_action('wp_ajax_nopriv_arm_remove_uploaded_file', array(&$this, 'arm_remove_uploaded_file'));
+            add_action('wp_ajax_arm_remove_uploaded_file', array($this, 'arm_remove_uploaded_file'));
+            add_action('wp_ajax_nopriv_arm_remove_uploaded_file', array($this, 'arm_remove_uploaded_file'));
 
-            add_action('wp_ajax_arm_get_all_preset_fields', array(&$this, 'arm_get_all_preset_fields'));
+            add_action('wp_ajax_arm_get_all_preset_fields', array($this, 'arm_get_all_preset_fields'));
 
             /* Shortcode For Member Forms */
-            add_shortcode('arm_form', array(&$this, 'arm_form_shortcode_func'));
-            add_shortcode('arm_edit_profile', array(&$this, 'arm_edit_profile_shortcode_func'));
-            add_shortcode('arm_logout', array(&$this, 'arm_logout_shortcode_func'));
-            add_shortcode('arm_cancel_membership', array(&$this, 'arm_cancel_membership_shortcode_func'));
+            add_shortcode('arm_form', array($this, 'arm_form_shortcode_func'));
+            add_shortcode('arm_edit_profile', array($this, 'arm_edit_profile_shortcode_func'));
+            add_shortcode('arm_logout', array($this, 'arm_logout_shortcode_func'));
+            add_shortcode('arm_cancel_membership', array($this, 'arm_cancel_membership_shortcode_func'));
             add_shortcode('arm_profile_detail', array($this, 'arm_profile_detail_shortcode_func') );
 
-            add_filter('arm_change_field_options', array(&$this, 'arm_filter_form_field_options'));
-            add_action('arm_before_render_form', array(&$this, 'arm_check_form_include_js_css'), 10, 2);
+            add_filter('arm_change_field_options', array($this, 'arm_filter_form_field_options'));
+            add_action('arm_before_render_form', array($this, 'arm_check_form_include_js_css'), 10, 2);
 
-            add_action('arm_member_update_meta', array(&$this, 'arm_member_update_meta_details'), 10, 2);
-            add_action('arm_admin_save_member_details', array(&$this, 'arm_admin_save_member_details'));
+            add_action('arm_member_update_meta', array($this, 'arm_member_update_meta_details'), 10, 2);
+            add_action('arm_admin_save_member_details', array($this, 'arm_admin_save_member_details'));
 
-            add_action('wp_ajax_arm_get_spf_in_tinymce', array(&$this, 'arm_get_spf_in_tinymce'));
+            add_action('wp_ajax_arm_get_spf_in_tinymce', array($this, 'arm_get_spf_in_tinymce'));
             /* Insert Login History When user logged in */
-            add_action('set_logged_in_cookie', array(&$this, 'arm_add_login_history_for_set_logged_in_cookie'), 10, 5);
+            add_action('set_logged_in_cookie', array($this, 'arm_add_login_history_for_set_logged_in_cookie'), 10, 5);
             /* Update Logout Entery  */
-            add_action('clear_auth_cookie', array(&$this, 'arm_update_login_history'), 10);
+            add_action('clear_auth_cookie', array($this, 'arm_update_login_history'), 10);
             /* Get User Login History in admin */
-            add_action('wp_ajax_arm_get_login_history', array(&$this, 'arm_get_login_history_func'));
+            add_action('wp_ajax_arm_get_login_history', array($this, 'arm_get_login_history_func'));
             add_filter('registration_errors', array($this, 'armforceError'), 10, 1);
             /* Reinitialize session for spam filter if any error occured while submit the form. for e.g. wrong password */
-            add_action('wp_ajax_arm_reinit_session', array(&$this, 'arm_reinit_session_filter_var'));
-            add_action('wp_ajax_nopriv_arm_reinit_session', array(&$this, 'arm_reinit_session_filter_var'));
-            add_filter('arm_change_popup_form_content', array(&$this, 'arm_change_content_after_display_form_function'), 10, 3);
-            add_action('arm_remove_third_party_error', array(&$this, 'arm_remove_bot_error'), 10, 1);
-            //add_action('init', array(&$this, 'arm_auto_lock_shared_account'));
-            add_filter('send_password_change_email', array(&$this, 'arm_send_change_password_default_email'), 10, 3);
-            add_filter('send_email_change_email', array(&$this, 'arm_send_change_password_default_email'), 10, 3);
-            add_filter('the_content', array(&$this, 'arm_the_filtered_content'));
+            add_action('wp_ajax_arm_reinit_session', array($this, 'arm_reinit_session_filter_var'));
+            add_action('wp_ajax_nopriv_arm_reinit_session', array($this, 'arm_reinit_session_filter_var'));
+            add_filter('arm_change_popup_form_content', array($this, 'arm_change_content_after_display_form_function'), 10, 4);
+            add_action('arm_remove_third_party_error', array($this, 'arm_remove_bot_error'), 10, 1);
+            //add_action('init', array($this, 'arm_auto_lock_shared_account'));
+            add_filter('send_password_change_email', array($this, 'arm_send_change_password_default_email'), 10, 3);
+            add_filter('send_email_change_email', array($this, 'arm_send_change_password_default_email'), 10, 3);
+            add_filter('the_content', array($this, 'arm_the_filtered_content'));
 
-            add_action('wp_ajax_arm_update_preset_form_fields', array(&$this, 'arm_update_preset_form_fields'));
+            add_action('wp_ajax_arm_update_preset_form_fields', array($this, 'arm_update_preset_form_fields'));
 
-            add_action('wp_ajax_get_field_option', array(&$this, 'arm_get_field_option_by_meta'), 10, 1);
+            add_action('wp_ajax_get_field_option', array($this, 'arm_get_field_option_by_meta'), 10, 1);
 
-            add_action('wp_ajax_add_new_profile_form', array(&$this, 'arm_add_new_profile_form'));
+            add_action('wp_ajax_add_new_profile_form', array($this, 'arm_add_new_profile_form'));
 
             add_filter( 'get_user_metadata', array($this,'armember_update_user_data'), 10, 4 );
         }
@@ -247,11 +247,11 @@ if (!class_exists('ARM_member_forms')) {
                 $arm_message = $this->arm_verify_user_activation_for_front($user_email, $chk_key);
                 $message = '';
                 if ($arm_message['status'] == 'error') {
-                    $message .= '<div class="arm_form_message_container1 arm_editor_form_fileds_container arm_editor_form_fileds_wrapper"><div class="arm_error_msg"><ul><li>';
+                    $message .= '<div class="arm_form_message_container1 arm_editor_form_fileds_container arm_editor_form_fileds_wrapper arm_account_verify_error_container"><div class="arm_error_msg"><ul><li>';
                     $message .= $arm_message['message'];
                     $message .= '</li></ul></div></div>';
                 } else {
-                    $message .= '<div class="arm_form_message_container1 arm_editor_form_fileds_container arm_editor_form_fileds_wrapper"><div class="arm_success_msg"><ul><li>';
+                    $message .= '<div class="arm_form_message_container1 arm_editor_form_fileds_container arm_editor_form_fileds_wrapper arm_account_verify_success_container"><div class="arm_success_msg"><ul><li>';
                     $message .= $arm_message['message'];
                     $message .= '</li></ul></div></div>';
                 }
@@ -277,7 +277,7 @@ if (!class_exists('ARM_member_forms')) {
             return $arm_errors;
         }
 
-        function arm_change_content_after_display_form_function($content, $form, $atts) {
+        function arm_change_content_after_display_form_function($content, $form, $atts, $formRandomID="" ) {
 
             global $arm_global_settings;
             if (isset($form) && !empty($form)) {
@@ -310,56 +310,91 @@ if (!class_exists('ARM_member_forms')) {
         }
 
         function arm_remove_uploaded_file() {
-
-
             global $wpdb, $ARMember, $arm_slugs;
-            if (!empty($_POST['file_name'])) {
-                if (isset($_POST['type']) && $_POST['type'] == 'badges') {
-                    $file_path = MEMBERSHIP_UPLOAD_DIR . '/social_badges/' . sanitize_text_field($_POST['file_name']);
-                } elseif (isset($_POST['type']) && $_POST['type'] == 'social_icon') {
-                    $file_path = MEMBERSHIP_UPLOAD_DIR . '/social_icon/' . sanitize_text_field($_POST['file_name']);
-                } else {
-                    $file_path = MEMBERSHIP_UPLOAD_DIR . '/' . sanitize_text_field($_POST['file_name']);
-                }
 
+            $denyExts = array("php", "php3", "php4", "php5", "pl", "py", "jsp", "asp", "exe", "cgi", "css", "js", "html", "htm");
 
+            if (!empty($_POST['file_name'])) 
+            {
+                $file_name = basename( sanitize_text_field($_POST['file_name']) );
+                $file_name_arm = substr($file_name, 0,3);
 
-                if (file_exists($file_path)) {
+                $checkext = explode(".", $file_name);
+                $ext = strtolower( $checkext[count($checkext) - 1] );
 
-                    @unlink($file_path);
+                if(!empty($ext) && !in_array($ext, $denyExts) && !empty($file_name) && $file_name_arm=='arm') 
+                {
+                    if (isset($_POST['type']) && $_POST['type'] == 'badges') 
+                    {
+                        $file_path = MEMBERSHIP_UPLOAD_DIR . '/social_badges/' . sanitize_text_field($file_name);
+                    } 
+                    elseif (isset($_POST['type']) && $_POST['type'] == 'social_icon') 
+                    {
+                        $file_path = MEMBERSHIP_UPLOAD_DIR . '/social_icon/' . sanitize_text_field($file_name);
+                    } 
+                    else 
+                    {
+                        $file_path = MEMBERSHIP_UPLOAD_DIR . '/' . sanitize_text_field($file_name);
+                    }
 
-                    if (is_user_logged_in()) {
-                        if (isset($_POST['type']) && $_POST['type'] == 'profile_cover') {
-                            delete_user_meta(get_current_user_id(), 'profile_cover');
-                            do_action('arm_remove_bp_profile_cover', get_current_user_id());
-                            exit;
-                        }
+                    if (file_exists($file_path)) 
+                    {
 
-                        if (isset($_POST['type']) && $_POST['type'] == 'profile_pic') {
-                            do_action('arm_remove_bp_avatar', get_current_user_id());
-                            delete_user_meta(get_current_user_id(), 'avatar');
+                        @unlink($file_path);
 
-                            $avatar = get_avatar(wp_get_current_user()->user_email, '200');
-                            preg_match_all("/src='([^']+)/", $avatar, $images);
+                        if (is_user_logged_in()) 
+                        {
+                            if (isset($_POST['type']) && $_POST['type'] == 'profile_cover') 
+                            {
+                                delete_user_meta(get_current_user_id(), 'profile_cover');
+                                do_action('arm_remove_bp_profile_cover', get_current_user_id());
+                                exit;
+                            }
 
-                            $avatar_url = isset($images[1][0]) ? $images[1][0] : '';
-                            echo $avatar_url;
-                            exit;
+                            if (isset($_POST['type']) && $_POST['type'] == 'profile_pic') 
+                            {
+                                do_action('arm_remove_bp_avatar', get_current_user_id());
+                                delete_user_meta(get_current_user_id(), 'avatar');
+
+                                $avatar = get_avatar(wp_get_current_user()->user_email, '200');
+                                preg_match_all("/src='([^']+)/", $avatar, $images);
+
+                                $avatar_url = isset($images[1][0]) ? $images[1][0] : '';
+                                echo $avatar_url;
+                                exit;
+                            }
                         }
                     }
                 }
             }
-            if (!empty($_POST['file_url'])) {
-                if (isset($_POST['type']) && $_POST['type'] == 'badges') {
-                    $file_path = MEMBERSHIP_UPLOAD_DIR . '/social_badges/' . basename(sanitize_text_field($_POST['file_url']));
-                } else if (isset($_POST['type']) && $_POST['type'] == 'social_icon') {
 
-                    $file_path = MEMBERSHIP_UPLOAD_DIR . '/social_icon/' . basename(sanitize_text_field($_POST['file_url']));
-                } else {
-                    $file_path = MEMBERSHIP_UPLOAD_DIR . '/' . basename(sanitize_text_field($_POST['file_url']));
-                }
-                if (file_exists($file_path)) {
-                    unlink($file_path);
+            if (!empty($_POST['file_url'])) 
+            {
+                $file_name = basename( sanitize_text_field($_POST['file_url']) );
+                $file_name_arm = substr($file_name, 0,3);
+
+                $checkext = explode(".", $file_name);
+                $ext = strtolower( $checkext[count($checkext) - 1] );
+
+                if(!empty($ext) && !in_array($ext, $denyExts) &&  !empty($file_name) && $file_name_arm=='arm') 
+                {
+                    if (isset($_POST['type']) && $_POST['type'] == 'badges') 
+                    {
+                        $file_path = MEMBERSHIP_UPLOAD_DIR . '/social_badges/' . basename(sanitize_text_field($file_name));
+                    } 
+                    else if (isset($_POST['type']) && $_POST['type'] == 'social_icon') 
+                    {
+                        $file_path = MEMBERSHIP_UPLOAD_DIR . '/social_icon/' . basename(sanitize_text_field($file_name));
+                    }
+                    else 
+                    {
+                        $file_path = MEMBERSHIP_UPLOAD_DIR . '/' . basename(sanitize_text_field($file_name));
+                    }
+
+                    if (file_exists($file_path)) 
+                    {
+                        unlink($file_path);
+                    }
                 }
                 echo '1';
                 exit;
@@ -634,13 +669,20 @@ if (!class_exists('ARM_member_forms')) {
                     $general_settings = $all_global_settings['general_settings'];
                     $enable_crop = isset($general_settings['enable_crop']) ? $general_settings['enable_crop'] : 0;
 
-                    if($enable_crop){
+                    global $arm_is_enable_crop;
+                    if($enable_crop && empty($arm_is_enable_crop)){
+                        $arm_is_enable_crop = 1;
                         $content .='<div id="arm_crop_div_wrapper" class="arm_crop_div_wrapper"  style="display:none;" data_id="'.$formRandomID.'">';
                         $content .='<div id="arm_crop_div_wrapper_close" class="arm_clear_field_close_btn arm_popup_close_btn"></div>';
                         $content .='<div id="arm_crop_div" class="arm_crop_div" data_id="'.$formRandomID.'"><img id="arm_crop_image" class="arm_crop_image" src="" style="max-width:100%;" data_id="'.$formRandomID.'"/></div>';
                         $content .='<div class="arm_skip_avtr_crop_button_wrapper_admn arm_inht_front_usr_avtr">';
-                        $content .='<button class="arm_crop_button" data_id="'.$formRandomID.'">' . __('crop', 'ARMember') . '</button>';
-                        $content .='<label id="arm_skip_avtr_crop_nav_front" title="'.__("Skip Avatar Cropping", 'ARMember').'" class="arm_helptip_icon tipso_style" data_id="'.$formRandomID.'">' . __('Skip', 'ARMember') . '</label>';
+                        $content .='<button class="arm_crop_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Crop', 'ARMember') . '" data-method="crop"><span class="armfa armfa-crop"></span></button>';
+                        $content .='<button class="arm_clear_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Clear', 'ARMember') . '" data-method="clear" style="display:none;"><span class="armfa armfa-times"></span></button>';
+                        $content .='<button class="arm_zoom_button arm_zoom_plus arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" data-method="zoom" data-option="0.1" title="' . __('Zoom In', 'ARMember') . '"><span class="armfa armfa-search-plus"></span></button>';
+                        $content .='<button class="arm_zoom_button arm_zoom_minus arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" data-method="zoom" data-option="-0.1" title="' . __('Zoom Out', 'ARMember') . '"><span class="armfa armfa-search-minus"></span></button>';
+                        $content .='<button class="arm_rotate_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" data-method="rotate" data-option="90" title="' . __('Rotate', 'ARMember') . '"><span class="armfa armfa-rotate-right"></span></button>';
+                        $content .='<button class="arm_reset_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Reset', 'ARMember') . '" data-method="reset"><span class="armfa armfa-refresh"></span></button>';
+                        $content .='<button id="arm_skip_avtr_crop_nav_front" class="arm_avtr_done_front" data_id="'.$formRandomID.'">' . __('Done', 'ARMember') . '</button>';
                         $content .='</div>';
                         $content .='<p class="arm_discription">' . __('(Use Cropper to set image and <br/>use mouse scroller for zoom image.)', 'ARMember') . '</p>';
                         $content .='</div>';
@@ -650,8 +692,13 @@ if (!class_exists('ARM_member_forms')) {
                         $content .='<div id="arm_crop_cover_div_wrapper_close" class="arm_clear_field_close_btn arm_popup_close_btn"></div>';
                         $content .='<div id="arm_crop_cover_div" class="arm_crop_cover_div" data_id="'.$formRandomID.'"><img id="arm_crop_cover_image" class="arm_crop_cover_image" src="" style="max-width:100%;max-height:100%;" data_id="'.$formRandomID.'" /></div>';
                         $content .='<div class="arm_skip_cvr_crop_button_wrapper_admn arm_inht_front_usr_cvr arm_inht_front_usr_profile_cvr">';
-                        $content .='<button  class="arm_crop_cover_button" data_id="'.$formRandomID.'">' . __('crop', 'ARMember') . '</button>';
-                        $content .='<label id="arm_skip_cvr_crop_nav_front" title="'.__("Skip Cover Cropping", 'ARMember').'" class="arm_helptip_icon tipso_style" data_id="'.$formRandomID.'">' . __('Skip', 'ARMember') . '</label>';
+                        $content .='<button class="arm_crop_cover_button arm_img_cover_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Crop', 'ARMember') . '" data-method="crop"><span class="armfa armfa-crop"></span></button>';
+                        $content .='<button class="arm_clear_cover_button arm_img_cover_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Clear', 'ARMember') . '" data-method="clear" style="display:none;"><span class="armfa armfa-times"></span></button>';
+                        $content .='<button class="arm_zoom_cover_button arm_zoom_plus arm_img_cover_setting armhelptip tipso_style" data-method="zoom" data-option="0.1" data_id="'.$formRandomID.'" title="' . __('Zoom In', 'ARMember') . '"><span class="armfa armfa-search-plus"></span></button>';
+                        $content .='<button class="arm_zoom_cover_button arm_zoom_minus arm_img_cover_setting armhelptip tipso_style" data-method="zoom" data-option="-0.1" data_id="'.$formRandomID.'" title="' . __('Zoom Out', 'ARMember') . '"><span class="armfa armfa-search-minus"></span></button>';
+                        $content .='<button class="arm_rotate_cover_button arm_img_cover_setting armhelptip tipso_style" data_id="'.$formRandomID.'" data-method="rotate" data-option="90" title="' . __('Rotate', 'ARMember') . '"><span class="armfa armfa-rotate-right"></span></button>';
+                        $content .='<button class="arm_reset_cover_button arm_img_cover_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Reset', 'ARMember') . '" data-method="reset"><span class="armfa armfa-refresh"></span></button>';
+                        $content .='<button data_id="'.$formRandomID.'" id="arm_skip_cvr_crop_nav_front" class="arm_cvr_done_front">' . __('Done', 'ARMember') . '</button>';
                         $content .='</div>';
                         $content .='<p class="arm_discription">' . __('(Use Cropper to set image and use mouse scroller for zoom image.)', 'ARMember') . '</p>';
                         $content .='</div>';
@@ -707,7 +754,7 @@ if (!class_exists('ARM_member_forms')) {
                     }
 
                     $content .= '</div>';
-                    $content = apply_filters('arm_change_content_after_display_form', $content, 0, $atts);
+                    $content = apply_filters('arm_change_content_after_display_form', $content, $form, $atts, $formRandomID);
                 }
             } else {
                 $default_login_form_id = $this->arm_get_default_form_id('login');
@@ -870,13 +917,20 @@ if (!class_exists('ARM_member_forms')) {
                     $general_settings = $all_global_settings['general_settings'];
                     $enable_crop = isset($general_settings['enable_crop']) ? $general_settings['enable_crop'] : 0;
 
-                    if($enable_crop){
+                    global $arm_is_enable_crop;
+                    if($enable_crop && empty($arm_is_enable_crop)){
+                        $arm_is_enable_crop = 1;
                         $content .='<div id="arm_crop_div_wrapper" class="arm_crop_div_wrapper"  style="display:none;" data_id="'.$formRandomID.'">';
                         $content .='<div id="arm_crop_div_wrapper_close" class="arm_clear_field_close_btn arm_popup_close_btn"></div>';
                         $content .='<div id="arm_crop_div" class="arm_crop_div" data_id="'.$formRandomID.'"><img id="arm_crop_image" class="arm_crop_image" src="" style="max-width:100%;" data_id="'.$formRandomID.'"/></div>';
                         $content .='<div class="arm_skip_avtr_crop_button_wrapper_admn arm_inht_front_usr_avtr">';
-                        $content .='<button class="arm_crop_button" data_id="'.$formRandomID.'">' . __('crop', 'ARMember') . '</button>';
-                        $content .='<label id="arm_skip_avtr_crop_nav_front" title="'.__("Skip Avatar Cropping", 'ARMember').'" class="arm_helptip_icon tipso_style" data_id="'.$formRandomID.'">' . __('Skip', 'ARMember') . '</label>';
+                        $content .='<button class="arm_crop_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Crop', 'ARMember') . '" data-method="crop"><span class="armfa armfa-crop"></span></button>';
+                        $content .='<button class="arm_clear_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Clear', 'ARMember') . '" data-method="clear" style="display:none;"><span class="armfa armfa-times"></span></button>';
+                        $content .='<button class="arm_zoom_button arm_zoom_plus arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" data-method="zoom" data-option="0.1" title="' . __('Zoom In', 'ARMember') . '"><span class="armfa armfa-search-plus"></span></button>';
+                        $content .='<button class="arm_zoom_button arm_zoom_minus arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" data-method="zoom" data-option="-0.1" title="' . __('Zoom Out', 'ARMember') . '"><span class="armfa armfa-search-minus"></span></button>';
+                        $content .='<button class="arm_rotate_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" data-method="rotate" data-option="90" title="' . __('Rotate', 'ARMember') . '"><span class="armfa armfa-rotate-right"></span></button>';
+                        $content .='<button class="arm_reset_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Reset', 'ARMember') . '" data-method="reset"><span class="armfa armfa-refresh"></span></button>';
+                        $content .='<button id="arm_skip_avtr_crop_nav_front" class="arm_avtr_done_front" data_id="'.$formRandomID.'">' . __('Done', 'ARMember') . '</button>';
                         $content .='</div>';
                         $content .='<p class="arm_discription">' . __('(Use Cropper to set image and <br/>use mouse scroller for zoom image.)', 'ARMember') . '</p>';
                         $content .='</div>';
@@ -886,8 +940,13 @@ if (!class_exists('ARM_member_forms')) {
                         $content .='<div id="arm_crop_cover_div_wrapper_close" class="arm_clear_field_close_btn arm_popup_close_btn"></div>';
                         $content .='<div id="arm_crop_cover_div" class="arm_crop_cover_div" data_id="'.$formRandomID.'"><img id="arm_crop_cover_image" class="arm_crop_cover_image" src="" style="max-width:100%;max-height:100%;" data_id="'.$formRandomID.'" /></div>';
                         $content .='<div class="arm_skip_cvr_crop_button_wrapper_admn arm_inht_front_usr_cvr arm_inht_front_usr_profile_cvr">';
-                        $content .='<button  class="arm_crop_cover_button" data_id="'.$formRandomID.'">' . __('crop', 'ARMember') . '</button>';
-                        $content .='<label id="arm_skip_cvr_crop_nav_front" title="'.__("Skip Cover Cropping", 'ARMember').'" class="arm_helptip_icon tipso_style" data_id="'.$formRandomID.'">' . __('Skip', 'ARMember') . '</label>';
+                        $content .='<button class="arm_crop_cover_button arm_img_cover_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Crop', 'ARMember') . '" data-method="crop"><span class="armfa armfa-crop"></span></button>';
+                        $content .='<button class="arm_clear_cover_button arm_img_cover_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Clear', 'ARMember') . '" data-method="clear" style="display:none;"><span class="armfa armfa-times"></span></button>';
+                        $content .='<button class="arm_zoom_cover_button arm_zoom_plus arm_img_cover_setting armhelptip tipso_style" data-method="zoom" data-option="0.1" data_id="'.$formRandomID.'" title="' . __('Zoom In', 'ARMember') . '"><span class="armfa armfa-search-plus"></span></button>';
+                        $content .='<button class="arm_zoom_cover_button arm_zoom_minus arm_img_cover_setting armhelptip tipso_style" data-method="zoom" data-option="-0.1" data_id="'.$formRandomID.'" title="' . __('Zoom Out', 'ARMember') . '"><span class="armfa armfa-search-minus"></span></button>';
+                        $content .='<button class="arm_rotate_cover_button arm_img_cover_setting armhelptip tipso_style" data-method="rotate" data-option="90" data_id="'.$formRandomID.'" title="' . __('Rotate', 'ARMember') . '"><span class="armfa armfa-rotate-right"></span></button>';
+                        $content .='<button class="arm_reset_cover_button arm_img_cover_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Reset', 'ARMember') . '" data-method="reset"><span class="armfa armfa-refresh"></span></button>';
+                        $content .='<button data_id="'.$formRandomID.'" id="arm_skip_cvr_crop_nav_front" class="arm_cvr_done_front">' . __('Done', 'ARMember') . '</button>';
                         $content .='</div>';
                         $content .='<p class="arm_discription">' . __('(Use Cropper to set image and use mouse scroller for zoom image.)', 'ARMember') . '</p>';
                         $content .='</div>';
@@ -945,7 +1004,7 @@ if (!class_exists('ARM_member_forms')) {
                     }
 
                     $content .= '</div>';
-                    $content = apply_filters('arm_change_content_after_display_form', $content, 0, $atts);
+                    $content = apply_filters('arm_change_content_after_display_form', $content, $form, $atts, $formRandomID);
                 }
 
             } else {
@@ -1447,12 +1506,11 @@ if (!class_exists('ARM_member_forms')) {
                     $arm_default_redirection_settings = get_option('arm_redirection_settings');
                     $arm_default_redirection_settings = maybe_unserialize($arm_default_redirection_settings);
                     $login_redirection_rules_options = $arm_default_redirection_settings['login'];
-
-                  
-                    if ($atts['is_referer'] == '1' || (isset($login_redirection_rules_options['type'] ) && $login_redirection_rules_options['type'] == 'referral')) {
-
-                        
-                        
+                    $signup_redirection_rules_options = $arm_default_redirection_settings['signup'];
+                    
+                    if ($atts['is_referer'] == '1' || 
+                        (isset($login_redirection_rules_options['type'] ) && $login_redirection_rules_options['type'] == 'referral') || 
+                        (isset($signup_redirection_rules_options['type'] ) && $signup_redirection_rules_options['type'] == 'referral')) {
 
                         if (isset($_REQUEST['redirect']) && $_REQUEST['redirect'] != '') {
                             
@@ -1471,12 +1529,28 @@ if (!class_exists('ARM_member_forms')) {
                         }
                         if (isset($_SESSION['arm_restricted_page_url']) && !empty($_SESSION['arm_restricted_page_url'])) {
                             /* if referrel page is restricted, then below is used */
-                            $referral_url1 = $_SESSION['arm_restricted_page_url'];
-                        }
-                    }
+                            global $arm_restriction;
+                            $check_curr_page_url = $arm_restriction->curPageURL();
+                            $arm_url_components = parse_url($check_curr_page_url);
 
+                            //$arm_url_components = parse_url($referral_url1);
+                            if(isset($arm_url_components['query'])) 
+                            {
+                                parse_str($arm_url_components['query'], $arm_chk_res_params);
+                                if(isset($arm_chk_res_params['restricted']))
+                                {
+                                    $referral_url1 = $_SESSION['arm_restricted_page_url'];
+                                }
+                            }      
+                        } 
+                    }
                     
                     $default_redirect = (!empty($login_redirection_rules_options['refferel'])) ? $login_redirection_rules_options['refferel'] : wp_get_current_page_url();
+                    if(preg_match('/signup|registration/', $form_slug) > 0)
+                    {
+                        $default_redirect = (!empty($signup_redirection_rules_options['refferel'])) ? $signup_redirection_rules_options['refferel'] : wp_get_current_page_url();   
+                    }
+                        
                     $referral_url = !empty($referral_url1) ? $referral_url1 : $default_redirect;
                     $form_content .= '<input type="hidden" name="referral_url" value="' . $referral_url . '"/>';
                     if (is_admin() && isset($_REQUEST['id'])) {
@@ -1489,13 +1563,20 @@ if (!class_exists('ARM_member_forms')) {
                         $general_settings = $all_global_settings['general_settings'];
                         $enable_crop = isset($general_settings['enable_crop']) ? $general_settings['enable_crop'] : 0;
 
-                        if($enable_crop){
+                        global $arm_is_enable_crop;
+                        if($enable_crop && empty($arm_is_enable_crop)){
+                            $arm_is_enable_crop = 1;
                             $form_content .='<div id="arm_crop_div_wrapper" class="arm_crop_div_wrapper"  style="display:none;" data_id="'.$formRandomID.'">';
                             $form_content .='<div id="arm_crop_div_wrapper_close" class="arm_clear_field_close_btn arm_popup_close_btn"></div>';
                             $form_content .='<div id="arm_crop_div" class="arm_crop_div" data_id="'.$formRandomID.'"><img id="arm_crop_image" class="arm_crop_image" src="" style="max-width:100%;" data_id="'.$formRandomID.'"/></div>';
                             $form_content .='<div class="arm_skip_avtr_crop_button_wrapper_admn arm_inht_front_usr_avtr">';
-                            $form_content .='<button class="arm_crop_button" data_id="'.$formRandomID.'">' . __('crop', 'ARMember') . '</button>';
-                            $form_content .='<label id="arm_skip_avtr_crop_nav_front" title="'.__("Skip Avatar Cropping", 'ARMember').'" class="arm_helptip_icon tipso_style" data_id="'.$formRandomID.'">' . __('Skip', 'ARMember') . '</label>';
+                            $form_content .='<button class="arm_crop_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Crop', 'ARMember') . '" data-method="crop"><span class="armfa armfa-crop"></span></button>';
+                            $form_content .='<button class="arm_clear_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Clear', 'ARMember') . '" data-method="clear" style="display:none;"><span class="armfa armfa-times"></span></button>';
+                            $form_content .='<button class="arm_zoom_button arm_zoom_plus arm_img_setting armhelptip tipso_style" data-method="zoom" data-option="0.1" data_id="'.$formRandomID.'" title="' . __('Zoom In', 'ARMember') . '"><span class="armfa armfa-search-plus"></span></button>';
+                            $form_content .='<button class="arm_zoom_button arm_zoom_minus arm_img_setting armhelptip tipso_style" data-method="zoom" data-option="-0.1" data_id="'.$formRandomID.'" title="' . __('Zoom Out', 'ARMember') . '"><span class="armfa armfa-search-minus"></span></button>';
+                            $form_content .='<button class="arm_rotate_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" data-method="rotate" data-option="90" title="' . __('Rotate', 'ARMember') . '"><span class="armfa armfa-rotate-right"></span></button>';
+                            $form_content .='<button class="arm_reset_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Reset', 'ARMember') . '" data-method="reset"><span class="armfa armfa-refresh"></span></button>';
+                            $form_content .='<button id="arm_skip_avtr_crop_nav_front" class="arm_avtr_done_front" data_id="'.$formRandomID.'">' . __('Done', 'ARMember') . '</button>';
                             $form_content .='</div>';
                             $form_content .='<p class="arm_discription">' . __('(Use Cropper to set image and <br/>use mouse scroller for zoom image.)', 'ARMember') . '</p>';
                             $form_content .='</div>';
@@ -1557,7 +1638,7 @@ if (!class_exists('ARM_member_forms')) {
 
 
                         /*                         * ----------- Add Social Ids If User comes from social login -----------* */
-                        foreach (array('facebook', 'twitter', 'linkedin', 'vk', 'insta') as $social_type) {
+                        foreach (array('facebook', 'twitter', 'linkedin', 'vk', 'insta','tumblr') as $social_type) {
                             $social_id = (isset($_REQUEST['arm_' . $social_type . '_id'])) ? $_REQUEST['arm_' . $social_type . '_id'] : '';
                             $social_picture = (isset($_REQUEST[$social_type . '_picture'])) ? $_REQUEST[$social_type . '_picture'] : '';
                             if (!empty($social_id)) {
@@ -1648,7 +1729,7 @@ if (!class_exists('ARM_member_forms')) {
                         if (in_array($form->type, array('registration', 'forgot_password'))) {
                             $form_attr .= ' data-submission-key="' . $captcha_code . '" ';
                         }
-                        $content .= '<form method="post" class="arm_form arm_shortcode_form ' . $form_style_class . ' armAngularInit" enctype="multipart/form-data" novalidate ' . $form_attr . '>';
+                        $content .= '<form method="post" class="arm_form arm_shortcode_form ' . $form_style_class . ' armAngularInit arm_cl_'.$formRandomID.'" enctype="multipart/form-data" novalidate ' . $form_attr . '>';
                         if ($form->type != 'change_password' && $form->type != 'login') {
                             $content .= "<input type='text' name='arm_filter_input' arm_register='true' data-random-key='{$formRandomID}' value='' style='opacity:0 !important;display:none !important;visibility:hidden !important;' />";
                             $arm_random_key = rand();
@@ -1729,7 +1810,7 @@ if (!class_exists('ARM_member_forms')) {
                             $popup_modal_content .= '</div>';
                             $popup_modal_content .= '</div>';
                             $popup_modal_content .= '<div class="popup_content_text" style="' . $popup_content_height . 'min-height: 100px;" data-height="' . $popupHeight . '">';
-                            $popup_modal_content .= apply_filters('arm_change_popup_form_content', $content, $form, $atts);
+                            $popup_modal_content .= apply_filters('arm_change_popup_form_content', $content, $form, $atts, $pformRandomID);
                             $popup_modal_content .= '</div>';
                             $popup_modal_content .= '<div class="armclear"></div>';
                             $popup_modal_content .= '</div></div>';
@@ -1761,7 +1842,7 @@ if (!class_exists('ARM_member_forms')) {
                         $content .= '</div>';
                     }
 
-                    $content = apply_filters('arm_change_content_after_display_form', $content, $form, $atts);
+                    $content = apply_filters('arm_change_content_after_display_form', $content, $form, $atts, $formRandomID);
                     $ARMember->enqueue_angular_script();
                 }
             }
@@ -1925,6 +2006,8 @@ if (!class_exists('ARM_member_forms')) {
                             $ref_field_id = $field_options['ref_field_id'];
                             $enable_repeat_field = $field_options['enable_repeat_field'];
                         }
+                        $class = !empty($class) ? ' '.$class :''; 
+
                         $prefix_name = 'arm_field[' . $form_id . ']';
                         if ($type == 'avatar' || $field_options['meta_key'] == 'avatar') {
                             $isAvatarField = true;
@@ -1938,7 +2021,7 @@ if (!class_exists('ARM_member_forms')) {
                                      *
                                      * * */
                                     if (!$isSocialField) {
-                                        $field_content .= '<div class="arm_form_field_container ' . $class . ' arm_form_field_container_social_fields" id="arm_form_field_container_' . $form_field_id . '" data-field_id="' . $form_field_id . '">';
+                                        $field_content .= '<div class="arm_form_field_container' . $class . ' arm_form_field_container_social_fields" id="arm_form_field_container_' . $form_field_id . '" data-field_id="' . $form_field_id . '">';
                                         if (!empty($atts['social_fields']) && isset($atts['social_fields'])) {
                                             $extraFields = explode(',', rtrim($atts['social_fields'], ','));
                                         } else {
@@ -1976,7 +2059,7 @@ if (!class_exists('ARM_member_forms')) {
                                                 'invalid_message' => __('Invalid image selected.', 'ARMember'),
                                             );
                                             $avatarOptions = apply_filters('arm_change_field_options', $avatarOptions);
-                                            $submit_field .= '<div class="arm_form_field_container ' . $class . ' arm_form_field_container_avatar" id="arm_form_field_container_' . $avatar_field_id . '" data-field_id="' . $avatar_field_id . '">';
+                                            $submit_field .= '<div class="arm_form_field_container' . $class . ' arm_form_field_container_avatar" id="arm_form_field_container_' . $avatar_field_id . '" data-field_id="' . $avatar_field_id . '">';
                                             $submit_field .= '<div class="arm_form_label_wrapper arm_form_field_label_wrapper arm_form_member_field_avatar">';
                                             $submit_field .= '<div class="arm_member_form_field_label">';
                                             if ($required == 1) {
@@ -2012,7 +2095,7 @@ if (!class_exists('ARM_member_forms')) {
                                             'invalid_message' => __('Invalid image selected.', 'ARMember'),
                                         );
                                         $profileCoverOptions = apply_filters('arm_change_field_options', $profileCoverOptions);
-                                        $submit_field .= '<div class="arm_form_field_container ' . $class . ' arm_form_field_container_profile_cover" id="arm_form_field_container_' . $profile_cover_field_id . '" data-field_id="' . $profile_cover_field_id . '">';
+                                        $submit_field .= '<div class="arm_form_field_container' . $class . ' arm_form_field_container_profile_cover" id="arm_form_field_container_' . $profile_cover_field_id . '" data-field_id="' . $profile_cover_field_id . '">';
                                         $submit_field .= '<div class="arm_form_label_wrapper arm_form_field_label_wrapper arm_form_member_field_profile_cover">';
                                         $submit_field .= '<div class="arm_member_form_field_label">';
                                         if ($required == 1) {
@@ -2030,7 +2113,7 @@ if (!class_exists('ARM_member_forms')) {
                                 }
                             }
                             if (empty($atts['setup'])) {
-                                $submit_field .= '<div class="arm_form_field_container ' . $class . ' arm_form_field_container_' . $type . '" id="arm_form_field_container_' . $form_field_id . '" data-field_id="' . $form_field_id . '">';
+                                $submit_field .= '<div class="arm_form_field_container' . $class . ' arm_form_field_container_' . $type . '" id="arm_form_field_container_' . $form_field_id . '" data-field_id="' . $form_field_id . '">';
                                 $submit_field .= '<div class="arm_form_label_wrapper arm_form_field_label_wrapper arm_form_member_field_' . $type . '"></div>';
                                 $submit_field .= '<div class="arm_label_input_separator"></div>';
                                 $submit_field .= '<div class="arm_form_input_wrapper">';
@@ -2041,7 +2124,7 @@ if (!class_exists('ARM_member_forms')) {
                         } elseif ($type == 'social_fields') {
                             $isSocialField = true;
                             if ($arm_social_feature->isSocialFeature) {
-                                $field_content .= '<div class="arm_form_field_container ' . $class . ' arm_form_field_container_social_fields" id="arm_form_field_container_' . $form_field_id . '" data-field_id="' . $form_field_id . '">';
+                                $field_content .= '<div class="arm_form_field_container' . $class . ' arm_form_field_container_social_fields" id="arm_form_field_container_' . $form_field_id . '" data-field_id="' . $form_field_id . '">';
                                 if (!empty($atts['social_fields']) && isset($atts['social_fields'])) {
                                     $extraFields = explode(',', rtrim($atts['social_fields'], ','));
                                 } else {
@@ -2055,7 +2138,7 @@ if (!class_exists('ARM_member_forms')) {
                                 $field_content .= '</div>';
                             }
                         } elseif ($type == 'hidden') {
-                            $field_content .= '<div class="arm_form_field_container ' . $class . ' hidden_field_hide arm_form_field_container_' . $type . '" id="arm_form_field_container_' . $form_field_id . '" data-field_id="' . $form_field_id . '">';
+                            $field_content .= '<div class="arm_form_field_container' . $class . ' hidden_field_hide arm_form_field_container_' . $type . '" id="arm_form_field_container_' . $form_field_id . '" data-field_id="' . $form_field_id . '">';
                             $field_content .= $this->arm_member_form_get_fields_by_type($field_options, $form_field_id, $form_id, 'active', $form);
                             $field_content .= '</div>';
                         } else {
@@ -2087,7 +2170,7 @@ if (!class_exists('ARM_member_forms')) {
                             }
 
 
-                            $field_content .= '<div class="arm_form_field_container ' . $class . ' arm_form_field_container_' . $type . ' ' . $fieldContClass . '" id="arm_form_field_container_' . $form_field_id . '" data-field_id="' . $form_field_id . '" style="' . $fieldBoxStyle . '">';
+                            $field_content .= '<div class="arm_form_field_container' . $class . ' arm_form_field_container_' . $type . $fieldContClass . '" id="arm_form_field_container_' . $form_field_id . '" data-field_id="' . $form_field_id . '" style="' . $fieldBoxStyle . '">';
                             if (!in_array($field_options['type'], array('html', 'section')) && !empty($label) ) {
                                 $field_content .= '<div class="arm_form_label_wrapper arm_form_field_label_wrapper arm_form_member_field_' . $type . '">';
                                 if (!in_array($type, array('submit', 'hidden', 'rememberme'))) {
@@ -2519,6 +2602,10 @@ if (!class_exists('ARM_member_forms')) {
                                     $options['numeric'] = (isset($options['numeric'])) ? $options['numeric'] : 0;
                                     $options['uppercase'] = (isset($options['uppercase'])) ? $options['uppercase'] : 0;
                                     $options['lowercase'] = (isset($options['lowercase'])) ? $options['lowercase'] : 0;
+                                    $options['veryweaktext'] = (!empty($options['veryweaktext'])) ? stripslashes($options['veryweaktext']) : __('Strength: Very Weak', 'ARMember');
+                                    $options['weaktext'] = (!empty($options['weaktext'])) ? stripslashes($options['weaktext']) : __('Strength: Weak', 'ARMember');
+                                    $options['goodtext'] = (!empty($options['goodtext'])) ? stripslashes($options['goodtext']) : __('Strength: Good', 'ARMember');
+                                    $options['strongtext'] = (!empty($options['strongtext'])) ? stripslashes($options['strongtext']) : __('Strength: Strong', 'ARMember');
                                     ?>
                                                 <div class="arm_form_field_settings_menu_inner arm_placeholder_text_container">
                                                     <div class="arm_form_field_settings_field_label">
@@ -2535,7 +2622,7 @@ if (!class_exists('ARM_member_forms')) {
                                         <?php _e('Min Length', 'ARMember'); ?>
                                                         </div>
                                                         <div class="arm_form_field_settings_field_val">
-                                                            <input type="number" value="<?php echo $options['minlength']; ?>" name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][options][minlength]" style="width: 60px;display: inline-block;" min="0" onkeydown="javascript:return checkNumber(event)"/>
+                                                            <input type="number" value="<?php echo $options['minlength']; ?>" name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][options][minlength]" min="0" onkeydown="javascript:return checkNumber(event)"/>
                                                         </div>
                                                     </div>
                                                     <div class="arm_form_field_settings_menu_inner">
@@ -2543,7 +2630,7 @@ if (!class_exists('ARM_member_forms')) {
                                                     <?php _e('Max Length', 'ARMember'); ?>
                                                         </div>
                                                         <div class="arm_form_field_settings_field_val">
-                                                            <input type="number" value="<?php echo $options['maxlength']; ?>" name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][options][maxlength]" style="width: 60px;display: inline-block;" min="0" onkeydown="javascript:return checkNumber(event)"/>
+                                                            <input type="number" value="<?php echo $options['maxlength']; ?>" name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][options][maxlength]" min="0" onkeydown="javascript:return checkNumber(event)"/>
                                                         </div>
                                                     </div>
                                                     <?php if ($form->type != 'login'): ?>
@@ -2561,6 +2648,32 @@ if (!class_exists('ARM_member_forms')) {
                                                                 </p>
                                                             </div>
                                                         </div>
+                                                        <div class="arm_form_field_settings_menu_inner arm_form_field_strength_text <?php echo ($is_strength_meter != 1) ? 'hidden_section' : ''; ?>">                         
+                                                            <div class="arm_form_field_settings_field_label">
+                                                        <?php _e('Very Weak Text', 'ARMember'); ?>
+                                                            </div>
+                                                            <div class="arm_form_field_settings_field_val">
+                                                            <input type="textbox" value="<?php echo $options['veryweaktext']; ?>" name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][options][veryweaktext]"  />
+                                                            </div>
+                                                            <div class="arm_form_field_settings_field_label">
+                                                        <?php _e('Weak Text', 'ARMember'); ?>
+                                                            </div>
+                                                            <div class="arm_form_field_settings_field_val">
+                                                                <input type="textbox" value="<?php echo $options['weaktext']; ?>" name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][options][weaktext]" />
+                                                            </div>
+                                                            <div class="arm_form_field_settings_field_label">
+                                                        <?php _e('Good Text', 'ARMember'); ?>
+                                                            </div>
+                                                            <div class="arm_form_field_settings_field_val">
+                                                                <input type="textbox" value="<?php echo $options['goodtext']; ?>" name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][options][goodtext]"  />
+                                                            </div>
+                                                            <div class="arm_form_field_settings_field_label">
+                                                        <?php _e('Strong Text', 'ARMember'); ?>
+                                                            </div>
+                                                            <div class="arm_form_field_settings_field_val">
+                                                                <input type="textbox" value="<?php echo $options['strongtext']; ?>" name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][options][strongtext]" />
+                                                            </div>
+                                                        </div>                                                           
                                                         <div class="arm_form_field_settings_menu_inner">
                                                             <div class="arm_form_field_settings_field_label">
                                                                 <?php _e('Strong Password?', 'ARMember'); ?>
@@ -2674,7 +2787,7 @@ if (!class_exists('ARM_member_forms')) {
                                                             <?php _e('Min Length', 'ARMember'); ?>
                                                         </div>
                                                         <div class="arm_form_field_settings_field_val">
-                                                            <input type="number" value="<?php echo $options['minlength']; ?>" name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][options][minlength]" style="width: 60px;display: inline-block;" min="0" onkeydown="javascript:return checkNumber(event)"/>
+                                                            <input type="number" value="<?php echo $options['minlength']; ?>" name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][options][minlength]" min="0" onkeydown="javascript:return checkNumber(event)"/>
                                                         </div>
                                                     </div>
                                                     <div class="arm_form_field_settings_menu_inner">
@@ -2682,7 +2795,7 @@ if (!class_exists('ARM_member_forms')) {
                                                     <?php _e('Max Length', 'ARMember'); ?>
                                                         </div>
                                                         <div class="arm_form_field_settings_field_val">
-                                                            <input type="number" value="<?php echo $options['maxlength']; ?>" name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][options][maxlength]" style="width: 60px;display: inline-block;" min="0" onkeydown="javascript:return checkNumber(event)"/>
+                                                            <input type="number" value="<?php echo $options['maxlength']; ?>" name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][options][maxlength]" min="0" onkeydown="javascript:return checkNumber(event)"/>
                                                         </div>
                                                     </div>
                                                 <?php
@@ -2785,8 +2898,8 @@ if (!class_exists('ARM_member_forms')) {
                                     <div class="arm_form_field_settings_field_val">
                                 <?php $validation_type = isset($validation_type) ? $validation_type : 'custom_validation_none'; ?>
                                         <input id="arm_form_field_settings_validation_type_<?php echo $form_field_id; ?>" field_id = "<?php echo $form_field_id; ?>" type='hidden' name="<?php echo $prefix_name; ?>[<?php echo $form_field_id; ?>][validation_type]" class="arm_form_field_settings_field_input arm_form_field_settings_validation_type" value="<?php echo $validation_type; ?>" />
-                                        <dl class="arm_selectbox column_level_dd">
-                                            <dt style="width:70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                        <dl class="arm_selectbox column_level_dd arm_width_210">
+                                            <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                             <dd>
                                                 <ul data-id="arm_form_field_settings_validation_type_<?php echo $form_field_id; ?>">
                                                     <li data-value="custom_validation_none" data-label="<?php _e('None', 'ARMember'); ?>"><?php _e('None', 'ARMember'); ?></li>
@@ -3100,7 +3213,7 @@ if (!class_exists('ARM_member_forms')) {
                     }
                 }
             }
-            $field_class = isset( $field_options['class'] ) ? $field_options['class'] : '';
+            $field_class = !empty( $field_options['class'] ) ? ' '.$field_options['class'] : '';
             $prefix_name = 'arm_forms[' . $form_id . ']';
             $socialFieldsHtml = '<div class="arm_form_social_profile_fields_wrapper">';
             $selectedSPFOpt = '';
@@ -3131,7 +3244,7 @@ if (!class_exists('ARM_member_forms')) {
                             $spfMetaValue = get_user_meta($user_id, $spfMetaKey, true);
                         }
                         $selectedSPFOpt .= '<input type="hidden" class="arm_selected_social_profile_fields" name="' . $prefix_name . '[' . $form_field_id . '][options][]" value="' . $spfKey . '"/>';
-                        $socialFieldsHtml .= '<div class="arm_form_field_container ' . $field_class . ' arm_form_field_container_text" id="arm_form_field_container_' . $form_field_id . '_' . $spfKey . '" data-field_id="' . $form_field_id . '">';
+                        $socialFieldsHtml .= '<div class="arm_form_field_container' . $field_class . ' arm_form_field_container_text" id="arm_form_field_container_' . $form_field_id . '_' . $spfKey . '" data-field_id="' . $form_field_id . '">';
                         $socialFieldsHtml .= '<div class="arm_form_label_wrapper arm_form_field_label_wrapper arm_form_member_field_social_fields">';
                         $socialFieldsHtml .= '<div class="arm_member_form_field_label">';
                         $socialFieldsHtml .= '<div class="arm_form_field_label_text">' . $spfLabel . '</div>';
@@ -3203,7 +3316,7 @@ if (!class_exists('ARM_member_forms')) {
             $value['id'] = "arm_" . $value['id'] . "_" . $form_id;
             $class = apply_filters('arm_form_field_class', '');
             $class .= ' arm_form_input_box_' . $field_id . ' ';
-            $class .= ' arm_form_input_box ';
+            $class .= ' arm_form_input_box arm_cl_'.$meta_key.'_'.$formRandomID.' ';
             $value['label'] = !empty($value['label']) ? stripslashes($value['label']) : '';
             $value['placeholder'] = !empty($value['placeholder']) ? stripslashes($value['placeholder']) : '';
             $ffield_label = (!empty($value['placeholder'])) ? $value['placeholder'] : '';
@@ -3214,7 +3327,7 @@ if (!class_exists('ARM_member_forms')) {
             if (isset($formStyles['form_layout']) && $formStyles['form_layout'] == 'writer') {
                 $placeholder = '';
                 $ffield_label = $value['label'];
-                $class = ' arm_form_input_box arm_form_input_box_' . $field_id . ' arm_material_input';
+                $class = ' arm_form_input_box arm_form_input_box_' . $field_id . ' arm_material_input arm_cl_'.$meta_key.'_'.$formRandomID;
                 $suffix_eye_icon_cls = " arm_visible_password_material ";
             }
             $validate_msgs = '';
@@ -3260,6 +3373,7 @@ if (!class_exists('ARM_member_forms')) {
                 $validation_data = $validate_msgs = $required = '';
             }
             $onchange = (!empty($value['onchange'])) ? 'onchange="' . $value['onchange'] . '"' : '';
+            $onchange = apply_filters( 'arm_form_field_onchange', $formRandomID, $meta_key, $ffield_type, $onchange );
             /* Set Value Variable */
             $field_desc = (isset($value['description'])) ? $value['description'] : '';
             $field_val = (isset($value['value'])) ? $value['value'] : '';
@@ -3285,12 +3399,12 @@ if (!class_exists('ARM_member_forms')) {
             }
             if (!empty($value['options']['minlength'])) {
                 $field_attr .= ' data-ng-minlength="' . ((int) $value['options']['minlength']) . '"';
-                $minlength_invalid_message = (isset($common_messages['arm_minlength_invalid']) && $common_messages['arm_minlength_invalid'] != '') ? str_replace('[MINVALUE]', ((int) $value['options']['minlength']), $common_messages['arm_minlength_invalid']) : __('Please enter at least', 'ARMember') . " " . ((int) $value['options']['minlength']) . __(' characters.', 'ARMember');
+                $minlength_invalid_message = (isset($common_messages['arm_minlength_invalid']) && $common_messages['arm_minlength_invalid'] != '') ? str_replace('[MINVALUE]', ((int) $value['options']['minlength']), $common_messages['arm_minlength_invalid']) : __('Please enter at least', 'ARMember') . " " . ((int) $value['options']['minlength']) .' '. __('characters.', 'ARMember');
                 $validate_msgs .= '<div data-ng-message="minlength" class="arm_error_msg"><div class="arm_error_box_arrow"></div>' . $minlength_invalid_message . '</div>';
             }
             if (!empty($value['options']['maxlength'])) {
                 $field_attr .= ' data-ng-maxlength="' . ((int) $value['options']['maxlength']) . '"';
-                $maxlength_invalid_message = (isset($common_messages['arm_maxlength_invalid']) && $common_messages['arm_maxlength_invalid'] != '') ? str_replace('[MAXVALUE]', ((int) $value['options']['maxlength']), $common_messages['arm_maxlength_invalid']) : __('Maximum', 'ARMember') . " " . ((int) $value['options']['minlength']) . __(' characters allowed.', 'ARMember');
+                $maxlength_invalid_message = (isset($common_messages['arm_maxlength_invalid']) && $common_messages['arm_maxlength_invalid'] != '') ? str_replace('[MAXVALUE]', ((int) $value['options']['maxlength']), $common_messages['arm_maxlength_invalid']) : __('Maximum', 'ARMember') . " " . ((int) $value['options']['minlength']) .' '. __('characters allowed.', 'ARMember');
                 $validate_msgs .= '<div data-ng-message="maxlength" class="arm_error_msg"><div class="arm_error_box_arrow"></div>' . $maxlength_invalid_message . '</div>';
             }
             if( !empty($ffield_label) ) {
@@ -3366,7 +3480,7 @@ if (!class_exists('ARM_member_forms')) {
                     $output .= '<md-input-container class="md-block" flex-gt-sm="">';
                     $output .= $prefix_icon;
                     $output .= $ffield_label;
-                    $output .= '<input name="' . $name . '" type="' . $ffield_type . '" value="' . esc_attr($field_val) . '" class="' . esc_attr($class) . '" ' . $field_attr . '>';
+                    $output .= '<input name="' . $name . '" type="' . $ffield_type . '" value="' . esc_attr($field_val) . '" class="' . esc_attr($class) . '" ' . $field_attr . ' '.$onchange.'>';
                     $output .= $suffix_icon;
                     if ($form_type == 'active') {
                         $output .= '<div data-ng-cloak data-ng-messages="arm_form.' . esc_attr($name) . '.$error" data-ng-show="arm_form.' . esc_attr($name) . '.$touched" class="arm_error_msg_box ng-cloak">';
@@ -3400,10 +3514,15 @@ if (!class_exists('ARM_member_forms')) {
                         }
                         if (!is_admin()) {
                             if (isset($options['strength_meter']) && $options['strength_meter'] == '1') {
+                                $veryweaktext= (!empty($options['veryweaktext'])) ? stripslashes($options['veryweaktext']) : __('Strength: Very Weak', 'ARMember');
+                                $weaktext = (!empty($options['weaktext'])) ? stripslashes($options['weaktext']) : __('Strength: Weak', 'ARMember');
+                                $goodtext = (!empty($options['goodtext'])) ? stripslashes($options['goodtext']) : __('Strength: Good', 'ARMember');
+                                $strongtext = (!empty($options['strongtext'])) ? stripslashes($options['strongtext']) : __('Strength: Strong', 'ARMember');
+                                  
                                 $class .= ' arm_strength_meter_input';
                                 $psm .= '<div class="arm_pass_strength_meter">';
-                                $psm .= '<ul class="arm_strength_meter_block_container" check-strength="arm_form.' . esc_attr($name) . '_' . $field_id . '" field-name="' . esc_attr($name) . '"></ul>';
-                                $psm .= '<span class="arm_strength_meter_label">' . __('Strength: Very Weak', 'ARMember') . '</span>';
+                                $psm .= '<ul class="arm_strength_meter_block_container" check-strength="arm_form.' . esc_attr($name) . '_' . $field_id . '" field-name="' . esc_attr($name) . '" data-field-veryweak = "'.$veryweaktext.'" data-field-weak = "'.$weaktext.'" data-field-good = "'.$goodtext.'" data-field-strong = "'.$strongtext.'" ></ul>';                                                            
+                                $psm .= '<span class="arm_strength_meter_label">' . $veryweaktext . '</span>'; 
                                 $psm .= '<div class="armclear"></div>';
                                 $psm .= '</div>';
                             }
@@ -3462,30 +3581,24 @@ if (!class_exists('ARM_member_forms')) {
                     if (!empty($form) && !empty($formSettings['show_time'])) {
                         $showTimePicker = $formSettings['show_time'];
                     }
+                    /*
                     if (!empty($field_val)) {
-
-                        if (!empty($form) && !empty($formSettings['show_time'])) {
+                        if(!empty($form) && !empty($formSettings['show_time'])) {
                             $formDateFormat .= ' h:i A';
                         }
-
-                        if (preg_match("/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/", $field_val, $match)) {
+                        if(preg_match("/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/", $field_val, $match)) {
                             try {
                                 $date = new DateTime($field_val);
                             } catch (Exception $e) {
                                 $date1_ = str_replace('/', '-', $field_val);
                                 $date = new DateTime($date1_);
                             }
-
                             $field_val = $date->format($formDateFormat);
                         } else {
-
-                          
-                          
                             $field_val = date($formDateFormat, strtotime($field_val));
- 
-                            
                         }
                     }
+                    */
                     $calLocalization = '';
                     if (!empty($form) && isset($value['cal_localization'])) {
                         $calLocalization = $value['cal_localization'];
@@ -3496,7 +3609,7 @@ if (!class_exists('ARM_member_forms')) {
                     if ($form_type == 'active') {
                         $class .= ' arm_datepicker arm_datepicker_front ';
                     }
-                    $output .= '<input name="' . $name . '" type="text" autocomplete="off" value="' . esc_attr($field_val) . '" class="' . esc_attr($class) . '" ' . $field_attr . ' data-dateformat="' . $dateFormat . '" data-date_field="arm_date_field_' . $form_id . '" data-show_timepicker="' . $showTimePicker . '" data-cal_localization="' . $calLocalization . '">';
+                    $output .= '<input name="' . $name . '" type="text" autocomplete="off" value="' . esc_attr($field_val) . '" class="' . esc_attr($class) . '" ' . $field_attr . ' data-dateformat="' . $dateFormat . '" data-date_field="arm_date_field_' . $form_id . '" data-show_timepicker="' . $showTimePicker . '" data-cal_localization="' . $calLocalization . '" '.$onchange.'>';
                     $output .= $suffix_icon;
                     if ($form_type == 'active') {
                         $output .= '<div data-ng-cloak data-ng-messages="arm_form.' . esc_attr($name) . '.$error" data-ng-show="arm_form.' . esc_attr($name) . '.$touched" class="arm_error_msg_box ng-scope">';
@@ -3519,6 +3632,7 @@ if (!class_exists('ARM_member_forms')) {
                         $accept = 'accept=".jpg,.jpeg,.png,.bmp,.ico"';
                     }
                     $file_size_limit = (!empty($value['file_size_limit'])) ? (int) $value['file_size_limit'] : 2;
+                    $file_size_limit = (!empty($file_size_limit)) ? $file_size_limit : 2;
                     $display_file = !empty($field_val) && file_exists(MEMBERSHIP_UPLOAD_DIR . '/' . basename($field_val)) ? true : false;
                     $file_name = $fileUrl = '';
                     if ($display_file) {
@@ -3575,10 +3689,15 @@ if (!class_exists('ARM_member_forms')) {
 
                                 $output .='<div id="arm_crop_cover_div_wrapper" class="arm_crop_cover_div_wrapper" style="display:none;" data_id="'.$formRandomID.'">';
                                 $output .='<div id="arm_crop_cover_div_wrapper_close" class="arm_clear_field_close_btn arm_popup_close_btn"></div>';
-                                $output .='<div id="arm_crop_cover_div" class="arm_crop_cover_div" data_id="'.$formRandomID.'"><img id="arm_crop_cover_image" class="arm_crop_cover_image" src="" style="max-width:100%;max-height:100%;" data_id="'.$formRandomID.'" /></div>';
+                                $output .='<div id="arm_crop_cover_div" class="arm_crop_cover_div" data_id="'.$formRandomID.'"><img id="arm_crop_cover_image" class="arm_crop_cover_image" src="" style="max-width:100%;max-height:100%;" data_id="'.$formRandomID.'"  data-rotate="0" /></div>';
                                 $output .='<div class="arm_skip_cvr_crop_button_wrapper_admn">';
-                                $output .='<button  class="arm_crop_cover_button" data_id="'.$formRandomID.'">' . __('crop', 'ARMember') . '</button>';
-                                $output .='<label id="arm_skip_cvr_crop_nav_admn" title="'.__("Skip Cover Cropping", 'ARMember').'" class="arm_helptip_icon tipso_style">' . __('Skip', 'ARMember') . '</label>';
+                                $output .='<button class="arm_crop_cover_button arm_img_cover_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Crop', 'ARMember') . '" data-method="crop"><span class="armfa armfa-crop"></span></button>';
+                                $output .='<button class="arm_clear_cover_button arm_img_cover_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Clear', 'ARMember') . '" data-method="clear" style="display:none;"><span class="armfa armfa-times"></span></button>';
+                                $output .='<button class="arm_zoom_cover_button arm_zoom_plus arm_img_cover_setting armhelptip tipso_style" data-method="zoom" data-option="0.1" title="' . __('Zoom In', 'ARMember') . '"><span class="armfa armfa-search-plus"></span></button>';
+                                $output .='<button class="arm_zoom_cover_button arm_zoom_minus arm_img_cover_setting armhelptip tipso_style" data-method="zoom" data-option="-0.1" title="' . __('Zoom Out', 'ARMember') . '"><span class="armfa armfa-search-minus"></span></button>';
+                                $output .='<button class="arm_rotate_cover_button arm_img_cover_setting armhelptip tipso_style" data_id="'.$formRandomID.'" data-method="rotate" data-option="90" title="' . __('Rotate', 'ARMember') . '"><span class="armfa armfa-rotate-right"></span></button>';
+                                $output .='<button class="arm_reset_cover_button arm_img_cover_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Reset', 'ARMember') . '" data-method="reset"><span class="armfa armfa-refresh"></span></button>';
+                                $output .='<button id="arm_skip_cvr_crop_nav_admn" data_id="'.$formRandomID.'" class="arm_cvr_done_front">' . __('Done', 'ARMember') . '</button>';
                                 $output .='</div>';
 
                                 $output .='<p class="arm_discription">' . __('(Use Cropper to set image and use mouse scroller for zoom image.)', 'ARMember') . '</p>';
@@ -3588,10 +3707,15 @@ if (!class_exists('ARM_member_forms')) {
 
                                 $output .='<div id="arm_crop_div_wrapper" class="arm_crop_div_wrapper"  style="display:none;" data_id="'.$formRandomID.'">';
                                 $output .='<div id="arm_crop_div_wrapper_close" class="arm_clear_field_close_btn arm_popup_close_btn"></div>';
-                                $output .='<div id="arm_crop_div" class="arm_crop_div" data_id="'.$formRandomID.'"><img id="arm_crop_image" class="arm_crop_image" src="" style="max-width:100%;" data_id="'.$formRandomID.'" /></div>';
+                                $output .='<div id="arm_crop_div" class="arm_crop_div" data_id="'.$formRandomID.'"><img id="arm_crop_image" class="arm_crop_image" src="" style="max-width:100%;" data_id="'.$formRandomID.'"  data-rotate="0" /></div>';
                                 $output .='<div class="arm_skip_avtr_crop_button_wrapper_admn">';
-                                $output .='<button class="arm_crop_button" data_id="'.$formRandomID.'">' . __('crop', 'ARMember') . '</button>';
-                                $output .='<label id="arm_skip_avtr_crop_nav_admn" title="'.__("Skip Avatar Cropping", 'ARMember').'" class="arm_helptip_icon tipso_style">' . __('Skip', 'ARMember') . '</label>';
+                                $output .='<button class="arm_crop_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Crop', 'ARMember') . '" data-method="crop"><span class="armfa armfa-crop"></span></button>';
+                                $output .='<button class="arm_clear_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Clear', 'ARMember') . '" data-method="clear" style="display:none;"><span class="armfa armfa-times"></span></button>';
+                                $output .='<button class="arm_zoom_button arm_zoom_plus arm_img_setting armhelptip tipso_style" data-method="zoom" data-option="0.1" data_id="'.$formRandomID.'" title="' . __('Zoom In', 'ARMember') . '"><span class="armfa armfa-search-plus"></span></button>';
+                                $output .='<button class="arm_zoom_button arm_zoom_minus arm_img_setting armhelptip tipso_style" data-method="zoom" data-option="-0.1" data_id="'.$formRandomID.'" title="' . __('Zoom Out', 'ARMember') . '"><span class="armfa armfa-search-minus"></span></button>';
+                                $output .='<button class="arm_rotate_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" data-method="rotate" data-option="90" title="' . __('Rotate', 'ARMember') . '"><span class="armfa armfa-rotate-right"></span></button>';
+                                $output .='<button class="arm_reset_button arm_img_setting armhelptip tipso_style" data_id="'.$formRandomID.'" title="' . __('Reset', 'ARMember') . '" data-method="reset"><span class="armfa armfa-refresh"></span></button>';
+                                $output .='<button id="arm_skip_avtr_crop_nav_admn" class="arm_avtr_done_front" data_id="'.$formRandomID.'">' . __('Done', 'ARMember') . '</button>';
                                 $output .='</div>';
                                 $output .='<p class="arm_discription">' . __('(Use Cropper to set image and <br/>use mouse scroller for zoom image.)', 'ARMember') . '</p>';
                                 $output .='</div>';
@@ -3702,7 +3826,7 @@ if (!class_exists('ARM_member_forms')) {
                     }
                     $output .= '<md-input-container class="md-block" flex-gt-sm="">';
                     $output .= $ffield_label;
-                    $output .= '<textarea class="arm_textarea ' . esc_attr($class) . '" name="' . esc_attr($name) . '" rows="' . $rows . '" cols="' . $cols . '" ' . $field_attr . ' data-ng-init="arm_form.' . esc_attr($name) . '_' . $field_id . '=\'' . esc_attr(addslashes($field_val)) . '\'">' . stripslashes($field_val) . '</textarea>';
+                    $output .= '<textarea class="arm_textarea ' . esc_attr($class) . '" name="' . esc_attr($name) . '" rows="' . $rows . '" cols="' . $cols . '" ' . $field_attr . ' data-ng-init="arm_form.' . esc_attr($name) . '_' . $field_id . '=\'' . esc_attr(addslashes($field_val)) . '\'" '.$onchange.'>' . stripslashes($field_val) . '</textarea>';
                     if ($form_type == 'active') {
                         $output .= '<div data-ng-cloak data-ng-messages="arm_form.' . esc_attr($name) . '.$error" data-ng-show="arm_form.' . esc_attr($name) . '.$touched" class="arm_error_msg_box ng-scope">';
                         $output .= $validate_msgs;
@@ -3772,7 +3896,7 @@ if (!class_exists('ARM_member_forms')) {
                         if( isset( $field_options['readonly'] ) && 1 == $field_options['readonly']  ){
                             $field_attr .= ' ng-disabled="true" ';
                         }
-                        $output .= '<md-select class="' . esc_attr($class) . '" ' . $field_attr . $ng_change_func .'>';
+                        $output .= '<md-select class="' . esc_attr($class) . '" ' . $field_attr . $ng_change_func .' '.$onchange.'>';
                         $writter_class = (!empty($form) && isset($formStyles['rtl']) && $formStyles['rtl'] == '1') ? 'armSelectOptionRTL' : 'armSelectOptionLTR';
                         if (!empty($value['options'])) {
                             $allOptions = array();
@@ -3867,7 +3991,7 @@ if (!class_exists('ARM_member_forms')) {
                                     $default_radio_temp_value = true;
                                 }
                                 
-                                $radio_controls .= '<md-radio-button '.$ngreadonly.' data-ng-value="\'' . esc_attr($key) . '\'" value="' . esc_attr($key) . '">' . esc_html($option) . '</md-radio-button>';
+                                $radio_controls .= '<md-radio-button '.$ngreadonly.' data-ng-value="\'' . esc_attr($key) . '\'" value="' . esc_attr($key) . '" '.$onchange.'>' . esc_html($option) . '</md-radio-button>';
 
                             }
 
@@ -3878,7 +4002,7 @@ if (!class_exists('ARM_member_forms')) {
                             
                             $ng_init = ( $default_radio_temp_value ) ? 'data-ng-init="arm_form.' . esc_attr($name) . '_' . $field_id . '=\'' . esc_attr($field_val) . '\'"' : "";
 
-                            $output .= '<md-radio-group name="' . esc_attr($name) . '" '.$ng_init.' class="' . esc_attr($class) . '" ' . $field_attr . $ng_change_func . ' >';
+                            $output .= '<md-radio-group name="' . esc_attr($name) . '" '.$ng_init.' class="' . esc_attr($class) . '" ' . $field_attr . $ng_change_func . '>';
 
                                 $output .= $radio_controls;
 
@@ -4013,7 +4137,7 @@ if (!class_exists('ARM_member_forms')) {
                                 if (!empty($required)) {
                                     $field_attr .= ' data-ng-required="'.$arm_field_chkbox_ng_required.'"';
                                 }
-                                $output .= '<md-checkbox '.$ngreadonly.' aria-label="' . esc_html($key) . '" ' . $chked . ' value="' . esc_attr($key) . '" data-ng-true-value="\'' . esc_html($key) . '\'" data-ng-false-value="null" class="' . esc_attr($class) . '" ' . $field_attr . ' id="' . $ngModelCheck . '">';
+                                $output .= '<md-checkbox '.$ngreadonly.' aria-label="' . esc_html($key) . '" ' . $chked . ' value="' . esc_attr($key) . '" data-ng-true-value="\'' . esc_html($key) . '\'" data-ng-false-value="null" class="' . esc_attr($class) . '" ' . $field_attr . ' id="' . $ngModelCheck . '" '.$onchange.'>';
                                 
                                 $output .= $option;
                                 if ($form_type != 'active') {
@@ -4021,7 +4145,7 @@ if (!class_exists('ARM_member_forms')) {
                                 } else {
                                     $field_name = $fname;
                                 }
-                                $chkInputs .= '<input type="hidden" name="' . esc_attr($field_name) . '" value="{{ ' . $ngModelCheck . ' }}">';
+                                $chkInputs .= '<input type="hidden" name="' . esc_attr($field_name) . '" class="arm_cl_chk_'.$name.'_'.$formRandomID.'" value="{{ ' . $ngModelCheck . ' }}">';
                                 $output .= '</md-checkbox>';
 
                                 $arm_form_chkbox_counter++;
@@ -4453,6 +4577,13 @@ if (!class_exists('ARM_member_forms')) {
                     $old_plan_data = array();
                     $old_plan_ids = get_user_meta($user_ID, 'arm_user_plan_ids', true);
                     $old_plan_ids = !empty($old_plan_ids) ? $old_plan_ids : array();
+
+                    $arm_user_plan2_data=array();
+                    if(!empty($member_data['arm_user_plan2'])){
+                        $member_data['arm_user_plan2']=array_filter($member_data['arm_user_plan2']);
+                        $arm_user_plan2_data=$member_data['arm_user_plan2'];
+                    }
+
                     if (!isset($member_data['arm_user_plan'])) {
                         $member_data['arm_user_plan'] = 0;
                     } else {
@@ -4688,8 +4819,6 @@ if (!class_exists('ARM_member_forms')) {
 
                                          $arm_last_payment_status = $wpdb->get_var($wpdb->prepare("SELECT `arm_transaction_status` FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_user_id`=%d AND `arm_plan_id`=%d AND `arm_created_date`<=%s ORDER BY `arm_log_id` DESC LIMIT 0,1", $user_ID, $extend_renewal_date_plan_id, $now));  
 
-                                
-
 
                                         if (strtotime($now) < $old_next_due_date) {
 
@@ -4796,17 +4925,35 @@ if (!class_exists('ARM_member_forms')) {
                             armMemberAccountVerifyMail($user_data);
                         }
                         if (isset($member_data['arm_user_plan']) && !empty($member_data['arm_user_plan'])) {
-                            if ( is_array($member_data['arm_user_plan']) && ( $is_multiple_membership_feature->isMultipleMembershipFeature || ( !empty( $member_data['arm_paid_post_request'] ) && 1 == $member_data['arm_paid_post_request'] ) ) ) {
+                            if( !empty( $member_data['arm_paid_post_request'] ) && 1 == $member_data['arm_paid_post_request'] ){  
                                 $old_plan_ids1 = array_intersect($member_data['arm_user_plan'], $old_plan_ids);
                                 foreach ($member_data['arm_user_plan'] as $plan_id) {
-                                    if (!in_array($plan_id, $old_plan_ids1)) {
+                                    if (!in_array($plan_id, $old_plan_ids1) && in_array($plan_id,$arm_user_plan2_data)) {
+                                        $arm_manage_communication->membership_communication_mail('on_new_subscription', $user_ID, $plan_id);
+                                        do_action('arm_after_user_plan_change_by_admin', $user_ID, $plan_id);
+                                    }
+                                }
+                            }  
+                            if ( is_array($member_data['arm_user_plan']) && 1==$is_multiple_membership_feature->isMultipleMembershipFeature){ 
+                                $old_plan_ids1 = array_intersect($member_data['arm_user_plan'], $old_plan_ids);
+                                foreach ($member_data['arm_user_plan'] as $plan_id) {
+                                    if (!in_array($plan_id, $old_plan_ids1) && !in_array($plan_id,$arm_user_plan2_data)) {
                                         $arm_manage_communication->membership_communication_mail('on_new_subscription', $user_ID, $plan_id);
                                         do_action('arm_after_user_plan_change_by_admin', $user_ID, $plan_id);
                                     }
                                 }
                             } else {
                                 if ($old_plan_id != 0 && $old_plan_id != '') {
-                                    if ($old_plan_id != $member_data['arm_user_plan']) {
+                                    
+                                    if(is_array($member_data['arm_user_plan'])){
+                                        $old_plan_ids1 = array_intersect($member_data['arm_user_plan'], $old_plan_ids);
+                                        foreach ($member_data['arm_user_plan'] as $plan_id) {
+                                            if (!in_array($plan_id, $old_plan_ids1) && !in_array($plan_id,$arm_user_plan2_data)) {
+                                                $arm_manage_communication->membership_communication_mail('on_change_subscription_by_admin', $user_ID, $plan_id);
+                                            }
+                                        }
+
+                                    }else if ($old_plan_id != $member_data['arm_user_plan']) {
                                         $arm_manage_communication->membership_communication_mail('on_change_subscription_by_admin', $user_ID, $member_data['arm_user_plan']);
                                     } else if($old_plan_id == $member_data['arm_user_plan'] && (isset($member_data['arm_skip_next_renewal_'.$old_plan_id]) && $member_data['arm_skip_next_renewal_'.$old_plan_id] == 1 )) {
 
@@ -4917,6 +5064,7 @@ if (!class_exists('ARM_member_forms')) {
                         case 'register' :
                             $posted_data['form'] = $form;
                             $user_id = $this->arm_register_new_member($posted_data, $armform);
+                            $referral_url = isset($posted_data['referral_url']) ? esc_url_raw($posted_data['referral_url']) : '';
                             global $arm_login_from_registration;
                             if (is_numeric($user_id) && !is_array($user_id)) {
 
@@ -4952,6 +5100,11 @@ if (!class_exists('ARM_member_forms')) {
                                     if ($login_redirection_rules_options['type'] == 'page') {
                                         $form_redirect_id = (!empty($login_redirection_rules_options['page_id'])) ? $login_redirection_rules_options['page_id'] : '0';
                                         $redirect_to = $arm_global_settings->arm_get_permalink('', $form_redirect_id);
+                                    
+                                    } else if ($login_redirection_rules_options['type'] == 'referral') {
+                                        $default_redirect = (!empty($login_redirection_rules_options['refferel'])) ? $login_redirection_rules_options['refferel'] : ARM_HOME_URL;
+                                        $redirect_to = (!empty($referral_url)) ? $referral_url : $default_redirect;
+                                        
                                     } else {
                                         $redirect_to = (!empty($login_redirection_rules_options['url'])) ? $login_redirection_rules_options['url'] : ARM_HOME_URL;
                                         $user_info = get_userdata($user_id);
@@ -5092,6 +5245,7 @@ if (!class_exists('ARM_member_forms')) {
                                                 $login_redirection_conditions = (isset($login_redirection_rules_options['conditional_redirect']) && !empty($login_redirection_rules_options['conditional_redirect'])) ? $login_redirection_rules_options['conditional_redirect'] : array();
                                                 $default_redirect = (isset($login_redirection_conditions['default']) && !empty($login_redirection_conditions['default'])) ? $login_redirection_conditions['default'] : ARM_HOME_URL;
                                                 $arm_user_plan_ids = get_user_meta($user->ID, 'arm_user_plan_ids', true);
+                                                $arm_user_plan_ids = apply_filters('arm_allow_specific_user_restricted_access', $arm_user_plan_ids, $user->ID);
                                                 $arm_user_plan_ids = !empty($arm_user_plan_ids) ? $arm_user_plan_ids : array();
                                                 if(!empty($arm_user_plan_ids)){
                                                     $arm_user_plan_ids[] = -3; 
@@ -5178,10 +5332,8 @@ if (!class_exists('ARM_member_forms')) {
                                                                     
                                                                     $end_time = strtotime(date("Y-m-d H:i:s", $now). " +" . $expiration_days . " days");
                                                                     
-                                                                    $user_plan_ids = get_user_meta($user->ID, 'arm_user_plan_ids', true);
-                                                                    
-                                                                    if(!empty($user_plan_ids)) {
-                                                                        foreach ($user_plan_ids as $key => $user_plan_id) {
+                                                                    if(!empty($arm_user_plan_ids)) {
+                                                                        foreach ($arm_user_plan_ids as $key => $user_plan_id) {
                                                                         
                                                                             $user_plan_data = get_user_meta($user->ID, 'arm_user_plan_' . $user_plan_id, true);     
 
@@ -5224,16 +5376,22 @@ if (!class_exists('ARM_member_forms')) {
                                         $return['type'] = 'redirect';
                                         $return['message'] = $login_message;
                                         unset($_SESSION['arm_restricted_page_url']);
+
+                                        if(empty($arm_user_plan_ids))
+                                        {
+                                            $arm_user_plan_ids = get_user_meta($user->ID, 'arm_user_plan_ids', true);
+                                            $arm_user_plan_ids = apply_filters('arm_allow_specific_user_restricted_access', $arm_user_plan_ids, $user->ID);
+                                            $arm_user_plan_ids = !empty($arm_user_plan_ids) ? $arm_user_plan_ids : array();
+                                        }
+                                        $user_plan_id = !empty($arm_user_plan_ids) ? $arm_user_plan_ids[0] : 0;
+                                        
+                                        global $arm_manage_communication;
+                                        $args = array('plan_id' => $user_plan_id, 'user_id' => $user->ID, 'action' => 'on_login_account');
+                                        $arm_manage_communication->arm_user_plan_status_action_mail($args);
                                     }
                                 }
                                 
-                                $arm_user_plan_ids = get_user_meta($user->ID, 'arm_user_plan_ids', true);
-                                $arm_user_plan_ids = !empty($arm_user_plan_ids) ? $arm_user_plan_ids : array();
-                                $user_plan_id = !empty($arm_user_plan_ids) ? $arm_user_plan_ids[0] : 0;
-                                
-                                global $arm_manage_communication;
-                                $args = array('plan_id' => $user_plan_id, 'user_id' => $user->ID, 'action' => 'on_login_account');
-                                $arm_manage_communication->arm_user_plan_status_action_mail($args);
+
                             //}
                             break;
 
@@ -5560,7 +5718,7 @@ if (!class_exists('ARM_member_forms')) {
         /**
          * Register New User.
          */
-        function arm_register_new_member($posted_data = array(), $armform = NULL, $social_signup = '') {
+        function arm_register_new_member($posted_data = array(), $armform = NULL, $social_signup = '', $is_mail_sent = 1) {
             global $wp, $wpdb, $current_user, $arm_errors, $ARMember, $arm_members_class, $arm_global_settings, $arm_buddypress_feature, $arm_subscription_plans, $payment_done, $arm_email_settings, $arm_login_from_registration, $arm_manage_communication;
             $arm_errors = new WP_Error();
             $posted_data = apply_filters('arm_before_member_register', $posted_data);
@@ -5672,9 +5830,15 @@ if (!class_exists('ARM_member_forms')) {
                 'item_id' => $plan_ID,
             );
             do_action('arm_record_activity', $register_activity);
-            /* Send User Notification */
-            arm_new_user_notification($user_id, $user_pass);
-            if ($pgateway != 'bank_transfer' && $plan_ID > 0) {
+
+            if($is_mail_sent)
+            {
+                /* Send User Notification */
+                arm_new_user_notification($user_id, $user_pass);
+            }
+
+
+            if ($pgateway != 'bank_transfer' && $plan_ID > 0 && $is_mail_sent) {
                 /**
                  * Send Email Notification for Successful Payment
                  */
@@ -5801,7 +5965,6 @@ if (!class_exists('ARM_member_forms')) {
                                     break;
                                 case 'getresponse':
                                     $this->arm_register_getresponse_user();
-                                    //require_once(MEMBERSHIP_LIBRARY_DIR . '/getresponse/getresponse.php');
                                     break;
                                 case 'madmimi':
                                     require_once(MEMBERSHIP_LIBRARY_DIR . '/madmimi/madmimi_send_contact.php');
@@ -5809,6 +5972,9 @@ if (!class_exists('ARM_member_forms')) {
                                 case 'mailerlite':
                                     require_once(MEMBERSHIP_LIBRARY_DIR . '/mailerlite/mailerlite_send_contact.php');
                                     break;
+                                case 'sendinblue':
+                                    $this->arm_register_sendinblue_user();
+                                    break;     
                                 default:
                                     do_action('armember_send_to_optin', $etool, $et, $posted_data);
                                     break;
@@ -5908,8 +6074,13 @@ if (!class_exists('ARM_member_forms')) {
                     $update_data['user_url'] = sanitize_text_field($posted_data['user_url']);
                 }
                 $display_name = isset($posted_data['display_name']) ? sanitize_text_field($posted_data['display_name']) : '';
-                $posted_data['first_name'] = isset($posted_data['first_name']) ? trim(sanitize_text_field($posted_data['first_name'])) : '';
-                $posted_data['last_name'] = isset($posted_data['last_name']) ? trim(sanitize_text_field($posted_data['last_name'])) : '';
+                if(isset($posted_data['first_name'])) {
+                    $posted_data['first_name'] = trim(sanitize_text_field($posted_data['first_name']));
+                }
+                if(isset($posted_data['last_name'])) {
+                    $posted_data['last_name'] = trim(sanitize_text_field($posted_data['last_name']));
+                }
+                
                 if (empty($display_name)) {
                     if ($posted_data['first_name'] && $posted_data['last_name']) {
                         /* translators: 1: first name, 2: last name */
@@ -5974,10 +6145,14 @@ if (!class_exists('ARM_member_forms')) {
         }
 
         function arm_member_update_meta_details($user_ID, $posted_data = array()) {
-            global $wp, $wpdb, $current_user, $arm_errors, $ARMember, $arm_subscription_plans, $payment_done, $arm_members_class, $is_multiple_membership_feature, $arm_pay_per_post_feature;
-            $arm_errors = new WP_Error();
+            global $wp, $wpdb, $current_user, $arm_errors, $ARMember, $arm_subscription_plans, $payment_done, $arm_members_class, $is_multiple_membership_feature, $arm_pay_per_post_feature,$arm_members_activity, $arm_capabilities_global;
 
+            $arm_errors = new WP_Error();
+            if(!empty($posted_data['arm_subscription_start_date']) && (empty($posted_data['arm_user_import'] != true) || $posted_data['arm_user_import'] != true)){
+                $posted_data['arm_subscription_start_date'] = $posted_data['arm_subscription_start_date']." ".current_time('H:i:s');
+            }
             $posted_data = apply_filters('arm_change_user_meta_before_save', $posted_data, $user_ID);
+
             $payment_gateway = isset($posted_data['pgateway']) ? sanitize_text_field($posted_data['pgateway']) : '';
             $start_time = isset($posted_data['start_time']) ? sanitize_text_field($posted_data['start_time']) : '';
             $plan_cycle = isset($posted_data['arm_selected_payment_cycle']) ? $posted_data['arm_selected_payment_cycle'] : 0;
@@ -6203,13 +6378,32 @@ if (!class_exists('ARM_member_forms')) {
                                     } else {
                                        
                                         do_action('arm_before_update_user_subscription', $user_ID, $new_plan);
-                                        $user->remove_cap('armember_access_plan_' . $old_plan);
-                                        delete_user_meta($user_ID, 'arm_user_plan_'.$old_plan);
+                                        $arm_user_old_post_ids = get_user_meta($user_ID, 'arm_user_post_ids', true);                                       
+                                        $arm_user_old_gift_ids = get_user_meta($user_ID, 'arm_user_gift_ids', true);
+
+                                        if(!empty($arm_user_old_post_ids)) {
+                                            $arm_check_plan_var = 1;
+                                            foreach($arm_user_old_post_ids as $arm_old_post_key => $arm_old_post_val) {
+                                                if($old_plan == $arm_old_post_key) {
+							$arm_check_plan_var = 0;
+							break;
+                                                }
+                                            }
+					    if($arm_check_plan_var==1)
+					    {
+						$user->remove_cap('armember_access_plan_' . $old_plan);
+                                                delete_user_meta($user_ID, 'arm_user_plan_'.$old_plan);
+					    }
+                                        }
+					else 
+					{
+						$user->remove_cap('armember_access_plan_' . $old_plan);
+                                                delete_user_meta($user_ID, 'arm_user_plan_'.$old_plan);
+					}
                                         if ($payment_gateway != 'bank_transfer') {
                                             $arm_new_update_plan_arr = array();
                                             array_push($arm_new_update_plan_arr, $new_plan);
 
-                                            $arm_user_old_post_ids = get_user_meta($user_ID, 'arm_user_post_ids', true);
                                             if(!empty($arm_user_old_post_ids))
                                             {
                                                 foreach($arm_user_old_post_ids as $arm_old_post_key => $arm_old_post_val)
@@ -6221,6 +6415,15 @@ if (!class_exists('ARM_member_forms')) {
                                                 }
                                             }
 
+                                            if(!empty($arm_user_old_gift_ids)) {
+                                                foreach($arm_user_old_gift_ids as $arm_old_gift_key => $arm_old_gift_val)
+                                                {
+                                                    if(!in_array($arm_old_gift_val, $arm_new_update_plan_arr))
+                                                    {
+                                                        array_push($arm_new_update_plan_arr, $arm_old_gift_val);
+                                                    }
+                                                }
+                                            }   
                                             update_user_meta($user_ID, 'arm_user_plan_ids', $arm_new_update_plan_arr); 
                                             
                                             update_user_meta($user_ID, 'arm_user_last_plan', $new_plan);
@@ -6287,13 +6490,14 @@ if (!class_exists('ARM_member_forms')) {
                                 $user_future_plan_arrays = get_user_meta($user_ID, 'arm_user_future_plan_ids', true);
                                 $user_future_plan_arrays = !empty($user_future_plan_arrays) ? $user_future_plan_arrays : array(); 
                                 $i = 0;
-                                foreach($val as $plan_val){
+                                foreach($val as $plan_key => $plan_val){
                                     $defaultPlanData = $arm_subscription_plans->arm_default_plan_array();
                                     $userPlanDatameta = get_user_meta($user_ID, 'arm_user_plan_' . $plan_val, true);
                                     $userPlanDatameta = !empty($userPlanDatameta) ? $userPlanDatameta : array();
                                     $planData = shortcode_atts($defaultPlanData, $userPlanDatameta);
                                     $is_user_in_trial = isset($planData['arm_is_trial_plan']) ? $planData['arm_is_trial_plan'] : 0;
-                                    $plan_start_date = $planData['arm_start_plan'];
+                                    //$plan_start_date = $planData['arm_start_plan'];
+                                    $plan_start_date = !empty($planData['arm_started_plan_date']) ? $planData['arm_started_plan_date'] : $planData['arm_start_plan'];
                                     if(!empty($plan_start_date)){
                                         if($plan_start_date > strtotime(current_time('mysql'))){
                                             if(in_array($plan_val, $current_user_plan_ids)){
@@ -6320,6 +6524,9 @@ if (!class_exists('ARM_member_forms')) {
 
                                 $user_future_plan_arrays = array(); 
                                 $user_future_plan_arrays2 = get_user_meta($user_ID, 'arm_user_future_plan_ids', true);
+                                if(!is_array($user_future_plan_arrays2)){
+                                    $user_future_plan_arrays2 = explode(',', $user_future_plan_arrays2);
+                                }
                                 foreach ($user_future_plan_arrays2 as $user_future_plan_key => $user_future_plan_value) {
                                     $future_user_plan_data = get_user_meta($user_ID, 'arm_user_plan_'.$user_future_plan_value, true);
                                     if (!empty($future_user_plan_data)) {
@@ -6385,41 +6592,6 @@ if (!class_exists('ARM_member_forms')) {
                         }
                         continue;
                     }
-
-                    $pattern = '/^(date\_(.*))/';
-
-                    if(preg_match($pattern, $key)){
-                        if($val != ''){
-                            $arm_user_form_id = get_user_meta($user_ID, 'arm_form_id', true);
-
-                            if($arm_user_form_id != ''){
-                                $arm_form_settings = $wpdb->get_var("SELECT `arm_form_settings`  FROM " . $ARMember->tbl_arm_forms . " WHERE `arm_form_id` = " . $arm_user_form_id);
-                                $arm_unserialized_settings = maybe_unserialize($arm_form_settings);
-                                $form_date_format = $arm_unserialized_settings['date_format'];
-                                if ($form_date_format == '') {
-                                    $form_date_format = 'd/m/Y';
-                                }
-                            }
-                            else{
-                                $form_date_format = 'd/m/Y';
-                            }
-                            try {
-                                if (!$arm_date_key = DateTime::createFromFormat($form_date_format, $val)) {
-                                    $arm_date_key = arm_check_date_format($val);
-                                }
-                                     $val = $arm_date_key->format('Y-m-d H:i:s');
-              
-                        } catch (Exception $e) {
-
-                            $date1_ = str_replace('/','-',$val);
-                            $arm_date_key = new DateTime($date1_);
-
-                         
-                            $val = $arm_date_key->format('Y-m-d H:i:s');
-                           
-                        }
-                    }
-                    }
                     $pattern1 = '/^((.*)\_arm\_hidden)/';
                     if (preg_match($pattern1, $key)) {
                         $key = str_replace('_arm_hidden', '', $key);
@@ -6433,11 +6605,13 @@ if (!class_exists('ARM_member_forms')) {
         function arm_retrieve_password() {
             global $wp, $wpdb, $wp_hasher, $current_user, $current_site, $arm_errors, $ARMember, $arm_email_settings, $arm_global_settings;
             $arm_errors = new WP_Error();
+            $is_user_data_exist = 0;
             if (empty($_POST['user_login'])) {
                 $err_msg = __('Enter a username or e-mail address.', 'ARMember');
                 $arm_errors->add('empty_username', $err_msg);
             } else if (strpos($_POST['user_login'], '@')) {
                 $user_data = get_user_by('email', trim(sanitize_email($_POST['user_login'])));
+                $is_user_data_exist = 1;
                 if (empty($user_data)) {
                     $err_msg = isset($arm_global_settings->common_message['arm_no_registered_email']) ? $arm_global_settings->common_message['arm_no_registered_email'] : '';
                     $err_msg = (!empty($err_msg)) ? $err_msg : __('There is no user registered with that email address.', 'ARMember');
@@ -6446,9 +6620,19 @@ if (!class_exists('ARM_member_forms')) {
             } else {
                 $login = trim(sanitize_text_field($_POST['user_login']));
                 $user_data = get_user_by('login', $login);
+				if (empty($user_data)) {
+                    $err_msg = isset($arm_global_settings->common_message['arm_no_registered_email']) ? $arm_global_settings->common_message['arm_no_registered_email'] : '';
+                    $err_msg = (!empty($err_msg)) ? $err_msg : __('There is no user registered with that username.', 'ARMember');
+                    $arm_errors->add('invalid_username', $err_msg);
+                }
+                $is_user_data_exist = 1;
             }
-
-            do_action('lostpassword_post');
+			
+			if( !empty($user_data) && empty($arm_errors) )
+			{
+            	$user_data_param = ($is_user_data_exist == 1) ? $user_data : false;
+            	do_action('lostpassword_post', $arm_errors, $user_data_param);
+			}
 
             if ($arm_errors->get_error_code())
                 return $arm_errors;
@@ -8165,7 +8349,7 @@ exit;
                             unset($arm_form_settings['change_password']);
                             $arm_form_settings['redirect_type'] = 'message';
                             $arm_form_settings['message'] = isset($posted_data['arm_form_settings']['forgot_password']['message']) ? sanitize_text_field($posted_data['arm_form_settings']['forgot_password']['message']) : '';
-                            $arm_form_settings['description'] = isset($posted_data['arm_form_settings']['forgot_password']['description']) ? sanitize_text_field($posted_data['arm_form_settings']['forgot_password']['description']) : '';
+                            $arm_form_settings['description'] = isset($posted_data['arm_form_settings']['forgot_password']['description']) ? $posted_data['arm_form_settings']['forgot_password']['description'] : '';
                         }
                     }
                     if (isset($arm_form_settings['hidden_fields']) && !empty($arm_form_settings['hidden_fields'])) {
@@ -8237,7 +8421,15 @@ exit;
                             $field_data['label'] = isset($field_data['label']) ? esc_attr($field_data['label']) : '';
                             $field_data['meta_key'] = isset($field_data['meta_key']) ? sanitize_title(strtolower($field_data['meta_key'])) : '';
                             $field_data['readonly'] = isset($field_data['readonly']) ? sanitize_title(strtolower($field_data['readonly'])) : '';
-                            $field_data['regular_expression'] = isset($field_data['regular_expression']) ? stripslashes_deep($field_data['regular_expression']) : '';
+                            $field_data['regular_expression'] = isset($field_data['regular_expression']) ? stripslashes_deep($field_data['regular_expression']) : ''; 
+
+                            if($field_data['type'] == 'password' &&  in_array($formType, array('registration', 'edit_profile', 'change_password'))) { 
+                                $field_data['options']['veryweaktext'] = isset($field_data['options']['veryweaktext']) ? esc_attr($field_data['options']['veryweaktext']) : '';
+                                $field_data['options']['weaktext'] = isset($field_data['options']['weaktext']) ? esc_attr($field_data['options']['weaktext']) : '';
+                                $field_data['options']['goodtext'] = isset($field_data['options']['goodtext']) ? esc_attr($field_data['options']['goodtext']) : '';
+                                $field_data['options']['strongtext'] = isset($field_data['options']['strongtext']) ? esc_attr($field_data['options']['strongtext']) : '';
+                            }
+
                             $save_field_data = array(
                                 'arm_form_field_order' => $i,
                                 'arm_form_field_slug' => $field_data['meta_key'],
@@ -8335,27 +8527,27 @@ exit;
                 "validation_type" => "modern",
                 "validation_position" => "bottom",
                 "rtl" => 0,
-                "color_scheme" => "bright_cyan",
-                "main_color" => '#0c7cd5',
-                "form_title_font_color" => '#555555',
-                "lable_font_color" => '#919191',
-                'field_font_color' => '#242424',
-                "field_border_color" => '#c7c7c7',
-                "field_focus_color" => '#23b7e5',
+                "color_scheme" => "blue",
+                "main_color" => '#005AEE',
+                "form_title_font_color" => '#1A2538',
+                "lable_font_color" => '#1A2538',
+                'field_font_color' => '#2F3F5C',
+                "field_border_color" => '#D3DEF0',
+                "field_focus_color" => '#637799',
                 "field_bg_color" => '#ffffff',
-                "button_back_color" => '#23b7e5',
-                "button_back_color_gradient" => "#5691c8",
-                "button_font_color" => '#ffffff',
-                "button_hover_color" => '#25c0f0',
-                "button_hover_color_gradient" => "#5691c8",
+                "button_back_color" => '#005AEE',
+                "button_back_color_gradient" => "#363795",
+                "button_font_color" => '#FFFFFF',
+                "button_hover_color" => '#0D54C9',
+                "button_hover_color_gradient" => "#363795",
                 "button_hover_font_color" => '#ffffff',
-                "login_link_font_color" => '#23b7e5',
-                "register_link_font_color" => '#23b7e5',
-                "form_bg_color" => "#ffffff",
-                "form_border_color" => "#cccccc",
+                "login_link_font_color" => '#005AEE',
+                "register_link_font_color" => '#005AEE',
+                "form_bg_color" => "#FFFFFF",
+                "form_border_color" => "#DCE5F2",
                 "prefix_suffix_color" => '#bababa',
-                "error_font_color" => '#e6594d',
-                "error_field_border_color" => '#f05050',
+                "error_font_color" => '#FF3B3B',
+                "error_field_border_color" => '#FF3B3B',
                 "error_field_bg_color" => '#ffffff',
                 "field_width" => "100",
                 "field_width_type" => "%",
@@ -8415,6 +8607,28 @@ exit;
 
         function arm_form_color_schemes() {
             $mainColors = array(
+                'blue' => array(
+                    "main_color" => '#005AEE',
+                    "form_title_font_color" => '#1A2538',
+                    "lable_font_color" => '#1A2538',
+                    'field_font_color' => '#2F3F5C',
+                    "field_border_color" => '#D3DEF0',
+                    "field_focus_color" => '#637799',
+                    "field_bg_color" => '#ffffff',
+                    "button_back_color" => '#005AEE',
+                    "button_back_color_gradient" => "#363795",
+                    "button_font_color" => '#FFFFFF',
+                    "button_hover_color" => '#0D54C9',
+                    "button_hover_color_gradient" => "#363795",
+                    "button_hover_font_color" => '#ffffff',
+                    "login_link_font_color" => '#005AEE',
+                    "register_link_font_color" => '#005AEE',
+                    "form_bg_color" => "#FFFFFF",
+                    "prefix_suffix_color" => '#bababa',
+                    "error_font_color" => '#ffffff',
+                    "error_field_border_color" => '#FF3B3B',
+                    "error_field_bg_color" => '#FF3B3B',
+                ),
                 'bright_cyan' => array(
                     "main_color" => '#23b7e5',
                     "form_title_font_color" => '#555555',
@@ -8524,29 +8738,7 @@ exit;
                     "error_font_color" => '#ffffff',
                     "error_field_border_color" => '#f05050',
                     "error_field_bg_color" => '#e6594d',
-                ),
-                'blue' => array(
-                    "main_color" => '#0c7cd5',
-                    "form_title_font_color" => '#313131',
-                    "lable_font_color" => '#919191',
-                    'field_font_color' => '#242424',
-                    "field_border_color" => '#c7c7c7',
-                    "field_focus_color" => '#0c7cd5',
-                    "field_bg_color" => '#ffffff',
-                    "button_back_color" => '#0c7cd5',
-                    "button_back_color_gradient" => "#363795",
-                    "button_font_color" => '#ffffff',
-                    "button_hover_color" => '#0d84e3',
-                    "button_hover_color_gradient" => "#363795",
-                    "button_hover_font_color" => '#ffffff',
-                    "login_link_font_color" => '#0c7cd5',
-                    "register_link_font_color" => '#0c7cd5',
-                    "form_bg_color" => "#ffffff",
-                    "prefix_suffix_color" => '#bababa',
-                    "error_font_color" => '#ffffff',
-                    "error_field_border_color" => '#f05050',
-                    "error_field_bg_color" => '#e6594d',
-                ),
+                ),                
                 'yellow' => array(
                     "main_color" => '#ffce3a',
                     "form_title_font_color" => '#313131',
@@ -8735,7 +8927,8 @@ exit;
             if (!empty($form_settings['style'])) {
                 $default_form_style = $this->arm_default_form_style();
                 $new_style = $form_settings['style'];
-                $form_settings['custom_css'] = isset($form_settings['custom_css']) ? $form_settings['custom_css'] : '';
+                $form_layout = $new_style['form_layout'];
+                $form_settings['custom_css'] = isset($form_settings['custom_css']) ? stripslashes($form_settings['custom_css']) : '';
                 $fp_link_margin = (isset($form_settings['forgot_password_link_margin'])) ? $form_settings['forgot_password_link_margin'] : array();
                 $fp_link_margin['left'] = (isset($fp_link_margin['left']) && is_numeric($fp_link_margin['left'])) ? $fp_link_margin['left'] : 0;
                 $fp_link_margin['top'] = (isset($fp_link_margin['top']) && is_numeric($fp_link_margin['top'])) ? $fp_link_margin['top'] : 0;
@@ -8981,6 +9174,12 @@ exit;
                         z-index:2 !important;
                     }";
                 }
+
+                $arm_background_form_field_style = "";
+                if($form_layout!='writer')
+                {
+                    $arm_background_form_field_style = "background-color: " . $new_style['field_bg_color'] . " !important;";
+                }
                 $new_style_css .= "
 	                    $container .arm_close_account_message,
 						$container .arm_forgot_password_description {
@@ -9116,7 +9315,8 @@ exit;
 						$container .arm_form_input_container textarea,
 						$container .arm_form_input_container select,
 						$container .arm_form_input_container md-select md-select-value{
-	                        background-color: " . $new_style['field_bg_color'] . " !important;
+
+	                        ".$arm_background_form_field_style."
 							border: " . $new_style['field_border_width'] . "px " . $new_style['field_border_style'] . " " . $new_style['field_border_color'] . ";
 							border-color: " . $new_style['field_border_color'] . ";
 							border-radius: " . $new_style['field_border_radius'] . "px !important;
@@ -9843,6 +10043,12 @@ exit;
 
         function arm_default_button_gradient_color() {
             $arm_button_gradient_color = array();
+            $arm_button_gradient_color['blue'] = array(
+                'button_back_color' => '#005C97',
+                'button_back_color_gradient' => '#363795',
+                'button_hover_color' => '#005C97',
+                'button_hover_color_gradient' => '#363795'
+            );
             $arm_button_gradient_color['bright_cyan'] = array(
                 'button_back_color' => '#00d2ff',
                 'button_back_color_gradient' => '#3afbd5',
@@ -9872,12 +10078,6 @@ exit;
                 'button_back_color_gradient' => '#ffc500',
                 'button_hover_color' => '#c21500',
                 'button_hover_color_gradient' => '#ffc500'
-            );
-            $arm_button_gradient_color['blue'] = array(
-                'button_back_color' => '#005C97',
-                'button_back_color_gradient' => '#363795',
-                'button_hover_color' => '#005C97',
-                'button_hover_color_gradient' => '#363795'
             );
             $arm_button_gradient_color['yellow'] = array(
                 'button_back_color' => '#F09819',
@@ -10254,6 +10454,9 @@ exit;
             }
 
             if(!empty($responder_list_id) && !empty($api_key)) {
+
+                do_action('arm_general_log_entry', 'getresponse', 'Getresponse selected list ID', 'armember', $responder_list_id);
+
                 if ($status == '1' && !empty($responder_list_id))
                 {
                     $subscriberEmail = $armemail;
@@ -10278,41 +10481,44 @@ exit;
                     if(!is_wp_error($arm_get_response_campaign_data))
                     {
                         $arm_get_response_campaign_body_data = json_decode($arm_get_response_campaign_data['body']);
-                        $arm_campaign_id = $arm_get_response_campaign_body_data[0]->campaignId;
+                        if(is_array($arm_get_response_campaign_body_data) && !empty($arm_get_response_campaign_body_data[0]))
+                        {
+                            $arm_campaign_id = $arm_get_response_campaign_body_data[0]->campaignId;
+                        }
                     }
+
+                    do_action('arm_general_log_entry', 'getresponse', 'Getresponse Get Campaign ID', 'armember', $arm_campaign_id);
 
 
                     //-----------------------------------------------------------
 
-                        //Get all Contacts and check for lowest number and assign largest number
-                        $day_of_cycle = '';
+                    //Get all Contacts and check for lowest number and assign largest number
+                    $day_of_cycle = '';
 
-                        $arm_get_response_contact_url = $arm_get_response_base_url."contacts";
-                        if(!empty($arm_campaign_id))
+                    $arm_get_response_contact_url = $arm_get_response_base_url."contacts";
+                    if(!empty($arm_campaign_id))
+                    {
+                        $arm_get_response_contact_url .= "?query[campaignId]=".$arm_campaign_id;
+                    }
+
+                    $arm_get_response_contact_list = wp_remote_get($arm_get_response_contact_url, $arm_get_response_body_params);
+
+                    if(!is_wp_error($arm_get_response_contact_list))
+                    {
+                        $arm_get_response_contact_body_data = json_decode($arm_get_response_contact_list['body']);
+                        if(!empty($arm_get_response_contact_body_data))
                         {
-                            $arm_get_response_contact_url .= "?query[campaignId]=".$arm_campaign_id;
-                        }
-
-                        $arm_get_response_contact_list = wp_remote_get($arm_get_response_contact_url, $arm_get_response_body_params);
-
-                        if(!is_wp_error($arm_get_response_contact_list))
-                        {
-                            $arm_get_response_contact_body_data = json_decode($arm_get_response_contact_list['body']);
-                            if(!empty($arm_get_response_contact_body_data))
+                            $get_smallest_cycle_day = "999999";
+                            foreach($arm_get_response_contact_body_data as $arm_get_response_contact_key => $arm_get_repsonse_contact_val)
                             {
-                                $get_smallest_cycle_day = "999999";
-                                foreach($arm_get_response_contact_body_data as $arm_get_response_contact_key => $arm_get_repsonse_contact_val)
+                                if(!empty($arm_get_repsonse_contact_val->dayOfCycle))
                                 {
-                                    if(!empty($arm_get_repsonse_contact_val->dayOfCycle))
-                                    {
-                                        $get_smallest_cycle_day = $day_of_cycle = $arm_get_repsonse_contact_val->dayOfCycle;
-                                    }
+                                    $get_smallest_cycle_day = $day_of_cycle = $arm_get_repsonse_contact_val->dayOfCycle;
                                 }
                             }
                         }
-
+                    }
                     //-----------------------------------------------------------
-
                     if(!empty($arm_campaign_id))
                     {
                         //Add Subscriber to Campaign
@@ -10334,7 +10540,12 @@ exit;
                         $arm_get_response_body_params['body'] = wp_json_encode($arm_getresponse_body_data);
                         $arm_get_response_body_params['headers']['Content-Type'] = "application/json";
 
+                        do_action('arm_general_log_entry', 'getresponse', 'subscriber parameters', 'armember', $arm_get_response_body_params);
+
                         $arm_get_response_create_contact_response = wp_safe_remote_post($arm_get_response_add_contact_url, $arm_get_response_body_params);
+
+                        do_action('arm_general_log_entry', 'getresponse', 'subscriber add response', 'armember', $arm_get_response_create_contact_response);
+
                         if(!is_wp_error($arm_get_response_create_contact_response))
                         {
                             $arm_get_response_create_contact_body_response = json_decode($arm_get_response_create_contact_response['body']);
@@ -10342,6 +10553,83 @@ exit;
                     }
                 }
             }
+        }
+        
+        function arm_register_sendinblue_user(){
+
+            global $wpdb, $ARMember, $armemail, $armfname,$armlname, $form_id,$arm_sbapi_version,$arm_social_feature, $arm_is_social_signup, $arm_sbapi_version;
+            $email_settings_unser = get_option('arm_email_settings');
+
+            $arm_optins_email_settings = maybe_unserialize($email_settings_unser);
+            $sendinblueOpt = (isset($arm_optins_email_settings['arm_email_tools']['sendinblue'])) ? $arm_optins_email_settings['arm_email_tools']['sendinblue'] : array();
+            $api_key = (isset($sendinblueOpt['api_key'])) ? $sendinblueOpt['api_key'] : '';
+            $list_id = (isset($sendinblueOpt['list_id'])) ? $sendinblueOpt['list_id'] : '';
+                
+            $responder_list_id = '';
+            if($arm_is_social_signup){
+                $social_settings = $arm_social_feature->arm_get_social_settings();
+                if(isset($social_settings['options']['optins_name']) && $social_settings['options']['optins_name'] == 'sendinblue') {
+                    $etool_name = isset($social_settings['options']['optins_name']) ? $social_settings['options']['optins_name'] : '';
+                    $status = 1;
+                    $responder_list_id = isset($social_settings['options'][$etool_name]['list_id']) ? $social_settings['options'][$etool_name]['list_id'] : $list_id ;
+                }
+            }
+            else
+            {
+                $form_settings = $wpdb->get_var("SELECT `arm_form_settings` FROM `" . $ARMember->tbl_arm_forms . "` WHERE `arm_form_id`='" . $form_id . "'");
+                $form_settings = (!empty($form_settings)) ? maybe_unserialize($form_settings) : array();
+                $status = (isset($form_settings['email']['sendinblue']['status'])) ? $form_settings['email']['sendinblue']['status'] : 0;
+                $responder_list_id = (isset($form_settings['email']['sendinblue']['list_id'])) ? $form_settings['email']['sendinblue']['list_id'] : $list_id;
+            }                
+                
+            if (!empty($responder_list_id) && !empty($api_key)) {
+
+                if ($status == '1' && !empty($responder_list_id))
+                {
+                    /*Validation*/
+                    if (!$armemail) {
+                        return "No email address provided";
+                    }
+                    if (!preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*$/i", $armemail)) {
+                        return "Email address is invalid";
+                    }                                       
+                    $url = 'https://api.sendinblue.com/'.$arm_sbapi_version.'/contacts';
+                    $args = array(
+                        'timeout' => '10000',
+                        'method'   => 'POST',
+                        'headers'   => array(
+                            'Content-Type' => 'application/json',
+                            'api-key' => $api_key,  
+                        ),
+                        'body'     => json_encode(array('email' => $armemail,'attributes' => array('FIRSTNAME'=> $armfname,'LASTNAME' => $armlname) ,'listIds' => array($responder_list_id))),
+                    );
+                    
+                    do_action('arm_general_log_entry', 'sendinblue', 'subscriber parameters', 'armember', $args);
+                    $response = wp_remote_post( $url, $args );
+
+                    do_action('arm_general_log_entry', 'sendinblue', 'subscriber add response', 'armember', $response);
+                    
+                    if(!is_wp_error( $response)){
+                       
+                        $url_add_to_id = 'https://api.sendinblue.com/'.$arm_sbapi_version.'/contacts/lists/'.$responder_list_id.'/contacts/add';
+                        $args = array(
+                            'timeout' => '10000',
+                            'method'   => 'POST',
+                            'headers'   => array(
+                                'Content-Type' => 'application/json',
+                                'api-key' => $api_key,
+                            ),
+                                'body' => json_encode(array('emails' => array($armemail))),
+                        );
+                        do_action('arm_general_log_entry', 'sendinblue', 'subscriber contact add list parameters', 'armember', $args);
+                        
+                        $response_add_to_list = wp_remote_post( $url_add_to_id, $args );                                      
+                        do_action('arm_general_log_entry', 'sendinblue', 'subscriber contact add list response', 'armember', $response_add_to_list);
+                    }        
+                    
+                }
+            }
+            return;
         }
     }
 

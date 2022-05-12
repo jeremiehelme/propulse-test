@@ -44,7 +44,7 @@ function arm_load_drip_rules_list_grid() {
     var __ARM_Showing_empty = '<?php echo addslashes(__('Showing 0 to 0 of 0 entries','ARMember')); ?>';
     var __ARM_to = '<?php echo addslashes(__('to','ARMember')); ?>';
     var __ARM_of = '<?php echo addslashes(__('of','ARMember')); ?>';
-    var __ARM_RECORDS = '<?php _e('entries','ARMember'); ?>';
+    var __ARM_RECORDS = '<?php echo addslashes(__('entries','ARMember')); ?>';
     var __ARM_Show = '<?php echo addslashes(__('Show','ARMember')); ?>';
     var __ARM_NO_FOUND = '<?php echo addslashes(__('No any record found.','ARMember')); ?>';
     var __ARM_NO_MATCHING = '<?php echo addslashes(__('No matching records found.','ARMember')); ?>';
@@ -88,7 +88,14 @@ function arm_load_drip_rules_list_grid() {
 			oData.iLength = 10;
 			//oData.oSearch.sSearch = "<?php echo $filter_search;?>";
 		},
+		"fnPreDrawCallback": function () {
+            jQuery('.arm_loading_grid').show();
+        },
 		"fnDrawCallback":function(){
+			setTimeout(function(){
+				jQuery('.arm_loading_grid').hide();
+				arm_show_data();
+			}, 1000);
 			jQuery(".cb-select-all-th").removeClass('sorting_asc');
             jQuery("#cb-select-all-1").prop("checked", false);
 			if (jQuery.isFunction(jQuery().tipso)) {
@@ -128,8 +135,8 @@ function arm_load_drip_rules_list_grid() {
 			<div class="arm_datatable_filters_options">
 				<div class='sltstandard'>
 					<input type="hidden" id="arm_drip_rule_bulk_action" name="action1" value="-1" />
-					<dl class="arm_selectbox column_level_dd">
-						<dt style="width: 120px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+					<dl class="arm_selectbox column_level_dd arm_width_200">
+						<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 						<dd>
 							<ul data-id="arm_drip_rule_bulk_action">
 								<li data-label="<?php _e('Bulk Actions','ARMember');?>" data-value="-1"><?php _e('Bulk Actions','ARMember');?></li>
@@ -146,8 +153,8 @@ function arm_load_drip_rules_list_grid() {
 			<div class="arm_datatable_filters_options">
 				<div class='sltstandard'>
 					<input type="hidden" id="arm_drip_rule_bulk_action" name="action1" value="-1" />
-					<dl class="arm_selectbox column_level_dd">
-						<dt style="width: 120px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+					<dl class="arm_selectbox column_level_dd arm_width_200">
+						<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 						<dd>
 							<ul data-id="arm_drip_rule_bulk_action">
 								<li data-label="<?php _e('Bulk Actions','ARMember');?>" data-value="-1"><?php _e('Bulk Actions','ARMember');?></li>
@@ -167,13 +174,12 @@ function arm_load_drip_rules_list_grid() {
 					<label><input type="text" placeholder="<?php _e('Search', 'ARMember');?>" id="armmanagesearch_new_drip" value="<?php echo $filter_search;?>" tabindex="-1"></label>
 					<!--./====================Begin Filter By Content Type Box====================/.-->
 					<div class="arm_datatable_filter_item arm_filter_dctype_label">
-						<span class="arm_manage_filter_label"><?php _e('Content Type', 'ARMember')?></span>
 						<input type="hidden" id="arm_filter_dctype" class="arm_filter_dctype" value="<?php echo $filter_dctype;?>" />
-						<dl class="arm_selectbox column_level_dd">
-							<dt style="width: 150px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+						<dl class="arm_selectbox column_level_dd arm_width_200">
+							<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 							<dd>
 								<ul data-id="arm_filter_dctype">
-									<li data-label="<?php _e('All','ARMember');?>" data-value="0"><?php _e('All','ARMember');?></li>
+									<li data-label="<?php _e('Select Content Type','ARMember');?>" data-value="0"><?php _e('Select Content Type','ARMember');?></li>
 									<?php 
 									if (!empty($dripContentTypes)) {
 										foreach ($dripContentTypes as $key => $val) {
@@ -189,10 +195,9 @@ function arm_load_drip_rules_list_grid() {
 					<!--./====================Begin Filter By Plan Box====================/.-->
 					<?php if (!empty($all_plans)): ?>
 					<div class="arm_datatable_filter_item arm_filter_plan_id_label">
-						<span class="arm_manage_filter_label"><?php _e('Plan', 'ARMember')?></span>
 						<input type="hidden" id="arm_filter_dplan_id" class="arm_filter_dplan_id" value="<?php echo $filter_plan_id;?>" />
-						<dl class="arm_multiple_selectbox">
-							<dt style="width: 200px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+						<dl class="arm_multiple_selectbox arm_width_200">
+							<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 							<dd>
 								<ul data-id="arm_filter_dplan_id" data-placeholder="<?php _e('Select Plans', 'ARMember');?>">
 									<?php foreach ($all_plans as $plan): ?>
@@ -206,13 +211,12 @@ function arm_load_drip_rules_list_grid() {
 					<!--./====================End Filter By Plan Box====================/.-->
 					<!--./====================Begin Filter By Drip Type====================/.-->
 					<div class="arm_datatable_filter_item arm_filter_drip_type_label" style="">
-						<span class="arm_manage_filter_label"><?php _e('Drip Type', 'ARMember')?></span>
 						<input type="hidden" id="arm_filter_drip_type" class="arm_filter_drip_type" value="<?php echo $filter_drip_type;?>" />
-						<dl class="arm_selectbox column_level_dd">
-							<dt style="width: 230px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+						<dl class="arm_selectbox column_level_dd arm_width_230">
+							<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 							<dd>
 								<ul data-id="arm_filter_drip_type">
-									<li data-label="<?php _e('All','ARMember');?>" data-value="0"><?php _e('All','ARMember');?></li>
+									<li data-label="<?php _e('Select Drip Type','ARMember');?>" data-value="0"><?php _e('Select Drip Type','ARMember');?></li>
 									<?php 
 									if (!empty($dripContentTypes)) {
 										foreach ($drip_types as $key => $val) {
@@ -234,13 +238,13 @@ function arm_load_drip_rules_list_grid() {
 			<div id="armmainformnewlist" class="arm_filter_grid_list_container">
 				<div class="arm_loading_grid" style="display: none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL;?>/loader.gif" alt="Loading.."></div>
 				<div class="response_messages"></div>
-				<table cellpadding="0" cellspacing="0" border="0" class="display" id="armember_datatable">
+				<table cellpadding="0" cellspacing="0" border="0" class="display arm_hide_datatable" id="armember_datatable">
 					<thead>
 						<tr>
-							<th class="center cb-select-all-th" style="max-width:60px;"><input id="cb-select-all-1" type="checkbox" class="chkstanard"></th>
-							<th style="width: 100px;"><?php _e('Enable','ARMember');?></th>
-							<th style="width: 120px;"><?php _e('Content Type','ARMember');?></th>
-							<th style="width: 150px;"><?php _e('Page/Post Name','ARMember');?></th>
+							<th class="center cb-select-all-th arm_max_width_60" ><input id="cb-select-all-1" type="checkbox" class="chkstanard"></th>
+							<th class="arm_width_100"><?php _e('Enable','ARMember');?></th>
+							<th class="arm_width_120"><?php _e('Content Type','ARMember');?></th>
+							<th class="arm_width_150"><?php _e('Page/Post Name','ARMember');?></th>
 							<th><?php _e('Drip Type', 'ARMember'); ?></th>
 							<th><?php _e('Shortcode','ARMember');?></th>
 							<th><?php _e('Plans','ARMember');?></th>
@@ -286,7 +290,7 @@ function arm_load_drip_rules_list_grid() {
 								<td class="center">
 									<input class="chkstanard arm_bulk_select_single" type="checkbox" value="<?php echo $ruleID; ?>" name="item-action[]">
 								</td>
-								<td class="center" style="min-width: 80px;"><?php 
+								<td class="center arm_min_width_80" ><?php 
 									$switchChecked = ($dr['arm_rule_status'] == '1') ? 'checked="checked"' : '';
 									echo '<div class="armswitch">
 										<input type="checkbox" class="armswitch_input arm_drip_rule_status_action" id="arm_drip_rule_status_input_'.$ruleID.'" value="1" data-item_id="'.$ruleID.'" '.$switchChecked.'>
@@ -438,3 +442,6 @@ function arm_load_drip_rules_list_grid() {
     __ARM_NO_FOUNT = '<?php _e('No any member found.','ARMember'); ?>';
     __ARM_NO_MATCHING = '<?php _e('No matching members found.','ARMember'); ?>';
 </script>
+<?php
+	echo $ARMember->arm_get_need_help_html_content('manage-drip-rules');
+?>

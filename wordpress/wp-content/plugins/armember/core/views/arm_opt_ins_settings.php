@@ -1,6 +1,8 @@
 <?php
 global $wpdb, $ARMember, $arm_members_class, $arm_global_settings, $arm_email_settings;
 $all_email_settings = $arm_email_settings->arm_get_all_email_settings();
+
+$arm_aweber_redirect_url = ARM_HOME_URL.'/?arm_redirect_aweber=1';
 ?>
 <div class="arm_global_settings_main_wrapper">
 	<div class="page_sub_content">
@@ -27,7 +29,7 @@ $all_email_settings = $arm_email_settings->arm_get_all_email_settings();
 						<input id="arm_aweber_consumer_key" type="hidden" name="arm_email_tools[aweber][consumer_key]" value="<?php echo MEMBERSHIP_AWEBER_CONSUMER_KEY; ?>" >
 						<input id="arm_aweber_consumer_secret" type="hidden" name="arm_email_tools[aweber][consumer_secret]" value="<?php echo MEMBERSHIP_AWEBER_CONSUMER_SECRET; ?>" >
 
-						<button class="armemailaddbtn" type="button" name="continue" onclick="aweber_continue('<?php echo MEMBERSHIP_LIBRARY_URL;?>/aweber/configuration.php');"><?php _e('Authorize Account', 'ARMember') ?></button>
+						<button class="armemailaddbtn" type="button" name="continue" onclick="aweber_continue('<?php echo $arm_aweber_redirect_url; ?>');"><?php _e('Authorize Account', 'ARMember') ?></button>
 					</td>
 				</tr>
 				<tr class="form-field arm_aweber_api_lists" style="<?php echo ($aweber_status == 1) ? '' : 'display:none;';?>">
@@ -50,7 +52,7 @@ $all_email_settings = $arm_email_settings->arm_get_all_email_settings();
 						</div>
 						<span id="arm_aweber_error" class="arm_error_msg" style="display:none;"><?php _e('Not Verified', 'ARMember'); ?></span>
 						<span id="arm_aweber_refresh" class="arm_success_msg" style="display:none;"><?php _e('Refreshed', 'ARMember'); ?></span>
-						<div id="arm_aweber_action_link" style="padding-left:5px; margin-top:10px;" class="arlinks">					
+						<div id="arm_aweber_action_link"  class="arlinks arm_padding_left_5 arm_margin_top_10">					
 							<span id="arm_mailchimp_link_refresh"><a href="javascript:void(0);" onclick="refresh_email_tool('refresh', 'aweber');"><?php _e('Refresh List', 'ARMember'); ?></a></span>
 							&nbsp;	&nbsp;	&nbsp;	&nbsp;
 							<span id="arm_mailchimp_link_delete"><a href="javascript:void(0);" onclick="refresh_email_tool('delete', 'aweber');"><?php _e('Delete Configuration', 'ARMember'); ?></a></span>
@@ -101,7 +103,7 @@ $all_email_settings = $arm_email_settings->arm_get_all_email_settings();
 							</dd>
 						</dl>
 						<span id="arm_mailchimp_refresh" class="arm_success_msg" style="display:none;"><?php _e('Refreshed', 'ARMember'); ?></span>
-						<div id="arm_mailchimp_action_link" style="padding-left:5px; margin-top:10px;<?php if ($mailchimp_status == 0) { ?>display:none;<?php } ?>" class="arlinks">					
+						<div id="arm_mailchimp_action_link " class="arm_padding_left_5 arm_margin_top_10" style="<?php if ($mailchimp_status == 0) { ?>display:none;<?php } ?>" class="arlinks">					
 							<span id="arm_mailchimp_link_refresh"><a href="javascript:void(0);" onclick="refresh_email_tool('refresh', 'mailchimp');"><?php _e('Refresh List', 'ARMember'); ?></a></span>
 							&nbsp;	&nbsp;	&nbsp;	&nbsp;
 							<span id="arm_mailchimp_link_delete"><a href="javascript:void(0);" onclick="refresh_email_tool('delete', 'mailchimp');"><?php _e('Delete Configuration', 'ARMember'); ?></a></span>
@@ -110,7 +112,7 @@ $all_email_settings = $arm_email_settings->arm_get_all_email_settings();
 				</tr>
                                 <tr class="form-field">
                                     <th></th>
-                                    <td><input type="checkbox" name="arm_email_tools[mailchimp][enable_double_opt_in]" id="arm_mailchimp_enable_double_opt_in" class="arm_icheckbox" <?php checked($mailchimp_double_opt_in, 1, true);?> value="1"> <?php _e('Enable double opt-in', 'ARMember'); ?></td>
+                                    <td><input type="checkbox" name="arm_email_tools[mailchimp][enable_double_opt_in]" id="arm_mailchimp_enable_double_opt_in" class="arm_icheckbox" <?php checked($mailchimp_double_opt_in, 1, true);?> value="1"><label for="arm_mailchimp_enable_double_opt_in"><?php _e('Enable double opt-in', 'ARMember'); ?></label></td>
 				</tr>
 			</table>
 			<div class="arm_solid_divider"></div>
@@ -162,7 +164,7 @@ $all_email_settings = $arm_email_settings->arm_get_all_email_settings();
 							</dd>
 						</dl>
 						<span id="arm_constant_refresh" class="arm_success_msg" style="display:none;"><?php _e('Refreshed', 'ARMember'); ?></span>
-						<div id="arm_constant_action_link" style="padding-left:5px; margin-top:10px;<?php if ($constant_status == 0) { ?>display:none;<?php } ?>" class="arlinks">					
+						<div id="arm_constant_action_link" class="arm_padding_left_5 arm_margin_top_10" style="<?php if ($constant_status == 0) { ?>display:none;<?php } ?>" class="arlinks">
 							<span id="arm_constant_link_refresh"><a href="javascript:void(0);" onclick="refresh_email_tool('refresh', 'constant');"><?php _e('Refresh List', 'ARMember'); ?></a></span>
 							&nbsp;	&nbsp;	&nbsp;	&nbsp;
 							<span id="arm_constant_link_delete"><a href="javascript:void(0);" onclick="refresh_email_tool('delete', 'constant');"><?php _e('Delete Configuration', 'ARMember'); ?></a></span>
@@ -211,7 +213,7 @@ $all_email_settings = $arm_email_settings->arm_get_all_email_settings();
 							</dd>
 						</dl>
 						<span id="arm_getresponse_refresh" class="arm_success_msg" style="display:none;"><?php _e('Refreshed', 'ARMember'); ?></span>
-						<div id="arm_getresponse_action_link" style="padding-left:5px; margin-top:10px;<?php if ($getresponse_status == 0) { ?>display:none;<?php } ?>" class="arlinks">					
+						<div id="arm_getresponse_action_link" class="arm_padding_left_5 arm_margin_top_10" style="<?php if ($getresponse_status == 0) { ?>display:none;<?php } ?>" class="arlinks">					
 							<span id="arm_getresponse_link_refresh"><a href="javascript:void(0);" onclick="refresh_email_tool('refresh', 'getresponse');"><?php _e('Refresh List', 'ARMember'); ?></a></span>
 							&nbsp;	&nbsp;	&nbsp;	&nbsp;
 							<span id="arm_getresponse_link_delete"><a href="javascript:void(0);" onclick="refresh_email_tool('delete', 'getresponse');"><?php _e('Delete Configuration', 'ARMember'); ?></a></span>
@@ -270,7 +272,7 @@ $all_email_settings = $arm_email_settings->arm_get_all_email_settings();
 							</dd>
 						</dl>
 						<span id="arm_madmimi_refresh" class="arm_success_msg" style="display:none;"><?php _e('Refreshed', 'ARMember'); ?></span>
-						<div id="arm_madmimi_action_link" style="padding-left:5px; margin-top:10px;<?php if ($madmimi_status == 0) { ?>display:none;<?php } ?>" class="arlinks">					
+						<div id="arm_madmimi_action_link" class="arm_padding_left_5 arm_margin_top_10" style="<?php if ($madmimi_status == 0) { ?>display:none;<?php } ?>" class="arlinks">					
 							<span id="arm_madmimi_link_refresh"><a href="javascript:void(0);" onclick="refresh_email_tool('refresh', 'madmimi');"><?php _e('Refresh List', 'ARMember'); ?></a></span>
 							&nbsp;	&nbsp;	&nbsp;	&nbsp;
 							<span id="arm_madmimi_link_delete"><a href="javascript:void(0);" onclick="refresh_email_tool('delete', 'madmimi');"><?php _e('Delete Configuration', 'ARMember'); ?></a></span>
@@ -321,7 +323,7 @@ $all_email_settings = $arm_email_settings->arm_get_all_email_settings();
 							</dd>
 						</dl>
 						<span id="arm_mailerlite_refresh" class="arm_success_msg" style="display:none;"><?php _e('Refreshed', 'ARMember'); ?></span>
-						<div id="arm_mailerlite_action_link" style="padding-left:5px; margin-top:10px;<?php if ($mailerlite_status == 0) { ?>display:none;<?php } ?>" class="arlinks">					
+						<div id="arm_mailerlite_action_link" class="arm_padding_left_5 arm_margin_top_10" style="<?php if ($mailerlite_status == 0) { ?>display:none;<?php } ?>" class="arlinks">					
 							<span id="arm_mailerlite_link_refresh"><a href="javascript:void(0);" onclick="refresh_email_tool('refresh', 'mailerlite');"><?php _e('Refresh List', 'ARMember'); ?></a></span>
 							&nbsp;	&nbsp;	&nbsp;	&nbsp;
 							<span id="arm_mailerlite_link_delete"><a href="javascript:void(0);" onclick="refresh_email_tool('delete', 'mailerlite');"><?php _e('Delete Configuration', 'ARMember'); ?></a></span>
@@ -341,21 +343,75 @@ $all_email_settings = $arm_email_settings->arm_get_all_email_settings();
 
                 <tr class="form-field">
                     <th></th>
-                    <td><input type="checkbox" name="arm_email_tools[mailster][enable_double_opt_in]" id="arm_mailster_enable_double_opt_in" class="arm_icheckbox" <?php checked($mailster_double_opt_in, 1, true);?> value="1"> <?php _e('Enable double opt-in', 'ARMember'); ?></td>
+                    <td><input type="checkbox" name="arm_email_tools[mailster][enable_double_opt_in]" id="arm_mailster_enable_double_opt_in" class="arm_icheckbox" <?php checked($mailster_double_opt_in, 1, true);?> value="1"><label for="arm_mailster_enable_double_opt_in"><?php _e('Enable double opt-in', 'ARMember'); ?></label></td>
 				</tr>
 			</table>
-			<?php } 
+			<?php } ?>
+
+
+			<div class="arm_solid_divider"></div>
+		    <table class="form-table">
+				<tr class="form-field">
+					<td colspan="2"><img src="<?php echo MEMBERSHIP_IMAGES_URL?>/sendinblue.png" alt="<?php _e('Sendinblue', 'ARMember'); ?>"></td>
+				</tr>
+				<tr class="form-field">
+					<th class="arm-form-table-label"><label><?php _e('API Key', 'ARMember'); ?></label></th>
+					<td class="arm-form-table-content">
+						<?php 
+						$sendinblue_api_key = (!empty($emailTools['sendinblue']['api_key'])) ? $emailTools['sendinblue']['api_key'] : '';
+						$sendinblue_status = (!empty($emailTools['sendinblue']['status'])) ? $emailTools['sendinblue']['status'] : 0;
+						$sendinblueList = (!empty($emailTools['sendinblue']['list'])) ? $emailTools['sendinblue']['list'] : array();
+                                                
+						if (empty($sendinblueList)) {
+							$emailTools['sendinblue']['list_id'] = '';
+						}
+						?>
+						<input id="arm_sendinblue_api_key" type="text" name="arm_email_tools[sendinblue][api_key]" value="<?php echo $sendinblue_api_key;?>" onkeyup="show_email_tool_verify_btn('sendinblue');">
+						<span id="arm_sendinblue_link" <?php if ($sendinblue_status == 1) { ?>style="display:none;"<?php } ?>><a href="javascript:void(0);" onclick="verify_email_tool('sendinblue', '0');"><?php _e('Verify', 'ARMember'); ?></a></span>
+						<span id="arm_sendinblue_verify" class="arm_success_msg" style="display:none;"><?php _e('Verified', 'ARMember'); ?></span>    
+						<span id="arm_sendinblue_error" class="arm_error_msg" style="display:none;"><?php _e('Not Verified', 'ARMember'); ?></span>
+						<span class="error arm_invalid" id="arm_sendinblue_api_error" style="display: none;"><?php _e('This field cannot be blank.', 'ARMember');?></span>
+						<input type="hidden" name="arm_email_tools[sendinblue][status]" id="arm_sendinblue_status" value="<?php echo $sendinblue_status;?>">
+					</td>
+				</tr>
+				<tr class="form-field">
+					<th class="arm-form-table-label"><label><?php _e('List ID', 'ARMember'); ?></label></th>
+					<td class="arm-form-table-content">
+						<input type="hidden" id="sendinblue_list_name" name="arm_email_tools[sendinblue][list_id]" value="<?php echo (!empty($emailTools['sendinblue']['list_id'])) ? $emailTools['sendinblue']['list_id'] : ''; ?>" />
+						<dl id="arm_sendinblue_dl" class="arm_selectbox column_level_dd <?php if ($sendinblue_status == 0) { ?>disabled<?php } ?>">
+							<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+							<dd>
+								<ul data-id="sendinblue_list_name" id="arm_sendinblue_list">
+									<?php if(!empty($sendinblueList)) :?>
+										<?php foreach($sendinblueList as $list):?>
+										<li data-label="<?php echo $list['name'];?>" data-value="<?php echo $list['id'];?>"><?php echo $list['name'];?></li>
+										<?php endforeach;?>
+									<?php endif;?>
+								</ul>
+							</dd>
+						</dl>
+						<span id="arm_sendinblue_refresh" class="arm_success_msg" style="display:none;"><?php _e('Refreshed', 'ARMember'); ?></span>
+						<div id="arm_sendinblue_action_link" class="arm_padding_left_5 arm_margin_top_10" style="<?php if ($sendinblue_status == 0) { ?>display:none;<?php } ?>" class="arlinks">					
+							<span id="arm_sendinblue_link_refresh"><a href="javascript:void(0);" onclick="refresh_email_tool('refresh', 'sendinblue');"><?php _e('Refresh List', 'ARMember'); ?></a></span>
+							&nbsp;	&nbsp;	&nbsp;	&nbsp;
+							<span id="arm_sendinblue_link_delete"><a href="javascript:void(0);" onclick="refresh_email_tool('delete', 'sendinblue');"><?php _e('Delete Configuration', 'ARMember'); ?></a></span>
+						</div>
+					</td>
+				</tr>
+            </table> 
 			
-			
-                        do_action('arm_add_new_optins');
+			<?php
+
+            do_action('arm_add_new_optins');
                         
 			$customEmailTools = apply_filters('arm_add_new_optin_settings', '', $emailTools);
 			echo $customEmailTools;
 			?>
 			
+			
 			<table class="form-table"><tr><td colspan="2">&nbsp;</td></tr></table>
 			<div class="arm_submit_btn_container">
-				<button class="arm_save_btn arm_opt_ins_options_btn" type="submit" id="arm_opt_ins_options_btn" name="arm_opt_ins_options_btn"><?php _e('Save', 'ARMember') ?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" style="position:relative;top:8px;display:none;" width="24" height="24" />
+				<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_submit_btn_loader" style="display:none;" width="24" height="24" />&nbsp;<button class="arm_save_btn arm_opt_ins_options_btn" type="submit" id="arm_opt_ins_options_btn" name="arm_opt_ins_options_btn"><?php _e('Save', 'ARMember') ?></button>
 				<?php wp_nonce_field( 'arm_wp_nonce' );?>
 			</div>
 		</form>

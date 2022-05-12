@@ -2,52 +2,6 @@
 global $wpdb, $ARMember, $arm_global_settings, $arm_email_settings, $arm_payment_gateways, $arm_access_rules, $arm_subscription_plans, $arm_member_forms, $arm_social_feature, $arm_drip_rules;
 $all_global_settings = $arm_global_settings->arm_get_all_global_settings();
 
-
-/*
-if(!empty($_REQUEST['arm_update_payment_history']))
-{
-    global $wpdb, $wp, $ARMember,$arm_member_forms, $arm_global_settings;
-
-    $pt_log_table = $ARMember->tbl_arm_payment_log;
-    $bt_log_table = $ARMember->tbl_arm_bank_transfer_log;
-    $ptquery = "SELECT arm_log_id,arm_user_id FROM `" . $pt_log_table . "` ";
-    $pt_payment_log = $wpdb->get_results($ptquery, ARRAY_A);
-
-    $payment_log_user_det_arr = array();
-    if(count($pt_payment_log)>0)
-    {
-        foreach($pt_payment_log as $pt_payment_log_data)
-        {
-            $payment_log_user_id = $pt_payment_log_data["arm_user_id"];
-            $payment_log_id = $pt_payment_log_data["arm_log_id"];
-            if(!isset($payment_log_user_det_arr[$payment_log_user_id]))
-            {
-                $meta_value_first_name = $wpdb->get_var("SELECT meta_value FROM {$wpdb->usermeta} WHERE user_id = {$payment_log_user_id} AND meta_key = 'first_name'");
-                $meta_value_last_name = $wpdb->get_var("SELECT meta_value FROM {$wpdb->usermeta} WHERE user_id = {$payment_log_user_id} AND meta_key = 'last_name'");
-
-                $payment_log_user_det_arr[$payment_log_user_id]['first_name'] = $meta_value_first_name;
-                $payment_log_user_det_arr[$payment_log_user_id]['last_name'] = $meta_value_last_name;
-            }
-            else
-            {
-                $meta_value_first_name = $payment_log_user_det_arr[$payment_log_user_id]['first_name'];
-                $meta_value_last_name = $payment_log_user_det_arr[$payment_log_user_id]['last_name'];
-            }
-
-            if( !empty($meta_value_first_name) || !empty($meta_value_last_name) )
-            {
-                $wpdb->update($pt_log_table, 
-                                array('arm_first_name' => $meta_value_first_name,'arm_last_name'=>$meta_value_last_name), 
-                                array('arm_log_id' => $payment_log_id)
-                            );
-            }
-        }
-    }
-}
-*/
-
-
-
 $all_email_settings = $arm_email_settings->arm_get_all_email_settings();
 $is_permalink = $arm_global_settings->is_permalink();
 $general_settings = $all_global_settings['general_settings'];
@@ -63,7 +17,7 @@ $default_rules = $arm_access_rules->arm_get_default_access_rules();
 $default_schedular_settings = $arm_global_settings->arm_default_global_settings();
 $all_roles = $arm_global_settings->arm_get_all_roles();
 
-$currencies = array_merge($arm_payment_gateways->currency['paypal'], $arm_payment_gateways->currency['stripe'], $arm_payment_gateways->currency['authorize_net'], $arm_payment_gateways->currency['2checkout']);
+$currencies = array_merge($arm_payment_gateways->currency['paypal'], $arm_payment_gateways->currency['stripe'], $arm_payment_gateways->currency['authorize_net'], $arm_payment_gateways->currency['2checkout'], $arm_payment_gateways->currency['bank_transfer']);
 
 
 global $arm_members_activity;
@@ -186,7 +140,7 @@ $is_debug_enable = 0;
                             $arm_exclude_role_for_hide_admin = isset($general_settings['arm_exclude_role_for_hide_admin']) ? explode(',', $general_settings['arm_exclude_role_for_hide_admin']) : array(); 
                         }
                         ?>
-                        <select id="arm_access_page_for_restrict_site" class="arm_chosen_selectbox" name="arm_general_settings[arm_exclude_role_for_hide_admin][]" data-placeholder="<?php _e('Select Role(s)..', 'ARMember');?>" multiple="multiple" style="width:500px;">
+                        <select id="arm_access_page_for_restrict_site" class="arm_chosen_selectbox arm_width_500" name="arm_general_settings[arm_exclude_role_for_hide_admin][]" data-placeholder="<?php _e('Select Role(s)..', 'ARMember');?>" multiple="multiple" >
                                 <?php
                                     if (!empty($all_roles)):
                                         foreach ($all_roles as $role_key => $role_value) {
@@ -197,7 +151,7 @@ $is_debug_enable = 0;
                                         <option value=""><?php _e('No Roles Available', 'ARMember');?></option>
                                 <?php endif;?>
                         </select>
-                        <span class="arm_info_text" style="margin: 10px 0 0; display:block;">
+                        <span class="arm_info_text arm_info_text_style" >
                             (<?php _e('Admin bar will be displayed to selected roles.','ARMember'); ?>)
                         </span>
                     </td>
@@ -242,17 +196,17 @@ $is_debug_enable = 0;
 						<em>(<?php _e('EXPERIMENTAL', 'ARMember');?>) Change "/wp-admin" (e.g. panel, cp).</em>
 						<br/>
 						<br/>
-						<span class="arm_warning_text" style="margin:0;"><em><?php _e('Do Not change permalink structure to default in order to work this option. if you set permalink structure to default, You will need to DELETE or comment (//) line which start with', 'ARMember');?>: <code>define("ADMIN_COOKIE_PATH","...</code></em></span>
+						<span class="arm_warning_text arm_margin_0" ><em><?php _e('Do Not change permalink structure to default in order to work this option. if you set permalink structure to default, You will need to DELETE or comment (//) line which start with', 'ARMember');?>: <code>define("ADMIN_COOKIE_PATH","...</code></em></span>
 
                      <?php   $arm_get_hide_wp_admin_option = get_option('arm_hide_wp_amin_disable');
                 if (!empty($arm_get_hide_wp_admin_option)) {
                     ?>
 
-                    <br/><span class="arm_warning_text" style="margin:0;">
+                    <br/><span class="arm_warning_text arm_margin_0" >
                         
                        <em> <?php _e('If you can\'t login after renaming wp-admin, run below URL and all changes are rollback to default :', 'ARMember'); ?></em><br/>
                    <div class="arm_shortcode_text arm_form_shortcode_box">
-                       <span class="armCopyText" style="font-size: 13px;"><?php echo home_url().'?arm_wpdisable='.$arm_get_hide_wp_admin_option; ?></span>
+                       <span class="armCopyText arm_font_size_13" ><?php echo home_url().'?arm_wpdisable='.$arm_get_hide_wp_admin_option; ?></span>
 											<span class="arm_click_to_copy_text" data-code="<?php echo home_url().'?arm_wpdisable='.$arm_get_hide_wp_admin_option; ?>"><?php _e('Click to copy', 'ARMember');?></span>
 											<span class="arm_copied_text"><img src="<?php echo MEMBERSHIP_IMAGES_URL;?>/copied_ok.png" alt="ok"><?php _e('Code Copied', 'ARMember');?></span>
                    </div>
@@ -305,7 +259,7 @@ $is_debug_enable = 0;
 							<input type="checkbox" id="autolock_shared_account" <?php checked($general_settings['autolock_shared_account'], '1');?> value="1" class="armswitch_input" name="arm_general_settings[autolock_shared_account]"/>
 							<label for="autolock_shared_account" class="armswitch_label"></label>
 						</div>
-                                                <span class="arm_info_text" style="margin: 10px 0 0; display:block;">(<?php _e('By enabling this feature, you can prevent simultaneous multiple logins using same login details','ARMember'); ?>)</span>
+                                                <span class="arm_info_text arm_info_text_style">(<?php _e('By enabling this feature, you can prevent simultaneous multiple logins using same login details','ARMember'); ?>)</span>
 					</td>
 				</tr>
 				<tr class="form-field">
@@ -315,7 +269,7 @@ $is_debug_enable = 0;
 							<input type="checkbox" id="enable_gravatar" <?php checked($general_settings['enable_gravatar'], '1');?> value="1" class="armswitch_input" name="arm_general_settings[enable_gravatar]"/>
 							<label for="enable_gravatar" class="armswitch_label"></label>
 						</div>
-                                                <span class="arm_info_text" style="margin: 10px 0 0; display:block;">(<?php _e('if buddyPress plugin is active then use buddyPress avtars','ARMember'); ?>)</span>
+                                                <span class="arm_info_text arm_info_text_style">(<?php _e('if buddyPress plugin is active then use buddyPress avtars','ARMember'); ?>)</span>
 					</td>
 				</tr>
                 
@@ -399,7 +353,7 @@ $is_debug_enable = 0;
 
 
 						<div class="armclear"></div>
-						<span style="width: 220px;text-align: center;display: inline-block;font-weight: bold;font-size: 16px;margin: 15px 0 1px;"><?php _e('OR', 'ARMember');?></span>
+						<span class="arm_currency_seperator_text_style"><?php _e('OR', 'ARMember');?></span>
 						<div class="armclear"></div>
 						<div class="armGridActionTD arm_custom_currency_options_container">
 							<input type="hidden" class="custom_currency_symbol" name="arm_general_settings[custom_currency][symbol]" value="<?php echo $custom_currency_symbol;?>">
@@ -408,9 +362,9 @@ $is_debug_enable = 0;
 							<div class="armclear"></div>
 							<label class="arm_custom_currency_checkbox_label"><input type="checkbox" class="arm_custom_currency_checkbox arm_icheckbox" value="1" name="arm_general_settings[custom_currency][status]" <?php checked($custom_currency_status, 1)?>><span><?php _e('Set Custom Currency', 'ARMember');?></span></label>
 							<div class="arm_confirm_box_custom_currency arm_no_hide" id="arm_confirm_box_custom_currency">
-								<div class="arm_confirm_box_body" style="max-width: 100%;">
+								<div class="arm_confirm_box_body arm_max_width_100_pct" >
 									<div class="arm_confirm_box_arrow"></div>
-									<div class="arm_confirm_box_text arm_custom_currency_fields" style="text-align: left;">
+									<div class="arm_confirm_box_text arm_custom_currency_fields arm_text_align_left" >
 										<table>
 											<tr>
 												<th><?php _e('Currency Symbol', 'ARMember');?></th>
@@ -432,8 +386,8 @@ $is_debug_enable = 0;
 												<th><?php _e('Symbol will be display as', 'ARMember');?></th>
 												<td>
 													<input type="hidden" id="custom_currency_place" value="<?php echo (!empty($custom_currency_place)) ? $custom_currency_place : 'prefix'; ?>"/>
-													<dl class="arm_selectbox column_level_dd">
-														<dt style="width: 110px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+													<dl class="arm_selectbox column_level_dd arm_width_130">
+														<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 														<dd>
 															<ul data-id="custom_currency_place">
 																<li data-label="<?php _e('Prefix', 'ARMember');?>" data-value="prefix"><?php _e('Prefix', 'ARMember');?></li>
@@ -446,7 +400,7 @@ $is_debug_enable = 0;
 										</table>
 									</div>
 									<div class='arm_confirm_box_btn_container'>
-										<button type="button" class="arm_confirm_box_btn armemailaddbtn" id="arm_custom_currency_ok_btn" style="margin-right: 5px;"><?php _e('Add', 'ARMember');?></button>
+										<button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5" id="arm_custom_currency_ok_btn"><?php _e('Add', 'ARMember');?></button>
 										<button type="button" class="arm_confirm_box_btn armcancel" onclick="hideCustomCurrencyBox();"><?php _e('Cancel', 'ARMember');?></button>
 									</div>
 								</div>
@@ -466,9 +420,14 @@ $is_debug_enable = 0;
 						}
 						$currency_warring = $arm_payment_gateways->arm_check_currency_status($paymentcurrency);
 						?>
-						<span class="arm_global_setting_currency_warring" style="<?php echo (empty($currency_warring)) ? 'display:none;' : '';?>"><?php echo $currency_warring;?></span>
+						<span class="arm_global_setting_currency_warring arm-note-message --warning" style="color: #676767;<?php echo (empty($currency_warring)) ? 'display:none;' : '';?>"><?php echo $currency_warring;?></span>
 					</td>
 				</tr>
+
+                <?php 
+                    $arm_custom_html_after_currency = "";
+                    echo apply_filters('arm_general_settings_after_currency_option', $arm_custom_html_after_currency);
+                ?>
 
                 <tr class="form-field" style="<?php echo (!$arm_social_feature->isSocialFeature) ? 'display:none;' : '';?>">
 					<th class="arm-form-table-label"><?php _e('Profile Permalink Base','ARMember');?></th>
@@ -520,7 +479,7 @@ $is_debug_enable = 0;
                                                     )
                                             );
                                             ?>
-                                            <span class="arm_info_text" style="margin: 10px 0 0; display:block;">(<?php _e('Choose ARMember profile page to replace bbPress profile page.','ARMember'); ?>)</span>
+                                            <span class="arm_info_text arm_info_text_style" >(<?php _e('Choose ARMember profile page to replace bbPress profile page.','ARMember'); ?>)</span>
 					</td>
 				</tr>
                                 <?php
@@ -530,23 +489,23 @@ $is_debug_enable = 0;
 				<tr class="form-field">
 					<th class="arm-form-table-label"><?php _e('Load JS & CSS in all pages','ARMember');?></th>
 					<td class="arm-form-table-content">						
-						<div class="armswitch arm_global_setting_switch" style="margin-top: 5px;">
+						<div class="armswitch arm_global_setting_switch arm_margin_top_5">
 							<input type="checkbox" id="arm_enqueue_all_js_css" <?php checked($general_settings['enqueue_all_js_css'], '1');?> value="1" class="armswitch_input" name="arm_general_settings[enqueue_all_js_css]"/>
 							<label for="arm_enqueue_all_js_css" class="armswitch_label"></label>
 						</div>
-						<span class="arm_info_text" style="margin: 10px 0 0;display: block;">(<strong><?php _e('Not recommended', 'ARMember');?></strong> - <?php _e('If you have any js/css loading issue in your theme, only in that case you should enable this settings', 'ARMember');?>)</span>
+						<span class="arm_info_text arm_info_text_style">(<strong><?php _e('Not recommended', 'ARMember');?></strong> - <?php _e('If you have any js/css loading issue in your theme, only in that case you should enable this settings', 'ARMember');?>)</span>
 					</td>
 				</tr>
 				<tr class="form-field">
 					<th class="arm-form-table-label"><?php _e('Badge icon size', 'ARMember'); ?></th>
 					<td class="arm-form-table-content">
-						<div style="display: inline-block;margin-top: -5px;">
-							<span style="display: inline-block; min-width: 60px;"><?php _e('Width', 'ARMember'); ?></span>
-							<input id="arm_badge_width" type="text" name="arm_general_settings[badge_width]" value="<?php echo (!empty($general_settings['badge_width']) ? $general_settings['badge_width'] : 30 ); ?>" style="width:80px;"><span> (px)</span>
+						<div style="display: inline-block;margin-top:-5px;">
+							<span class="arm_badge_size_field_label"><?php _e('Width', 'ARMember'); ?></span>
+							<input id="arm_badge_width" class="arm_width_80"type="text" name="arm_general_settings[badge_width]" value="<?php echo (!empty($general_settings['badge_width']) ? $general_settings['badge_width'] : 30 ); ?>"><span> (px)</span>
 						</div>
-						<div style="margin-top: 5px;">
-							<span style="display: inline-block; min-width: 60px;"><?php _e('Height', 'ARMember'); ?></span>
-							<input id="arm_badge_height" type="text" name="arm_general_settings[badge_height]" value="<?php echo (!empty($general_settings['badge_height']) ? $general_settings['badge_height'] : 30 ); ?>" style="width:80px;"><span> (px)</span>
+						<div class="arm_margin_top_5">
+							<span class="arm_badge_size_field_label" ><?php _e('Height', 'ARMember'); ?></span>
+							<input id="arm_badge_height" type="text" class="arm_width_80" name="arm_general_settings[badge_height]" value="<?php echo (!empty($general_settings['badge_height']) ? $general_settings['badge_height'] : 30 ); ?>" ><span> (px)</span>
 						</div>
 					</td>
 				</tr>
@@ -582,7 +541,7 @@ $is_debug_enable = 0;
 				</tr>
 				<tr class="form-field">
 					<th class="arm_email_settings_content_label"><?php _e('Email notification','ARMember');?></th>
-					<td class="arm_email_settings_content_text" style="vertical-align: top;padding: 10px;">
+					<td class="arm_email_settings_content_text arm_vertical_align_top arm_padding_10">
 						<div class="arm_email_settings_select_text">
 							<div class="arm_email_settings_select_text_inner">
 							<?php $all_email_settings['arm_email_server'] = (isset($all_email_settings['arm_email_server'])) ? $all_email_settings['arm_email_server'] : 'wordpress_server';?>
@@ -602,7 +561,7 @@ $is_debug_enable = 0;
 							<table class="form-sub-table" width="100%">
 
                                 <tr>
-                                    <th class="arm_email_settings_content_label" style="min-width: 100px;"><?php _e('Authentication','ARMember');?></th>
+                                    <th class="arm_email_settings_content_label arm_min_width_100"><?php _e('Authentication','ARMember');?></th>
                                     <td class="arm_email_settings_content_text">
                                         <?php $arm_mail_authentication = (isset($all_email_settings['arm_mail_authentication'])) ? $all_email_settings['arm_mail_authentication'] : '1'; ?>
                                         
@@ -611,10 +570,10 @@ $is_debug_enable = 0;
                                     </td>
                                 </tr>
 								<tr>
-									<th class="arm_email_settings_content_label" style="min-width: 100px;"><?php _e('Mail Server','ARMember');?> *</th>
+									<th class="arm_email_settings_content_label arm_min_width_100"><?php _e('Mail Server','ARMember');?> *</th>
 									<td class="arm_email_settings_content_text">
                                                                             <?php $arm_mail_server = (isset($all_email_settings['arm_mail_server'])) ? $all_email_settings['arm_mail_server'] : ''; ?>
-										<input type="text" id="arm_mail_server" name="arm_mail_server" value="<?php echo (isset($all_email_settings['arm_mail_server'])) ? $all_email_settings['arm_mail_server'] : '';?>" class="arm_mail_server_input" style="width: 390px;"/>
+										<input type="text" id="arm_mail_server" name="arm_mail_server" value="<?php echo (isset($all_email_settings['arm_mail_server'])) ? $all_email_settings['arm_mail_server'] : '';?>" class="arm_mail_server_input arm_width_390" >
 										<span class="error arm_invalid" id="arm_mail_server_error" style="display: none;"><?php _e('Mail Server can not be left blank.', 'ARMember');?></span>
 									</td>
 								</tr>
@@ -622,7 +581,7 @@ $is_debug_enable = 0;
 									<th class="arm_email_settings_content_label"><?php _e('Port','ARMember');?> *</th>
 									<td class="arm_email_settings_content_text">
                                                                             <?php $arm_mail_port = (isset($all_email_settings['arm_mail_port'])) ? $all_email_settings['arm_mail_port'] : ''; ?>
-										<input type="text" id="arm_port" name="arm_mail_port" value="<?php echo (isset($all_email_settings['arm_mail_port'])) ? $all_email_settings['arm_mail_port'] : '';?>" style="width: 390px;"/>
+										<input type="text" id="arm_port" class="arm_width_390" name="arm_mail_port" value="<?php echo (isset($all_email_settings['arm_mail_port'])) ? $all_email_settings['arm_mail_port'] : '';?>" />
 										<span class="error arm_invalid" id="arm_mail_port_error" style="display: none;"><?php _e('Port can not be left blank.', 'ARMember');?></span>
 									</td>
 								</tr>
@@ -630,7 +589,7 @@ $is_debug_enable = 0;
 									<th class="arm_email_settings_content_label"><?php _e('Login Name','ARMember');?> *</th>
 									<td class="arm_email_settings_content_text">
                                                                             <?php $arm_mail_login_name = (isset($all_email_settings['arm_mail_login_name'])) ? $all_email_settings['arm_mail_login_name'] : ''; ?>
-										<input type="text" id="arm_login_name" value="<?php echo (isset($all_email_settings['arm_mail_login_name'])) ? $all_email_settings['arm_mail_login_name'] : '';?>" name="arm_mail_login_name" style="width: 390px;"/>
+										<input type="text" id="arm_login_name" class="arm_width_390" value="<?php echo (isset($all_email_settings['arm_mail_login_name'])) ? $all_email_settings['arm_mail_login_name'] : '';?>" name="arm_mail_login_name" />
 										<span class="error arm_invalid" id="arm_mail_login_name_error" style="display: none;"><?php _e('Login Name can not be left blank.', 'ARMember');?></span>
 									</td>
 								</tr>
@@ -638,7 +597,7 @@ $is_debug_enable = 0;
 									<th class="arm_email_settings_content_label"><?php _e('Password','ARMember');?> *</th>
 									<td class="arm_email_settings_content_text">
                                                                             <?php $arm_mail_pssword = (isset($all_email_settings['arm_mail_password'])) ? $all_email_settings['arm_mail_password'] : ''; ?>
-										<input type="password" id="arm_password" value="<?php echo (isset($all_email_settings['arm_mail_password'])) ? $all_email_settings['arm_mail_password'] : '';?>" name="arm_mail_password" style="width: 390px;"/>
+										<input type="password" id="arm_password" class="arm_width_390" value="<?php echo (isset($all_email_settings['arm_mail_password'])) ? $all_email_settings['arm_mail_password'] : '';?>" name="arm_mail_password" />
 										<span class="error arm_invalid" id="arm_mail_password_error" style="display: none;"><?php _e('Password can not be left blank.', 'ARMember');?></span>
 									</td>
 								</tr>
@@ -652,15 +611,15 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
 												$all_email_settings['arm_smtp_enc'] = (isset($all_email_settings['arm_smtp_enc'])) ? $all_email_settings['arm_smtp_enc'] : '0';
 												?>
 												<input type="radio" id="arm_smtp_enc_none" class="arm_general_input arm_iradio" <?php checked( $selected_enc, '0' );?>  name="arm_smtp_enc" value="none" />
-                                                                                                <label for="arm_smtp_enc_none" class="arm_email_settings_help_text" style="margin-right: 0px;"><?php _e('None','ARMember');?></label>
+                                                                                                <label for="arm_smtp_enc_none" class="arm_email_settings_help_text arm_margin_right_0" ><?php _e('None','ARMember');?></label>
 											</div>
 											<div class="arm_email_settings_select_text_inner">
 												<input type="radio" id="arm_smtp_enc_ssl" class="arm_general_input arm_iradio" <?php checked( $all_email_settings['arm_smtp_enc'], 'ssl' );?> name="arm_smtp_enc" value="ssl" />
-												<label for="arm_smtp_enc_ssl" class="arm_email_settings_help_text" style="margin-right: 0px;"><?php _e('SSL','ARMember');?></label>
+												<label for="arm_smtp_enc_ssl" class="arm_email_settings_help_text arm_margin_right_0" ><?php _e('SSL','ARMember');?></label>
 											</div>
 											<div class="arm_email_settings_select_text_inner">
 												<input type="radio" id="arm_smtp_enc_tls" class="arm_general_input arm_iradio" <?php checked( $all_email_settings['arm_smtp_enc'], 'tls' );?> name="arm_smtp_enc" value="tls" />
-												<label for="arm_smtp_enc_tls" class="arm_email_settings_help_text" style="margin-right: 0px;"><?php _e('TLS','ARMember');?></label>
+												<label for="arm_smtp_enc_tls" class="arm_email_settings_help_text arm_margin_right_0"><?php _e('TLS','ARMember');?></label>
 											</div>
 										</div>
                                     </td>
@@ -668,21 +627,21 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
                                 <tr>
                                     <th class="arm_email_settings_content_label"><b><?php _e('Send Test E-mail</b>', 'ARMember'); ?></b></th>
                                     <td class="arm_email_settings_content_text">
-                                        <label id="arm_success_test_mail" style="font-size:14px; display:none; float:left; width:100%; font-family:'open_sanssemibold',Arial,Helvetica,Verdana,sans-serif; color:#4c9738;"><?php _e('Your test mail is successfully sent.', 'ARMember'); ?></label>
-                                        <label id="arm_error_test_mail" style="font-size:14px; display:none; float:left; width:100%; font-family:'open_sanssemibold',Arial,Helvetica,Verdana,sans-serif; color:#ff0000;"><?php _e('Your test mail is not sent for some reason, Please check your SMTP setting.', 'ARMember'); ?></label>
+                                        <label id="arm_success_test_mail" class="arm_success_test_mail_label" style="display:none;"><?php _e('Your test mail is successfully sent.', 'ARMember'); ?></label>
+                                        <label id="arm_error_test_mail" class="arm_error_test_mail_label" style="display:none;"><?php _e('Your test mail is not sent for some reason, Please check your SMTP setting.', 'ARMember'); ?></label>
                                     </td>
                                 </tr> 
                                 <tr>
                                     <th class="arm_email_settings_content_label"><?php _e('To', 'ARMember'); ?> *</th>
                                     <td class="arm_email_settings_content_text">
-                                        <input type="text" id="arm_test_email_to" name="arm_test_email_to" value="" style="width: 390px;"/>
+                                        <input type="text" id="arm_test_email_to" class="arm_width_390" name="arm_test_email_to" value="" />
                                         <span class="error arm_invalid" id="arm_test_email_to_error" style="display: none;"><?php _e('To can not be left blank.', 'ARMember'); ?></span>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th class="arm_email_settings_content_label"><?php _e('Message', 'ARMember'); ?> *</th>
                                     <td class="arm_email_settings_content_text">
-                                        <textarea id="arm_test_email_msg" value="" name="arm_test_email_msg" style="width: 390px;"></textarea>
+                                        <textarea id="arm_test_email_msg" class="arm_width_390" value="" name="arm_test_email_msg" ></textarea>
                                         <span class="error arm_invalid" id="arm_test_email_msg_error" style="display: none;"><?php _e('Message can not be left blank.', 'ARMember'); ?></span>
                                     </td>
                                 </tr>
@@ -690,7 +649,7 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
                                     <th class="arm_email_settings_content_label"></th>
                                     <td class="arm_email_settings_content_text">
                                         
-                                        <button type="button" class="arm_save_btn" id="arm_send_test_mail"><?php _e('Send test mail', 'ARMember');?></button><img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif'; ?>" id="arm_send_test_mail_loader" width="24" height="24" style="position: relative; top: 8px; display: none;" /><br/><span style="font-style:italic;">(<?php _e('Test e-mail works only after configure SMTP server settings', 'ARMember'); ?>)</span>
+                                        <button type="button" class="arm_save_btn" id="arm_send_test_mail"><?php _e('Send test mail', 'ARMember');?></button><img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif'; ?>" id="arm_send_test_mail_loader" class="arm_submit_btn_loader" width="24" height="24" style="display: none;" /><br/><span style="font-style:italic;">(<?php _e('Test e-mail works only after configure SMTP server settings', 'ARMember'); ?>)</span>
                                     </td>
 								 </tr>
 							</table>
@@ -823,7 +782,7 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
                                 </dd>
                             </dl>
 
-                            <input type="text" name="arm_general_settings[arm_country_tax_val][]" class="arm_country_tax_val_inpt" id="arm_country_tax_val_<?php echo $x?>" value="<?php echo !empty($country_tax_val_arr[$x]) ? $country_tax_val_arr[$x] : '0'; ?>" style="max-width: 100px;"  onkeypress="return isNumber(event)"><b> %</b>
+                            <input type="text" name="arm_general_settings[arm_country_tax_val][]" class="arm_country_tax_val_inpt arm_max_width_100" id="arm_country_tax_val_<?php echo $x?>" value="<?php echo !empty($country_tax_val_arr[$x]) ? $country_tax_val_arr[$x] : '0'; ?>"   onkeypress="return isNumber(event)"><b> %</b>
                             <div class="arm_country_tax_action_buttons">
                                 <div class="arm_country_tax_plus_icon arm_helptip_icon tipso_style" title="<?php _e('Add Country', 'ARMember'); ?>"></div>
                                 <div class="arm_country_tax_minus_icon arm_helptip_icon tipso_style" title="<?php _e('Remove Country', 'ARMember'); ?>"></div>
@@ -865,24 +824,24 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
                 <tr class="form-field arm_invc_pre_sfx_tr<?php echo ($invc_pre_sfx_mode == '1') ? '' : ' hidden_section' ; ?>">
                     <th class="arm-form-table-label"><?php _e('Enter Invoice Prefix', 'ARMember'); ?></th>
                     <td class="arm-form-table-content">
-                        <div style="display: inline-block;margin-top: -5px;">
-                            <input type="text" name="arm_general_settings[invc_prefix_val]" id="arm_invc_prefix_val" value="<?php echo $invc_prefix_val; ?>" style="max-width: 80px;">
+                        <div>
+                            <input type="text" name="arm_general_settings[invc_prefix_val]" id="arm_invc_prefix_val" value="<?php echo $invc_prefix_val; ?>" >
                         </div>
                     </td>
                 </tr>
                 <tr class="form-field arm_invc_pre_sfx_tr<?php echo ($invc_pre_sfx_mode == '1') ? '' : ' hidden_section' ; ?>">
                     <th class="arm-form-table-label"><?php _e('Enter Invoice Suffix', 'ARMember'); ?></th>
                     <td class="arm-form-table-content">
-                        <div style="display: inline-block;margin-top: -5px;">
-                            <input type="text" name="arm_general_settings[invc_suffix_val]" id="arm_invc_suffix_val" value="<?php echo $invc_suffix_val; ?>" style="max-width: 80px;">
+                        <div>
+                            <input type="text" name="arm_general_settings[invc_suffix_val]" id="arm_invc_suffix_val" value="<?php echo $invc_suffix_val; ?>" >
                         </div>
                     </td>
                 </tr>
                 <tr class="form-field arm_invc_pre_sfx_tr<?php echo ($invc_pre_sfx_mode == '1') ? '' : ' hidden_section' ; ?>">
                     <th class="arm-form-table-label"><?php _e('Enter Minimum Invoice Digit(s)', 'ARMember'); ?></th>
                     <td class="arm-form-table-content">
-                        <div style="display: inline-block;margin-top: -5px;">
-                            <input type="number" name="arm_general_settings[invc_min_digit]" id="arm_invc_min_digit" value="<?php echo $invc_min_digit; ?>" style="max-width: 80px;">
+                        <div>
+                            <input type="number" name="arm_general_settings[invc_min_digit]" id="arm_invc_min_digit" value="<?php echo $invc_min_digit; ?>" >
                         </div>
                     </td>
                 </tr>
@@ -1025,15 +984,15 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
                         <td>
                         <div class="arm_manage_preset_fields">
                         <div class="arm_manage_preset_fields_btn">
-                         <input type="button" value="<?php _e('Edit Preset Form Fields', 'ARMember'); ?>" onclick="arm_open_edit_field_popup();" id="arm_edit_form_fields" class="armemailaddbtn" title="" style="width: 200px;">
+                         <input type="button" value="<?php _e('Edit Preset Form Fields', 'ARMember'); ?>" onclick="arm_open_edit_field_popup();" id="arm_edit_form_fields" class="armemailaddbtn arm_width_220" title="" >
                          </div>
                          <div class="arm_manage_preset_fields_text">
                             <span class="arm_info_text"><?php _e('To edit specific form preset fields, click on this button, popup opens, edit fields which you want to update and click on update button.','ARMember'); ?></span>
                             </div>
                          </div>
-                         <div class="arm_manage_preset_fields" style="margin-top: 30px;">
+                         <div class="arm_manage_preset_fields arm_margin_top_30" >
                          <div class="arm_manage_preset_fields_btn">
-                            <input type="button" value="<?php _e('Clear Preset Form Fields', 'ARMember'); ?>" onclick="arm_open_clear_field_popup();" id="arm_clear_form_fields" class="armemailaddbtn"  style="width: 200px;">
+                            <input type="button" value="<?php _e('Clear Preset Form Fields', 'ARMember'); ?>" onclick="arm_open_clear_field_popup();" id="arm_clear_form_fields" class="armemailaddbtn arm_width_220"  >
                             </div>
                             <div class="arm_manage_preset_fields_text">
                                 <span class="arm_info_text"><?php _e('To remove specific form fields with its value, click on this button, popup opens, select fields which you want to remove from everywhere.','ARMember'); ?></span>
@@ -1056,8 +1015,8 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
                         <td>
                             <?php $arm_email_schedular_time = isset($general_settings['arm_email_schedular_time']) ? $general_settings['arm_email_schedular_time'] : 12; ?>
                             <input type="hidden" name="arm_general_settings[arm_email_schedular_time]" id="arm_email_schedular_time" value="<?php echo $arm_email_schedular_time ?>" />
-                            <dl class="arm_selectbox column_level_dd">
-                                <dt style="min-width:40px;max-width:40px;">
+                            <dl class="arm_selectbox column_level_dd arm_width_200 arm_max_width_200">
+                                <dt>
                                 <span></span>
                                 <input type="text" style="display:none;" value="" class="arm_autocomplete"  />
                                 <i class="armfa armfa-caret-down armfa-lg"></i>
@@ -1119,15 +1078,15 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
                         $frontOptHtml .= ' <i class="arm_helptip_icon armfa armfa-question-circle" title="' . $tooltip_title . '"></i></th>';
                         $frontOptHtml .= '<td>';
                         $frontOptHtml .= '<input type="hidden" id="arm_front_font_family_' . $key . '" name="arm_general_settings[front_settings][' . $key . '][font_family]" value="' . ((!empty($fontVal['font_family'])) ? $fontVal['font_family'] : 'Helvetica') . '"/>';
-                        $frontOptHtml .= '<dl class="arm_selectbox column_level_dd">';
-                        $frontOptHtml .= '<dt style="width:160px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                        $frontOptHtml .= '<dl class="arm_selectbox column_level_dd arm_width_200 arm_margin_right_10">';
+                        $frontOptHtml .= '<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
                         $frontOptHtml .= '<dd><ul data-id="arm_front_font_family_' . $key . '">';
                         $frontOptHtml .= $arm_member_forms->arm_fonts_list();
                         $frontOptHtml .= '</ul></dd>';
                         $frontOptHtml .= '</dl>';
                         $frontOptHtml .= '<input type="hidden" id="arm_front_font_size_' . $key . '" name="arm_general_settings[front_settings][' . $key . '][font_size]" value="' . (!empty($fontVal['font_size']) ? $fontVal['font_size'] : '14') . '"/>';
-                        $frontOptHtml .= '<dl class="arm_selectbox column_level_dd">';
-                        $frontOptHtml .= '<dt style="width:70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                        $frontOptHtml .= '<dl class="arm_selectbox column_level_dd arm_width_100">';
+                        $frontOptHtml .= '<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
                         $frontOptHtml .= '<dd><ul data-id="arm_front_font_size_' . $key . '">';
                         for ($i = 8; $i < 41; $i++) {
                             $frontOptHtml .= '<li data-label="' . $i . ' px" data-value="' . $i . '">' . $i . ' px</li>';
@@ -1180,14 +1139,14 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
 			</table>
 			<?php do_action('arm_after_global_settings_html', $general_settings);?>
 			<div class="arm_submit_btn_container">
-				<button id="arm_global_settings_btn" class="arm_save_btn" name="arm_global_settings_btn" type="submit"><?php _e('Save', 'ARMember') ?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" style="position:relative;top:8px;display:none;" width="24" height="24" />
+				<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_submit_btn_loader" style="display:none;" width="24" height="24" />&nbsp;<button id="arm_global_settings_btn" class="arm_save_btn " name="arm_global_settings_btn" type="submit"><?php _e('Save', 'ARMember') ?></button>
 			</div>
             <?php wp_nonce_field( 'arm_wp_nonce' );?>
 		</form>
 	</div>
 	<div class="armclear"></div>
 	<div class="arm_custom_css_detail_container"></div>
-    <div class="arm_edit_form_fields_popup_div popup_wrapper <?php echo (is_rtl()) ? 'arm_page_rtl' : ''; ?>" style="width:1000px; min-height: 200px;">
+    <div class="arm_edit_form_fields_popup_div popup_wrapper <?php echo (is_rtl()) ? 'arm_page_rtl' : ''; ?>" >
             <form method="GET" id="arm_edit_preset_fields_form" class="arm_admin_form">
                 <div>
                     <div class="popup_header">
@@ -1195,8 +1154,8 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
                         
                         <span class="add_rule_content"><?php _e('Edit Preset Fields', 'ARMember'); ?></span>
                     </div>
-                    <div class="popup_content_text arm_edit_form_fields_popup_text" style="text-align:center;">
-                            <div style="width: 100%; margin: 45px auto;">   <img src="<?php echo MEMBERSHIP_IMAGES_URL."/arm_loader.gif"; ?>">
+                    <div class="popup_content_text arm_edit_form_fields_popup_text arm_text_align_center" >
+                            <div class="arm_width_100_pct" style="margin: 45px auto;"><img src="<?php echo MEMBERSHIP_IMAGES_URL."/arm_loader.gif"; ?>">
                             </div>
                     </div>
                     <div class="popup_content_btn popup_footer">
@@ -1205,7 +1164,7 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
                                 <span class="arm_error_msg"><?php _e('Sorry, something went wrong while updating prest fields.', 'ARMember'); ?></span>
                         </div>
                         <div class="popup_content_btn_wrapper">
-                            <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif' ?>" id="arm_loader_img_preset_update_field" class="arm_loader_img" style="position: relative;top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left'; ?>;display: none;" width="20" height="20" />
+                            <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif' ?>" id="arm_loader_img_preset_update_field" class="arm_loader_img arm_submit_btn_loader" style="float: <?php echo (is_rtl()) ? 'right' : 'left'; ?>;display: none;" width="20" height="20" />
                             <button class="arm_save_btn arm_edit_preset_fields_button" type="button"><?php _e('Update', 'ARMember') ?></button>
                             <button class="arm_cancel_btn arm_edit_preset_fields_close_btn" type="button"><?php _e('Cancel', 'ARMember'); ?></button>
                         </div>
@@ -1273,7 +1232,7 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
                     </td>
                     <td class="popup_content_btn popup_footer">
                         <div class="popup_content_btn_wrapper">
-                            <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif' ?>" id="arm_loader_img_clear_field" class="arm_loader_img" style="position: relative;top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left'; ?>;display: none;" width="20" height="20" />
+                            <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif' ?>" id="arm_loader_img_clear_field" class="arm_loader_img arm_submit_btn_loader" style="float: <?php echo (is_rtl()) ? 'right' : 'left'; ?>;display: none;" width="20" height="20" />
                             <button class="arm_save_btn arm_clear_form_fields_button" type="submit" data-type="add"><?php _e('Ok', 'ARMember') ?></button>
                             <button class="arm_cancel_btn arm_clear_field_close_btn" type="button"><?php _e('Cancel', 'ARMember'); ?></button>
                         </div>
@@ -1293,7 +1252,7 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
         <iframe style="display:block; height:100%; width:100%; margin-top:0px;" frameborder="0" name="test" id="armresetlicframe" src="" hspace="0"></iframe>
 </div> 
 
-<div id='arm_rename_wp_admin_popup_div' class="popup_wrapper" style="width: 800px;">    
+<div id='arm_rename_wp_admin_popup_div' class="popup_wrapper" >    
                 <table  cellspacing="0">
                     <tr>
                         <td class="arm_clear_field_close_btn arm_popup_close_btn"></td>
@@ -1331,9 +1290,9 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
            
             <td class="popup_footer">
             <div class='arm_rewrite_button_div'>
-            <input type='submit' name='arm_save_global_settings' id='arm_save_global_settings' style='min-width:auto;' class='arm_save_btn' value='<?php _e('Okey, I did It!','ARMember'); ?>' />
+            <input type='submit' name='arm_save_global_settings' id='arm_save_global_settings' class='arm_save_btn arm_min_width_auto' value='<?php _e('Okey, I did It!','ARMember'); ?>' />
 
-            <input type='submit' name='arm_cancel_global_settings' id='arm_cancel_global_settings' style='min-width:auto; background-color: #d54e21; border: 1px solid #d54e21;' class='arm_save_btn' value='<?php _e('Abort Renaming','ARMember'); ?>' />
+            <input type='submit' name='arm_cancel_global_settings' id='arm_cancel_global_settings' style='background-color: #d54e21; border: 1px solid #d54e21;' class='arm_save_btn arm_min_width_auto' value='<?php _e('Abort Renaming','ARMember'); ?>' />
             </div>
             </td>
         </tr>
@@ -1351,7 +1310,7 @@ $selected_enc = (isset($all_email_settings['arm_smtp_enc'])) ? (($all_email_sett
         </tr>
     </table>
 </div>
-<div class="arm_smtp_debug_detail_popup popup_wrapper arm_smtp_debug_detail_popup_wrapper" style="width:700px;">
+<div class="arm_smtp_debug_detail_popup popup_wrapper arm_smtp_debug_detail_popup_wrapper" >
     <div class="popup_wrapper_inner" style="overflow: hidden;">
         <div class="popup_header">
             <span class="popup_close_btn arm_popup_close_btn arm_section_custom_css_detail_close_btn"></span>

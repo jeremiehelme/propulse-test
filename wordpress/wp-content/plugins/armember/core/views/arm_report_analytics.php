@@ -10,11 +10,11 @@ $before_week = strtotime('-6 days', strtotime($current_time));
 $before_week = date('Y-m-d 00:00:00', $before_week);
 $current_date = date('Y-m-d 23:59:00', strtotime($current_time));
 
-$recent_query_payment = "SELECT SUM(arm_amount) recent_amount FROM ".$ARMember->tbl_arm_payment_log." WHERE (arm_transaction_status='success' || arm_transaction_status='1') AND arm_payment_date >= '".$before_week."' AND arm_payment_date <= '".$current_date."' AND arm_is_post_payment = 0";
+$recent_query_payment = "SELECT SUM(arm_amount) recent_amount FROM ".$ARMember->tbl_arm_payment_log." WHERE (arm_transaction_status='success' || arm_transaction_status='1') AND arm_payment_date >= '".$before_week."' AND arm_payment_date <= '".$current_date."' AND arm_is_post_payment = 0 AND arm_is_gift_payment = 0";
 
 $recent_query_payment = "SELECT IFNULL((".$recent_query_payment."),0) AS recent_amount";
 
-$total_query = "SELECT IFNULL((SELECT SUM(arm_amount) FROM ".$ARMember->tbl_arm_payment_log." WHERE (arm_transaction_status='success' || arm_transaction_status='1') AND arm_is_post_payment = 0),0) as total_amount";
+$total_query = "SELECT IFNULL((SELECT SUM(arm_amount) FROM ".$ARMember->tbl_arm_payment_log." WHERE (arm_transaction_status='success' || arm_transaction_status='1') AND arm_is_post_payment = 0 AND arm_is_gift_payment = 0),0) as total_amount";
 $total_payment = $wpdb->get_row($total_query);
 $total_payment = !empty($total_payment) ? sprintf("%.2f", $total_payment->total_amount) : sprintf("%.2f",0);
 
@@ -46,16 +46,15 @@ $setact = $arm_members_activity->$check_sorting();
 ?>
 
 <div class="wrap arm_page arm_report_analytics_main_wrapper">
+    <?php
+    if ($setact != 1) {
+        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
+        ?>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+    <?php } ?>
 	<div class="content_wrapper arm_report_analytics_content" id="content_wrapper">
 		<div class="page_title">
 			<?php _e('Reports','ARMember');?>
-            <?php
-				if ($setact != 1) {
-					$admin_css_url = admin_url('admin.php?page=arm_manage_license');
-					?>
-			
-					<div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
-			<?php } ?>
 			<div class="armclear"></div>
 		</div>
 
@@ -157,6 +156,17 @@ $setact = $arm_members_activity->$check_sorting();
                     						}
     	                                }
                 				    }
+                                    $arm_gift_ids = get_user_meta($recent_member->ID, 'arm_user_gift_ids', true);
+                                    if(!empty($arm_gift_ids))
+                                    {
+                                        foreach($plan_ids as $arm_plan_key => $arm_plan_val)
+                                        {
+                                            if(in_array($arm_plan_val, $arm_gift_ids))
+                                            {
+                                                unset($plan_ids[$arm_plan_key]);
+                                            }
+                                        }
+                                    }
                                     $plan_name = $arm_subscription_plans->arm_get_comma_plan_names_by_ids($plan_ids);
                                     echo (!empty($plan_name)) ? $plan_name : '<span class="arm_empty">--</span>';
                                     ?></td>
@@ -300,8 +310,11 @@ $setact = $arm_members_activity->$check_sorting();
                         
                     </div>
                     <div class="armclear"></div>
-                
+                <?php wp_nonce_field( 'arm_wp_nonce' );?>              
         </div>    
     </div>
 </div>
 <div class="arm_member_view_detail_container"></div>
+<?php
+    echo $ARMember->arm_get_need_help_html_content('members-report-analysis');
+?>

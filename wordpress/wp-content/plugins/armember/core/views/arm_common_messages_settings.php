@@ -19,7 +19,7 @@ if (!empty($common_messages)) {
 						<label for="arm_user_not_exist"><?php _e('Incorrect Username/Email', 'ARMember'); ?></label>
 						
 					</th>
-					<td class="arm-form-table-content" style="vertical-align: top;">
+					<td class="arm-form-table-content arm_vertical_align_top" >
 						<input type="text" name="arm_common_message_settings[arm_user_not_exist]" id="arm_user_not_exist" value="<?php echo (!empty($common_messages['arm_user_not_exist'])) ? $common_messages['arm_user_not_exist'] : ''; ?>"/>
 					</td>
 				</tr>
@@ -472,6 +472,12 @@ if (!empty($common_messages)) {
 						<input type="text" name="arm_common_message_settings[arm_profile_member_since]" id="arm_profile_member_since" value="<?php echo (isset($common_messages['arm_profile_member_since'])) ? $common_messages['arm_profile_member_since'] : __('Member Since', 'ARMember'); ?>"/>
 					</td>
 				</tr>
+				<tr class="form-field">
+					<th class="arm-form-table-label"><label for="arm_profile_member_personal_detail"><?php _e('Personal Details', 'ARMember'); ?></label></th>
+					<td class="arm-form-table-content">
+						<input type="text" name="arm_common_message_settings[arm_profile_member_personal_detail]" id="arm_profile_member_personal_detail" value="<?php echo (isset($common_messages['arm_profile_member_personal_detail'])) ? $common_messages['arm_profile_member_personal_detail'] : __('Personal Details', 'ARMember'); ?>"/>
+					</td>
+				</tr>
                 <tr class="form-field">
 					<th class="arm-form-table-label"><label for="arm_profile_view_profile"><?php _e('View Profile', 'ARMember'); ?></label></th>
 					<td class="arm-form-table-content">
@@ -530,7 +536,7 @@ if (!empty($common_messages)) {
                        
 			<?php do_action('arm_after_common_messages_settings_html', $common_messages);?>
 			<div class="arm_submit_btn_container">
-				<button class="arm_save_btn arm_common_message_settings_btn" type="submit" id="arm_common_message_settings_btn" name="arm_common_message_settings_btn"><?php _e('Save', 'ARMember');?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" style="position:relative;top:8px;display:none;" width="24" height="24" />
+				<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" class="arm_submit_btn_loader" id="arm_loader_img" style="display:none;" width="24" height="24" />&nbsp;<button class="arm_save_btn arm_common_message_settings_btn" type="submit" id="arm_common_message_settings_btn" name="arm_common_message_settings_btn"><?php _e('Save', 'ARMember');?></button>
 			</div>
 			<?php wp_nonce_field( 'arm_wp_nonce' );?>
 		</form>

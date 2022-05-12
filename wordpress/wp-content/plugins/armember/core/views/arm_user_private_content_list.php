@@ -29,14 +29,14 @@ function show_grid_loader() {
 
 function arm_load_private_content_list_grid(is_filtered){
 
-	var __ARM_Showing = '<?php echo addslashes(esc_html__('Showing','ARMember')); ?>';
-    var __ARM_Showing_empty = '<?php echo addslashes(esc_html__('Showing 0 to 0 of 0 entries','ARMember')); ?>';
-    var __ARM_to = '<?php echo addslashes(esc_html__('to','ARMember')); ?>';
-    var __ARM_of = '<?php echo addslashes(esc_html__('of','ARMember')); ?>';
-    var __ARM_Entries = ' <?php _e('entries','ARMember'); ?>';
-    var __ARM_Show = '<?php echo addslashes(esc_html__('Show','ARMember')); ?> ';
-    var __ARM_NO_FOUND = '<?php echo addslashes(esc_html__('No user private content found.','ARMember')); ?>';
-    var __ARM_NO_MATCHING = '<?php echo addslashes(esc_html__('No matching records found.','ARMember')); ?>';
+	var __ARM_Showing = '<?php echo addslashes(__('Showing','ARMember')); ?>';
+    var __ARM_Showing_empty = '<?php echo addslashes(__('Showing 0 to 0 of 0 entries','ARMember')); ?>';
+    var __ARM_to = '<?php echo addslashes(__('to','ARMember')); ?>';
+    var __ARM_of = '<?php echo addslashes(__('of','ARMember')); ?>';
+    var __ARM_Entries = ' <?php echo addslashes(__('entries','ARMember')); ?>';
+    var __ARM_Show = '<?php echo addslashes(__('Show','ARMember')); ?> ';
+    var __ARM_NO_FOUND = '<?php echo addslashes(__('No user private content found.','ARMember')); ?>';
+    var __ARM_NO_MATCHING = '<?php echo addslashes(__('No matching records found.','ARMember')); ?>';
 
 	var ajax_url = '<?php echo admin_url("admin-ajax.php"); ?>';
 	var table = jQuery('#armember_datatable').dataTable({
@@ -51,6 +51,10 @@ function arm_load_private_content_list_grid(is_filtered){
             "sLengthMenu": __ARM_Show + "_MENU_" + __ARM_Entries,
             "sEmptyTable": __ARM_NO_FOUND,
             "sZeroRecords": __ARM_NO_MATCHING,
+        },
+        "language":{
+            "searchPlaceholder": "Search",
+            "search":"",
         },
         "bProcessing": false,
         "bServerSide": true,
@@ -141,27 +145,27 @@ $user_meta_table = $wpdb->usermeta;
 
 ?>
 <div class="wrap arm_page arm_private_content_main_wrapper">
-	<div class="content_wrapper arm_private_content_wrapper" id="content_wrapper" style="position: relative;">
+	<?php
+    if ($setact != 1) {
+        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
+        ?>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+    <?php } ?>
+	<div class="content_wrapper arm_private_content_wrapper arm_position_relative" id="content_wrapper" >
 		<div class="arm_loading_grid" style="display: none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/loader.gif" alt="Loading.."></div>
 		<div class="page_title">
 			<?php esc_html_e('Manage Userwise Private Content','ARMember');?>
-			<?php
-		    if ($setact != 1) {
-		        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
-	        ?>
-	        <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
-    		<?php } ?>
 			
-			<div class="armclear"></div>
-		</div>
-
 		<div class="arm_add_new_item_box">
 			<a class="greensavebtn" href="<?php echo admin_url('admin.php?page='.$arm_slugs->private_content.'&action=add_private_content');?>"><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php esc_html_e('Add Private Content', 'ARMember') ?></span></a>
 		</div>		
+			<div class="armclear"></div>
+		</div>
+
 
 		<div class="armclear"></div>
 
-		<div class="arm_private_content_list" style="position:relative;top:10px;">
+		<div class="arm_private_content_list arm_position_relative" style="top:10px;">
 			<form method="GET" id="subscription_plans_list_form" class="data_grid_list" onsubmit="return apply_bulk_action_subscription_plans_list();">
 				<input type="hidden" name="page" value="<?php echo $arm_slugs->private_content;?>" />
 				<input type="hidden" name="armaction" value="list" />
@@ -170,9 +174,9 @@ $user_meta_table = $wpdb->usermeta;
 					<table cellpadding="0" cellspacing="0" border="0" class="display arm_on_display" id="armember_datatable">
 						<thead>
 							<tr>
-								<th style="min-width:50px"><?php esc_html_e('User ID','ARMember');?></th>
-								<th style="min-width:150px"><?php esc_html_e('Username','ARMember');?></th>
-								<th style="max-width:140px"><?php esc_html_e('Enable / Disable Private Content','ARMember');?></th>
+								<th class="arm_min_width_50 arm_text_align_center"><?php esc_html_e('User ID','ARMember');?></th>
+								<th class="arm_min_width_150 arm_text_align_center"><?php esc_html_e('Username','ARMember');?></th>
+								<th class="arm_max_width_140 arm_text_align_center"><?php esc_html_e('Enable / Disable Private Content','ARMember');?></th>
 								
 								<th class="armGridActionTD"></th>
 							</tr>
@@ -220,7 +224,7 @@ $user_meta_table = $wpdb->usermeta;
 			<div class="armclear"></div>
 		</div>
 
-		<form method="post" name="default_private_content_form" id="default_private_content_form">
+		<form method="post" name="default_private_content_form" id="default_private_content_form" class="arm_padding_left_45">
 			<table cellpadding="0" cellspacing="0" border="0" class="display arm_on_display" id="armember_private_content_default">
 				<tr>
 					<th>
@@ -249,7 +253,7 @@ $user_meta_table = $wpdb->usermeta;
 					<td>
 						<div class="arm_membership_setup_shortcode_box">
 	                        <span class="arm_shortcode_label"><?php esc_html_e("Userwise Private Content Shortcode :", "ARMember"); ?></span>
-	                        <span class="arm_form_shortcode arm_shortcode_text arm_form_shortcode_box">
+	                        <span class="arm_form_shortcode arm_shortcode_text arm_form_shortcode_box arm_margin_bottom_20">
 	                            <span class="armCopyText" >[arm_user_private_content]</span>
 	                            <span class="arm_click_to_copy_text" data-code="[arm_user_private_content]"><?php esc_html_e("Click to Copy", "ARMember"); ?></span>
 	                            <span class="arm_copied_text">
@@ -263,7 +267,9 @@ $user_meta_table = $wpdb->usermeta;
 				<tr>
 					<td></td>
 					<td>
-						<button class="arm_save_btn" value="" id="arm_default_private_content_save" name="arm_default_private_content_save" type="submit"><?php esc_html_e('Save', 'ARMember') ?></button>
+						<div class="arm_submit_btn_container">
+							<button class="arm_save_btn" value="" id="arm_default_private_content_save" name="arm_default_private_content_save" type="submit"><?php esc_html_e('Save', 'ARMember') ?></button>
+						</div>
 					</td>
 				</tr>
 			</table>
@@ -272,3 +278,6 @@ $user_meta_table = $wpdb->usermeta;
 </div>
 
 <div class="arm_member_view_detail_container"></div>
+<?php
+	echo $ARMember->arm_get_need_help_html_content('users-private-content-list');
+?>

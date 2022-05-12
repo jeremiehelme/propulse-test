@@ -11,24 +11,26 @@ if (!class_exists('ARM_drip_rules')) {
             $this->isDripFeature = false;
             if (get_option('arm_is_drip_content_feature') == '1') {
                 $this->isDripFeature = true;
-                add_shortcode('arm_drip_content', array(&$this, 'arm_drip_content_shortcode_func'));
+                add_shortcode('arm_drip_content', array($this, 'arm_drip_content_shortcode_func'));
+		add_filter('arm_email_notification_shortcodes_outside', array($this, 'arm_email_notification_shortcodes_outside_func'));
+            	add_filter('arm_admin_email_notification_shortcodes_outside', array($this, 'arm_admin_email_notification_shortcodes_outside_func'));
             }
-            add_action('wp_ajax_arm_add_drip_rule', array(&$this, 'arm_add_drip_rule'));
-            add_action('wp_ajax_arm_update_drip_rule', array(&$this, 'arm_update_drip_rule'));
-            add_action('wp_ajax_arm_update_drip_rule_status', array(&$this, 'arm_update_drip_rule_status'));
-            add_action('wp_ajax_arm_delete_single_drip_rule', array(&$this, 'arm_delete_single_drip_rule'));
-            add_action('wp_ajax_arm_delete_bulk_drip_rules', array(&$this, 'arm_delete_bulk_drip_rules'));
-            add_action('wp_ajax_arm_edit_drip_rule_data', array(&$this, 'arm_edit_drip_rule_data'));
-            add_action('wp_ajax_arm_get_drip_rule_items', array(&$this, 'arm_get_drip_rule_items'));
-            add_action('wp_ajax_arm_get_drip_rule_item_options', array(&$this, 'arm_get_drip_rule_item_options'));
-            add_action('wp_ajax_arm_filter_drip_rules_list', array(&$this, 'arm_filter_drip_rules_list'));
+            add_action('wp_ajax_arm_add_drip_rule', array($this, 'arm_add_drip_rule'));
+            add_action('wp_ajax_arm_update_drip_rule', array($this, 'arm_update_drip_rule'));
+            add_action('wp_ajax_arm_update_drip_rule_status', array($this, 'arm_update_drip_rule_status'));
+            add_action('wp_ajax_arm_delete_single_drip_rule', array($this, 'arm_delete_single_drip_rule'));
+            add_action('wp_ajax_arm_delete_bulk_drip_rules', array($this, 'arm_delete_bulk_drip_rules'));
+            add_action('wp_ajax_arm_edit_drip_rule_data', array($this, 'arm_edit_drip_rule_data'));
+            add_action('wp_ajax_arm_get_drip_rule_items', array($this, 'arm_get_drip_rule_items'));
+            add_action('wp_ajax_arm_get_drip_rule_item_options', array($this, 'arm_get_drip_rule_item_options'));
+            add_action('wp_ajax_arm_filter_drip_rules_list', array($this, 'arm_filter_drip_rules_list'));
 
-            add_filter('arm_is_allow_access', array(&$this, 'arm_filter_drip_access'), 20, 2);
-            //add_action('deleted_post', array(&$this, 'arm_delete_post_drip_rules'), 20);
+            add_filter('arm_is_allow_access', array($this, 'arm_filter_drip_access'), 20, 2);
+            //add_action('deleted_post', array($this, 'arm_delete_post_drip_rules'), 20);
 
-            add_filter('arm_notification_add_message_types', array(&$this, 'arm_notification_add_message_types_func'));
+            add_filter('arm_notification_add_message_types', array($this, 'arm_notification_add_message_types_func'));
 
-            add_action('wp_ajax_arm_get_drip_rule_members_data', array(&$this, 'arm_get_drip_rule_members_data_func'));
+            add_action('wp_ajax_arm_get_drip_rule_members_data', array($this, 'arm_get_drip_rule_members_data_func'));
         }
 
         function arm_notification_add_message_types_func($message_types = array()) {
@@ -38,9 +40,29 @@ if (!class_exists('ARM_drip_rules')) {
             return $message_types;
         }
 
+        function arm_email_notification_shortcodes_outside_func($arm_other_custom_shortcode_arr = array())
+        {
+            $arm_other_custom_shortcode_arr['dripped_content_url']['title_on_hover'] = __("To Display dripped URL for Member.", 'ARMember');
+            $arm_other_custom_shortcode_arr['dripped_content_url']['shortcode'] = "{ARM_MESSAGE_DRIP_CONTENT_URL}";
+            $arm_other_custom_shortcode_arr['dripped_content_url']['shortcode_label'] = __("Member Dripped Content URL", 'ARMember');
+	    $arm_other_custom_shortcode_arr['dripped_content_url']['shortcode_class'] = "arm_before_dripped_content_available_url";
+            
+            return $arm_other_custom_shortcode_arr;
+        }
+
+        function arm_admin_email_notification_shortcodes_outside_func($arm_other_custom_shortcode_arr = array())
+        {
+            $arm_other_custom_shortcode_arr['admin_dripped_content_url']['title_on_hover'] = __("To Display dripped URL for Member.", 'ARMember');
+            $arm_other_custom_shortcode_arr['admin_dripped_content_url']['shortcode'] = "{ARM_MESSAGE_DRIP_CONTENT_URL}";
+            $arm_other_custom_shortcode_arr['admin_dripped_content_url']['shortcode_label'] = __("Member Dripped Content URL", 'ARMember');
+            $arm_other_custom_shortcode_arr['admin_dripped_content_url']['shortcode_class'] = "arm_before_dripped_content_available_url";
+
+            return $arm_other_custom_shortcode_arr;
+        }
+
         function arm_filter_drip_access($allowed = true, $extraVars = array()) {
             global $wp, $wpdb, $ARMember, $arm_slugs, $arm_global_settings, $arm_access_rules;
-            if ($allowed) {
+            if (!$allowed) {
 
 
                 if ($this->isDripFeature && is_user_logged_in()) {
@@ -324,15 +346,6 @@ if (!class_exists('ARM_drip_rules')) {
                             }
                             break;
                         case 'dates':
-                            $headers = getallheaders();
-                            $isWebinarWebsite = $headers['PRO_CONTRACT_WEBINAR_WEBSITE'] ?? getenv('PRO_CONTRACT_WEBINAR_WEBSITE');
-                            if (intval($isWebinarWebsite) === 1) {
-                                $activity_content_serialized = $wpdb->get_var("SELECT `arm_content` FROM `" . $ARMember->tbl_arm_activity . "` WHERE `arm_type`='membership' AND `arm_action`= 'new_subscription' AND `arm_user_id`='$user_id' AND `arm_item_id`='$plan_id' ORDER BY `arm_activity_id` DESC");
-                                $activity_content = maybe_unserialize($activity_content_serialized);
-                                $startPlanDate = $activity_content['start'] ?? time();
-                                $isDripped = ($startPlanDate > strtotime($rule_options['from_date']));
-                                break;
-                            }
                             $rule_from_date = isset($rule_options['from_date']) ? $rule_options['from_date'] : '';
                             $rule_to_date = isset($rule_options['to_date']) ? $rule_options['to_date'] : '';
                             if (!empty($rule_from_date)) {
@@ -893,6 +906,7 @@ if (!class_exists('ARM_drip_rules')) {
                                     'user_email' => $um->user_email,
                                     'email_days' => $email_days,
                                     'plan_array' => $psarray,
+                                    'arm_item_id' => $post_id,
                                 );
                             }
                         }

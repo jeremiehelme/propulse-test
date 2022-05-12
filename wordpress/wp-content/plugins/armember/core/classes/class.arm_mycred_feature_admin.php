@@ -9,17 +9,17 @@ if (!class_exists('ARM_Admin_mycred_feature'))
             global $wpdb, $ARMember;
             $arm_admin_mycred_feature = get_option('arm_is_mycred_feature');
             $this->ismyCREDFeature = ($arm_admin_mycred_feature == '1') ? true : false;
-            add_action('mycred_deactivation',array(&$this, 'arm_mycred_deactivation'));
+            add_action('mycred_deactivation',array($this, 'arm_mycred_deactivation'));
 
             if($this->ismyCREDFeature == true) {
 
-                add_filter('arm_get_payment_gateways', array(&$this, 'arm_add_mycred_payment_gateways'));
-                add_filter('arm_get_payment_gateways_in_filters', array(&$this, 'arm_add_mycred_payment_gateways'));
-                add_filter('arm_filter_gateway_names', array(&$this, 'arm_filter_gateway_names_func'), 10);
-                add_filter('arm_allowed_payment_gateways', array(&$this, 'arm_payment_allowed_gateways'), 10, 3);
-                add_filter('arm_not_display_payment_mode_setup', array(&$this, 'arm_not_display_payment_mode_setup_func'), 10, 1);
-                add_action('arm_payment_gateway_validation_from_setup', array(&$this, 'arm_payment_gateway_form_submit_action_mycred'), 10, 4);
-                add_action('arm_payment_related_common_message', array(&$this, 'arm_payment_related_common_message_func'), 10, 1);
+                add_filter('arm_get_payment_gateways', array($this, 'arm_add_mycred_payment_gateways'));
+                add_filter('arm_get_payment_gateways_in_filters', array($this, 'arm_add_mycred_payment_gateways'));
+                add_filter('arm_filter_gateway_names', array($this, 'arm_filter_gateway_names_func'), 10);
+                add_filter('arm_allowed_payment_gateways', array($this, 'arm_payment_allowed_gateways'), 10, 3);
+                add_filter('arm_not_display_payment_mode_setup', array($this, 'arm_not_display_payment_mode_setup_func'), 10, 1);
+                add_action('arm_payment_gateway_validation_from_setup', array($this, 'arm_payment_gateway_form_submit_action_mycred'), 10, 4);
+                add_action('arm_payment_related_common_message', array($this, 'arm_payment_related_common_message_func'), 10, 1);
             }
         }
         function arm_mycred_deactivation()
@@ -345,7 +345,6 @@ if (!class_exists('ARM_Admin_mycred_feature'))
                         $mycred_response['arm_amount'] = $discount_amt;
                         $mycred_response['arm_currency'] = $currency;
                         $mycred_response['arm_coupon_code'] = $posted_data['arm_coupon_code'];
-                        $mycred_response['arm_response_text'] = '';
                         $mycred_response['arm_extra_vars'] = maybe_serialize($extraParam);
                         $mycred_response['arm_is_trial'] = $arm_is_trial;
                         $mycred_response['arm_created_date'] = current_time('mysql');
@@ -397,7 +396,6 @@ if (!class_exists('ARM_Admin_mycred_feature'))
                                     'arm_coupon_discount' => $arm_coupon_discount,
                                     'arm_coupon_discount_type' => $arm_coupon_discount_type,
                                     'arm_coupon_on_each_subscriptions' => $arm_coupon_on_each_subscriptions,
-                                    'arm_response_text' => (!empty($response)) ? maybe_serialize((array) $response) : '',
                                     'arm_created_date' => current_time('mysql'),
                                     'arm_display_log' => '1'
                                 );

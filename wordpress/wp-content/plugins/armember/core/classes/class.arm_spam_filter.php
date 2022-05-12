@@ -12,14 +12,14 @@ if (!class_exists('Spam_Filter'))
 		{
 			global $wp, $wpdb,$arm_global_settings;
 			
-			add_shortcode('armember_spam_filters', array(&$this, 'armember_spam_filters_func'));
+			add_shortcode('armember_spam_filters', array($this, 'armember_spam_filters_func'));
 
 			$all_global_settings = $arm_global_settings->arm_get_all_global_settings();
 			$general_settings = $all_global_settings['general_settings'];
 			$spam_protection = isset($general_settings['spam_protection']) ? $general_settings['spam_protection'] : '';
 			if(!empty($spam_protection)){
 
-				add_filter('armember_validate_spam_filter_fields', array(&$this, 'armember_check_spam_filter_fields'), 10, 2);
+				add_filter('armember_validate_spam_filter_fields', array($this, 'armember_check_spam_filter_fields'), 10, 2);
 			}	
 		}
 		function armember_check_spam_filter_fields($validate = true,$form_key = '')
@@ -38,7 +38,7 @@ if (!class_exists('Spam_Filter'))
 	            $ARMember->arm_debug_response_log('armember_check_spam_filter_fields',$arm_case_types,array(),$wpdb->last_query);
 	        }
 			/* Return false if form key not found */
-			if( $form_key == '' || !@array_key_exists($form_key,@$_SESSION['ARM_FILTER_INPUT']) ){
+			if( $form_key == '' || (!is_array($_SESSION['ARM_FILTER_INPUT']) || !@array_key_exists($form_key,@$_SESSION['ARM_FILTER_INPUT'])) ){
 				$is_form_key = false;
 			}
 			/* Get dynamic generated field */

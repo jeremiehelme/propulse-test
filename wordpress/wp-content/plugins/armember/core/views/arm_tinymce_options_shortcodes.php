@@ -106,11 +106,11 @@ if (is_rtl()) {
 										<td>
 											<label class="form_popup_type_radio">
 												<input type="radio" name="popup" value="false" class="arm_iradio arm_shortcode_form_popup_opt" checked="checked">
-												<?php _e('Internal', 'ARMember'); ?>
+												<span><?php _e('Internal', 'ARMember'); ?></span>
 											</label>
 											<label class="form_popup_type_radio">
 												<input type="radio" name="popup" value="true" class="arm_iradio arm_shortcode_form_popup_opt">
-												<?php _e('External popup window', 'ARMember'); ?>
+												<span><?php _e('External popup window', 'ARMember'); ?></span>
 											</label>
 											<div class="form_popup_options">
 												<div class="form_popup_options_row">
@@ -137,7 +137,7 @@ if (is_rtl()) {
 													<div>
 														<input type="hidden" id="arm_shortcode_form_overlay" name="overlay" value="0.6" />
 														<dl class="arm_selectbox column_level_dd">
-															<dt style="width: 80px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+															<dt class="arm_width_80"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 															<dd>
 																<ul data-id="arm_shortcode_form_overlay">
 																	<li data-label="0 (<?php _e('None', 'ARMember');?>)" data-value="0">0 (<?php _e('None', 'ARMember');?>)</li>
@@ -161,8 +161,8 @@ if (is_rtl()) {
 												</div>
 												<div class="form_popup_options_row">
                                                     <div class="arm_opt_title">
-                                                        <span class="arm_opt_title arm_shortcode_form_link_opts" style="vertical-align: top;"><?php _e('Link CSS', 'ARMember'); ?>: </span>
-                                                        <span class="arm_opt_title arm_shortcode_form_button_opts arm_hidden" style="vertical-align: top;"><?php _e('Button CSS', 'ARMember'); ?>: </span>
+                                                        <span class="arm_opt_title arm_shortcode_form_link_opts arm_vertical_align_top" ><?php _e('Link CSS', 'ARMember'); ?>: </span>
+                                                        <span class="arm_opt_title arm_shortcode_form_button_opts arm_vertical_align_top arm_hidden " ><?php _e('Button CSS', 'ARMember'); ?>: </span>
                                                     </div>
                                                     <div class="popup_arm_opt_input_div">
                                                         <textarea class="arm_popup_textarea" name="link_css" rows="3"></textarea><br/>
@@ -171,8 +171,8 @@ if (is_rtl()) {
 												</div>
 												<div class="form_popup_options_row">
                                                     <div class="arm_opt_title">
-                                                        <span class="arm_opt_title arm_shortcode_form_link_opts" style="vertical-align: top;"><?php _e('Link Hover CSS', 'ARMember'); ?>: </span>
-                                                        <span class="arm_opt_title arm_shortcode_form_button_opts arm_hidden" style="vertical-align: top;"><?php _e('Button Hover CSS', 'ARMember'); ?>: </span>
+                                                        <span class="arm_opt_title arm_shortcode_form_link_opts arm_vertical_align_top" ><?php _e('Link Hover CSS', 'ARMember'); ?>: </span>
+                                                        <span class="arm_opt_title arm_shortcode_form_button_opts arm_vertical_align_top arm_hidden " ><?php _e('Button Hover CSS', 'ARMember'); ?>: </span>
                                                     </div>
                                                     <div class="popup_arm_opt_input_div">
                                                         <textarea class="arm_popup_textarea" name="link_hover_css" rows="3"></textarea><br/>
@@ -187,17 +187,17 @@ if (is_rtl()) {
 										<td>
 											<label class="form_popup_type_radio">
 												<input type="radio" name="form_position" value="left" class="arm_iradio" />
-												<?php _e('Left','ARMember'); ?>
+												<span><?php _e('Left','ARMember'); ?></span>
 											</label>
 											<label class="form_popup_type_radio">
 												<input type="radio" name="form_position" value="center" class="arm_iradio" checked="checked" />
-												<?php _e('Center','ARMember'); ?>
+												<span><?php _e('Center','ARMember'); ?></span>
 											</label>
 											<label class="form_popup_type_radio">
 												<input type="radio" name="form_position" value="right" class="arm_iradio" />
-												<?php _e('Right','ARMember'); ?>
+												<span><?php _e('Right','ARMember'); ?></span>
 											</label>
-											<div style="margin-left: 10px;">(<?php _e('With Respect to its container','ARMember') ?>)</div>
+											<div class="arm_margin_left_10">(<?php _e('With Respect to its container','ARMember') ?>)</div>
 										</td>
 									</tr>
                                                                         
@@ -270,17 +270,17 @@ if (is_rtl()) {
 										<td>
 											<label class="form_popup_type_radio">
 												<input type="radio" name="form_position" value="left" class="arm_iradio arm_shortcode_form_popup_opt" />
-												<?php _e('Left','ARMember'); ?>
+												<span><?php _e('Left','ARMember'); ?></span>
 											</label>
 											<label class="form_popup_type_radio">
 												<input type="radio" name="form_position" value="center" class="arm_iradio arm_shortcode_form_popup_opt" checked="checked" />
-												<?php _e('Center','ARMember'); ?>
+												<span><?php _e('Center','ARMember'); ?></span>
 											</label>
 											<label class="form_popup_type_radio">
 												<input type="radio" name="form_position" value="right" class="arm_iradio arm_shortcode_form_popup_opt" />
-												<?php _e('Right','ARMember'); ?>
+												<span><?php _e('Right','ARMember'); ?></span>
 											</label>
-											<div style="margin-left: 10px;">(<?php _e('With Respect to its container','ARMember') ?>)</div>
+											<div class="arm_margin_left_10">(<?php _e('With Respect to its container','ARMember') ?>)</div>
 										</td>
 									</tr>
 								</table>
@@ -331,11 +331,11 @@ if (is_rtl()) {
 										<td>
 											<label class="setup_popup_type_radio">
 												<input type="radio" name="popup" value="false" class="arm_iradio arm_shortcode_setup_popup_opt" checked="checked">
-												<?php _e('Internal', 'ARMember'); ?>
+												<span><?php _e('Internal', 'ARMember'); ?></span>
 											</label>
 											<label class="setup_popup_type_radio">
 												<input type="radio" name="popup" value="true" class="arm_iradio arm_shortcode_setup_popup_opt">
-												<?php _e('External popup window', 'ARMember'); ?>
+												<span><?php _e('External popup window', 'ARMember'); ?></span>
 											</label>
 											<div class="setup_popup_options">
 												<div class="setup_popup_options_row">
@@ -361,7 +361,7 @@ if (is_rtl()) {
 													<div>
 														<input type="hidden" id="arm_shortcode_form_overlay_setup" name="overlay" value="0.6" />
 														<dl class="arm_selectbox column_level_dd">
-															<dt style="width: 80px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+															<dt class="arm_width_80"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 															<dd>
 																<ul data-id="arm_shortcode_form_overlay_setup">
 																	<li data-label="0 (<?php _e('None', 'ARMember');?>)" data-value="0">0 (<?php _e('None', 'ARMember');?>)</li>
@@ -385,8 +385,8 @@ if (is_rtl()) {
 												</div>
 												<div class="setup_popup_options_row">
                                                     <div class="arm_opt_title">
-                                                        <span class="arm_opt_title arm_shortcode_setup_link_opts" style="vertical-align: top;"><?php _e('Link CSS', 'ARMember'); ?>: </span>
-                                                        <span class="arm_opt_title arm_shortcode_setup_button_opts arm_hidden" style="vertical-align: top;"><?php _e('Button CSS', 'ARMember'); ?>: </span>
+                                                        <span class="arm_opt_title arm_shortcode_setup_link_opts arm_vertical_align_top" ><?php _e('Link CSS', 'ARMember'); ?>: </span>
+                                                        <span class="arm_opt_title arm_shortcode_setup_button_opts arm_vertical_align_top arm_hidden" ><?php _e('Button CSS', 'ARMember'); ?>: </span>
                                                     </div>
                                                     <div class="popup_arm_opt_input_div">
                                                         <textarea class="arm_popup_textarea" name="link_css" rows="3"></textarea><br/>
@@ -395,8 +395,8 @@ if (is_rtl()) {
 												</div>
 												<div class="setup_popup_options_row">
                                                     <div class="arm_opt_title">
-                                                        <span class="arm_opt_title arm_shortcode_setup_link_opts" style="vertical-align: top;"><?php _e('Link Hover CSS', 'ARMember'); ?>: </span>
-                                                        <span class="arm_opt_title arm_shortcode_setup_button_opts arm_hidden" style="vertical-align: top;"><?php _e('Button Hover CSS', 'ARMember'); ?>: </span>
+                                                        <span class="arm_opt_title arm_shortcode_setup_link_opts arm_vertical_align_top" ><?php _e('Link Hover CSS', 'ARMember'); ?>: </span>
+                                                        <span class="arm_opt_title arm_shortcode_setup_button_opts arm_hidden arm_vertical_align_top" ><?php _e('Button Hover CSS', 'ARMember'); ?>: </span>
                                                     </div>
                                                     <div class="popup_arm_opt_input_div">
                                                         <textarea class="arm_popup_textarea" name="link_hover_css" rows="3"></textarea><br/>
@@ -407,11 +407,11 @@ if (is_rtl()) {
 										</td>
 									</tr>
                                                                         <tr class="arm_shortcode_setup_main_opt">
-                                                                            <th style="color: red;"><?php _e('Important Notes', 'ARMember');?></th>
+                                                                            <th class="arm_color_red"><?php _e('Important Notes', 'ARMember');?></th>
                                                                             <td>
-                                                                                <div style="padding-top:5px;"><?php _e('Add hide_plans="1" parameter to hide plan selection area.', 'ARMember'); ?></div>
-                                                                                <div style="padding-top:5px;"><?php _e('Add subscription_plan="PLAN_ID" parameter to keep plan having PLAN_ID selected.', 'ARMember'); ?></div>
-                                                                                <div style="padding-top:5px;"><?php _e('Add payment_duration="ORDER_ID" parameter to keep plan having ORDER_ID selected.This argument will work only subscription_plan argument is passed.', 'ARMember'); ?></div>
+                                                                                <div class="arm_padding_top_5"><?php _e('Add hide_plans="1" parameter to hide plan selection area.', 'ARMember'); ?></div>
+                                                                                <div class="arm_padding_top_5"><?php _e('Add subscription_plan="PLAN_ID" parameter to keep plan having PLAN_ID selected.', 'ARMember'); ?></div>
+                                                                                <div class="arm_padding_top_5"><?php _e('Add payment_duration="ORDER_ID" parameter to keep plan having ORDER_ID selected.This argument will work only subscription_plan argument is passed.', 'ARMember'); ?></div>
                                                                             </td>
 									</tr>
                                                                         
@@ -641,7 +641,6 @@ if (is_rtl()) {
                                             <?php endif;?>
                                         </td>
                                     </tr>
-                                    <?php echo $default_network_shown; ?>
                                     <tr class="arm_social_login_gp_icons <?php
 				    					if ($default_network_shown != 'google') {
 										echo 'arm_hidden';
@@ -667,6 +666,37 @@ if (is_rtl()) {
                             }
                         ?> 
                                                     <img src="<?php echo ($url_icon);?>" alt="google" class="arm_social_login_icon_image"/>
+                                                </div>
+                                            <?php endforeach;?>
+                                            <?php endif;?>
+                                        </td>
+                                    </tr>
+
+                                    <tr class="arm_social_login_tu_icons <?php
+								    if ($default_network_shown != 'tumblr') {
+									echo 'arm_hidden';
+								    }
+								    ?>">
+                                        <th><?php _e('Network Icon', 'ARMember'); ?></th>
+                                        <td>
+                                            <?php
+                                            $tu_icons = $arm_social_feature->arm_get_social_network_icons('tumblr');
+                                            $i = 0;
+                                            ?>
+                                            <?php if(!empty($tu_icons)):?>
+                                            <?php foreach($tu_icons as $icon => $url): $i++;?>
+                                                <div class="arm_social_login_icon_container" id="arm_social_login_tu<?php echo $i; ?>">
+                                                    <input type="radio" class="arm_iradio" name="icon" value="<?php echo $url;?>" id="tu_icon<?php echo $i; ?>" <?php if ($i == 1 && $default_network_shown == 'tumblr') { ?> checked="checked" <?php } ?>>
+                                                    <?php
+                        if(file_exists(strstr($url, "//"))){
+                                $url_icon =strstr($url, "//");
+                            }else if(file_exists($url)){
+                               $url_icon = $url;
+                            }else{
+                                 $url_icon = $url;
+                            }
+                        ?> 
+                                                    <img src="<?php echo ($url_icon);?>" alt="Tumblr" class="arm_social_login_icon_image"/>
                                                 </div>
                                             <?php endforeach;?>
                                             <?php endif;?>
@@ -755,7 +785,7 @@ if (is_rtl()) {
 										<th>
 											<span class="arm_shortcode_pay_per_post_link_opts"><?php _e('Redirect URL (Optional)', 'ARMember'); ?></span>
 										</th>
-										<td><input type="text" name="redirect_url"><br /><span style="color: #f00;"><?php _e("If you don't add URL at above textbox then buynow page will be set from ARMember -> General Settings -> Page Setup page.", "ARMember"); ?></span></td>
+										<td><input type="text" name="redirect_url"><br /><span class="arm_color_red"><?php _e("If you don't add URL at above textbox then buynow page will be set from ARMember -> General Settings -> Page Setup page.", "ARMember"); ?></span></td>
 
 									</tr>
 									<tr>
@@ -782,7 +812,7 @@ if (is_rtl()) {
 									</tr>
 									<tr>
 										<th><?php _e('Success Redirect URL (Optional)', 'ARMember'); ?></th>
-										<td><input type="text" name="success_url"><br /><span style="color: #f00;"><?php _e("If you don't add URL at above textbox then after purchase paid post, page will be redirected to the URL as set at ARMember -> General Settings -> Redirection Rules page.", "ARMember"); ?></span></td>
+										<td><input type="text" name="success_url"><br /><span class="arm_color_red"><?php _e("If you don't add URL at above textbox then after purchase paid post, page will be redirected to the URL as set at ARMember -> General Settings -> Redirection Rules page.", "ARMember"); ?></span></td>
 									</tr>
 									<tr>
 										<th>
@@ -993,11 +1023,11 @@ if (is_rtl()) {
                                         <td>
                                             <label class="view_invoice_radio">
                                                 <input type="radio" name="display_invoice_button" value="false" class="arm_iradio arm_shortcode_subscription_opt"  />
-                                                <?php _e('No', 'ARMember'); ?>
+                                                <span><?php _e('No', 'ARMember'); ?></span>
                                             </label>
                                             <label class="view_invoice_radio">
                                                 <input type="radio" name="display_invoice_button" value="true" class="arm_iradio arm_shortcode_subscription_opt" checked="checked" />
-                                                <?php _e('Yes','ARMember'); ?>
+                                                <span><?php _e('Yes','ARMember'); ?></span>
                                             </label>
                                         </td>
                                     </tr>
@@ -1219,11 +1249,11 @@ if (is_rtl()) {
                                         <td>
                                             <label class="renew_subscription_radio">
                                                 <input type="radio" name="display_renew_button" value="false" class="arm_iradio arm_shortcode_subscription_opt" checked="checked" />
-                                                <?php _e('No', 'ARMember'); ?>
+                                                <span><?php _e('No', 'ARMember'); ?></span>
                                             </label>
                                             <label class="renew_subscription_radio">
                                                 <input type="radio" name="display_renew_button" value="true" class="arm_iradio arm_shortcode_subscription_opt"  />
-                                                <?php _e('Yes','ARMember'); ?>
+                                                <span><?php _e('Yes','ARMember'); ?></span>
                                             </label>
                                         </td>
                                     </tr>
@@ -1259,11 +1289,11 @@ if (is_rtl()) {
                                         <td>
                                             <label class="cancel_subscription_radio">
                                                 <input type="radio" name="display_cancel_button" value="false" class="arm_iradio arm_shortcode_subscription_opt" checked="checked"/>
-                                                <?php _e('No', 'ARMember'); ?>
+                                                <span><?php _e('No', 'ARMember'); ?></span>
                                             </label>
                                             <label class="cancel_subscription_radio">
                                                 <input type="radio" name="display_cancel_button" value="true" class="arm_iradio arm_shortcode_subscription_opt" />
-                                                <?php _e('Yes','ARMember'); ?>
+                                                <span><?php _e('Yes','ARMember'); ?></span>
                                             </label>
                                         </td>
                                     </tr>
@@ -1297,11 +1327,11 @@ if (is_rtl()) {
                                         <td>
                                             <label class="update_card_subscription_radio">
                                                 <input type="radio" name="display_update_card_button" value="false" class="arm_iradio arm_shortcode_subscription_opt" checked="checked" />
-                                                <?php _e('No', 'ARMember'); ?>
+                                                <span><?php _e('No', 'ARMember'); ?></span>
                                             </label>
                                             <label class="update_card_subscription_radio">
                                                 <input type="radio" name="display_update_card_button" value="true" class="arm_iradio arm_shortcode_subscription_opt"  />
-                                                <?php _e('Yes','ARMember'); ?>
+                                                <span><?php _e('Yes','ARMember'); ?></span>
                                             </label>
                                         </td>
                                     </tr>
@@ -1530,7 +1560,7 @@ if (is_rtl()) {
 										<th><?php _e('Select Membership Plan','ARMember'); ?></th>
 										<td>
 											
-                                                                                    <select name="arm_conditional_redirection_plans" class="arm_conditional_redirection_plans_select arm_chosen_selectbox" multiple data-placeholder="<?php _e('Select Plans', 'ARMember');?>" tabindex="-1" style="min-width: 300px;">
+                                                                                    <select name="arm_conditional_redirection_plans" class="arm_conditional_redirection_plans_select arm_chosen_selectbox arm_min_width_300" multiple data-placeholder="<?php _e('Select Plans', 'ARMember');?>" tabindex="-1" >
                                                                                             <?php 
                                                                                             if(!empty($all_plans))
                                                                                             {
@@ -1578,7 +1608,7 @@ if (is_rtl()) {
 										<th><?php _e('Select User Role','ARMember'); ?></th>
 										<td>
 											
-                                                                                    <select name="arm_conditional_redirection_by_user_role_roles" class="arm_conditional_redirection_by_user_role_roles_select arm_chosen_selectbox" multiple data-placeholder="<?php _e('Select Roles', 'ARMember');?>" tabindex="-1" style="min-width: 300px;">
+                                                                                    <select name="arm_conditional_redirection_by_user_role_roles" class="arm_conditional_redirection_by_user_role_roles_select arm_chosen_selectbox arm_min_width_300" multiple data-placeholder="<?php _e('Select Roles', 'ARMember');?>" tabindex="-1" >
                                                                                             <?php 
 						if (!empty($all_roles)) {
                                                                                                     foreach($all_roles as $role_key => $role_name) {
@@ -1746,11 +1776,11 @@ if (is_rtl()) {
                                         <td>
                                             <label class="renew_subscription_radio">
                                                 <input type="radio" name="display_renew_button" value="false" class="arm_iradio arm_shortcode_subscription_opt" checked="checked" />
-                                                <?php _e('No', 'ARMember'); ?>
+                                                <span><?php _e('No', 'ARMember'); ?></span>
                                             </label>
                                             <label class="renew_subscription_radio">
                                                 <input type="radio" name="display_renew_button" value="true" class="arm_iradio arm_shortcode_subscription_opt"  />
-                                                <?php _e('Yes','ARMember'); ?>
+                                                <span><?php _e('Yes','ARMember'); ?></span>
                                             </label>
                                         </td>
                                     </tr>
@@ -1786,11 +1816,11 @@ if (is_rtl()) {
                                         <td>
                                             <label class="cancel_subscription_radio">
                                                 <input type="radio" name="display_cancel_button" value="false" class="arm_iradio arm_shortcode_subscription_opt" checked="checked"/>
-                                                <?php _e('No', 'ARMember'); ?>
+                                                <span><?php _e('No', 'ARMember'); ?></span>
                                             </label>
                                             <label class="cancel_subscription_radio">
                                                 <input type="radio" name="display_cancel_button" value="true" class="arm_iradio arm_shortcode_subscription_opt" />
-                                                <?php _e('Yes','ARMember'); ?>
+                                                <span><?php _e('Yes','ARMember'); ?></span>
                                             </label>
                                         </td>
                                     </tr>
@@ -1824,11 +1854,11 @@ if (is_rtl()) {
                                         <td>
                                             <label class="update_card_subscription_radio">
                                                 <input type="radio" name="display_update_card_button" value="false" class="arm_iradio arm_shortcode_subscription_opt" checked="checked" />
-                                                <?php _e('No', 'ARMember'); ?>
+                                                <span><?php _e('No', 'ARMember'); ?></span>
                                             </label>
                                             <label class="update_card_subscription_radio">
                                                 <input type="radio" name="display_update_card_button" value="true" class="arm_iradio arm_shortcode_subscription_opt"  />
-                                                <?php _e('Yes','ARMember'); ?>
+                                                <span><?php _e('Yes','ARMember'); ?></span>
                                             </label>
                                         </td>
                                     </tr>
@@ -1967,11 +1997,11 @@ if (is_rtl()) {
                                         <td>
                                             <label class="view_invoice_radio">
                                                 <input type="radio" name="display_invoice_button" value="false" class="arm_iradio arm_shortcode_subscription_opt"  />
-                                                <?php _e('No', 'ARMember'); ?>
+                                                <span><?php _e('No', 'ARMember'); ?></span>
                                             </label>
                                             <label class="view_invoice_radio">
                                                 <input type="radio" name="display_invoice_button" value="true" class="arm_iradio arm_shortcode_subscription_opt" checked="checked" />
-                                                <?php _e('Yes','ARMember'); ?>
+                                                <span><?php _e('Yes','ARMember'); ?></span>
                                             </label>
                                         </td>
                                     </tr>
@@ -2026,6 +2056,8 @@ if (is_rtl()) {
 						</form>
 						<!-- end paid post transactions form-->
 						<?php endif; ?>
+
+
 
 						<?php do_action('add_others_section_select_option_tinymce'); ?>
 					</div>
@@ -2110,7 +2142,7 @@ if (is_rtl()) {
 					</div>
 					<div id="arm-drip-content" class="arm_tabgroup_content">
 						<form onsubmit="return false;" class="arm_shortcode_drip_rule_form">
-							<div class="arm_group_body" style='min-height:200px;'>
+							<div class="arm_group_body arm_min_height_200" >
 								<?php $customDripRules = $arm_drip_rules->arm_get_custom_drip_rules();?>
 								<?php if(!empty($customDripRules)):?>
 								<div class="arm_custom_drip_rule_field">
@@ -2118,9 +2150,9 @@ if (is_rtl()) {
 									<div class="arm_custom_drip_rule_list_wrapper">
 										<table class="arm_custom_drip_rule_list">
 											<tr>
-												<th style="width: 20px;"></th>
-												<th style="min-width: 230px;"><?php _e('Drip Type', 'ARMember');?></th>
-												<th style="min-width: 300px;"><?php _e('Plans', 'ARMember');?></th>
+												<th class="arm_width_20"></th>
+												<th class="arm_min_width_230"><?php _e('Drip Type', 'ARMember');?></th>
+												<th class="arm_min_width_300"><?php _e('Plans', 'ARMember');?></th>
 											</tr>
 											<?php $i=0;foreach($customDripRules as $rule):?>
 												<tr>
@@ -2374,6 +2406,7 @@ if (is_rtl()) {
                                                     <a class="arm_cancel_btn popup_close_btn" href="javascript:void(0)"><?php _e('Cancel', 'ARMember') ?></a>
                                             </div>
                                     </div>      
+
                                     <?php do_action('arm_shortcode_add_other_tab_buttons'); ?>                            
                             </div>
                             <!-- add conditional shortcode buttons -->
@@ -2415,8 +2448,8 @@ if (is_rtl()) {
 							<th><?php _e('Restriction Type', 'ARMember'); ?></th>
 							<td>
 								<input type="hidden" id="arm_restriction_type" name="type" value="hide" />
-								<dl class="arm_selectbox column_level_dd">
-									<dt style="width: 330px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+								<dl class="arm_selectbox column_level_dd arm_width_330">
+									<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 									<dd>
 										<ul data-id="arm_restriction_type">
 											<li data-label="<?php _e('Hide content only for','ARMember');?>" data-value="hide"><?php _e('Hide content only for', 'ARMember');?></li>
@@ -2429,7 +2462,7 @@ if (is_rtl()) {
 						<tr>
 							<th><?php _e('Target Users', 'ARMember'); ?></th>
 							<td>
-								<select name="plan" class="arm_chosen_selectbox" multiple data-placeholder="<?php _e('Everyone', 'ARMember');?>" tabindex="-1" style="width: 350px;">
+								<select name="plan" class="arm_chosen_selectbox arm_width_350" multiple data-placeholder="<?php _e('Everyone', 'ARMember');?>" tabindex="-1" >
 									<option value="registered"><?php _e('Loggedin Users', 'ARMember');?></option>
 									<option value="unregistered"><?php _e('Non Loggedin Users', 'ARMember');?></option>
 									<?php 

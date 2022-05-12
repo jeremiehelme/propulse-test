@@ -86,6 +86,7 @@ if (!is_dir($icon_upload_dir)) {
                                                                                         else if ($etool == 'getresponse') { $etoolName = __('GetResponse', 'ARMember'); }
                                                                                         else if ($etool == 'madmimi') { $etoolName = __('Mad Mimi', 'ARMember'); }
                                                                                         else if ($etool == 'mailerlite') { $etoolName = __('Mailer Lite', 'ARMember'); }
+                                                                                         else if ($etool == 'sendinblue') { $etoolName = __('Sendinblue', 'ARMember'); }
                                                                                         
                                                                                         echo '<li class="arm_optins_li '.stripslashes($etool).'" data-label="'.stripslashes($etoolName).'" data-value="'.$etool.'">'.stripslashes($etoolName).'</li>';
                                                                                         
@@ -244,8 +245,8 @@ if (!is_dir($icon_upload_dir)) {
 
                                                     <label for="arm_get_social_avatar" class="armswitch_label"></label>
                                                 </div>
-                                                <span class="arm_info_text" style="margin: 10px 0 0; display:block;">(<?php echo __('Get social avatar while authenticate with social connect buttons','ARMember'); ?>)</span>
-                                                <span class="arm_info_text" style="margin: 10px 0 0; display:block;">(<?php echo __('This options will only works if','ARMember').' <b>allow_url_fopen</b> '.__(' setting is ON in your server configuration','ARMember'); ?>)</span>
+                                                <span class="arm_info_text arm_social_info_text" >(<?php echo __('Get social avatar while authenticate with social connect buttons','ARMember'); ?>)</span>
+                                                <span class="arm_info_text arm_social_info_text" >(<?php echo __('This options will only works if','ARMember').' <b>allow_url_fopen</b> '.__(' setting is ON in your server configuration','ARMember'); ?>)</span>
                                             </td>
                                         </tr>
                                        
@@ -326,7 +327,7 @@ if (!is_dir($icon_upload_dir)) {
                         <tr class="form-field">
                             <th class="arm-form-table-label"><label><?php _e('Callback URL', 'ARMember'); ?></label></th>
                             <td class="arm-form-table-content">
-                                <span class="arm_info_text"><?php echo ARM_HOME_URL; ?>/</span><br><span style="font-size:13px;"><em><?php _e('Callback URLs that you should add in Twitter Application -> Settings.', 'ARMember'); ?></em></span>
+                                <span class="arm_info_text"><?php echo ARM_HOME_URL; ?>/</span><br><span class="arm_font_size_13"><em><?php _e('Callback URLs that you should add in Twitter Application -> Settings.', 'ARMember'); ?></em></span>
                             </td>
                         </tr>
 					</table>
@@ -368,7 +369,7 @@ if (!is_dir($icon_upload_dir)) {
                         <tr class="form-field">
                             <th class="arm-form-table-label"><label><?php _e('Callback URL', 'ARMember'); ?></label></th>
                             <td class="arm-form-table-content">
-                                <span class="arm_info_text"><?php echo ARM_HOME_URL; ?></span><br><span style="font-size:13px;"><em><?php _e('Callback URLs that you should add in LinkedIn Application', 'ARMember'); ?></em></span>
+                                <span class="arm_info_text"><?php echo ARM_HOME_URL; ?></span><br><span class="arm_font_size_13"><em><?php _e('Callback URLs that you should add in LinkedIn Application', 'ARMember'); ?></em></span>
                             </td>
                         </tr>
 					</table>
@@ -405,7 +406,7 @@ if (!is_dir($icon_upload_dir)) {
                         <tr class="form-field">
                             <th class="arm-form-table-label"><label for="arm_vk_app_secret"><?php _e('Authorised JavaScript origins', 'ARMember'); ?></label></th>
                             <td class="arm-form-table-content">
-                                <span class="arm_info_text"><?php echo ARM_HOME_URL; ?></span><br><span style="font-size:13px;"><em><?php _e(' Set Authorised JavaScript origins URL in your Google Web Application settings.', 'ARMember'); ?></em></span>
+                                <span class="arm_info_text"><?php echo ARM_HOME_URL; ?></span><br><span class="arm_font_size_13"><em><?php _e(' Set Authorised JavaScript origins URL in your Google Web Application settings.', 'ARMember'); ?></em></span>
                             </td>
                         </tr>
                     </table>
@@ -448,7 +449,7 @@ if (!is_dir($icon_upload_dir)) {
                                                 <tr class="form-field">
                                                         <th class="arm-form-table-label"><label for="arm_vk_app_secret"><?php _e('Authorized redirect URI', 'ARMember'); ?></label></th>
 							<td class="arm-form-table-content">
-                                                            <span class="arm_info_text"><?php echo MEMBERSHIP_VIEWS_URL.'/callback/vk_callback.php'; ?></span><br><span style="font-size:13px;"><em><?php _e('Redirect URI that you should add in VK API.', 'ARMember'); ?></em></span>
+                                                            <span class="arm_info_text"><?php echo MEMBERSHIP_VIEWS_URL.'/callback/vk_callback.php'; ?></span><br><span class="arm_font_size_13"><em><?php _e('Redirect URI that you should add in VK API.', 'ARMember'); ?></em></span>
 							</td>
                                                 </tr>
 					</table>
@@ -493,17 +494,63 @@ if (!is_dir($icon_upload_dir)) {
                         <tr class="form-field">
                             <th class="arm-form-table-label"><label for="arm_insta_client_secret"><?php _e('Valid redirect URIs', 'ARMember'); ?></label></th>
                             <td class="arm-form-table-content">
-                                <span class="arm_info_text"><?php echo MEMBERSHIP_VIEWS_URL.'/callback/insta_callback.php'; ?></span><br><span style="font-size:13px;"><em><?php _e('Redirect URI that you should add in Instagram API.', 'ARMember'); ?></em></span>
+                                <span class="arm_info_text"><?php echo MEMBERSHIP_VIEWS_URL.'/callback/insta_callback.php'; ?></span><br><span class="arm_font_size_13"><em><?php _e('Redirect URI that you should add in Instagram API.', 'ARMember'); ?></em></span>
                             </td>
                         </tr>
                     </table>
                     <!-- Instagram Module Over -->
+                    <!-- Tumblr module -->
+                    <div class="arm_divider"></div>
+                    <div class="armclear"></div>
+                    <div class="page_sub_title"><?php _e('Tumblr', 'ARMember'); ?></div>
+                    <?php 
+                    $tu_status = (!empty($social_options) && isset($social_options['tumblr']['status'])) ? $social_options['tumblr']['status'] : 0;
+                    $tuDisabledAttr = ($tu_status == 0) ? 'disabled="disabled"' : '';
+                    $tuReadonlyAttr = ($tu_status == 0) ? 'readonly="readonly"' : '';
+
+                    ?>
+
+                    <table class="form-table">
+                        <tr class="form-field">
+                            <th class="arm-form-table-label"><label for="arm_tumblr_status"><?php _e('Active', 'ARMember'); ?></label></th>
+                            <td class="arm-form-table-content">
+                                <div class="armswitch arm_global_setting_switch">
+                                    <input id="arm_tumblr_status" class="armswitch_input arm_social_network_status" type="checkbox" name="arm_social_settings[options][tumblr][status]" value="1" data-stype="tu" <?php checked($tu_status, 1);?>>
+                                    <label for="arm_tumblr_status" class="armswitch_label"></label>
+                                                                        <?php $arm_sc_tu_icon = (!empty($social_options)) ? ((!empty($social_options['tumblr']['icon'])) ? $social_options['tumblr']['icon'] : 'tu_1.png') : 'tu_1.png'; 
+                                                                        $arm_sc_tu_custom_icon = (!empty($social_options)) ? ((!empty($social_options['tumblr']['custom_icon'])) ? $social_options['tumblr']['custom_icon'] : '') : '';?>
+                                                                        <input type="hidden" name="arm_social_settings[options][tumblr][icon]" value="<?php echo $arm_sc_tu_icon;?>">
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr class="form-field">
+                            <th class="arm-form-table-label"><label for="arm_tumblr_consumer_key"><?php _e('Consumer Key', 'ARMember'); ?> *</label></th>
+                            <td class="arm-form-table-content">
+                                <input type="text" name="arm_social_settings[options][tumblr][consumer_key]" class="arm_input_tu" id="arm_tumblr_consumer_key" value="<?php echo (!empty($social_options) && !empty($social_options['tumblr']['consumer_key'])) ? $social_options['tumblr']['consumer_key'] : '';?>" data-msg-required="<?php _e('Consumer Key can not be left blank.', 'ARMember'); ?>" <?php echo $tuReadonlyAttr;?>>
+                            </td>
+                        </tr>
+                        <tr class="form-field">
+                            <th class="arm-form-table-label"><label for="arm_tumblr_consumer_secret"><?php _e('Consumer Secret', 'ARMember'); ?> *</label></th>
+                            <td class="arm-form-table-content">
+                                <input type="text" name="arm_social_settings[options][tumblr][consumer_secret]" class="arm_input_tu" id="arm_tumblr_consumer_secret" value="<?php echo (!empty($social_options) && !empty($social_options['tumblr']['consumer_secret'])) ? $social_options['tumblr']['consumer_secret'] : '';?>" data-msg-required="<?php _e('Customer Secret can not be left blank.', 'ARMember'); ?>" <?php echo $tuReadonlyAttr;?>>
+                            </td>
+                        </tr>
+                        <tr class="form-field">
+                            <th class="arm-form-table-label"><label><?php _e('Callback URL', 'ARMember'); ?></label></th>
+                            <td class="arm-form-table-content">
+                                <span class="arm_info_text"><?php echo ARM_HOME_URL; ?>/</span><br><span class="arm_font_size_13"><em><?php _e('Callback URLs that you should add in Tumblr Application -> Settings.', 'ARMember'); ?></em></span>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- Tumblr module over -->
+                  
 				</div>
 			</div>
 			<div class="armclear"></div>
 			<div class="arm_submit_btn_container">
 				<input type="hidden" name="s_action" value="arm_update_social_settings">
-				<button class="arm_save_btn" type="submit" id="arm_social_settings_btn" name="arm_social_settings_btn"><?php _e('Save', 'ARMember');?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" style="position:relative;top:8px;display:none;" width="24" height="24" />
+				<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img" class="arm_submit_btn_loader" style="display:none;" width="24" height="24" />&nbsp;<button class="arm_save_btn" type="submit" id="arm_social_settings_btn" name="arm_social_settings_btn"><?php _e('Save', 'ARMember');?></button>
                 <?php wp_nonce_field( 'arm_wp_nonce' );?>
 			</div>
         </form>

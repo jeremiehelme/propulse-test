@@ -12,24 +12,24 @@ if (!class_exists('ARM_members_badges'))
                         $this->arm_badges_dir = MEMBERSHIP_UPLOAD_DIR . '/social_badges/';
                         $this->arm_badges_url = MEMBERSHIP_UPLOAD_URL . '/social_badges/';
 			$this->arm_slugs = $arm_slugs;			
-			add_action('wp_ajax_arm_badges_operation', array(&$this, 'arm_badges_operation'));
-			add_action('wp_ajax_arm_edit_badges_data', array(&$this, 'arm_edit_badges_data'));
-			add_action('wp_ajax_arm_delete_single_badges', array(&$this, 'arm_delete_single_badges'));
-			add_action('wp_ajax_arm_delete_single_achievements', array(&$this, 'arm_delete_single_achievements'));
-			add_action('wp_ajax_arm_save_achievements', array(&$this, 'arm_save_achievements_func'));
-			add_action('wp_ajax_arm_edit_achievements_data', array(&$this, 'arm_edit_achievements_data'));
-			add_action('wp_ajax_arm_edit_user_achievements_data', array(&$this, 'arm_edit_user_achievements_data'));
-			add_action('wp_ajax_arm_update_user_achievements', array(&$this, 'arm_update_user_achievements'));
-			add_action('wp_ajax_arm_delete_single_user_achievements', array(&$this, 'arm_delete_single_user_achievements'));
-			add_action('wp_ajax_arm_badge_achievements_list', array(&$this, 'arm_badge_achievements_list'));
-			add_action('wp_ajax_arm_add_user_badges', array(&$this, 'arm_add_user_badges_func'));
-            add_action('arm_member_update_meta', array(&$this, 'arm_member_update_meta_achievements'), 100, 2);
-			/*add_action('save_post', array(&$this, 'arm_save_user_post_achieve'), 22, 3);
-			add_action('delete_post', array(&$this, 'arm_delete_user_post_achieve'), 22);
-			add_action('comment_post', array(&$this, 'arm_save_user_comment_achieve'), 10, 2);
-			add_action('delete_comment', array(&$this, 'arm_delete_user_comment_achieve'), 10, 1);*/
-            add_filter('upload_mimes', array(&$this, 'arm_upload_mimes'), 1, 1);
-            add_action('wp_ajax_get_user_achievements',array(&$this,'arm_get_user_achievements_grid_data'));
+			add_action('wp_ajax_arm_badges_operation', array($this, 'arm_badges_operation'));
+			add_action('wp_ajax_arm_edit_badges_data', array($this, 'arm_edit_badges_data'));
+			add_action('wp_ajax_arm_delete_single_badges', array($this, 'arm_delete_single_badges'));
+			add_action('wp_ajax_arm_delete_single_achievements', array($this, 'arm_delete_single_achievements'));
+			add_action('wp_ajax_arm_save_achievements', array($this, 'arm_save_achievements_func'));
+			add_action('wp_ajax_arm_edit_achievements_data', array($this, 'arm_edit_achievements_data'));
+			add_action('wp_ajax_arm_edit_user_achievements_data', array($this, 'arm_edit_user_achievements_data'));
+			add_action('wp_ajax_arm_update_user_achievements', array($this, 'arm_update_user_achievements'));
+			add_action('wp_ajax_arm_delete_single_user_achievements', array($this, 'arm_delete_single_user_achievements'));
+			add_action('wp_ajax_arm_badge_achievements_list', array($this, 'arm_badge_achievements_list'));
+			add_action('wp_ajax_arm_add_user_badges', array($this, 'arm_add_user_badges_func'));
+            add_action('arm_member_update_meta', array($this, 'arm_member_update_meta_achievements'), 100, 2);
+			/*add_action('save_post', array($this, 'arm_save_user_post_achieve'), 22, 3);
+			add_action('delete_post', array($this, 'arm_delete_user_post_achieve'), 22);
+			add_action('comment_post', array($this, 'arm_save_user_comment_achieve'), 10, 2);
+			add_action('delete_comment', array($this, 'arm_delete_user_comment_achieve'), 10, 1);*/
+            add_filter('upload_mimes', array($this, 'arm_upload_mimes'), 1, 1);
+            add_action('wp_ajax_get_user_achievements',array($this,'arm_get_user_achievements_grid_data'));
 			/* Email template slug */
 			$this->badges = new stdClass;
 			$this->badges->achievement = 'achievement';
@@ -648,12 +648,12 @@ if (!class_exists('ARM_members_badges'))
                             $arm_achivement_edit_response .= '<span>'. __('User has completed', 'ARMember').'&nbsp;';
                             $arm_achivement_edit_response .= '</span>';
                             $arm_achivement_edit_response .= '<input type="text" id="arm_edit_achieve_num" 
-                                                                name="arm_achieve_num[]" class="arm_achieve_num" onkeypress="javascript:return isNumber (event);"  value="'.$achieve_num_value.'" data-msg-required="'. __("Please enter number", "ARMember").'" style="min-width: 50px;width: 50px;text-align: center;">';
+                                                                name="arm_achieve_num[]" class="arm_achieve_num arm_min_width_50 arm_width_50 arm_text_align_center arm_padding_left_0" onkeypress="javascript:return isNumber (event);"  value="'.$achieve_num_value.'" data-msg-required="'. __("Please enter number", "ARMember").'" >';
                             $arm_achivement_edit_response .= '<input type="hidden" id="arm_require_achive_badges_id_'.$arm_achievement_cnt.'" 
                                                                 name="arm_require_achive_badges_id[]" class="arm_achivement_badge_icon" value="'.$achieve_badge_icon_id[$arm_achievement_cnt].'"/>';
                                                                 $arm_badges_require_icon = $this->arm_get_single_badge($achieve_badge_icon_id[$arm_achievement_cnt]);
-                            $arm_achivement_edit_response .= '<dl class="arm_selectbox arm_achievement_badge_select arm_badge_select column_level_dd arm_achive_badges_edit_selectbox" >
-                                                                <dt style="width: 190px;"><span><img src="' . ($arm_badges_require_icon['arm_badges_icon']) . '" alt="" class="arm_badge_icon" style="'.$badge_css.'" /><span class="arm_badge_title"> '.$arm_badges_require_icon['arm_badges_name'].'</span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                            $arm_achivement_edit_response .= '<dl class="arm_selectbox arm_achievement_badge_select arm_badge_select column_level_dd arm_achive_badges_edit_selectbox arm_width_190" >
+                                                                <dt><span><img src="' . ($arm_badges_require_icon['arm_badges_icon']) . '" alt="" class="arm_badge_icon arm_padding_top_5" style="'.$badge_css.'" /><span class="arm_badge_title"> '.$arm_badges_require_icon['arm_badges_name'].'</span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                 <dd>
                                     <ul data-id="arm_require_achive_badges_id_'.$arm_achievement_cnt.'">';
                                                                     
@@ -667,7 +667,7 @@ if (!class_exists('ARM_members_badges'))
                                                                     }else{
                                                                         $badge->arm_badges_icon = $badge->arm_badges_icon;
                                                                     }
-                            $arm_achivement_edit_response .= '<li data-value="'.$badge->arm_badges_id.'" ><img src="' . ($badge->arm_badges_icon) . '" alt="" class="arm_badge_icon" align="middle" style="'.$badge_css.'" /><span class="arm_badge_title">'.$badge->arm_badges_name.'</span></li>';
+                            $arm_achivement_edit_response .= '<li data-value="'.$badge->arm_badges_id.'" ><img src="' . ($badge->arm_badges_icon) . '" alt="" class="arm_badge_icon .arm_padding_top_5" align="middle" style="'.$badge_css.'" /><span class="arm_badge_title">'.$badge->arm_badges_name.'</span></li>';
                                                                             
                                                                     }}
                             $arm_achivement_edit_response .= '</ul>
@@ -705,12 +705,12 @@ if (!class_exists('ARM_members_badges'))
                         $arm_achivement_edit_response .= '<span>'. __('User has completed', 'ARMember').'&nbsp;';
                         $arm_achivement_edit_response .= '</span>';
                         $arm_achivement_edit_response .= '<input type="text" id="arm_edit_achieve_num" 
-                                                            name="arm_achieve_num[]" class="arm_achieve_num" onkeypress="javascript:return isNumber (event);"  value="'.$achieve_num.'" data-msg-required="'. __("Please enter number", "ARMember").'" style="min-width: 50px;width: 50px;text-align: center;">';
+                                                            name="arm_achieve_num[]" class="arm_achieve_num arm_min_width_50 arm_width_50 arm_text_align_center arm_padding_left_0" onkeypress="javascript:return isNumber (event);"  value="'.$achieve_num.'" data-msg-required="'. __("Please enter number", "ARMember").'" >';
                         $arm_achivement_edit_response .= '<input type="hidden" id="arm_require_achive_badges_id_'.$arm_achievement_cnt.'" 
                                                             name="arm_require_achive_badges_id[]" class="arm_achivement_badge_icon" value="'.$badges_parent.'"/>';
                                                             $arm_badges_require_icon = $this->arm_get_single_badge($badges_parent);
-                        $arm_achivement_edit_response .= '<dl class="arm_selectbox arm_achievement_badge_select arm_badge_select column_level_dd">
-                                                            <dt style="width: 190px;"><span><img src="' . ($arm_badges_require_icon['arm_badges_icon']) . '" alt="" class="arm_badge_icon" style="'.$badge_css.'" /><span class="arm_badge_title"> '.$arm_badges_require_icon['arm_badges_name'].'</span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                        $arm_achivement_edit_response .= '<dl class="arm_selectbox arm_achievement_badge_select arm_badge_select column_level_dd arm_width_190">
+                                                            <dt><span><img src="' . ($arm_badges_require_icon['arm_badges_icon']) . '" alt="" class="arm_badge_icon arm_padding_top_5" style="'.$badge_css.'" /><span class="arm_badge_title"> '.$arm_badges_require_icon['arm_badges_name'].'</span></span><input type="text" style="display:none;" value="" class="arm_autocomplete" /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                             <dd>
                                                                 <ul data-id="arm_require_achive_badges_id">';
                                                                 
@@ -724,7 +724,7 @@ if (!class_exists('ARM_members_badges'))
                                                                 }else{
                                                                     $badge->arm_badges_icon = $badge->arm_badges_icon;
                                                                 }
-                        $arm_achivement_edit_response .= '<li data-value="'.$badge->arm_badges_id.'" ><img src="' . ($badge->arm_badges_icon) . '" alt="" class="arm_badge_icon" align="middle" style="'.$badge_css.'" /><span class="arm_badge_title">'.$badge->arm_badges_name.'</span></li>';
+                        $arm_achivement_edit_response .= '<li data-value="'.$badge->arm_badges_id.'" ><img src="' . ($badge->arm_badges_icon) . '" alt="" class="arm_badge_icon .arm_padding_top_5" align="middle" style="'.$badge_css.'" /><span class="arm_badge_title">'.$badge->arm_badges_name.'</span></li>';
                                                                         
                                                                 }}
                         $arm_achivement_edit_response .= '</ul>
@@ -918,7 +918,7 @@ if (!class_exists('ARM_members_badges'))
                                         unset($old_user_achievements[$arm_old_achieve_badge_id_val][$badge_id]);
                                     }
                                 }
-                                if (count($old_user_achievements[$arm_old_achieve_badge_id_val]) == 0) {
+                                if( isset($old_user_achievements[$arm_old_achieve_badge_id_val]) && is_array($old_user_achievements[$arm_old_achieve_badge_id_val]) && count($old_user_achievements[$arm_old_achieve_badge_id_val]) == 0) {
                                     unset($old_user_achievements[$arm_old_achieve_badge_id_val]);
                                 }
                             }
@@ -1285,12 +1285,14 @@ if (!class_exists('ARM_members_badges'))
                                                 $old_user_achievements = $this->arm_get_user_achievements_data($user_id);
                                                 if($arm_flag_inside_condition == '')
                                                 {
+                                                    $old_user_achievements[$parent_badge_id][$badge_id][$achievement_type][$arm_achieve] = (!empty($old_user_achievements[$parent_badge_id][$badge_id][$achievement_type][$arm_achieve])) ? $old_user_achievements[$parent_badge_id][$badge_id][$achievement_type][$arm_achieve] : array();
                                                     $old_user_achievements[$parent_badge_id][$badge_id][$achievement_type][$arm_achieve]['achieve_num'] = $arm_achieve_number;
                                                     $old_user_achievements[$parent_badge_id][$badge_id][$achievement_type][$arm_achieve]['arm_achieve_badges_tooltip'] = $arm_achieve_badges_tooltip[$arm_achieve_num_key];
                                                     $arm_flag_inside_condition = 1;
                                                 }
                                                 $new_user_achievements = maybe_serialize($old_user_achievements);
                                                 $up_user_achievements = update_user_meta($user_id, 'arm_achievements', $new_user_achievements);
+                                                //do_action('arm_general_log_entry', 'cron', 'user achievements achieve_num array check', 'armember', array('user_id'=>$user_id,'user_register_date'=>$user_register_date,'new_user_meta'=>$new_user_achievements));
                                             }
                                         }
                                     }
@@ -1317,6 +1319,7 @@ if (!class_exists('ARM_members_badges'))
                                             $old_user_achievements[$parent_badge_id][$badge_id][$achievement_type][$arm_achieve] = $arm_achieve_num;
                                             $new_user_achievements = maybe_serialize($old_user_achievements);
                                             $up_user_achievements = update_user_meta($user_id, 'arm_achievements', $new_user_achievements);
+                                            do_action('arm_general_log_entry', 'cron', 'user achievements achieve_num not array check', 'armember', array('user_id'=>$user_id,'user_register_date'=>$user_register_date,'new_user_meta'=>$new_user_achievements));
                                         }
                                     }
                                 }
@@ -1561,7 +1564,7 @@ if (!class_exists('ARM_members_badges'))
                                                 }
                                             }
                                         } elseif ($achieveType == 'admin') {
-                                            $badge_title = __('Achieve this badge by', 'ARMember') . ' ' . $achieveType;
+                                            $badge_title = isset($parentBadgeData['arm_badges_name']) ? $parentBadgeData['arm_badges_name'] : __('Achieve this badge by', 'ARMember') . ' ' . $achieveType;
                                         } elseif($achieveType == 'plans'){
                                             if(is_array($user_suspended_plan_ids) && !in_array($achieveTotal, $user_suspended_plan_ids)){
                                                if(!empty($arm_badges_tooltip))
@@ -1881,7 +1884,7 @@ if (!class_exists('ARM_members_badges'))
 				if(!empty($achivements))
 				{
 					?>
-					<div class="arm_preview_badge_details_popup_wrapper popup_wrapper" style="width:650px;">
+					<div class="arm_preview_badge_details_popup_wrapper popup_wrapper">
 						<div class="popup_wrapper_inner" style="overflow: hidden;">
 							<div class="popup_header">
 								<span class="popup_close_btn arm_popup_close_btn add_preview_badge_close_btn"></span>

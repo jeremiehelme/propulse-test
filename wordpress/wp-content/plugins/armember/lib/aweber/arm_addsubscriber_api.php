@@ -2,8 +2,8 @@
 require_once('aweber_api.php');
 global $wpdb, $ARMember, $armemail, $armfname, $armlname, $form_id, $arm_social_feature, $arm_is_social_signup;;
 $email_settings_unser = get_option('arm_email_settings');
-$arm_email_settings = maybe_unserialize($email_settings_unser);
-$aweberOpt = (isset($arm_email_settings['arm_email_tools']['aweber'])) ? $arm_email_settings['arm_email_tools']['aweber'] : array();
+$arm_email_settings_data = maybe_unserialize($email_settings_unser);
+$aweberOpt = (isset($arm_email_settings_data['arm_email_tools']['aweber'])) ? $arm_email_settings_data['arm_email_tools']['aweber'] : array();
 $consumerKey = MEMBERSHIP_AWEBER_CONSUMER_KEY;
 $consumerSecret = MEMBERSHIP_AWEBER_CONSUMER_SECRET;
 $temp_data = (isset($aweberOpt['temp'])) ? $aweberOpt['temp'] : array();
@@ -45,13 +45,19 @@ if (!empty($responder_list_id) && !empty($consumerKey) && !empty($consumerSecret
 				'email' => $armemail,
 				'name' => $armfname . " " . $armlname,
 			);
+
+			do_action('arm_general_log_entry', 'aweber', 'subscriber parameters', 'armember', $params);
+
 			$subscribers = $list->subscribers;
 			$new_subscriber = $subscribers->create($params);
+
+			do_action('arm_general_log_entry', 'aweber', 'subscriber add response', 'armember', $new_subscriber);
 			
 			# success!
 			/*print "A new subscriber was added to the $list->name list!";*/
 		} catch (AWeberAPIException $exc) {
-			
+
+			do_action('arm_general_log_entry', 'aweber', 'subscriber error response', 'armember', $exc);
 		}
 	}
 }

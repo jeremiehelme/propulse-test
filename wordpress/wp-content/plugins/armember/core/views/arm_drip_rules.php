@@ -11,6 +11,12 @@ global $check_sorting;
 $setact = $arm_members_activity->$check_sorting();
 ?>
 <div class="wrap arm_page arm_drip_content_main_wrapper">
+	<?php
+    if ($setact != 1) {
+        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
+        ?>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+    <?php } ?>
 	<div class="content_wrapper arm_drip_content_container" id="content_wrapper">
 		<div class="page_title">
 			<?php _e('Drip Content','ARMember');
@@ -25,13 +31,6 @@ $setact = $arm_members_activity->$check_sorting();
                         
 			<div class="armclear"></div>
 		</div>
-        <?php
-    if ($setact != 1) {
-        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
-        ?>
-
-        <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
-    <?php } ?>
 		<div class="armclear"></div>
 		<div id="arm_drip_rules_grid_container" class="arm_drip_rules_grid_container">
 			<?php 
@@ -60,7 +59,7 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
 ?>
 <!--./******************** Add New Drip Rule Form ********************/.-->
 <div class="arm_drip_rule_items_list_container" id="arm_drip_rule_items_list_container"></div>
-<div class="arm_add_new_drip_rule_wrapper popup_wrapper" style="width: 650px;margin-top: 40px;">
+<div class="arm_add_new_drip_rule_wrapper popup_wrapper" >
 	<form method="post" action="#" id="arm_add_new_drip_rule_wrapper_frm" class="arm_admin_form arm_add_new_drip_rule_wrapper_frm">
 		<table cellspacing="0">
 			<tr class="popup_wrapper_inner">	
@@ -72,8 +71,8 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
 							<th><?php _e('Content Type', 'ARMember');?></th>
 							<td>
 								<input type="hidden" id="arm_add_rule_item_type" class="arm_rule_item_type_input" name="item_type" data-type="" value="page"/>
-								<dl class="arm_selectbox column_level_dd">
-									<dt style="width: 480px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+								<dl class="arm_selectbox column_level_dd arm_width_100_pct">
+									<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 									<dd>
 										<ul data-id="arm_add_rule_item_type">
 											<?php 
@@ -91,10 +90,10 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
 						<tr class="arm_drip_post_type_opts">
 							<th><?php _e('Select', 'ARMember');?> <span class="arm_rule_item_type_text"><?php _e('Page', 'ARMember')?></span></th>
 							<td class="arm_required_wrapper">
-								<div style="text-align: center;width: 100%;">
+								<div class="arm_text_align_center arm_width_100_pct" >
 								<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_drip_rule_items" class="arm_loader_img_drip_rule_items" style="display: none;" width="20" height="20" />
 								</div>
-								<input id="arm_drip_rule_items_input" type="text" value="" placeholder="<?php _e('Search by title...', 'ARMember');?>" required data-msg-required="<?php _e('Please select atleast one page/post.', 'ARMember');?>">
+								<input id="arm_drip_rule_items_input" type="text" value="" placeholder="<?php _e('Search by title...', 'ARMember');?>" required data-msg-required="<?php _e('Please select atleast one page/post.', 'ARMember');?>" class="arm_max_width_100_pct arm_width_100_pct">
 								<div class="arm_drip_rule_items arm_required_wrapper" id="arm_drip_rule_items" style="display: none;"></div>
 							</td>
 						</tr>
@@ -111,7 +110,7 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
 						<tr>
 							<th><?php _e('Membership Plans', 'ARMember');?></th>
 							<td class="arm_required_wrapper">
-								<select id="arm_drip_rule_plans" class="arm_chosen_selectbox" data-msg-required="<?php _e('Please select atleast one plan.', 'ARMember');?>" name="rule_plans[]" data-placeholder="<?php _e('Select Plan(s)..', 'ARMember');?>" multiple="multiple" style="width:500px;">
+								<select id="arm_drip_rule_plans" class="arm_chosen_selectbox arm_width_500" data-msg-required="<?php _e('Please select atleast one plan.', 'ARMember');?>" name="rule_plans[]" data-placeholder="<?php _e('Select Plan(s)..', 'ARMember');?>" multiple="multiple" >
 									<?php if (!empty($all_plans)):?>
 										<?php foreach ($all_plans as $plan): ?>
 											<option class="arm_message_selectbox_op" value="<?php echo $plan['arm_subscription_plan_id'];?>"><?php echo stripslashes($plan['arm_subscription_plan_name']);?></option>
@@ -126,8 +125,8 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
 							<th><?php _e('Drip Type', 'ARMember');?></th>
 							<td>
 								<input type="hidden" class="arm_drip_type_input" id="arm_add_drip_type" name="rule_type" value="instant"/>
-								<dl class="arm_selectbox column_level_dd">
-									<dt style="width: 480px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+								<dl class="arm_selectbox column_level_dd arm_width_100_pct">
+									<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 									<dd>
 										<ul data-id="arm_add_drip_type">
 											<?php foreach($drip_types as $key => $val):?>
@@ -147,14 +146,14 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
 								<div class="arm_drip_type_options_wrapper arm_drip_type_options_post_publish hidden_section arm_required_wrapper" id="arm_drip_type_options_post_publish">
 									<div class="arm_drip_type_options_container">
 										<label><?php _e('Show After', 'ARMember');?></label>
-										<input type="number" id="arm_edit_drip_type_post_publish" name="rule_options[post_publish]" min="0" value="10" data-msg-required="<?php _e('Please enter days.', 'ARMember');?>" onkeydown="javascript:return checkNumber(event)"/>
+										<input type="number" id="arm_edit_drip_type_post_publish_add" name="rule_options[post_publish]" min="0" value="10" data-msg-required="<?php _e('Please enter days.', 'ARMember');?>" onkeydown="javascript:return checkNumber(event)"/>
 										<label><?php _e('Days', 'ARMember');?></label>
 									</div>
 								</div>
 								<div class="arm_drip_type_options_wrapper arm_drip_type_options_post_modify hidden_section arm_required_wrapper" id="arm_drip_type_options_post_modify">
 									<div class="arm_drip_type_options_container">
 										<label><?php _e('Show After', 'ARMember');?></label>
-										<input type="number" id="arm_edit_drip_type_post_modify" name="rule_options[post_modify]" min="0" value="10" data-msg-required="<?php _e('Please enter days.', 'ARMember');?>" onkeydown="javascript:return checkNumber(event)"/>
+										<input type="number" id="arm_edit_drip_type_post_modify_add" name="rule_options[post_modify]" min="0" value="10" data-msg-required="<?php _e('Please enter days.', 'ARMember');?>" onkeydown="javascript:return checkNumber(event)"/>
 										<label><?php _e('Days', 'ARMember');?></label>
 									</div>
 								</div>
@@ -190,7 +189,7 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
 				</td>
 				<td class="popup_content_btn popup_footer">
 					<div class="popup_content_btn_wrapper">
-						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_add_drip_rule" class="arm_loader_img" style="position: relative;top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;display: none;" width="20" height="20" />
+						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_add_drip_rule" class="arm_loader_img arm_submit_btn_loader"  style="top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;display: none;" width="20" height="20" />
 						<button class="arm_save_btn arm_new_drip_rule_button" type="submit" data-type="add"><?php _e('Save', 'ARMember') ?></button>
 						<button class="arm_cancel_btn add_new_drip_rule_close_btn" type="button"><?php _e('Cancel','ARMember');?></button>
 					</div>
@@ -201,7 +200,7 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
 	</form>
 </div>
 <!--./******************** Edit Drip Rule Form ********************/.-->
-<div class="arm_edit_drip_rule_wrapper popup_wrapper" style="width: 650px;margin-top: 40px;">
+<div class="arm_edit_drip_rule_wrapper popup_wrapper" >
 	<form method="post" action="#" id="arm_edit_drip_rule_wrapper_frm" class="arm_admin_form arm_edit_drip_rule_wrapper_frm">
 		<table cellspacing="0">
 			<tr class="popup_wrapper_inner">	
@@ -218,7 +217,7 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
 						<tr>
 							<th><?php _e('Membership Plans', 'ARMember');?></th>
 							<td class="arm_required_wrapper">
-								<select id="arm_edit_drip_rule_plans" class="arm_chosen_selectbox" data-msg-required="<?php _e('Please select atleast one plan.', 'ARMember');?>" name="rule_plans[]" data-placeholder="<?php _e('Select Plan(s)..', 'ARMember');?>" multiple="multiple" style="width:500px;">
+								<select id="arm_edit_drip_rule_plans" class="arm_chosen_selectbox arm_width_500" data-msg-required="<?php _e('Please select atleast one plan.', 'ARMember');?>" name="rule_plans[]" data-placeholder="<?php _e('Select Plan(s)..', 'ARMember');?>" multiple="multiple" >
 									<?php if (!empty($all_plans)):?>
 										<?php foreach ($all_plans as $plan): ?>
 											<option class="arm_message_selectbox_op" value="<?php echo $plan['arm_subscription_plan_id'];?>"><?php echo stripslashes($plan['arm_subscription_plan_name']);?></option>
@@ -233,8 +232,8 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
 							<th><?php _e('Drip Type', 'ARMember');?></th>
 							<td>
 								<input type="hidden" class="arm_drip_type_input" id="arm_edit_drip_type" name="rule_type" value="immediately"/>
-								<dl class="arm_selectbox column_level_dd">
-									<dt style="width: 480px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+								<dl class="arm_selectbox column_level_dd arm_width_100_pct">
+									<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 									<dd>
 										<ul data-id="arm_edit_drip_type">
 											<?php foreach($drip_types as $key => $val):?>
@@ -306,7 +305,7 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
 				</td>
 				<td class="popup_content_btn popup_footer">
 					<div class="popup_content_btn_wrapper">
-						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_edit_drip_rule" class="arm_loader_img" style="position: relative;top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;display: none;" width="20" height="20" />
+						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_edit_drip_rule" class="arm_loader_img arm_submit_btn_loader" style="top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;display: none;" width="20" height="20" />
 						<button class="arm_save_btn arm_update_drip_rule_button" type="submit" data-type="add"><?php _e('Save', 'ARMember') ?></button>
 						<button class="arm_cancel_btn edit_drip_rule_close_btn" type="button"><?php _e('Cancel','ARMember');?></button>
 					</div>
@@ -317,7 +316,7 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
 	</form>
 </div>
 <!--./******************** Drip Rule Members List ********************/.-->
-<div class="arm_members_list_detail_popup popup_wrapper arm_members_list_detail_popup_wrapper" style="width:810px;min-height: 250px;">
+<div class="arm_members_list_detail_popup popup_wrapper arm_members_list_detail_popup_wrapper" >
 	<div class="arm_loading_grid" id="arm_loading_grid_members" style="display: none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL;?>/loader.gif" alt="Loading.."></div>
     <div class="popup_wrapper_inner" style="overflow: hidden;">
         <div class="popup_header">
@@ -325,13 +324,13 @@ echo $arm_global_settings->arm_get_bpopup_html($bulk_delete_drip_rules_popup_arg
             <span class="add_rule_content"><?php _e('Members Details', 'ARMember'); ?></span>
         </div>
         <div class="popup_content_text arm_members_list_detail_popup_text">
-            <table width="100%" cellspacing="0" class="display" id="armember_datatable_1" style="min-width: 802px;">
+            <table width="100%" cellspacing="0" class="display arm_min_width_802" id="armember_datatable_1" >
                 <thead>
                     <tr>
                         <th><?php _e('Username', 'ARMember'); ?></th>
                         <th><?php _e('Email', 'ARMember'); ?></th>
-                        <th style="width:170px;"><?php _e('Days Of Subscription', 'ARMember'); ?></th>
-                        <th class="arm-no-sort" style="width:170px;"><?php _e('View Detail', 'ARMember'); ?></th>
+                        <th class="arm_width_170"><?php _e('Days Of Subscription', 'ARMember'); ?></th>
+                        <th class="arm-no-sort arm_width_170" ><?php _e('View Detail', 'ARMember'); ?></th>
                     </tr>
                 </thead>
             </table>

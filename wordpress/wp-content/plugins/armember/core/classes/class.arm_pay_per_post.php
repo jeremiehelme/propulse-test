@@ -81,7 +81,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                 add_action( 'arm_update_access_plan_for_drip_rules', array( $this, 'arm_update_access_plan_for_drip_rules_callback'), 10, 1);
 
-                add_action('wp_ajax_get_arm_paid_post_plan_list', array(&$this, 'get_arm_paid_post_plan_list_func'));
+                add_action('wp_ajax_get_arm_paid_post_plan_list', array($this, 'get_arm_paid_post_plan_list_func'));
 
 	        }
         }
@@ -355,6 +355,12 @@ if (!class_exists('ARM_pay_per_post_feature')) {
             if( empty( $_POST ) ){
                 return;
             }
+
+            if (!isset($_POST['arm_enable_paid_post_hidden']) && ( empty($_REQUEST['page']) ) ) {
+                //Special condition for WP All Import plugin.
+                return;
+            }
+
             if( array_key_exists('arm_enable_paid_post', $_POST ) && ! wp_is_post_revision( $post_id ) ){
 
                 update_post_meta( $post_id, 'arm_is_paid_post', 1 );
@@ -592,6 +598,9 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
             global $arm_payment_gateways,$ARMember,$wpdb, $arm_global_settings;
 
+            /* Add CSS for Metaboxes */
+            wp_enqueue_style('arm_post_metaboxes_css', MEMBERSHIP_URL . '/css/arm_post_metaboxes.css', array(), MEMBERSHIP_VERSION);
+
             $global_currency = $arm_payment_gateways->arm_get_global_currency();
             $all_currencies = $arm_payment_gateways->arm_get_all_currencies();
             $global_currency_sym = isset($all_currencies) ? $all_currencies[strtoupper($global_currency)] : '';
@@ -659,6 +668,8 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                         $paid_post_html .= '<div class="arm_paid_post_row_right">';
 
+                            $paid_post_html .= '<input type="hidden" value="'.$is_paid_post_enabled.'" name="arm_enable_paid_post_hidden" id="arm_enable_paid_post_hidden" />';
+
                             $paid_post_html .= '<div class="armswitch armswitchbig">';
 
                                 $enable_paid_post = checked( 1, $is_paid_post_enabled, false );
@@ -718,9 +729,9 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                                     $paid_post_html .= '<input type="hidden" id="arm_add_paid_post_item_type" class="arm_paid_post_item_type_input" name="arm_add_paid_post_item_type" data-type="'.$post_type_label.'" value="'.$post_type.'"/>';
 
-                                    $paid_post_html .= '<dl class="arm_selectbox">';
+                                    $paid_post_html .= '<dl class="arm_selectbox arm_width_500">';
 
-                                        $paid_post_html .= '<dt style="width: 480px;"><span>'.$post_type_label.'</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                                        $paid_post_html .= '<dt><span>'.$post_type_label.'</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
 
                                         $paid_post_html .= '<dd>';
 
@@ -761,8 +772,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                                 $paid_post_html .= '<div class="arm_paid_post_row_right">';
 
-                                    $paid_post_html .= '<div style="text-align: center;width: 100%;"><img src="'.MEMBERSHIP_IMAGES_URL.'/arm_loader.gif" id="arm_loader_img_paid_post_items" class="arm_loader_img_paid_post_items" style="display: none;" width="20" height="20" /></div>';
-
+                                    $paid_post_html .= '<div class="arm_text_align_center" style="width: 100%;"><img src="'.MEMBERSHIP_IMAGES_URL.'/arm_loader.gif" id="arm_loader_img_paid_post_items" class="arm_loader_img_paid_post_items" style="display: none;" width="20" height="20" /></div>';
                                     $paid_post_html .= '<input id="arm_paid_post_items_input" type="text" value="" placeholder="'. esc_html__( 'Search by title...', 'ARMember').'" required data-msg-required="'.esc_html__('Please select atleast one page/post.', 'ARMember').'" />';
 
                                     $paid_post_html .= '<div class="arm_paid_post_items arm_required_wrapper" id="arm_paid_post_items" style="display: none;"></div>';
@@ -911,9 +921,9 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                                     $paid_post_html .= '<input type="hidden" name="arm_paid_plan_one_time_duration[days]" value="' . ( isset( $plan_options['eopa']['days'] ) ? $plan_options['eopa']['days'] : 1 ) . '" id="arm_paid_plan_one_time_duration_d" />';
 
-                                    $paid_post_html .= '<dl class="arm_selectbox">';
+                                    $paid_post_html .= '<dl class="arm_selectbox arm_width_100">';
 
-                                        $paid_post_html .= '<dt style="width:100px;"><span>' . ( isset( $plan_options['eopa']['days'] ) ? $plan_options['eopa']['days'] : 1 ) . '</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                                        $paid_post_html .= '<dt><span>' . ( isset( $plan_options['eopa']['days'] ) ? $plan_options['eopa']['days'] : 1 ) . '</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
 
                                         $paid_post_html .= '<dd>';
                                                     
@@ -943,9 +953,9 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                                     $paid_post_html .= '<input type="hidden" name="arm_paid_plan_one_time_duration[week]" value="' . ( isset( $plan_options['eopa']['weeks'] ) ? $plan_options['eopa']['weeks'] : 1 ) . '" id="arm_paid_plan_one_time_duration_w" />';
 
-                                    $paid_post_html .= '<dl class="arm_selectbox">';
+                                    $paid_post_html .= '<dl class="arm_selectbox arm_width_100">';
 
-                                        $paid_post_html .= '<dt style="width:100px;"><span>' . ( isset( $plan_options['eopa']['weeks'] ) ? $plan_options['eopa']['weeks'] : 1 ) . '</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                                        $paid_post_html .= '<dt><span>' . ( isset( $plan_options['eopa']['weeks'] ) ? $plan_options['eopa']['weeks'] : 1 ) . '</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
 
                                         $paid_post_html .= '<dd>';
                                                     
@@ -976,9 +986,9 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                                     $paid_post_html .= '<input type="hidden" name="arm_paid_plan_one_time_duration[month]" value="' . ( isset( $plan_options['eopa']['months'] ) ? $plan_options['eopa']['months'] : 1 ) . '" id="arm_paid_plan_one_time_duration_m" />';
 
-                                    $paid_post_html .= '<dl class="arm_selectbox">';
+                                    $paid_post_html .= '<dl class="arm_selectbox arm_width_100">';
 
-                                        $paid_post_html .= '<dt style="width:100px;"><span>' . ( isset( $plan_options['eopa']['months'] ) ? $plan_options['eopa']['months'] : 1 ) . '</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                                        $paid_post_html .= '<dt><span>' . ( isset( $plan_options['eopa']['months'] ) ? $plan_options['eopa']['months'] : 1 ) . '</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
 
                                         $paid_post_html .= '<dd>';
                                                     
@@ -1009,9 +1019,9 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                                     $paid_post_html .= '<input type="hidden" name="arm_paid_plan_one_time_duration[year]" value="' . ( isset( $plan_options['eopa']['years'] ) ? $plan_options['eopa']['years'] : 1 ) . '" id="arm_paid_plan_one_time_duration_y" />';
 
-                                    $paid_post_html .= '<dl class="arm_selectbox">';
+                                    $paid_post_html .= '<dl class="arm_selectbox arm_width_100">';
 
-                                        $paid_post_html .= '<dt style="width:100px;"><span>' . ( isset( $plan_options['eopa']['years'] ) ? $plan_options['eopa']['years'] : 1 ) . '</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                                        $paid_post_html .= '<dt><span>' . ( isset( $plan_options['eopa']['years'] ) ? $plan_options['eopa']['years'] : 1 ) . '</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
 
                                         $paid_post_html .= '<dd>';
                                                     
@@ -1039,7 +1049,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                                     $paid_post_html .= '<input type="hidden" name="arm_paid_plan_one_time_duration[type]" value="' . ( isset( $plan_options['eopa']['type'] )? $plan_options['eopa']['type'] : 'D' ) . '" id="arm_paid_plan_one_time_duration_type" />';
 
-                                    $paid_post_html .= '<dl class="arm_selectbox">';
+                                    $paid_post_html .= '<dl class="arm_selectbox arm_width_300">';
 
                                         $arm_paid_post_duration_label = esc_html__( 'Day(s)', 'ARMember' );
                                         if( isset( $plan_options['eopa']['type'] ) && 'W' == $plan_options['eopa']['type'] ){
@@ -1050,7 +1060,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                             $arm_paid_post_duration_label = esc_html__( 'Year(s)', 'ARMember' );
                                         }
 
-                                        $paid_post_html .= '<dt style="width:100px;"><span>' . $arm_paid_post_duration_label . '</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                                        $paid_post_html .= '<dt><span>' . $arm_paid_post_duration_label . '</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
 
                                         $paid_post_html .= '<dd>';
 
@@ -1134,9 +1144,9 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                                                     $paid_post_html .= '<input type="hidden" id="arm_ipc_billing'.$arm_pc.'" name="arm_paid_post_subscription_plan_options[payment_cycles]['.$arm_pc.'][billing_cycle]" value="'.(!empty($arm_value['billing_cycle']) ? $arm_value['billing_cycle'] : 1).'" />';
 
-                                                    $paid_post_html .= '<dl class="arm_selectbox" style="margin: 0px;">';
+                                                    $paid_post_html .= '<dl class="arm_selectbox arm_margin_0 arm_width_60 arm_min_width_50" ">';
 
-                                                        $paid_post_html .= '<dt style="width: 60px; min-width: 50px;"><span>'.( !empty( $arm_value['billing_cycle'] ) ? $arm_value['billing_cycle'] : 1 ).'</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                                                        $paid_post_html .= '<dt><span>'.( !empty( $arm_value['billing_cycle'] ) ? $arm_value['billing_cycle'] : 1 ).'</span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
                                                             
                                                         $paid_post_html .= '<dd>';
 
@@ -1158,9 +1168,9 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                                                     $paid_post_html .= '<input type="hidden" id="arm_ipc_billing_type'.$arm_pc.'" name="arm_paid_post_subscription_plan_options[payment_cycles]['.$arm_pc.'][billing_type]" value="' . ( !empty( $arm_value['billing_type'] ) ? $arm_value['billing_type'] : "D" ) . '" />';
 
-                                                    $paid_post_html .= '<dl class="arm_selectbox" style="margin: 0px;">';
+                                                    $paid_post_html .= '<dl class="arm_selectbox arm_margin_0 arm_min_width_75">';
 
-                                                        $paid_post_html .= '<dt style="width: 83px; min-width: 75px; "><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                                                        $paid_post_html .= '<dt class="arm_width_80"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
 
                                                         $paid_post_html .= '<dd>';
 
@@ -1186,9 +1196,9 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                                                 $paid_post_html .= '<input type="hidden" id="arm_ipc_recurring'.$arm_pc.'" name="arm_paid_post_subscription_plan_options[payment_cycles]['.$arm_pc.'][recurring_time]" value="' . (!empty($arm_value['recurring_time']) ? $arm_value['recurring_time'] : 'infinite' ).'" />';
 
-                                                $paid_post_html .= '<dl class="arm_selectbox" style="margin: 0px;">';
+                                                $paid_post_html .= '<dl class="arm_selectbox arm_margin_0 arm_width_100 arm_min_width_70" >';
 
-                                                    $paid_post_html .= '<dt style="width: 70px; min-width: 70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
+                                                    $paid_post_html .= '<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
 
                                                     $paid_post_html .= '<dd>';
 
@@ -1337,6 +1347,19 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
             $paid_post_html .= '</div>';
 
+            $paid_post_html .= '<script>
+                                jQuery(document).on("change", "#arm_enable_paid_post", function(e) {
+                                    if(jQuery(this).is(":checked")) {
+                                        jQuery("#arm_enable_paid_post_hidden").val(1);
+                                        console.log("arm_enable_paid_post_hidden : " + arm_enable_paid_post_hidden);
+                                    } else {
+                                        jQuery("#arm_enable_paid_post_hidden").val(0);
+                                        console.log("arm_enable_paid_post_hidden-2 : " + arm_enable_paid_post_hidden);
+                                    }
+                                    
+                                });
+                            </script>';
+
             if( $return ){
                 return $paid_post_html;
             } else {
@@ -1393,7 +1416,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
         function arm_allowed_pages_for_shortcode_popup_callback( $pages ){
             if( isset( $_GET['page'] ) && 'arm_general_settings' == $_GET['page'] && isset( $_GET['action'] ) && 'pay_per_post_setting' == $_GET['action'] ){
                 array_push( $pages, basename( $_SERVER['PHP_SELF'] ) );
-            } else if( isset( $_GET['page'] ) && 'arm_manage_pay_per_post' == $_GET['page'] && in_array($_GET['action'], array("add_paid_post", "edit_paid_post")) ){
+            } else if( isset( $_GET['page'] ) && 'arm_manage_pay_per_post' == $_GET['page'] && (!empty($_GET['action']) && in_array($_GET['action'], array("add_paid_post", "edit_paid_post")) ) ){
                 array_push( $pages, basename( $_SERVER['PHP_SELF'] ) );
             }
             return $pages;
@@ -2210,7 +2233,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                 {
                     $login_user_id = get_current_user_id();
                     $arm_paid_plan_ids = get_user_meta($login_user_id, 'arm_user_plan_ids', true);
-                    if(!in_array($plan_id, $arm_paid_plan_ids))
+                    if( is_array($arm_paid_plan_ids) && !in_array($plan_id, $arm_paid_plan_ids) )
                     {
                         do_action( 'arm_apply_plan_to_member', $plan_id, $login_user_id);
                         $paid_post_redirect = get_permalink($paid_post_id);
@@ -2649,7 +2672,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                 $starts_on = date_i18n($date_format, $started_date);
                                             }
 
-                                            $expires_on = !empty($planData['arm_expire_plan']) ? '<span id="arm_user_expiry_date_' . $pID . '" style="display: inline;"> ' . date_i18n($date_format, $planData['arm_expire_plan']) . ' <img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Change Expiry Date', 'ARMember') . '" data-plan_id="' . $pID . '" class="arm_edit_user_expiry_date"></span><span id="arm_user_expiry_date_box_' . $pID . '" style="display: none; position: relative; width: 155px;"><input type="text" value="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_expiry_date_' . $pID . '" class="arm_member_form_input arm_user_plan_expiry_date_picker" style="width: 120px; min-width: 120px;"/><img src="' . MEMBERSHIP_IMAGES_URL . '/cancel_date_icon.png" width="11" height="11" title="' . __('Cancel', 'ARMember') . '" data-plan_id="' . $pID . '" data-plan-expire-date="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '" class="arm_cancel_edit_user_expiry_date"></span>' : __('Never Expires', 'ARMember');
+                                            $expires_on = !empty($planData['arm_expire_plan']) ? '<span id="arm_user_expiry_date_' . $pID . '" style="display: inline;"> ' . date_i18n($date_format, $planData['arm_expire_plan']) . ' <img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Change Expiry Date', 'ARMember') . '" data-plan_id="' . $pID . '" class="arm_edit_user_expiry_date"></span><span id="arm_user_expiry_date_box_' . $pID . '" style="display: none; position: relative; width: 155px;"><input type="text" value="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_expiry_date_' . $pID . '" class="arm_member_form_input arm_user_plan_expiry_date_picker arm_width_120 arm_min_width_120" /><img src="' . MEMBERSHIP_IMAGES_URL . '/cancel_date_icon.png" width="11" height="11" title="' . __('Cancel', 'ARMember') . '" data-plan_id="' . $pID . '" data-plan-expire-date="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '" class="arm_cancel_edit_user_expiry_date"></span>' : __('Never Expires', 'ARMember');
                                             $renewal_on = !empty($planData['arm_next_due_payment']) ? date_i18n($date_format, $planData['arm_next_due_payment']) : '-';
                                             $trial_starts = !empty($planData['arm_trial_start']) ? $planData['arm_trial_start'] : '';
                                             $trial_ends = !empty($planData['arm_trial_end']) ? $planData['arm_trial_end'] : '';
@@ -2688,13 +2711,13 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                                             if (!empty($suspended_plan_ids)) {
                                                 if (in_array($pID, $suspended_plan_ids)) {
-                                                    $arm_plan_is_suspended = '<div class="arm_user_plan_status_div" style="position: relative;"><span class="armhelptip tipso_style" id="arm_user_suspend_plan_' . $pID . '" style="color: red; cursor:pointer;" onclick="arm_show_failed_payment_history(' . $user_id . ',' . $pID . ',\'' . $planName . '\',\'' . $planData['arm_start_plan'] . '\')" title="' . __('Click here to Show failed payment history', 'ARMember') . '">(' . __('Suspended', 'ARMember') . ')</span><img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Activate Post', 'ARMember') . '" data-plan_id="' . $pID . '" onclick="showConfirmBoxCallback(\'change_user_plan_' . $pID . '\');" class="arm_change_user_plan_img_' . $pID . '">
+                                                    $arm_plan_is_suspended = '<div class="arm_user_plan_status_div arm_position_relative" ><span class="armhelptip tipso_style" id="arm_user_suspend_plan_' . $pID . '" style="color: red; cursor:pointer;" onclick="arm_show_failed_payment_history(' . $user_id . ',' . $pID . ',\'' . $planName . '\',\'' . $planData['arm_start_plan'] . '\')" title="' . __('Click here to Show failed payment history', 'ARMember') . '">(' . __('Suspended', 'ARMember') . ')</span><img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Activate Post', 'ARMember') . '" data-plan_id="' . $pID . '" onclick="showConfirmBoxCallback(\'change_user_plan_' . $pID . '\');" class="arm_change_user_plan_img_' . $pID . '">
                 
                                                     <div class="arm_confirm_box arm_member_edit_confirm_box" id="arm_confirm_box_change_user_plan_' . $pID . '" style="top:25px; right: -20px; ">
                                                             <div class="arm_confirm_box_body">
                                                                 <div class="arm_confirm_box_arrow" style="float: right"></div>
-                                                                <div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">' .
-                                                            __('Are you sure you want to active this post?', 'ARMember') . '
+                                                                <div class="arm_confirm_box_text arm_padding_top_15" >' .
+                                                            __('Are you sure you want to active this paid post?', 'ARMember') . '
                                                                 </div>
                                                                 <div class="arm_confirm_box_btn_container">
                                                                     <button type="button" class="arm_confirm_box_btn armemailaddbtn" id="arm_change_user_plan_status" style="margin-right: 5px;" data-index="' . $pID . '" >' . __('Ok', 'ARMember') . '</button>
@@ -2740,7 +2763,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                 $total_recurrence = $recurringData['rec_time'];
                                                 $completed_rec = $planData['arm_completed_recurring'];
                                                 
-                                                $arm_paid_post_plans_wrapper.= '<div style="position: relative; float: left;">';
+                                                $arm_paid_post_plans_wrapper.= '<div class="arm_float_left arm_position_relative">';
                                                    
                                                     if (!in_array($pID, $suspended_plan_ids) && $total_recurrence != $completed_rec) {
                                                         
@@ -2749,11 +2772,11 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                         $arm_paid_post_plans_wrapper.= '<div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_extend_renewal_date" id="arm_confirm_box_extend_renewal_date_'.$pID.'">';
                                                         $arm_paid_post_plans_wrapper.= '<div class="arm_confirm_box_body">';
                                                         $arm_paid_post_plans_wrapper.= '<div class="arm_confirm_box_arrow"></div>';
-                                                        $arm_paid_post_plans_wrapper.= '<div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">';
-                                                        $arm_paid_post_plans_wrapper.= '<span style="font-size: 15px; margin-bottom: 5px;">'.__('Select how many days you want to extend in current cycle?', 'ARMember').'</span><div style="margin-top: 10px;">';
+                                                        $arm_paid_post_plans_wrapper.= '<div class="arm_confirm_box_text arm_padding_top_15">';
+                                                        $arm_paid_post_plans_wrapper.= '<span class="arm_margin_bottom_5 arm_font_size_15">'.__('Select how many days you want to extend in current cycle?', 'ARMember').'</span><div class="arm_margin_top_10">';
                                                         $arm_paid_post_plans_wrapper.= '<input type="hidden" id="arm_user_grace_plus_'.$pID.'" name="arm_user_grace_plus_'.$pID.'" value="0" class="arm_user_grace_plus"/>';
-                                                        $arm_paid_post_plans_wrapper.= '<dl class="arm_selectbox column_level_dd arm_member_form_dropdown">
-                                                                            <dt style="min-width:45px; width:45px; text-align: center;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                        $arm_paid_post_plans_wrapper.= '<dl class="arm_selectbox column_level_dd arm_member_form_dropdown arm_width_45 arm_min_width_45">
+                                                                            <dt class="arm_text_align_center"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                             <dd>';
                                                         $arm_paid_post_plans_wrapper.= '<ul data-id="arm_user_grace_plus_'.$pID.'">';
                                                                                     
@@ -2768,7 +2791,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                         $arm_paid_post_plans_wrapper.= '</dl>'.__('Days', 'ARMember').'</div>';
                                                         $arm_paid_post_plans_wrapper.= '</div>';
                                                         $arm_paid_post_plans_wrapper.= '<div class="arm_confirm_box_btn_container">';
-                                                        $arm_paid_post_plans_wrapper.= '<button type="button" class="arm_confirm_box_btn armemailaddbtn" style="margin-right: 5px;" onclick="hideConfirmBoxCallback();">'.__('Ok', 'ARMember').'</button>';
+                                                        $arm_paid_post_plans_wrapper.= '<button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5"  onclick="hideConfirmBoxCallback();">'.__('Ok', 'ARMember').'</button>';
                                                         $arm_paid_post_plans_wrapper.= '<button type="button" class="arm_confirm_box_btn armcancel arm_user_extend_renewal_date_cancel_btn" onclick="hideUserExtendRenewalDateBoxCallback('.$pID.');">'.__('Cancel', 'ARMember').'</button>';
                                                         
                                                         $arm_paid_post_plans_wrapper.= '</div>';
@@ -2782,13 +2805,13 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                     if ($total_recurrence != $completed_rec) {
                                                          
                                                         $arm_paid_post_plans_wrapper .= '<a href="javascript:void(0)" class="arm_user_renew_next_cycle_action_btn" id="arm_skip_next_cycle" onclick="showConfirmBoxCallback(\'renew_next_cycle_'.$pID.'\');">'.__('Renew Cycle', 'ARMember').'</a>';
-                                                        $arm_paid_post_plans_wrapper .=  '<div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_renew_next_cycle" id="arm_confirm_box_renew_next_cycle_'.$pID.'" style="width: 280px; top:25px; right:45px;">';
+                                                        $arm_paid_post_plans_wrapper .=  '<div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_renew_next_cycle arm_width_280" id="arm_confirm_box_renew_next_cycle_'.$pID.'" style=" top:25px; right:45px;">';
                                                         $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_body">';
                                                         $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_arrow" style="float: right"></div>';
-                                                        $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">';
+                                                        $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_text arm_padding_top_15">';
                                                         $arm_paid_post_plans_wrapper .= '<input type="hidden" id="arm_skip_next_renewal_'.$pID.'" name="arm_skip_next_renewal_'.$pID.'" value="0" class="arm_skip_next_renewal"/>'.__('Are you sure you want to renew next cycle?', 'ARMember').'</div>'; 
                                                         $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_btn_container">';
-                                                        $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armemailaddbtn" style="margin-right: 5px;" onclick="RenewNextCycleOkCallback('.$pID.')">'.__('Ok', 'ARMember').'</button>';
+                                                        $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5" onclick="RenewNextCycleOkCallback('.$pID.')">'.__('Ok', 'ARMember').'</button>';
                                                         $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armcancel arm_user_renew_next_cycle_cancel_btn" onclick="hideUserRenewNextCycleBoxCallback('.$pID.');">'.__('Cancel', 'ARMember').'</button>';
                                                         $arm_paid_post_plans_wrapper .= '</div>';
                                                         $arm_paid_post_plans_wrapper .= '</div>';
@@ -2800,13 +2823,13 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                       
                                                     $arm_paid_post_plans_wrapper .= '<div style="position: relative; float: left;">';
                                                     $arm_paid_post_plans_wrapper .= '<a href="javascript:void(0)" class="arm_user_renew_next_cycle_action_btn" id="arm_skip_next_cycle" onclick="showConfirmBoxCallback(\'renew_next_cycle_'.$pID.'\');">'.__('Renew', 'ARMember').'</a>';
-                                                    $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_renew_next_cycle" id="arm_confirm_box_renew_next_cycle_'.$pID.'" style="width: 280px; top:25px; right:45px; ">';
+                                                    $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_renew_next_cycle arm_width_280" id="arm_confirm_box_renew_next_cycle_'.$pID.'" style=" top:25px; right:45px; ">';
                                                     $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_body">';
                                                     $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_arrow" style="float: right"></div>';
-                                                    $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">';
+                                                    $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_text arm_padding_top_15">';
                                                     $arm_paid_post_plans_wrapper .= '<input type="hidden" id="arm_skip_next_renewal_'.$pID.'" name="arm_skip_next_renewal_'.$pID.'" value="0" class="arm_skip_next_renewal"/>'.__('Are you sure you want to renew plan?', 'ARMember').'</div>';
                                                     $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_btn_container">';
-                                                    $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armemailaddbtn" style="margin-right: 5px;" onclick="RenewNextCycleOkCallback('.$pID.')" >'.__('Ok', 'ARMember').'</button>';
+                                                    $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5"  onclick="RenewNextCycleOkCallback('.$pID.')">'.__('Ok', 'ARMember').'</button>';
                                                     $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armcancel arm_user_renew_next_cycle_cancel_btn" onclick="hideUserRenewNextCycleBoxCallback('.$pID.');">'.__('Cancel', 'ARMember').'</button>';
                                                     $arm_paid_post_plans_wrapper .= '</div>';
                                                     $arm_paid_post_plans_wrapper .= '</div>';
@@ -2820,7 +2843,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                     
                                                 }
                                                     
-                                                $arm_paid_post_plans_wrapper .= '<div style="position: relative; float: left;">';
+                                                $arm_paid_post_plans_wrapper .= '<div class="arm_position_relative arm_float_left">';
                                                 
                                                 $arm_paid_post_plans_wrapper .= '<a class="arm_remove_user_plan_div armhelptip tipso_style" href="javascript:void(0)" title="'.__('Remove Post', 'ARMember').'" onclick="showConfirmBoxCallback(\'delete_user_plan_'.$pID.'\');"></a>';
                                                 $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box arm_member_edit_confirm_box" id="arm_confirm_box_delete_user_plan_'.$pID.'" style="top:25px; right: -20px; ">';
@@ -2829,11 +2852,11 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                 
                                                 $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_arrow" style="float: right"></div>';
 
-                                                $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">'.__('Are you sure you want to remove this post?', 'ARMember').'</div>'; 
+                                                $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_text arm_padding_top_15">'.__('Are you sure you want to remove this post?', 'ARMember').'</div>'; 
                                                 
                                                 
                                                 $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_btn_container">';
-                                                $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armemailaddbtn arm_remove_user_plan_div_box" style="margin-right: 5px;" data-index='.$uniq_delete_no.' >'.__('Ok', 'ARMember').'</button>';
+                                                $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armemailaddbtn arm_remove_user_plan_div_box arm_margin_right_5"  data-index='.$uniq_delete_no.'>'.__('Ok', 'ARMember').'</button>';
 
                                                 $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armcancel" onclick="hideConfirmBoxCallback();">'.__('Cancel', 'ARMember').'</button>';
                                                 $arm_paid_post_plans_wrapper .= '</div>';
@@ -2874,7 +2897,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                 if($started_date != '' && $started_date <= $starts_date) {
                                                     $starts_on = date_i18n($date_format, $started_date);
                                                 }
-                                                $expires_on = !empty($planData['arm_expire_plan']) ? '<span id="arm_user_expiry_date_' . $pID . '" style="display: inline;">' . date_i18n($date_format, $planData['arm_expire_plan']) . ' <img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Change Expiry Date', 'ARMember') . '" data-plan_id="' . $pID . '" class="arm_edit_user_expiry_date"></span><span id="arm_user_expiry_date_box_' . $pID . '" style="display: none; position: relative; width: 155px;"><input type="text" value="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '" data-date_format="'.$arm_common_date_format.'"  name="arm_subscription_expiry_date_' . $pID . '" class="arm_member_form_input arm_user_plan_expiry_date_picker" style="width: 120px; min-width: 120px;"/><img src="' . MEMBERSHIP_IMAGES_URL . '/cancel_date_icon.png" width="11" height="11" title="' . __('Cancel', 'ARMember') . '" data-plan_id="' . $pID . '" data-plan-expire-date="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '" class="arm_cancel_edit_user_expiry_date"></span>' : __('Never Expires', 'ARMember');
+                                                $expires_on = !empty($planData['arm_expire_plan']) ? '<span id="arm_user_expiry_date_' . $pID . '" style="display: inline;">' . date_i18n($date_format, $planData['arm_expire_plan']) . ' <img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Change Expiry Date', 'ARMember') . '" data-plan_id="' . $pID . '" class="arm_edit_user_expiry_date"></span><span id="arm_user_expiry_date_box_' . $pID . '" style="display: none; position: relative; width: 155px;"><input type="text" value="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '" data-date_format="'.$arm_common_date_format.'"  name="arm_subscription_expiry_date_' . $pID . '" class="arm_member_form_input arm_user_plan_expiry_date_picker arm_width_120 arm_min_width_120" /><img src="' . MEMBERSHIP_IMAGES_URL . '/cancel_date_icon.png" width="11" height="11" title="' . __('Cancel', 'ARMember') . '" data-plan_id="' . $pID . '" data-plan-expire-date="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '" class="arm_cancel_edit_user_expiry_date"></span>' : __('Never Expires', 'ARMember');
                                                 $renewal_on = !empty($planData['arm_next_due_payment']) ? date_i18n($date_format, $planData['arm_next_due_payment']) : '-';
                                                 $trial_starts = !empty($planData['arm_trial_start']) ? $planData['arm_trial_start'] : '';
                                                 $trial_ends = !empty($planData['arm_trial_end']) ? $planData['arm_trial_end'] : '';
@@ -2925,15 +2948,15 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                 $arm_paid_post_plans_wrapper .= '<td>';
                                                 
                                                 
-                                                $arm_paid_post_plans_wrapper .= '<div style="position: relative; float: left;">';
+                                                $arm_paid_post_plans_wrapper .= '<div class="arm_position_relative arm_float_left">';
                                                 $arm_paid_post_plans_wrapper .= '<a class="arm_remove_user_plan_div armhelptip tipso_style" href="javascript:void(0)" title="'.__('Remove Post', 'ARMember').'" onclick="showConfirmBoxCallback(\'delete_user_plan_'.$pID.'\');"></a>';
                                                 $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box arm_member_edit_confirm_box" id="arm_confirm_box_delete_user_plan_'.$pID.'" style="top:25px; right: -20px; ">';
 
                                                 $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_body">';
                                                 $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_arrow" style="float: right"></div>';
-                                                $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">'.__('Are you sure you want to remove this post?', 'ARMember').'</div>';
+                                                $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_text arm_padding_top_15" >'.__('Are you sure you want to remove this post?', 'ARMember').'</div>';
                                                 $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_btn_container">';
-                                                $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armemailaddbtn" id="arm_remove_paid_post_user_future_plan_div_'.$pID.'" style="margin-right: 5px;" data-index='.$count_plans.'>'.__('Ok', 'ARMember').'</button>';
+                                                $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5" id="arm_remove_paid_post_user_future_plan_div_'.$pID.'" data-index='.$count_plans.'>'.__('Ok', 'ARMember').'</button>';
                                                 $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armcancel" onclick="hideConfirmBoxCallback();">'.__('Cancel', 'ARMember').'</button>';
                                                 $arm_paid_post_plans_wrapper .= '</div>';
                                                 $arm_paid_post_plans_wrapper .= '</div>';
@@ -3142,34 +3165,34 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                 $arm_paid_post_plans_wrapper .= '<div class="arm_add_new_item_box arm_add_new_plan"><a id="arm_add_plan_to_user" class="greensavebtn arm_save_btn" href="javascript:void(0)" ><img align="absmiddle" src="' . MEMBERSHIP_IMAGES_URL . '/add_new_icon.png"><span> ' . __('Add Post', 'ARMember') . '</span></a></div>';
 
-                $arm_paid_post_plans_wrapper .= '<div class="popup_content_text arm_add_plan" style="text-align:center; display:none;">';
-                $arm_paid_post_plans_wrapper .= '<div class="arm_edit_plan_wrapper" style="position: relative; margin-top: 10px;">';
+                $arm_paid_post_plans_wrapper .= '<div class="popup_content_text arm_add_plan arm_text_align_center" style="display:none;">';
+                $arm_paid_post_plans_wrapper .= '<div class="arm_edit_plan_wrapper arm_position_relative arm_margin_top_10" >';
                 $arm_paid_post_plans_wrapper .= '<span class="arm_edit_plan_lbl">' . __('Select Post', 'ARMember') . '*</span> ';
                 $arm_paid_post_plans_wrapper .= '<div class="arm_edit_field">';
                 
                     $arm_paid_post_plans_wrapper .= '<input type="hidden" class="arm_user_plan_change_input arm_user_plan_change_input_get_cycle" name="arm_user_plan[]" id="arm_user_plan" value="" data-manage-plan-grid="1"/>';
                 
-                $arm_paid_post_plans_wrapper .= '<dl class="arm_selectbox column_level_dd arm_member_form_dropdown" style="float: left;">';
+                $arm_paid_post_plans_wrapper .= '<dl class="arm_selectbox column_level_dd arm_member_form_dropdown arm_float_left arm_width_500" >';
                 $arm_paid_post_plans_wrapper .= '<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>';
                 $arm_paid_post_plans_wrapper .= '<dd><ul data-id="arm_user_plan">' . $plansLists . '</ul></dd>';
                 $arm_paid_post_plans_wrapper .= '</dl>';
-                $arm_paid_post_plans_wrapper .= '<br/><span class="arm_error_select_plan error arm_invalid" style="display:none; text-align:left;">' . __('Please select Post.', 'ARMember') . '</span>';
+                $arm_paid_post_plans_wrapper .= '<br/><span class="arm_error_select_plan error arm_invalid arm_text_align_left" style="display:none; ">' . __('Please select Post.', 'ARMember') . '</span>';
                 $arm_paid_post_plans_wrapper .= '</div>';
                 $arm_paid_post_plans_wrapper .= '</div>';
 
-                $arm_paid_post_plans_wrapper .= '<div class="arm_selected_plan_cycle" style="position: relative; margin-top: 3.8rem;">';
+                $arm_paid_post_plans_wrapper .= '<div class="arm_selected_plan_cycle arm_position_relative" style="margin-top: 3.8rem;">';
                 $arm_paid_post_plans_wrapper .= '</div>';
 
-                $arm_paid_post_plans_wrapper .= '<div  style="position: relative; margin-top: 10px;">';
+                $arm_paid_post_plans_wrapper .= '<div  class="arm_position_relative arm_margin_top_10">';
                 $arm_paid_post_plans_wrapper .= '<span class="arm_edit_plan_lbl">' . __('Post Start Date', 'ARMember') . '</span>';
-                $arm_paid_post_plans_wrapper .= '<div class="arm_edit_field" style="position: relative;">';
+                $arm_paid_post_plans_wrapper .= '<div class="arm_edit_field arm_position_relative" >';
                 
-                $arm_paid_post_plans_wrapper .= '<input type="text" value="' . date($arm_common_date_format, strtotime(date('Y-m-d'))) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_start_date[]" class="arm_datepicker arm_member_form_input arm_user_add_plan_date_picker"  style="width: 500px; min-width: 500px;"/>';
+                $arm_paid_post_plans_wrapper .= '<input type="text" value="' . date($arm_common_date_format, strtotime(date('Y-m-d'))) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_start_date[]" class="arm_datepicker arm_member_form_input arm_user_add_plan_date_picker arm_width_500 arm_min_width_500"  />';
                 
                 $arm_paid_post_plans_wrapper .= '</div>';
                 $arm_paid_post_plans_wrapper .= '</div>';
 
-                $arm_paid_post_plans_wrapper .= '<div  style="position: relative; margin-top: 10px;">';
+                $arm_paid_post_plans_wrapper .= '<div class="arm_position_relative arm_margin_top_10">';
                 $arm_paid_post_plans_wrapper .= '<span class="arm_edit_plan_lbl">&nbsp;</span>';
                 $arm_paid_post_plans_wrapper .= '<div class="arm_edit_field">';
                 $arm_paid_post_plans_wrapper .= '<button class="arm_member_add_paid_plan_save_btn arm_save_btn">' . __('Save', 'ARMember') . '</button>';
@@ -3178,7 +3201,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                 $arm_paid_post_plans_wrapper .= '<button class="arm_add_plan_cancel_btn arm_cancel_btn" type="button">' . __('Close', 'ARMember') . '</button>';
 
 
-                $arm_paid_post_plans_wrapper .= '<img src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" class="arm_loader_img_user_add_plan" style="position:relative;top:8px;display:none;" width="24" height="24" />';
+                $arm_paid_post_plans_wrapper .= '<img src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" class="arm_loader_img_user_add_plan arm_submit_btn_loader" style="display:none;" width="24" height="24" />';
                 $arm_paid_post_plans_wrapper .= '</div>';
                 $arm_paid_post_plans_wrapper .= '</div>';
 
@@ -3197,7 +3220,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                 $arm_paid_post_plans_wrapper .= '<div class="arm_paid_post_plans_wrapper" data-user_id="'.$user_id.'">';
 
-                $arm_paid_post_plans_wrapper.= '<table class="arm_user_edit_plan_table" cellspacing="1" style="text-align: center; width:95%;     border-left: 1px solid #eaeaea; margin: 20px; border-right: 1px solid #eaeaea;">';
+                $arm_paid_post_plans_wrapper.= '<table class="arm_user_edit_plan_table arm_text_align_center" cellspacing="1" style="width:calc(100% - 40px);border-left: 1px solid #eaeaea; margin: 20px; border-right: 1px solid #eaeaea;">';
                 $arm_paid_post_plans_wrapper.= '<tr class="arm_user_plan_row arm_user_plan_head odd">';
                 //$arm_paid_post_plans_wrapper.= '<th class="arm_user_plan_text_th arm_user_plan_no">'. __('No', 'ARMember').'</th>';
                 $arm_paid_post_plans_wrapper.= '<th class="arm_edit_plan_name">'. __('Post Name', 'ARMember').'</th>';
@@ -3224,6 +3247,17 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                     $count_plans = $count_plans + $per_page;
                 }
                 $arm_check_data = 1;
+                
+                $arm_member_view_paid_plan_detail_action = !empty($_REQUEST['action']) ? $_REQUEST['action'] : '';
+
+                $arm_paid_post_supended_tooltip_class = $arm_paid_post_supended_tooltip_txt = "";
+                $arm_paid_post_suspended_txt_func = "javascript:void(0)";
+                if(empty($arm_member_view_paid_plan_detail_action))
+                {
+                    $arm_paid_post_supended_tooltip_class = "armhelptip tipso_style";
+                    $arm_paid_post_supended_tooltip_txt = __('Click here to Show failed payment history', 'ARMember');
+                    $arm_paid_post_suspended_txt_func = 'arm_show_failed_payment_history(' . $user_id . ',' . $pID . ',\'' . $planName . '\',\'' . $planData['arm_start_plan'] . '\')';
+                }
 
                 if (!empty($planIDs)) {
                     foreach ($planIDs as $pID => $arm_paid_post_id) {
@@ -3254,7 +3288,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                     $starts_on = date_i18n($date_format, $started_date);
                                 }
 
-                                $expires_on = !empty($planData['arm_expire_plan']) ? '<span id="arm_user_expiry_date_' . $pID . '" style="display: inline;"> ' . date_i18n($date_format, $planData['arm_expire_plan']) . ' <img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Change Expiry Date', 'ARMember') . '" data-plan_id="' . $pID . '" class="arm_edit_user_expiry_date armhelptip tipso_style"></span><span id="arm_user_expiry_date_box_' . $pID . '" style="display: none; position: relative; width: 157px;"><input type="text" value="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_expiry_date_' . $pID . '"  id="arm_subscription_expiry_date_'.$pID.'_'.$user_id.'" class="arm_member_form_input arm_user_plan_expiry_date_picker" style="width: 120px; min-width: 120px;"/><img src="' . MEMBERSHIP_IMAGES_URL . '/arm_save_icon.png" style="vertical-align: middle;display:none;" width="14" height="16" title="' . __('Save Expiry Date', 'ARMember') . '" class="arm_edit_plan_action_button arm_member_save_post armhelptip tipso_style" id="arm_member_save_post_'.$pID.'" data-plan_id="' . $pID . '" data-user_id="' . $user_id . '" /><img src="' . MEMBERSHIP_IMAGES_URL . '/cancel_date_icon.png" width="11" height="11" title="' . __('Cancel', 'ARMember') . '" data-plan_id="' . $pID . '" data-plan-expire-date="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '" class="arm_cancel_edit_user_expiry_date"></span>' : __('Never Expires', 'ARMember');
+                                $expires_on = !empty($planData['arm_expire_plan']) ? '<span id="arm_user_expiry_date_' . $pID . '" style="display: inline;"> ' . date_i18n($date_format, $planData['arm_expire_plan']) . ' <img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Change Expiry Date', 'ARMember') . '" data-plan_id="' . $pID . '" class="arm_edit_user_expiry_date armhelptip tipso_style"></span><span id="arm_user_expiry_date_box_' . $pID . '" style="display: none;" class="arm_position_relative arm_width_157"><input type="text" value="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_expiry_date_' . $pID . '"  id="arm_subscription_expiry_date_'.$pID.'_'.$user_id.'" class="arm_member_form_input arm_user_plan_expiry_date_picker arm_width_120 arm_min_width_120" /><img src="' . MEMBERSHIP_IMAGES_URL . '/arm_save_icon.png" style="display:none;" width="14" height="16" title="' . __('Save Expiry Date', 'ARMember') . '" class="arm_edit_plan_action_button arm_member_save_post arm_vertical_align_middle armhelptip tipso_style" id="arm_member_save_post_'.$pID.'" data-plan_id="' . $pID . '" data-user_id="' . $user_id . '" /><img src="' . MEMBERSHIP_IMAGES_URL . '/cancel_date_icon.png" width="11" height="11" title="' . __('Cancel', 'ARMember') . '" data-plan_id="' . $pID . '" data-plan-expire-date="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '" class="arm_cancel_edit_user_expiry_date"></span>' : __('Never Expires', 'ARMember');
                                 $renewal_on = !empty($planData['arm_next_due_payment']) ? date_i18n($date_format, $planData['arm_next_due_payment']) : '-';
                                 $trial_starts = !empty($planData['arm_trial_start']) ? $planData['arm_trial_start'] : '';
                                 $trial_ends = !empty($planData['arm_trial_end']) ? $planData['arm_trial_end'] : '';
@@ -3293,16 +3327,16 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 
                                 if (!empty($suspended_plan_ids)) {
                                     if (in_array($pID, $suspended_plan_ids)) {
-                                        $arm_plan_is_suspended = '<div class="arm_user_plan_status_div" style="position: relative;"><span class="armhelptip tipso_style" id="arm_user_suspend_plan_' . $pID . '" style="color: red; cursor:pointer;" onclick="arm_show_failed_payment_history(' . $user_id . ',' . $pID . ',\'' . $planName . '\',\'' . $planData['arm_start_plan'] . '\')" title="' . __('Click here to Show failed payment history', 'ARMember') . '">(' . __('Suspended', 'ARMember') . ')</span><img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Activate Post', 'ARMember') . '" data-plan_id="' . $pID . '" onclick="showConfirmBoxCallback(\'change_user_plan_' . $pID . '\');" class="arm_change_user_plan_img_' . $pID . '">
+                                        $arm_plan_is_suspended = '<div class="arm_user_plan_status_div arm_position_relative" ><span class="'.$arm_paid_post_supended_tooltip_class.'" id="arm_user_suspend_plan_' . $pID . '" style="color: red;" onclick="'. $arm_paid_post_suspended_txt_func.'" title="' . $arm_paid_post_supended_tooltip_txt . '">(' . __('Suspended', 'ARMember') . ')</span><img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Activate Post', 'ARMember') . '" data-plan_id="' . $pID . '" onclick="showConfirmBoxCallback(\'change_user_plan_' . $pID . '\');" class="arm_change_user_plan_img_' . $pID . '">
     
                                         <div class="arm_confirm_box arm_member_edit_confirm_box" id="arm_confirm_box_change_user_plan_' . $pID . '" style="top:25px; right: -20px; ">
                                                 <div class="arm_confirm_box_body">
                                                     <div class="arm_confirm_box_arrow" style="float: right"></div>
-                                                    <div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">' .
+                                                    <div class="arm_confirm_box_text arm_padding_top_15" >' .
                                                 __('Are you sure you want to active this paid post?', 'ARMember') . '
                                                     </div>
                                                     <div class="arm_confirm_box_btn_container">
-                                                        <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_post_status_change" style="margin-right: 5px;" data-index="' . $pID . '" data-item_id="'.$pID.'" >' . __('Ok', 'ARMember') . '</button>
+                                                        <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_post_status_change arm_margin_right_5"  data-index="' . $pID . '" data-item_id="'.$pID.'" >' . __('Ok', 'ARMember') . '</button>
                                                         <button type="button" class="arm_confirm_box_btn armcancel" onclick="hideConfirmBoxCallback();">' . __('Cancel', 'ARMember') . '</button>
                                                     </div>
                                                 </div>
@@ -3341,7 +3375,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                             $total_recurrence = $recurringData['rec_time'];
                                             $completed_rec = $planData['arm_completed_recurring'];
                                             
-                                            $arm_paid_post_plans_wrapper.= '<div style="position: relative; float: left;">';
+                                            $arm_paid_post_plans_wrapper.= '<div class="arm_position_relative arm_float_left" >';
                                                
                                                 if (!in_array($pID, $suspended_plan_ids) && $total_recurrence != $completed_rec) {
                                                     
@@ -3350,8 +3384,8 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                     $arm_paid_post_plans_wrapper.= '<div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_extend_renewal_date" id="arm_confirm_box_extend_renewal_date_'.$pID.'">';
                                                     $arm_paid_post_plans_wrapper.= '<div class="arm_confirm_box_body">';
                                                     $arm_paid_post_plans_wrapper.= '<div class="arm_confirm_box_arrow"></div>';
-                                                    $arm_paid_post_plans_wrapper.= '<div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">';
-                                                    $arm_paid_post_plans_wrapper.= '<span style="font-size: 15px; margin-bottom: 5px;">'.__('Select how many days you want to extend in current cycle?', 'ARMember').'</span><div style="margin-top: 10px;">';
+                                                    $arm_paid_post_plans_wrapper.= '<div class="arm_confirm_box_text arm_padding_top_15" >';
+                                                    $arm_paid_post_plans_wrapper.= '<span class="arm_margin_bottom_5 arm_font_size_15>'.__('Select how many days you want to extend in current cycle?', 'ARMember').'</span><div class="arm_margin_top_10">';
                                                     $arm_paid_post_plans_wrapper.= '<input type="hidden" id="arm_user_grace_plus_'.$pID.'" name="arm_user_grace_plus_'.$pID.'" value="0" class="arm_user_grace_plus"/>';
                                                     $arm_paid_post_plans_wrapper.= '<dl class="arm_selectbox column_level_dd arm_member_form_dropdown">
                                                                         <dt style="min-width:45px; width:45px; text-align: center;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
@@ -3369,7 +3403,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                     $arm_paid_post_plans_wrapper.= '</dl>'.__('Days', 'ARMember').'</div>';
                                                     $arm_paid_post_plans_wrapper.= '</div>';
                                                     $arm_paid_post_plans_wrapper.= '<div class="arm_confirm_box_btn_container">';
-                                                    $arm_paid_post_plans_wrapper.= '<button type="button" class="arm_confirm_box_btn armemailaddbtn" style="margin-right: 5px;" onclick="hideConfirmBoxCallback();">'.__('Ok', 'ARMember').'</button>';
+                                                    $arm_paid_post_plans_wrapper.= '<button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5"  onclick="hideConfirmBoxCallback();">'.__('Ok', 'ARMember').'</button>';
                                                     $arm_paid_post_plans_wrapper.= '<button type="button" class="arm_confirm_box_btn armcancel arm_user_extend_renewal_date_cancel_btn" onclick="hideUserExtendRenewalDateBoxCallback('.$pID.');">'.__('Cancel', 'ARMember').'</button>';
                                                     
                                                     $arm_paid_post_plans_wrapper.= '</div>';
@@ -3383,13 +3417,13 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                 if ($total_recurrence != $completed_rec) {
                                                      
                                                     //$arm_paid_post_plans_wrapper .= '<a href="javascript:void(0)" class="arm_user_renew_next_cycle_action_btn" id="arm_skip_next_cycle" onclick="showConfirmBoxCallback(\'renew_next_cycle_'.$pID.'\');">'.__('Renew Cycle', 'ARMember').'</a>';
-                                                    $arm_paid_post_plans_wrapper .=  '<div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_renew_next_cycle" id="arm_confirm_box_renew_next_cycle_'.$pID.'" style="width: 280px; top:25px; right:45px;">';
+                                                    $arm_paid_post_plans_wrapper .=  '<div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_renew_next_cycle arm_width_280" id="arm_confirm_box_renew_next_cycle_'.$pID.'" style="top:25px; right:45px;">';
                                                     $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_body">';
                                                     $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_arrow" style="float: right"></div>';
-                                                    $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">';
+                                                    $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_text arm_padding_top_15" >';
                                                     $arm_paid_post_plans_wrapper .= '<input type="hidden" id="arm_skip_next_renewal_'.$pID.'" name="arm_skip_next_renewal_'.$pID.'" value="0" class="arm_skip_next_renewal"/>'.__('Are you sure you want to renew next cycle?', 'ARMember').'</div>'; 
                                                     $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_btn_container">';
-                                                    $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armemailaddbtn" style="margin-right: 5px;" onclick="RenewNextCycleOkCallback('.$pID.')">'.__('Ok', 'ARMember').'</button>';
+                                                    $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5"  onclick="RenewNextCycleOkCallback('.$pID.')">'.__('Ok', 'ARMember').'</button>';
                                                     $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armcancel arm_user_renew_next_cycle_cancel_btn" onclick="hideUserRenewNextCycleBoxCallback('.$pID.');">'.__('Cancel', 'ARMember').'</button>';
                                                     $arm_paid_post_plans_wrapper .= '</div>';
                                                     $arm_paid_post_plans_wrapper .= '</div>';
@@ -3401,13 +3435,13 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                   
                                                 $arm_paid_post_plans_wrapper .= '<div style="position: relative; float: left;">';
                                                 //$arm_paid_post_plans_wrapper .= '<a href="javascript:void(0)" class="arm_user_renew_next_cycle_action_btn" id="arm_skip_next_cycle" onclick="showConfirmBoxCallback(\'renew_next_cycle_'.$pID.'\');">'.__('Renew', 'ARMember').'</a>';
-                                                $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_renew_next_cycle" id="arm_confirm_box_renew_next_cycle_'.$pID.'" style="width: 280px; top:25px; right:45px; ">';
+                                                $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_renew_next_cycle arm_width_280" id="arm_confirm_box_renew_next_cycle_'.$pID.'" style="top:25px; right:45px; ">';
                                                 $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_body">';
                                                 $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_arrow" style="float: right"></div>';
-                                                $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">';
+                                                $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_text arm_padding_top_15" >';
                                                 $arm_paid_post_plans_wrapper .= '<input type="hidden" id="arm_skip_next_renewal_'.$pID.'" name="arm_skip_next_renewal_'.$pID.'" value="0" class="arm_skip_next_renewal"/>'.__('Are you sure you want to renew plan?', 'ARMember').'</div>';
                                                 $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box_btn_container">';
-                                                $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armemailaddbtn" style="margin-right: 5px;" onclick="RenewNextCycleOkCallback('.$pID.')" >'.__('Ok', 'ARMember').'</button>';
+                                                $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5"  onclick="RenewNextCycleOkCallback('.$pID.')" >'.__('Ok', 'ARMember').'</button>';
                                                 $arm_paid_post_plans_wrapper .= '<button type="button" class="arm_confirm_box_btn armcancel arm_user_renew_next_cycle_cancel_btn" onclick="hideUserRenewNextCycleBoxCallback('.$pID.');">'.__('Cancel', 'ARMember').'</button>';
                                                 $arm_paid_post_plans_wrapper .= '</div>';
                                                 $arm_paid_post_plans_wrapper .= '</div>';
@@ -3425,7 +3459,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                                 
                                                 
 
-                                                $arm_paid_post_plans_wrapper .= '<div style="position: relative;">';
+                                                $arm_paid_post_plans_wrapper .= '<div class="arm_position_relative">';
                                                 
                                                 $arm_paid_post_plans_wrapper .= '<img src="' . MEMBERSHIP_IMAGES_URL . '/grid_delete_icon_trans.png" class="arm_edit_plan_action_button armhelptip tipso_style" href="javascript:void(0)" title="'.__('Delete Post', 'ARMember').'" onclick="showConfirmBoxCallback_plan(\''.$pID.'\');">';
                                                 $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box" id="arm_confirm_box_plan_'.$pID.'" style="right: -15px;top: 1.4rem;">';
@@ -3483,7 +3517,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                     if($started_date != '' && $started_date <= $starts_date) {
                                         $starts_on = date_i18n($date_format, $started_date);
                                     }
-                                    $expires_on = !empty($planData['arm_expire_plan']) ? '<span id="arm_user_expiry_date_' . $pID . '" style="display: inline;"> ' . date_i18n($date_format, $planData['arm_expire_plan']) . ' <img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Change Expiry Date', 'ARMember') . '" data-plan_id="' . $pID . '" class="arm_edit_user_expiry_date armhelptip tipso_style"></span><span id="arm_user_expiry_date_box_' . $pID . '" style="display: none; position: relative; width: 157px;"><input type="text" value="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_expiry_date_' . $pID . '"  id="arm_subscription_expiry_date_'.$pID.'_'.$user_id.'" class="arm_member_form_input arm_user_plan_expiry_date_picker" style="width: 120px; min-width: 120px;"/><img src="' . MEMBERSHIP_IMAGES_URL . '/arm_save_icon.png" style="vertical-align: middle;display:none;" width="14" height="16" title="' . __('Save Expiry Date', 'ARMember') . '" class="arm_edit_plan_action_button arm_member_save_post armhelptip tipso_style" id="arm_member_save_post_'.$pID.'" data-plan_id="' . $pID . '" data-user_id="' . $user_id . '" /><img src="' . MEMBERSHIP_IMAGES_URL . '/cancel_date_icon.png" width="11" height="11" title="' . __('Cancel', 'ARMember') . '" data-plan_id="' . $pID . '" data-plan-expire-date="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '" class="arm_cancel_edit_user_expiry_date"></span>' : __('Never Expires', 'ARMember');
+                                    $expires_on = !empty($planData['arm_expire_plan']) ? '<span id="arm_user_expiry_date_' . $pID . '" style="display: inline;"> ' . date_i18n($date_format, $planData['arm_expire_plan']) . ' <img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Change Expiry Date', 'ARMember') . '" data-plan_id="' . $pID . '" class="arm_edit_user_expiry_date armhelptip tipso_style"></span><span id="arm_user_expiry_date_box_' . $pID . '" style="display: none;" class="arm_position_relative arm_width_157"><input type="text" value="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_expiry_date_' . $pID . '"  id="arm_subscription_expiry_date_'.$pID.'_'.$user_id.'" class="arm_member_form_input arm_user_plan_expiry_date_picker arm_width_120 arm_min_width_120" /><img src="' . MEMBERSHIP_IMAGES_URL . '/arm_save_icon.png" style="display:none;" width="14" height="16" title="' . __('Save Expiry Date', 'ARMember') . '" class="arm_edit_plan_action_button arm_member_save_post armhelptip tipso_style arm_vertical_align_middle" id="arm_member_save_post_'.$pID.'" data-plan_id="' . $pID . '" data-user_id="' . $user_id . '" /><img src="' . MEMBERSHIP_IMAGES_URL . '/cancel_date_icon.png" width="11" height="11" title="' . __('Cancel', 'ARMember') . '" data-plan_id="' . $pID . '" data-plan-expire-date="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '" class="arm_cancel_edit_user_expiry_date"></span>' : __('Never Expires', 'ARMember');
 
                                     $renewal_on = !empty($planData['arm_next_due_payment']) ? date_i18n($date_format, $planData['arm_next_due_payment']) : '-';
                                     $trial_starts = !empty($planData['arm_trial_start']) ? $planData['arm_trial_start'] : '';
@@ -3536,7 +3570,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                                     
                                     $arm_paid_post_plans_wrapper .= '<input name="arm_user_future_plan[]" value='.$pID.' type="hidden" id="arm_user_paid_post_future_plan_'.$pID.'">';
 
-                                            $arm_paid_post_plans_wrapper .= '<div style="position: relative;">';
+                                            $arm_paid_post_plans_wrapper .= '<div class="arm_position_relative">';
                                                 
                                             $arm_paid_post_plans_wrapper .= '<img src="' . MEMBERSHIP_IMAGES_URL . '/grid_delete_icon_trans.png" class="arm_edit_plan_action_button armhelptip tipso_style" href="javascript:void(0)" title="'.__('Delete Post', 'ARMember').'" onclick="showConfirmBoxCallback_plan(\''.$pID.'\');">';
                                             $arm_paid_post_plans_wrapper .= '<div class="arm_confirm_box" id="arm_confirm_box_plan_'.$pID.'" style="right: -15px;top: 1.4rem;">';
@@ -3583,7 +3617,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
                         }
                     }
                 } else{
-                    $arm_paid_post_plans_wrapper .= '<tr class="arm_user_edit_plan_table" ><td colspan="6" style="text-align:center">'. __("This user don't have any paid post.", 'ARMember'). '</td></tr>';
+                    $arm_paid_post_plans_wrapper .= '<tr class="arm_user_edit_plan_table" ><td colspan="6" class="arm_text_align_center">'. __("This user don't have any paid post.", 'ARMember'). '</td></tr>';
                 }
 
 
@@ -3694,7 +3728,7 @@ if (!class_exists('ARM_pay_per_post_feature')) {
 	                        'Y' => __("year", 'ARMember'),
 	                    );
 
-	                    $content .= '<table class="arm_user_edit_plan_table" cellspacing="1" style="text-align: center; width:95%; border-left: 1px solid #eaeaea; margin: 20px; border-right: 1px solid #eaeaea;">';
+	                    $content .= '<table class="arm_user_edit_plan_table arm_text_align_center" cellspacing="1" style="width:95%; border-left: 1px solid #eaeaea; margin: 20px; border-right: 1px solid #eaeaea;">';
 	                    $content .= '<tr class="arm_user_plan_row arm_user_plan_head odd">';
 	                    $content .= '<th class="arm_edit_plan_name">' . __('Label', 'ARMember') . '</th>';
 	                    $content .= '<th class="arm_edit_plan_type">' . __('Amount', 'ARMember') . '</th>';

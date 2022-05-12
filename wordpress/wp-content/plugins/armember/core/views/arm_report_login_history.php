@@ -20,16 +20,15 @@ if(!empty($_POST['arm_export_login_history']) && $_POST['arm_export_login_histor
 
 
 <div class="wrap arm_page arm_report_analytics_main_wrapper">
+    <?php
+    if ($setact != 1) {
+        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
+        ?>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+    <?php } ?>
     <div class="content_wrapper arm_report_analytics_content arm_report_login_history_content" id="content_wrapper">
         <div class="page_title">
             <?php echo $page_title; ?>
-             <?php
-				if ($setact != 1) {
-					$admin_css_url = admin_url('admin.php?page=arm_manage_license');
-					?>
-			
-					<div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
-			<?php } ?>
             <div class="armclear"></div>
 
         </div>
@@ -60,7 +59,7 @@ if(!empty($_POST['arm_export_login_history']) && $_POST['arm_export_login_histor
                                             
 
                                             
-                                            <label class="arm_log_history_search_lbl_user"><input type="text" placeholder="<?php esc_html_e('Search by username', 'ARMember'); ?>" id="arm_log_history_search_user" name="arm_log_history_search_user" value="" tabindex="-1" ></label>
+                                            <label class="arm_log_history_search_lbl_user"><input type="text" placeholder="<?php esc_html_e('Search by member', 'ARMember'); ?>" id="arm_log_history_search_user" name="arm_log_history_search_user" value="" tabindex="-1" ></label>
 
                                             <div class="sltstandard" style=" <?php echo $float; ?>">
                                                 <div style=" <?php echo $float; ?>margin:5px 2px;">
@@ -98,7 +97,7 @@ if(!empty($_POST['arm_export_login_history']) && $_POST['arm_export_login_histor
                                             ?>
                                             <div class="arm_all_loginhistory_filter_inner">
                                                 <button id="arm_login_history_page_search_btn" class="armemailaddbtn arm_login_history_page_search_btn" type="button"><?php esc_html_e('Apply', 'ARMember'); ?></button>
-                                                <button id="arm_login_history_page_export_btn" class="armemailaddbtn" type="button"><?php esc_html_e('Export To CSV', 'ARMember') ?></button>
+                                                <button id="arm_login_history_page_export_btn" class="armemailaddbtn arm_cancel_btn" type="button"><?php esc_html_e('Export To CSV', 'ARMember') ?></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -120,6 +119,7 @@ if(!empty($_POST['arm_export_login_history']) && $_POST['arm_export_login_histor
                             
         </table>
         <input type='hidden' name='arm_export_login_history' value='0'>
+        <?php wp_nonce_field( 'arm_wp_nonce' );?> 
         </form>
     <?php
     }
@@ -129,3 +129,6 @@ if(!empty($_POST['arm_export_login_history']) && $_POST['arm_export_login_histor
 </div>
 
 <div class="arm_member_view_detail_container"></div>
+<?php
+    echo $ARMember->arm_get_need_help_html_content('members-report-analysis');
+?>

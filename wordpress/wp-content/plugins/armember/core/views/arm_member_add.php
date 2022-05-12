@@ -48,7 +48,7 @@ $required_class = 0;
 $planIDs = array();
 $futurePlanIDs = array();
 $plan_start_date = date('m/d/Y');
-$arm_member_include_fields_keys=array('user_pass');
+$arm_member_include_fields_keys=array('user_email', 'user_pass');
 if (isset($_POST['action']) && $_POST['action'] == 'add_member') {
     $username = !empty($_POST['user_login']) ? $_POST['user_login'] : '';
     $useremail = !empty($_POST['user_email']) ? $_POST['user_email'] : '';
@@ -126,6 +126,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'edit_member' && !empty($_GET['
         }
     }
 
+    $planIDs = apply_filters('arm_modify_plan_ids_externally', $planIDs, $user_id);
+
     $planData = get_user_meta($user_id, 'arm_user_plan_' . $planID, true);
     $plan_start_date = (isset($planData['arm_start_plan']) && !empty($planData['arm_start_plan'])) ? date('m/d/Y', $planData['arm_start_plan']) : date('m/d/Y');
 
@@ -194,15 +196,14 @@ global $check_sorting;
 $setact = $arm_members_activity->$check_sorting();
 ?>
 <div class="wrap arm_page arm_add_member_page armPageContainer">
+    <?php
+    if ($setact != 1) {
+        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
+        ?>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+    <?php } ?>
     <div class="content_wrapper" id="content_wrapper">
         <div class="page_title"><?php echo $form_mode; ?></div>
-        <?php
-        if ($setact != 1) {
-            $admin_css_url = admin_url('admin.php?page=arm_manage_license');
-            ?>
-
-            <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:97%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
-        <?php } ?>
         <div class="armclear"></div>
         <?php
         global $arm_errors;
@@ -267,7 +268,6 @@ $setact = $arm_members_activity->$check_sorting();
                     </table>
 		    <?php } ?>
                 </div> 
-                <div class="armclear arm_pd-20"></div>   
                 <?php
                 }
                 ?>
@@ -294,6 +294,12 @@ $setact = $arm_members_activity->$check_sorting();
                                             $dbFormFields[$arm_member_form_field_slug]['label'] = $fields_value['arm_form_field_option']['label'];
                                             $dbFormFields[$arm_member_form_field_slug]['options'] = isset($fields_value['arm_form_field_option']['options']) ? $fields_value['arm_form_field_option']['options'] : array();
                                             $dbFormFields['display_member_fields'][$arm_member_form_field_slug]=$arm_member_form_field_slug;
+                                             
+                                             if( !empty( isset($fields_value['arm_form_field_option']['default_val']) ) && !empty($fields_value['arm_form_field_option']['type']) && ($fields_value['arm_form_field_option']['type']=='radio' || $fields_value['arm_form_field_option']['type']=='checkbox'))
+                                             {
+                                                $dbFormFields[$arm_member_form_field_slug]['default_val'] = $fields_value['arm_form_field_option']['default_val'];
+                                             }
+
                                         }    
                                     }
                                 }
@@ -414,7 +420,6 @@ $setact = $arm_members_activity->$check_sorting();
                                 </td>
                             </tr>
                             <?php 
-                           
                             if (!empty($dbFormFields)) {
                                 foreach ($dbFormFields as $meta_key => $field) {
                                     $field_options = maybe_unserialize($field);
@@ -498,7 +503,7 @@ $setact = $arm_members_activity->$check_sorting();
                             <?php
                            
                             $exclude_keys = array(
-                                'first_name', 'last_name', 'user_login', 'user_email', 'user_pass', 'repeat_pass',
+                                'user_login', 'user_email', 'user_pass', 'repeat_pass',
                                 'arm_user_plan', 'arm_last_login_ip', 'arm_last_login_date', 'roles', 'section',
                                 'repeat_pass', 'repeat_email', 'social_fields', 'avatar', 'profile_cover'
                             );
@@ -648,7 +653,7 @@ $setact = $arm_members_activity->$check_sorting();
                             }
                             ?>
 
-                            <select id="arm_role" class="arm_chosen_selectbox" data-msg-required="<?php _e('Select Role.', 'ARMember'); ?>" name="roles[]" data-placeholder="<?php _e('Select Role(s)..', 'ARMember'); ?>" multiple="multiple" style="width:500px;">
+                            <select id="arm_role" class="arm_chosen_selectbox" data-msg-required="<?php _e('Select Role.', 'ARMember'); ?>" name="roles[]" data-placeholder="<?php _e('Select Role(s)..', 'ARMember'); ?>" multiple="multiple">
                                 <?php if (!empty($user_roles)) { ?>
                                     <?php foreach ($user_roles as $key => $val) { ?>
                                         <option class="arm_message_selectbox_op" value="<?php echo $key; ?>" <?php
@@ -667,8 +672,8 @@ $setact = $arm_members_activity->$check_sorting();
                         <th>
                             <label for="arm_primary_status"><?php _e('Member Status', 'ARMember'); ?></label>
                         </th>
-                        <td style="position: relative;">
-                            <div class="armswitch" style="display: inline-block;vertical-align: middle;margin: 0 10px 0 6px;">
+                        <td class="arm_position_relative">
+                            <div class="armswitch arm_member_status_div">
                                 <input type="checkbox" id="arm_primary_status_check" <?php checked($primary_status, '1'); ?> value="1" class="armswitch_input" name="arm_primary_status"/>
                                 <label for="arm_primary_status_check" class="armswitch_label arm_primary_status_check_label"></label>
                             </div>
@@ -725,8 +730,14 @@ $setact = $arm_members_activity->$check_sorting();
             ?>    
             <table class="form-table">
                         <tr><td colspan="2"><div class="arm_solid_divider"></div><div class="page_sub_title"><?php _e('Membership Plan', 'ARMember'); ?></div></td></tr>
-
-                        <tr><th style="color: red; padding-top: 10px;"><?php _e('Important Note:', 'ARMember'); ?></th><td style="color: red;"><span><?php _e('All the actions like add new plan, change plan status, renew cycle, extend days, delete plan will be applied only after save button is clicked at the bottom of this page.', 'ARMember'); ?><br/></span></td></tr>
+                        <tr>
+                            <td colspan="2">
+                                <div class="arm-note-message --warning">
+                                    <p><?php _e('Important Note:', 'ARMember'); ?></p>
+                                    <span><?php _e('All the actions like add new plan, change plan status, renew cycle, extend days, delete plan will be applied only after save button is clicked at the bottom of this page.', 'ARMember'); ?></span>
+                                </div>
+                            </td>
+                        </tr>
 
                         <tr class="form-field">
                             <th>
@@ -738,15 +749,15 @@ $setact = $arm_members_activity->$check_sorting();
                                     }
                                     ?></label>
                             </th>
-                            <td style="position: relative;">
+                            <td class="arm_position_relative">
                                 <?php if ($is_multiple_membership_feature->isMultipleMembershipFeature) { ?>
 
                                     <ul class="arm_user_plan_ul" id="arm_user_plan_ul">
-                                        <li class="arm_user_plan_li_0" style="margin-bottom: 20px; float: left;">
+                                        <li class="arm_user_plan_li_0 arm_margin_bottom_20">
                                             <div class="arm_user_plns_box">
                                                 <input type='hidden' class="arm_user_plan_change_input arm_mm_user_plan_change_input_get_cycle" name="arm_user_plan[]" id="arm_user_plan_0" value="" data-arm-plan-count="0"/>
 
-                                                <dl class="arm_selectbox column_level_dd arm_member_form_dropdown">
+                                                <dl class="arm_selectbox column_level_dd arm_member_form_dropdown arm_margin_right_5">
                                                     <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                     <dd><ul data-id="arm_user_plan_0"><?php echo $plansLists; ?></ul></dd>
                                                 </dl>
@@ -754,12 +765,12 @@ $setact = $arm_members_activity->$check_sorting();
                                                 <img src="<?php echo MEMBERSHIP_IMAGES_URL . "/add_plan.png"; ?>"  id="arm_add_new_user_plan_link" title="<?php _e('Add New Plan', 'ARMember'); ?>" onmouseover="this.src = '<?php echo MEMBERSHIP_IMAGES_URL; ?>/add_plan_hover.png';" onmouseout="this.src = '<?php echo MEMBERSHIP_IMAGES_URL; ?>/add_plan.png';" class="arm_helptip_icon tipso_style arm_add_plan_icon">
                                                 <img src="<?php echo MEMBERSHIP_IMAGES_URL . "/remove_plan.png"; ?>"  id="arm_remove_user_plan" title="<?php _e('Remove Plan', 'ARMember'); ?>" onmouseover="this.src = '<?php echo MEMBERSHIP_IMAGES_URL; ?>/remove_plan_hover.png';" onmouseout="this.src = '<?php echo MEMBERSHIP_IMAGES_URL; ?>/remove_plan.png';" class="arm_helptip_icon tipso_style arm_add_plan_icon">
 
-                                                <div class="arm_selected_plan_cycle_0" style="margin-top: 10px; display: none;">
+                                                <div class="arm_selected_plan_cycle_0 arm_margin_top_10" style="display: none;">
                                                 </div>
 
                                                 <div class="arm_subscription_start_date_wrapper">
                                                     <span><?php _e('Plan Start Date', 'ARMember'); ?>  </span> 
-                                                    <input type="text" value="<?php echo date($arm_common_date_format, strtotime(date('Y-m-d'))); ?>" data-date_format="<?php echo $arm_common_date_format; ?>"  name="arm_subscription_start_date[]" class="arm_member_form_input arm_user_plan_date_picker" style="width: 300px; min-width: 397px;"/>
+                                                    <input type="text" value="<?php echo date($arm_common_date_format, strtotime(date('Y-m-d'))); ?>" data-date_format="<?php echo $arm_common_date_format; ?>"  name="arm_subscription_start_date[]" class="arm_member_form_input arm_user_plan_date_picker" />
                                                 </div>
                                             </div>
                                         </li>
@@ -779,14 +790,14 @@ $setact = $arm_members_activity->$check_sorting();
                                         ?>
                                     </span>
                                     <a href="javascript:void(0)" class="arm_user_plan_change_action_btn" onclick="showUserPlanChangeBoxCallback('plan_change');"><?php _e('Change Plan', 'ARMember'); ?></a>
-                                    <div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_plan_change" id="arm_confirm_box_plan_change" style="width: 280px;">
+                                    <div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_plan_change arm_width_280" id="arm_confirm_box_plan_change" >
                                         <div class="arm_confirm_box_body">
                                             <div class="arm_confirm_box_arrow"></div>
-                                            <div class="arm_confirm_box_text" style="text-align: left;padding-top: 15px;">
+                                            <div class="arm_confirm_box_text arm_text_align_left arm_padding_top_15">
                                                 <input type='hidden' id="arm_user_plan" class="arm_user_plan_change_input arm_user_plan_change_input_get_cycle" name="arm_user_plan" data-old="<?php echo $plan_id; ?>" value="<?php echo $plan_id; ?>" data-manage-plan-grid="2"/>
                                                 <span class="arm_add_plan_filter_label"><?php _e('Select New Plan', 'ARMember') ?></span>
-                                                <dl class="arm_selectbox column_level_dd">
-                                                    <dt style="width: 210px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                <dl class="arm_selectbox column_level_dd arm_width_230">
+                                                    <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                     <dd><ul data-id="arm_user_plan"><?php echo $plansLists; ?></ul></dd>
                                                 </dl>
                                                 <div class="arm_selected_plan_cycle"></div>
@@ -799,13 +810,13 @@ $setact = $arm_members_activity->$check_sorting();
                                                 }
                                                 ?>
 
-                                                <div style="display: <?php echo $display; ?>; margin-top: 10px; position: relative;" class="arm_plan_start_date_box">
+                                                <div style="display: <?php echo $display; ?>; position: relative;" class="arm_plan_start_date_box arm_margin_top_10">
                                                     <span class="arm_add_plan_filter_label"><?php _e('Plan Start Date', 'ARMember');    ?>  </span> 
-                                                    <input type="text" value="<?php echo date($arm_common_date_format, strtotime($plan_start_date)); ?>" data-date_format="<?php echo $arm_common_date_format; ?>" name="arm_subscription_start_date" class="arm_member_form_input arm_user_plan_date_picker" style="width: 232px; min-width: 232px;"/>
+                                                    <input type="text" value="<?php echo date($arm_common_date_format, strtotime($plan_start_date)); ?>" data-date_format="<?php echo $arm_common_date_format; ?>" name="arm_subscription_start_date" class="arm_member_form_input arm_user_plan_date_picker arm_width_232 arm_min_width_232" />
                                                 </div>
                                             </div>
                                             <div class='arm_confirm_box_btn_container'>
-                                                <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_user_plan_change_btn" style="margin-right: 5px;"><?php _e('Ok', 'ARMember'); ?></button>
+                                                <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_user_plan_change_btn arm_margin_right_5" ><?php _e('Ok', 'ARMember'); ?></button>
                                                 <button type="button" class="arm_confirm_box_btn armcancel arm_user_plan_change_cancel_btn" onclick="hideUserPlanChangeBoxCallback();"><?php _e('Cancel', 'ARMember'); ?></button>
                                             </div>
                                         </div>
@@ -872,7 +883,7 @@ $setact = $arm_members_activity->$check_sorting();
                                                                 $starts_on = date_i18n($date_format, $started_date);
                                                             }
 
-                                                            $expires_on = !empty($planData['arm_expire_plan']) ? '<span id="arm_user_expiry_date_' . $pID . '" style="display: inline;"> ' . date_i18n($date_format, $planData['arm_expire_plan']) . ' <img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Change Expiry Date', 'ARMember') . '" data-plan_id="' . $pID . '" class="arm_edit_user_expiry_date"></span><span id="arm_user_expiry_date_box_' . $pID . '" style="display: none; position: relative; width: 155px;"><input type="text" value="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_expiry_date_' . $pID . '" class="arm_member_form_input arm_user_plan_expiry_date_picker" style="width: 120px; min-width: 120px;"/><img src="' . MEMBERSHIP_IMAGES_URL . '/cancel_date_icon.png" width="11" height="11" title="' . __('Cancel', 'ARMember') . '" data-plan_id="' . $pID . '" data-plan-expire-date="' . date('m/d/Y', $planData['arm_expire_plan']) . '" class="arm_cancel_edit_user_expiry_date"></span>' : __('Never Expires', 'ARMember');
+                                                            $expires_on = !empty($planData['arm_expire_plan']) ? '<span id="arm_user_expiry_date_' . $pID . '" style="display: inline;"> ' . date_i18n($date_format, $planData['arm_expire_plan']) . ' <img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Change Expiry Date', 'ARMember') . '" data-plan_id="' . $pID . '" class="arm_edit_user_expiry_date"></span><span class="arm_width_155 arm_position_relative" id="arm_user_expiry_date_box_' . $pID . '" style="display: none;"><input type="text" value="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '"  data-date_format="'.$arm_common_date_format.'" name="arm_subscription_expiry_date_' . $pID . '" class="arm_member_form_input arm_user_plan_expiry_date_picker arm_width_120 arm_min_width_120" /><img src="' . MEMBERSHIP_IMAGES_URL . '/cancel_date_icon.png" width="11" height="11" title="' . __('Cancel', 'ARMember') . '" data-plan_id="' . $pID . '" data-plan-expire-date="' . date('m/d/Y', $planData['arm_expire_plan']) . '" class="arm_cancel_edit_user_expiry_date"></span>' : __('Never Expires', 'ARMember');
                                                             $renewal_on = !empty($planData['arm_next_due_payment']) ? date_i18n($date_format, $planData['arm_next_due_payment']) : '-';
                                                             $trial_starts = !empty($planData['arm_trial_start']) ? $planData['arm_trial_start'] : '';
                                                             $trial_ends = !empty($planData['arm_trial_end']) ? $planData['arm_trial_end'] : '';
@@ -911,16 +922,16 @@ $setact = $arm_members_activity->$check_sorting();
 
                                                             if (!empty($suspended_plan_ids)) {
                                                                 if (in_array($pID, $suspended_plan_ids)) {
-                                                                    $arm_plan_is_suspended = '<div class="arm_user_plan_status_div" style="position: relative;"><span class="armhelptip tipso_style" id="arm_user_suspend_plan_' . $pID . '" style="color: red; cursor:pointer;" onclick="arm_show_failed_payment_history(' . $user_id . ',' . $pID . ',\'' . $planName . '\',\'' . $planData['arm_start_plan'] . '\')" title="' . __('Click here to Show failed payment history', 'ARMember') . '">(' . __('Suspended', 'ARMember') . ')</span><img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Activate Plan', 'ARMember') . '" data-plan_id="' . $pID . '" onclick="showConfirmBoxCallback(\'change_user_plan_' . $pID . '\');" class="arm_change_user_plan_img_' . $pID . '">
+                                                                    $arm_plan_is_suspended = '<div class="arm_user_plan_status_div arm_position_relative" ><span class="armhelptip tipso_style arm_color_red" id="arm_user_suspend_plan_' . $pID . '" style=" cursor:pointer;" onclick="arm_show_failed_payment_history(' . $user_id . ',' . $pID . ',\'' . $planName . '\',\'' . $planData['arm_start_plan'] . '\')" title="' . __('Click here to Show failed payment history', 'ARMember') . '">(' . __('Suspended', 'ARMember') . ')</span><img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Activate Plan', 'ARMember') . '" data-plan_id="' . $pID . '" onclick="showConfirmBoxCallback(\'change_user_plan_' . $pID . '\');" class="arm_change_user_plan_img_' . $pID . '">
  
                                                                     <div class="arm_confirm_box arm_member_edit_confirm_box" id="arm_confirm_box_change_user_plan_' . $pID . '" style="top:25px; right: -20px; ">
                                                                             <div class="arm_confirm_box_body">
-                                                                                <div class="arm_confirm_box_arrow" style="float: right"></div>
-                                                                                <div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">' .
+                                                                                <div class="arm_confirm_box_arrow arm_float_right" ></div>
+                                                                                <div class="arm_confirm_box_text arm_padding_top_15" ">' .
                                                                             __('Are you sure you want to active this plan?', 'ARMember') . '
                                                                                 </div>
                                                                                 <div class="arm_confirm_box_btn_container">
-                                                                                    <button type="button" class="arm_confirm_box_btn armemailaddbtn" id="arm_change_user_plan_status" style="margin-right: 5px;" data-index="' . $pID . '" >' . __('Ok', 'ARMember') . '</button>
+                                                                                    <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5" id="arm_change_user_plan_status"  data-index="' . $pID . '" >' . __('Ok', 'ARMember') . '</button>
                                                                                     <button type="button" class="arm_confirm_box_btn armcancel" onclick="hideConfirmBoxCallback();">' . __('Cancel', 'ARMember') . '</button>
                                                                                 </div>
                                                                             </div>
@@ -958,7 +969,7 @@ $setact = $arm_members_activity->$check_sorting();
                                                                         $total_recurrence = $recurringData['rec_time'];
                                                                         $completed_rec = $planData['arm_completed_recurring'];
                                                                         ?>
-                                                                        <div style="position: relative; float: left;">
+                                                                        <div class="arm_position_relative arm_float_left">
                                                                             <?php
                                                                             if (!in_array($pID, $suspended_plan_ids) && $total_recurrence != $completed_rec) {
                                                                                 ?>
@@ -966,11 +977,11 @@ $setact = $arm_members_activity->$check_sorting();
                                                                                 <div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_extend_renewal_date" id="arm_confirm_box_extend_renewal_date_<?php echo $pID; ?>">
                                                                                     <div class="arm_confirm_box_body">
                                                                                         <div class="arm_confirm_box_arrow"></div>
-                                                                                        <div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">
-                                                                                            <span style="font-size: 15px; margin-bottom: 5px;"> <?php _e('Select how many days you want to extend in current cycle?', 'ARMember'); ?></span><div style="margin-top: 10px;">
+                                                                                        <div class="arm_confirm_box_text arm_padding_top_15">
+                                                                                            <span class="arm_font_size_15 arm_margin_bottom_5"> <?php _e('Select how many days you want to extend in current cycle?', 'ARMember'); ?></span><div class="arm_margin_top_10">
                                                                                                 <input type='hidden' id="arm_user_grace_plus_<?php echo $pID; ?>" name="arm_user_grace_plus_<?php echo $pID; ?>" value="0" class="arm_user_grace_plus"/>
-                                                                                                <dl class="arm_selectbox column_level_dd arm_member_form_dropdown">
-                                                                                                    <dt style="min-width:45px; width:45px; text-align: center;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                                                                                <dl class="arm_selectbox column_level_dd arm_member_form_dropdown arm_width_83">
+                                                                                                    <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                                                                     <dd>
                                                                                                         <ul data-id="arm_user_grace_plus_<?php echo $pID; ?>">
                                                                                                             <?php
@@ -982,10 +993,10 @@ $setact = $arm_members_activity->$check_sorting();
                                                                                                             ?>
                                                                                                         </ul>
                                                                                                     </dd>
-                                                                                                </dl><?php _e('Days', 'ARMember'); ?></div>
+                                                                                                </dl>&nbsp;&nbsp;<?php _e('Days', 'ARMember'); ?></div>
                                                                                         </div>
                                                                                         <div class='arm_confirm_box_btn_container'>
-                                                                                            <button type="button" class="arm_confirm_box_btn armemailaddbtn" style="margin-right: 5px;" onclick="hideConfirmBoxCallback();"><?php _e('Ok', 'ARMember'); ?></button>
+                                                                                            <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5" onclick="hideConfirmBoxCallback();"><?php _e('Ok', 'ARMember'); ?></button>
                                                                                             <button type="button" class="arm_confirm_box_btn armcancel arm_user_extend_renewal_date_cancel_btn" onclick="hideUserExtendRenewalDateBoxCallback(<?php echo $pID; ?>);"><?php _e('Cancel', 'ARMember'); ?></button>
                                                                                         </div>
                                                                                     </div>
@@ -997,15 +1008,15 @@ $setact = $arm_members_activity->$check_sorting();
                                                                             if ($total_recurrence != $completed_rec) {
                                                                                 ?>   
                                                                                 <a href="javascript:void(0)" class="arm_user_renew_next_cycle_action_btn" id="arm_skip_next_cycle" onclick="showConfirmBoxCallback('renew_next_cycle_<?php echo $pID; ?>');"><?php _e('Renew Cycle', 'ARMember'); ?></a>
-                                                                                <div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_renew_next_cycle" id="arm_confirm_box_renew_next_cycle_<?php echo $pID; ?>" style="width: 280px; top:25px; right:45px; ">
+                                                                                <div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_renew_next_cycle arm_width_280" id="arm_confirm_box_renew_next_cycle_<?php echo $pID; ?>" style="top:25px; right:45px; ">
                                                                                     <div class="arm_confirm_box_body">
-                                                                                        <div class="arm_confirm_box_arrow" style="float: right"></div>
-                                                                                        <div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">
+                                                                                        <div class="arm_confirm_box_arrow arm_float_right" ></div>
+                                                                                        <div class="arm_confirm_box_text arm_padding_top_15" >
                                                                                             <input type='hidden' id="arm_skip_next_renewal_<?php echo $pID; ?>" name="arm_skip_next_renewal_<?php echo $pID; ?>" value="0" class="arm_skip_next_renewal"/>
                                                                                             <?php _e('Are you sure you want to renew next cycle?', 'ARMember'); ?>
                                                                                         </div>
                                                                                         <div class='arm_confirm_box_btn_container'>
-                                                                                            <button type="button" class="arm_confirm_box_btn armemailaddbtn" style="margin-right: 5px;" onclick="RenewNextCycleOkCallback(<?php echo $pID; ?>)" ><?php _e('Ok', 'ARMember'); ?></button>
+                                                                                            <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5" onclick="RenewNextCycleOkCallback(<?php echo $pID; ?>)" ><?php _e('Ok', 'ARMember'); ?></button>
                                                                                             <button type="button" class="arm_confirm_box_btn armcancel arm_user_renew_next_cycle_cancel_btn" onclick="hideUserRenewNextCycleBoxCallback(<?php echo $pID; ?>);"><?php _e('Cancel', 'ARMember'); ?></button>
                                                                                         </div>
                                                                                     </div>
@@ -1016,17 +1027,17 @@ $setact = $arm_members_activity->$check_sorting();
                                                                         else if(isset($planData['arm_current_plan_detail']['arm_subscription_plan_type']) && $planData['arm_current_plan_detail']['arm_subscription_plan_type']=='paid_finite')
                                                                         {
                                                                             ?>   
-                                                                            <div style="position: relative; float: left;">
+                                                                            <div class="arm_position_relative arm_float_left">
                                                                                 <a href="javascript:void(0)" class="arm_user_renew_next_cycle_action_btn" id="arm_skip_next_cycle" onclick="showConfirmBoxCallback('renew_next_cycle_<?php echo $pID; ?>');"><?php _e('Renew', 'ARMember'); ?></a>
-                                                                                <div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_renew_next_cycle" id="arm_confirm_box_renew_next_cycle_<?php echo $pID; ?>" style="width: 280px; top:25px; right:45px; ">
+                                                                                <div class="arm_confirm_box arm_member_edit_confirm_box arm_confirm_box_renew_next_cycle arm_width_280" id="arm_confirm_box_renew_next_cycle_<?php echo $pID; ?>" style="top:25px; right:45px; ">
                                                                                     <div class="arm_confirm_box_body">
                                                                                         <div class="arm_confirm_box_arrow" style="float: right"></div>
-                                                                                        <div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">
+                                                                                        <div class="arm_confirm_box_text arm_padding_top_15" >
                                                                                             <input type='hidden' id="arm_skip_next_renewal_<?php echo $pID; ?>" name="arm_skip_next_renewal_<?php echo $pID; ?>" value="0" class="arm_skip_next_renewal"/>
                                                                                             <?php _e('Are you sure you want to renew plan?', 'ARMember'); ?>
                                                                                         </div>
                                                                                         <div class='arm_confirm_box_btn_container'>
-                                                                                            <button type="button" class="arm_confirm_box_btn armemailaddbtn" style="margin-right: 5px;" onclick="RenewNextCycleOkCallback(<?php echo $pID; ?>)" ><?php _e('Ok', 'ARMember'); ?></button>
+                                                                                            <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5" onclick="RenewNextCycleOkCallback(<?php echo $pID; ?>)" ><?php _e('Ok', 'ARMember'); ?></button>
                                                                                             <button type="button" class="arm_confirm_box_btn armcancel arm_user_renew_next_cycle_cancel_btn" onclick="hideUserRenewNextCycleBoxCallback(<?php echo $pID; ?>);"><?php _e('Cancel', 'ARMember'); ?></button>
                                                                                         </div>
                                                                                     </div>
@@ -1045,17 +1056,17 @@ $setact = $arm_members_activity->$check_sorting();
                                                                             <input type="hidden" name="arm_user_plan[]" value="<?php echo $pID; ?>"/>
 
                                                                             <input type="hidden" name="arm_subscription_start_date[]" value="<?php echo date('m/d/Y', $planData['arm_start_plan']); ?>"/>
-                                                                            <div style="position: relative; float: left;">
+                                                                            <div class="arm_position_relative arm_float_left">
                                                                                 <a class="arm_remove_user_plan_div armhelptip tipso_style" href="javascript:void(0)" title="<?php _e('Remove Plan', 'ARMember'); ?>" onclick="showConfirmBoxCallback('delete_user_plan_<?php echo $pID; ?>');"></a>
                                                                                 <div class="arm_confirm_box arm_member_edit_confirm_box" id="arm_confirm_box_delete_user_plan_<?php echo $pID; ?>" style="top:25px; right: -20px; ">
                                                                                     <div class="arm_confirm_box_body">
-                                                                                        <div class="arm_confirm_box_arrow" style="float: right"></div>
-                                                                                        <div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">
+                                                                                        <div class="arm_confirm_box_arrow arm_float_right"></div>
+                                                                                        <div class="arm_confirm_box_text arm_padding_top_15" >
 
                                                                                             <?php _e('Are you sure you want to remove this plan?', 'ARMember'); ?>
                                                                                         </div>
                                                                                         <div class='arm_confirm_box_btn_container'>
-                                                                                            <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_remove_user_plan_div_box" style="margin-right: 5px;" data-index="<?php echo $count_plans; ?>" ><?php _e('Ok', 'ARMember'); ?></button>
+                                                                                            <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_remove_user_plan_div_box arm_margin_right_5"  data-index="<?php echo $count_plans; ?>" ><?php _e('Ok', 'ARMember'); ?></button>
                                                                                             <button type="button" class="arm_confirm_box_btn armcancel" onclick="hideConfirmBoxCallback();"><?php _e('Cancel', 'ARMember'); ?></button>
                                                                                         </div>
                                                                                     </div>
@@ -1105,7 +1116,7 @@ $setact = $arm_members_activity->$check_sorting();
                                                         if($started_date != '' && $started_date <= $starts_date) {
                                                             $starts_on = date_i18n($date_format, $started_date);
                                                         }
-                                                        $expires_on = !empty($planData['arm_expire_plan']) ? '<span id="arm_user_expiry_date_' . $pID . '" style="display: inline;">' . date_i18n($date_format, $planData['arm_expire_plan']) . ' <img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Change Expiry Date', 'ARMember') . '" data-plan_id="' . $pID . '" class="arm_edit_user_expiry_date"></span><span id="arm_user_expiry_date_box_' . $pID . '" style="display: none; position: relative; width: 155px;"><input type="text" value="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '" data-date_format="'.$arm_common_date_format.'"  name="arm_subscription_expiry_date_' . $pID . '" class="arm_member_form_input arm_user_plan_expiry_date_picker" style="width: 120px; min-width: 120px;"/><img src="' . MEMBERSHIP_IMAGES_URL . '/cancel_date_icon.png" width="11" height="11" title="' . __('Cancel', 'ARMember') . '" data-plan_id="' . $pID . '" data-plan-expire-date="' . date('m/d/Y', $planData['arm_expire_plan']) . '" class="arm_cancel_edit_user_expiry_date"></span>' : __('Never Expires', 'ARMember');
+                                                        $expires_on = !empty($planData['arm_expire_plan']) ? '<span id="arm_user_expiry_date_' . $pID . '" style="display: inline;">' . date_i18n($date_format, $planData['arm_expire_plan']) . ' <img src="' . MEMBERSHIP_IMAGES_URL . '/grid_edit_hover_trns.png" width="26" style="position: absolute; margin: -4px 0 0 5px; cursor: pointer;" title="' . __('Change Expiry Date', 'ARMember') . '" data-plan_id="' . $pID . '" class="arm_edit_user_expiry_date"></span><span id="arm_user_expiry_date_box_' . $pID . '" class="arm_position_relative" style="display: none; width: 155px;"><input type="text" value="' . date($arm_common_date_format, $planData['arm_expire_plan']) . '" data-date_format="'.$arm_common_date_format.'"  name="arm_subscription_expiry_date_' . $pID . '" class="arm_member_form_input arm_user_plan_expiry_date_picker arm_width_120 arm_min_width_120" /><img src="' . MEMBERSHIP_IMAGES_URL . '/cancel_date_icon.png" width="11" height="11" title="' . __('Cancel', 'ARMember') . '" data-plan_id="' . $pID . '" data-plan-expire-date="' . date('m/d/Y', $planData['arm_expire_plan']) . '" class="arm_cancel_edit_user_expiry_date"></span>' : __('Never Expires', 'ARMember');
                                                         $renewal_on = !empty($planData['arm_next_due_payment']) ? date_i18n($date_format, $planData['arm_next_due_payment']) : '-';
                                                         $trial_starts = !empty($planData['arm_trial_start']) ? $planData['arm_trial_start'] : '';
                                                         $trial_ends = !empty($planData['arm_trial_end']) ? $planData['arm_trial_end'] : '';
@@ -1153,22 +1164,24 @@ $setact = $arm_members_activity->$check_sorting();
 
                                                             <td>
                                                             <input name="arm_user_future_plan[]" value="<?php echo $pID; ?>" type="hidden" id="arm_user_future_plan_<?php echo $pID; ?>">
-                                                                
-                                                                    <div style="position: relative; float: left;">
+                                                            <?php
+                                                                if ($is_multiple_membership_feature->isMultipleMembershipFeature) { ?>    
+                                                                    <div class="arm_position_relative arm_float_left">
                                                                         <a class="arm_remove_user_plan_div armhelptip tipso_style" href="javascript:void(0)" title="<?php _e('Remove Plan', 'ARMember'); ?>" onclick="showConfirmBoxCallback('delete_user_plan_<?php echo $pID; ?>');"></a>
                                                                         <div class="arm_confirm_box arm_member_edit_confirm_box" id="arm_confirm_box_delete_user_plan_<?php echo $pID; ?>" style="top:25px; right: -20px; ">
                                                                             <div class="arm_confirm_box_body">
-                                                                                <div class="arm_confirm_box_arrow" style="float: right"></div>
-                                                                                <div class="arm_confirm_box_text" style="text-align: center;padding-top: 15px;">
+                                                                                <div class="arm_confirm_box_arrow arm_float_right" ></div>
+                                                                                <div class="arm_confirm_box_text arm_padding_top_15" >
 
                                                                                     <?php _e('Are you sure you want to remove this plan?', 'ARMember'); ?>
                                                                                 </div>
                                                                                 <div class='arm_confirm_box_btn_container'>
-                                                                                    <button type="button" class="arm_confirm_box_btn armemailaddbtn" id="arm_remove_user_future_plan_div" style="margin-right: 5px;" data-index="<?php echo $count_plans; ?>" ><?php _e('Ok', 'ARMember'); ?></button>
+                                                                                    <button type="button" class="arm_confirm_box_btn armemailaddbtn arm_margin_right_5" id="arm_remove_user_future_plan_div"  data-index="<?php echo $count_plans; ?>" ><?php _e('Ok', 'ARMember'); ?></button>
                                                                                     <button type="button" class="arm_confirm_box_btn armcancel" onclick="hideConfirmBoxCallback();"><?php _e('Cancel', 'ARMember'); ?></button>
                                                                                 </div>
                                                                             </div>
                                                                         </div></div>
+							    <?php } ?>
                                                             </td>
 
 
@@ -1206,21 +1219,28 @@ $setact = $arm_members_activity->$check_sorting();
                         <input type="hidden" id="arm_total_user_posts" value="1">
                         <tr><td colspan="2"><div class="arm_solid_divider"></div><div class="page_sub_title"><?php _e('Paid Post', 'ARMember'); ?></div></td></tr>
 
-                        <tr><th style="color: red; padding-top: 10px;"><?php _e('Important Note:', 'ARMember'); ?></th><td style="color: red;"><span><?php _e('All the actions like add new post, renew cycle, extend days, delete post will be applied only after save button is clicked at the bottom of this page.', 'ARMember'); ?><br/></span></td></tr>
+                        <tr>
+                            <td colspan="2">
+                                <div class="arm-note-message --warning">
+                                    <p><?php _e('Important Note:', 'ARMember'); ?></p>
+                                    <span><?php _e('All the actions like add new post, renew cycle, extend days, delete post will be applied only after save button is clicked at the bottom of this page.', 'ARMember'); ?></span>
+                                </div>                                
+                            </td>
+                        </tr>
 
                         <tr class="form-field">
                             <th>
                                 <label for="arm_user_plan"><?php _e('Add New Paid Post', 'ARMember'); ?></label>
                             </th>
-                            <td style="position: relative;">
+                            <td class="arm_position_relative">
                                 <?php //if ($is_multiple_membership_feature->isMultipleMembershipFeature) { ?>
 
                                     <ul class="arm_user_plan_ul2" id="arm_user_plan_ul2">
-                                        <li class="arm_user_plan_li_1" style="margin-bottom: 20px; float: left;">
+                                        <li class="arm_user_plan_li_1 arm_margin_bottom_20">
                                             <div class="arm_user_plns_box">
                                                 <input type='hidden' class="arm_user_plan_change_input arm_mm_user_post_change_input_get_cycle" name="arm_user_plan2[]" id="arm_user_post_1" value="" data-arm-plan-count="0"/>
 
-                                                <dl class="arm_selectbox column_level_dd arm_member_form_dropdown">
+                                                <dl class="arm_selectbox column_level_dd arm_member_form_dropdown arm_margin_right_5">
                                                     <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                     <dd><ul data-id="arm_user_post_1"><?php echo $paidPlansLists; ?></ul></dd>
                                                 </dl>
@@ -1228,12 +1248,12 @@ $setact = $arm_members_activity->$check_sorting();
                                                 <img src="<?php echo MEMBERSHIP_IMAGES_URL . "/add_plan.png"; ?>"  id="arm_add_new_user_plan_link2" title="<?php _e('Add New Post', 'ARMember'); ?>" onmouseover="this.src = '<?php echo MEMBERSHIP_IMAGES_URL; ?>/add_plan_hover.png';" onmouseout="this.src = '<?php echo MEMBERSHIP_IMAGES_URL; ?>/add_plan.png';" class="arm_helptip_icon tipso_style arm_add_plan_icon">
                                                 <img src="<?php echo MEMBERSHIP_IMAGES_URL . "/remove_plan.png"; ?>"  id="arm_remove_user_plan2" title="<?php _e('Remove Post', 'ARMember'); ?>" onmouseover="this.src = '<?php echo MEMBERSHIP_IMAGES_URL; ?>/remove_plan_hover.png';" onmouseout="this.src = '<?php echo MEMBERSHIP_IMAGES_URL; ?>/remove_plan.png';" class="arm_helptip_icon tipso_style arm_add_plan_icon">
 
-                                                <div class="arm_selected_plan_cycle_0" style="margin-top: 10px; display: none;">
+                                                <div class="arm_selected_plan_cycle_0 arm_margin_top_20" style=" display: none;">
                                                 </div>
 
                                                 <div class="arm_subscription_start_date_wrapper">
-                                                    <span><?php _e('Post Start Date', 'ARMember'); ?>  </span> 
-                                                    <input type="text" value="<?php echo date($arm_common_date_format, strtotime(date('Y-m-d'))); ?>" data-date_format="<?php echo $arm_common_date_format; ?>"  name="arm_subscription_start_date2[]" class="arm_member_form_input arm_user_plan_date_picker" style="width: 300px; min-width: 397px;"/>
+                                                    <span><?php _e('Post Start Date', 'ARMember'); ?></span> 
+                                                    <input type="text" value="<?php echo date($arm_common_date_format, strtotime(date('Y-m-d'))); ?>" data-date_format="<?php echo $arm_common_date_format; ?>"  name="arm_subscription_start_date2[]" class="arm_member_form_input arm_user_plan_date_picker" />
                                                 </div>
                                             </div>
                                         </li>
@@ -1316,7 +1336,7 @@ $setact = $arm_members_activity->$check_sorting();
                                         <label><?php _e('Add Social Accounts', 'ARMember');?></label>
                                     </th> 
                                     <td class="arm-form-table-content">           
-                                        <select id="arm_member_social_ac_selection" class="arm_chosen_selectbox" name="arm_member_social_ac_selection" data-placeholder="<?php _e('Please Select..', 'ARMember'); ?>" style="width:500px;" data-msg-required="<?php _e('Please Select Social Account.', 'ARMember'); ?>" data-msg-already="<?php _e('This social account already added.', 'ARMember'); ?>">
+                                        <select id="arm_member_social_ac_selection" class="arm_chosen_selectbox arm_width_500" name="arm_member_social_ac_selection" data-placeholder="<?php _e('Please Select..', 'ARMember'); ?>"  data-msg-required="<?php _e('Please Select Social Account.', 'ARMember'); ?>" data-msg-already="<?php _e('This social account already added.', 'ARMember'); ?>">
                                             <option value=""><?php _e('Please Select', 'ARMember'); ?></option>
                                             <?php
                                             foreach ($socialProfileFields as $spfKey => $spfLabel) {
@@ -1329,7 +1349,6 @@ $setact = $arm_members_activity->$check_sorting();
                                     </td>
                                 </tr>
                             </table>
-                            <div class="armclear arm_pd-20"></div>
                             <table class="form-table" id="arm_social_field_tbl">
                             <?php
                             if (!empty($socialProfileFields)) {
@@ -1354,7 +1373,10 @@ $setact = $arm_members_activity->$check_sorting();
                             </table>
                         <?php endif; ?>
                     
-		    
+                        <?php 
+                            $outside_field_content = "";
+                            echo $outside_field_content = apply_filters('arm_add_fields_in_admin_before_save_button', $outside_field_content, $user_id); 
+                        ?>
 		    
                     <!--<div class="arm_divider"></div>-->
                     <div class="arm_submit_btn_container">
@@ -1372,7 +1394,7 @@ $setact = $arm_members_activity->$check_sorting();
 </div>
 
 
-<div class="arm_member_plan_failed_payment_popup popup_wrapper" style="width:800px; min-height: 200px;">
+<div class="arm_member_plan_failed_payment_popup popup_wrapper" >
 
 
     <div class="popup_header">
@@ -1380,9 +1402,9 @@ $setact = $arm_members_activity->$check_sorting();
 
         <span class="add_rule_content"><?php _e('Total Skipped Cycles Of', 'ARMember'); ?> <span class="arm_failed_payment_plan_name"></span></span>
     </div>
-    <div class="popup_content_text arm_member_plan_failed_payment_popup_text" style="text-align:center;">
+    <div class="popup_content_text arm_member_plan_failed_payment_popup_text arm_text_align_center" >
 
-        <div style="width: 100%; margin: 45px auto;"> <img src="<?php echo MEMBERSHIP_IMAGES_URL . "/arm_loader.gif"; ?>"></div>
+        <div class="arm_width_100_pct" style=" margin: 45px auto;"> <img src="<?php echo MEMBERSHIP_IMAGES_URL . "/arm_loader.gif"; ?>"></div>
 
     </div>
     <div class="armclear"></div>
@@ -1407,3 +1429,7 @@ $setact = $arm_members_activity->$check_sorting();
     var ARMADDPOST = '<?php echo addslashes( __('Add New Post', 'ARMember')); ?>';
     var REMOVEPAIDPOSTMESSAGE = '<?php echo addslashes( __('You cannot remove all posts.', 'ARMember')); ?>';
 </script>
+
+<?php
+    echo $ARMember->arm_get_need_help_html_content('manage-members-add');
+?>

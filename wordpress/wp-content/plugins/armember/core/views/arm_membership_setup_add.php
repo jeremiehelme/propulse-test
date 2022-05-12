@@ -8,7 +8,7 @@ $alertMessages = $ARMember->arm_alert_messages();
 $all_global_settings = $arm_global_settings->arm_get_all_global_settings();
 $general_settings = $all_global_settings['general_settings'];
 $enable_tax= isset($general_settings['enable_tax']) ? $general_settings['enable_tax'] : 0;
-$currencies = array_merge($arm_payment_gateways->currency['paypal'], $arm_payment_gateways->currency['stripe'], $arm_payment_gateways->currency['authorize_net'], $arm_payment_gateways->currency['2checkout']);
+$currencies = array_merge($arm_payment_gateways->currency['paypal'], $arm_payment_gateways->currency['stripe'], $arm_payment_gateways->currency['authorize_net'], $arm_payment_gateways->currency['2checkout'], $arm_payment_gateways->currency['bank_transfer']);
 $currency_symbol = $currencies[$general_settings['paymentcurrency']];
 $allGateways = $arm_payment_gateways->arm_get_all_payment_gateways_for_setup();
 $browser_info = $ARMember->getBrowser($_SERVER['HTTP_USER_AGENT']);
@@ -57,13 +57,13 @@ $default_setup_style = array(
     'summary_font_bold' => 0,
     'summary_font_italic' => '',
     'summary_font_decoration' => '',
-    'plan_title_font_color' => '#616161',
-    'plan_desc_font_color' => '#616161',
-    'price_font_color' => '#616161',
-    'summary_font_color' => '#616161',  
-    'bg_active_color' => '#23b7e5',
-    'selected_plan_title_font_color' => '#23b7e5',
-    'selected_plan_desc_font_color' => '#616161',
+    'plan_title_font_color' => '#2C2D42',
+    'plan_desc_font_color' => '#555F70',
+    'price_font_color' => '#2C2D42',
+    'summary_font_color' => '#555F70',  
+    'bg_active_color' => '#005AEE',
+    'selected_plan_title_font_color' => '#005AEE',
+    'selected_plan_desc_font_color' => '#2C2D42',
     'selected_price_font_color' => '#FFFFFF',
 );
 if( isset( $_GET['action']) && $_GET['action'] == 'edit_setup' && isset($_GET['id']) && !empty($_GET['id'])) {
@@ -75,7 +75,7 @@ if( isset( $_GET['action']) && $_GET['action'] == 'edit_setup' && isset($_GET['i
         $action = 'update';
         $setup_name = $setup_data['setup_name'];
         $arm_setup_type = $setup_data['arm_setup_type'];
-        $setup_modules = $setup_data['setup_modules'];
+        $setup_modules = !empty($setup_data['setup_modules']) ? $setup_data['setup_modules'] : array();
 		$button_labels = isset($setup_data['setup_labels']['button_labels']) ? $setup_data['setup_labels']['button_labels'] : $button_labels;
 	}
 }
@@ -97,14 +97,10 @@ if (!$arm_manage_coupons->isCouponFeature) {
 	$setup_modules['modules']['coupons'] = 0;
 }
 $setup_modules['custom_css'] = !empty($setup_modules['custom_css']) ? $setup_modules['custom_css'] : '';
-$setup_modules['style'] = !empty($setup_modules['style']) ? $setup_modules['style'] : $default_setup_style;
+$setup_modules['style'] = shortcode_atts( $default_setup_style, $setup_modules['style']);
 $setup_name = !empty($setup_name) ? esc_html(stripslashes($setup_name)) : '';
 $arm_setup_type = !empty($arm_setup_type) ? $arm_setup_type : 0;
 $all_payment_gateways = $arm_payment_gateways->arm_get_active_payment_gateways();
-
-if (!$arm_pay_per_post_feature->isPayPerPostFeature) {
-    $arm_setup_type  = 0;
-}
 ?>
 <?php
 
@@ -112,33 +108,32 @@ global $arm_members_activity;
 $setact = 0;
 global $check_sorting;
 $setact = $arm_members_activity->$check_sorting();
- $allPlans = $arm_subscription_plans->arm_get_all_active_subscription_plans();
+$allPlans = $arm_subscription_plans->arm_get_all_active_subscription_plans(); 
 ?>
 <div class="wrap arm_page arm_membership_setup_main_wrapper">
+    <?php
+    if ($setact != 1) {
+        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
+        ?>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+    <?php } ?>
 	<div class="content_wrapper arm_membership_setup_container" id="content_wrapper">
 		<div class="arm_membership_setup_content">
 			<form  method="post" id="arm_membership_setup_admin_form" class="arm_membership_setup_admin_form arm_admin_form" >
 				<input type="hidden" name="id" value="<?php echo $setup_id;?>">
 				<input type="hidden" name="form_action" value="<?php echo $action ?>">
 				<div class="page_title"><?php echo $page_mode;?></div>
-                <?php
-    if ($setact != 1) {
-        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
-        ?>
-
-        <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:80%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
-    <?php } ?>
 				<div class="armclear"></div>
 				<div class="arm_setup_admin_form_container arm_admin_form_content">
                     <span class="arm_setup_main_error_msg error" style="display: none;"><?php _e('This membership setup can not be saved because in some cases, payment gateway will not be available. So setup cannot be processed.', 'ARMember');?></span>
 					<div class="arm_belt_box">
 						<div class="arm_belt_block arm_setup_module_box">
-							<input name="setup_data[setup_name]" id="setup_name" type="text" style="width: 400px;" title="Setup name" value="<?php echo $setup_name;?>" data-msg-required="<?php _e('Setup name can not be left blank.', 'ARMember');?>" placeholder="<?php _e('Setup name', 'ARMember');?>" required />
+							<input name="setup_data[setup_name]" id="setup_name"  class="arm_width_400" type="text"  title="Setup name" value="<?php echo $setup_name;?>" data-msg-required="<?php _e('Setup name can not be left blank.', 'ARMember');?>" placeholder="<?php _e('Setup name', 'ARMember');?>" required />
 							<span class="arm_setup_error_msg"></span>
 						</div>
 						<div class="arm_belt_block" align="<?php echo (is_rtl()) ? 'left' : 'right';?>">
                             <div class="arm_membership_setup_shortcode_box">
-                                <span style="font-size: 18px;"><?php _e('Shortcode','ARMember');?></span>
+                                <span class="arm_font_size_18"><?php _e('Shortcode','ARMember');?></span>
                                 <?php if ($action == 'update') : ?>
                                 <?php $shortCode = '[arm_setup id="'.$setup_id.'"]';?>
                                 <div class="arm_shortcode_text arm_form_shortcode_box">
@@ -156,27 +151,47 @@ $setact = $arm_members_activity->$check_sorting();
 						<div class="armclear"></div>
 					</div>
 					<div class="armclear"></div>
-                    <span class="arm_info_text" style="margin-bottom: 15px;"><?php _e('This wizard will help you to configure membership registration page. It will generate only single shortcode for processes like plan selection', 'ARMember');?> &rarr; <?php _e('signup', 'ARMember');?> &rarr; <?php _e('payment process.', 'ARMember');?></span>
+                    <span class="arm_info_text arm_margin_bottom_15" ><?php _e('This wizard will help you to configure membership registration page. It will generate only single shortcode for processes like plan selection', 'ARMember');?> &rarr; <?php _e('signup', 'ARMember');?> &rarr; <?php _e('payment process.', 'ARMember');?></span>
 					<div class="arm_setup_modules_container">
 						<div class="arm_right_border"></div>
 						<div class="arm_setup_section_title"><span class="arm_title_round">1</span><?php _e('Basic Configuration','ARMember');?></div>
-						<div class="arm_setup_section_body">
-
+						<div class="arm_setup_section_body">                   
                             <?php if($arm_pay_per_post_feature->isPayPerPostFeature):?> 
                             <div class="arm_setup_option_field">
-                                <div class="arm_setup_option_label" style="padding-top: 10px;"><?php _e('Setup Type','ARMember');?></div>
+                                <div class="arm_setup_option_label arm_padding_top_10" ><?php _e('Setup Type','ARMember');?></div>
                                 <div class="arm_setup_option_input arm_setup_type_enable_radios">
                                     <input type="radio" class="arm_iradio arm_setup_type_chk" name="setup_data[setup_type]" value="0" <?php checked($arm_setup_type, 0, true);?> id="arm_setup_type_plan_setup">
                                     <label for="arm_setup_type_plan_setup"><?php _e('Membership Plan Setup', 'ARMember');?></label>
                                     <input type="radio" class="arm_iradio arm_setup_type_chk" name="setup_data[setup_type]" value="1" <?php checked($arm_setup_type, 1, true);?> id="arm_setup_type_paid_post_setup">
                                     <label for="arm_setup_type_paid_post_setup"><?php _e('Paid Post Setup', 'ARMember');?></label>
+                                    <?php 
+                                        $arm_membership_setup_content = "";
+                                        $arm_membership_setup_content = apply_filters('arm_add_membership_setup_type_content', $arm_membership_setup_content, $arm_setup_type);
+                                        echo $arm_membership_setup_content;
+                                    ?>
                                 </div>
-                            </div>
-                            <?php else:?> 
-                                <input type="hidden" name="setup_data[setup_type]" id="arm_setup_type_plan_default_setup" value="0">
-                            <?php  endif;?>
+                            </div>        
+                            <?php else:                                 
+                                    $arm_membership_setup_type_content = "";
+                                    $arm_membership_setup_type_content = apply_filters('arm_add_membership_setup_type_content', $arm_membership_setup_type_content, $arm_setup_type);
+                                    if($arm_membership_setup_type_content != ""){ ?>
+                                    <div class="arm_setup_option_field">
+                                        <div class="arm_setup_option_label arm_padding_top_10" ><?php _e('Setup Type','ARMember');?></div>
+                                        <div class="arm_setup_option_input arm_setup_type_enable_radios">
+                                            <input type="radio" class="arm_iradio arm_setup_type_chk" name="setup_data[setup_type]" value="0" <?php checked($arm_setup_type, 0, true);?> id="arm_setup_type_plan_setup">
+                                            <label for="arm_setup_type_plan_setup"><?php _e('Membership Plan Setup', 'ARMember');?></label>
+                                            <?php  echo $arm_membership_setup_type_content; ?>
+                                        </div>
+                                    </div>          
+                                    <?php
+                                    } else { ?>
+                                        <input type="hidden" name="setup_data[setup_type]" id="arm_setup_type_plan_default_setup" value="0">
+                                    <?php 
+                                    }                                                                    
+                             endif;
+			     ?>
                             <div class="arm_setup_option_field arm_setup_plans_main_container <?php echo ($arm_setup_type == 0) ? '' : 'hidden_section';?>">
-                                <div class="arm_setup_option_label" style="padding-top: 10px;"><?php _e('Select Plans','ARMember');?></div>
+                                <div class="arm_setup_option_label arm_padding_top_10" ><?php _e('Select Plans','ARMember');?></div>
                                 <div class="arm_setup_option_input arm_setup_plans_container">
                                     <div class="arm_setup_module_box">
                                         <div class="arm_setup_plan_options_list">
@@ -188,8 +203,14 @@ $setact = $arm_members_activity->$check_sorting();
                                     <a href="<?php echo admin_url('admin.php?page=' . $arm_slugs->manage_plans . '&action=new');?>" target="_blank" class="arm_setup_conf_links arm_ref_info_links"><?php _e('Add New Plan', 'ARMember');?></a>
                                 </div>
                             </div>
+                            <?php 
+                                $arm_setup_content_after_plans = "";
+                                $arm_setup_content_after_plans = apply_filters('arm_add_setup_container_after_plans', $arm_setup_content_after_plans, $selectedPlans, $arm_setup_type);
+                                echo $arm_setup_content_after_plans;
+                            ?>
+                            
                             <div class="arm_setup_option_field">
-                                <div class="arm_setup_option_label" style="padding-top: 10px;"><?php _e('Select Signup / Registration Form','ARMember');?></div>
+                                <div class="arm_setup_option_label arm_padding_top_10" ><?php _e('Select Signup / Registration Form','ARMember');?></div>
                                 <div class="arm_setup_option_input arm_setup_forms_container">
                                     <div class="arm_setup_module_box">
                                         <input type="hidden" id="arm_form_select_box" name="setup_data[setup_modules][modules][forms]" value="<?php echo $selectedForm;?>" data-msg-required="<?php _e('Please select signup / registration form.', 'ARMember');?>" />
@@ -210,7 +231,7 @@ $setact = $arm_members_activity->$check_sorting();
                                 </div>
                             </div>
                             <div class="arm_setup_option_field">
-                                <div class="arm_setup_option_label" style="padding-top: 10px;"><?php _e('Select Payment Gateways','ARMember');?></div>
+                                <div class="arm_setup_option_label arm_padding_top_10"><?php _e('Select Payment Gateways','ARMember');?></div>
                                 <div class="arm_setup_option_input arm_setup_items_box_gateways">
                                     <?php 
                                     $stripe_plan_options = '';
@@ -321,7 +342,7 @@ $setact = $arm_members_activity->$check_sorting();
                             <?php echo $arm_setup_preview_split_string;?>
                             <?php if ($arm_manage_coupons->isCouponFeature):?>
                             <div class="arm_setup_option_field">
-                                <div class="arm_setup_option_label" style="padding-top: 10px;"><?php _e('Enable coupon with payment?','ARMember');?></div>
+                                <div class="arm_setup_option_label arm_padding_top_10"><?php _e('Enable coupon with payment?','ARMember');?></div>
                                 <div class="arm_setup_option_input arm_coupon_enable_radios">
                                     <input type="radio" class="arm_iradio arm_setup_coupon_chk" name="setup_data[setup_modules][modules][coupons]" value="1" <?php checked($setup_modules['modules']['coupons'], 1, true);?> id="arm_setup_coupon_chk_yes">
                                     <label for="arm_setup_coupon_chk_yes"><?php _e('Yes', 'ARMember');?></label>
@@ -528,7 +549,7 @@ $setact = $arm_members_activity->$check_sorting();
                                         <label class="armswitch_label" for="arm_setup_two_step"></label>
                                     </div>
                                     <label class="arm_global_setting_switch_label" for="arm_setup_two_step"></label>
-                                    <span class="arm_info_text" style="margin: 10px 0 0; display:block;">(<?php  _e('By enabling this feature, plan + sign-up process will be devided in two parts. First part will contain plan and payment cycle selection area with NEXT button and second part will contain sign-up form and payment gateway selection area with PREVIOUS and SUBMIT button.', 'ARMember'); ?>)</span>
+                                    <span class="arm_info_text arm_setup_two_step_note">(<?php  _e('By enabling this feature, plan + sign-up process will be devided in two parts. First part will contain plan and payment cycle selection area with NEXT button and second part will contain sign-up form and payment gateway selection area with PREVIOUS and SUBMIT button.', 'ARMember'); ?>)</span>
                                 </div>
                             </div>
 
@@ -618,8 +639,10 @@ $setact = $arm_members_activity->$check_sorting();
                                 <div class="arm_setup_option_input">
                                     <?php $setup_content_width = ($setup_modules['style']['content_width'] == 0 && $setup_modules['style']['content_width'] != '') ? 800 : $setup_modules['style']['content_width'];
                                     ?>
-                                    <input type="text" name="setup_data[setup_modules][style][content_width]" value="<?php echo $setup_content_width; ?>" class="arm_setup_shortcode_form_width">&nbsp;px
-                                    <br/><span class="arm_info_text">Leave blank for auto width.</span>
+                                    <div class="arm_setup_module_box">
+                                        <input type="text" name="setup_data[setup_modules][style][content_width]" value="<?php echo $setup_content_width; ?>" class="arm_setup_shortcode_form_width">&nbsp;px
+                                        <br/><span class="arm_info_text">Leave blank for auto width.</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="arm_setup_option_field">
@@ -638,7 +661,7 @@ $setact = $arm_members_activity->$check_sorting();
                             </div>
 			                 <?php echo $arm_setup_preview_split_string;?>
                             <div class="arm_setup_option_field">
-                                <div class="arm_setup_option_label" style="padding-top: 10px;"><?php _e('Select Plan Layout', 'ARMember');?></div>
+                                <div class="arm_setup_option_label arm_padding_top_10"><?php _e('Select Plan Layout', 'ARMember');?></div>
                                 <div class="arm_setup_option_input">
                                     <?php $planColumnType = (!empty($setup_modules['plans_columns'])) ? $setup_modules['plans_columns'] : '3';?>
                                     <div class="arm_column_layout_types_container">
@@ -664,14 +687,14 @@ $setact = $arm_members_activity->$check_sorting();
                                         </label>
                                         <div class="armclear"></div>
                                     </div>
-                                    <ul class="arm_membership_setup_sub_ul arm_setup_plans_ul arm_setup_plan_layout_list arm_column_<?php echo $planColumnType; ?>" style="<?php echo (empty($selectedPlans)) ? 'display:none;' : '' ?> max-width: 785px;">
+                                    <ul class="arm_membership_setup_sub_ul arm_setup_plans_ul arm_setup_plan_layout_list arm_max_width_785 arm_column_<?php echo $planColumnType; ?>" style="<?php echo (empty($selectedPlans)) ? 'display:none;' : '' ?>">
                                         <?php echo $arm_membership_setup->arm_setup_plan_layout_list_options($planOrders, $selectedPlans, $user_selected_plan); ?>
                                     </ul>
                                 </div>
                             </div>
                                                     
                              <div class="arm_setup_option_field">
-                                <div class="arm_setup_option_label" style="padding-top: 10px;"><?php _e('Select Payment Cycle Layout', 'ARMember');?></div>
+                                <div class="arm_setup_option_label arm_padding_top_10"><?php _e('Select Payment Cycle Layout', 'ARMember');?></div>
                                 <div class="arm_setup_option_input">
                                     <?php $cycleColumnType = (!empty($setup_modules['cycle_columns'])) ? $setup_modules['cycle_columns'] : '1';?>
                                     <div class="arm_column_layout_types_container">
@@ -701,7 +724,7 @@ $setact = $arm_members_activity->$check_sorting();
                             </div>
                                                     
                             <div class="arm_setup_option_field">
-                                <div class="arm_setup_option_label" style="padding-top: 10px;"><?php _e('Select Payment Gateway Layout', 'ARMember');?></div>
+                                <div class="arm_setup_option_label arm_padding_top_10"><?php _e('Select Payment Gateway Layout', 'ARMember');?></div>
                                 <div class="arm_setup_option_input">
                                     <?php 
                                     $gatewayColumnType = (!empty($setup_modules['gateways_columns'])) ? $setup_modules['gateways_columns'] : '1';
@@ -764,13 +787,13 @@ $setact = $arm_members_activity->$check_sorting();
                                             </ul>
                                         </dd>
                                     </dl>
-                                    <div class="armclear" style="margin-bottom: 20px;"></div>
+                                    <div class="armclear arm_margin_bottom_20"></div>
                                     <div class="arm_setup_option_field">
                                         <div class="arm_setup_option_label"><?php _e('Plan Title', 'ARMember');?></div>
                                         <div class="arm_setup_option_input">
                                             <input type='hidden' id="arm_setup_title_font_size" name="setup_data[setup_modules][style][title_font_size]" class="arm_setup_font_size" value="<?php echo !empty($setup_modules['style']['title_font_size']) ? $setup_modules['style']['title_font_size'] : '20';?>" />
-                                            <dl class="arm_selectbox column_level_dd">
-                                                <dt style="width:70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                            <dl class="arm_selectbox arm_setup_option_input_font_style column_level_dd ">
+                                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                 <dd>
                                                     <ul data-id="arm_setup_title_font_size">
                                                         <?php for ($i = 8; $i < 41; $i++):?>
@@ -797,8 +820,8 @@ $setact = $arm_members_activity->$check_sorting();
                                         <div class="arm_setup_option_label"><?php _e('Plan Description', 'ARMember');?></div>
                                         <div class="arm_setup_option_input">
                                             <input type='hidden' id="arm_setup_description_font_size" name="setup_data[setup_modules][style][description_font_size]" class="arm_setup_font_size" value="<?php echo !empty($setup_modules['style']['description_font_size']) ? $setup_modules['style']['description_font_size'] : '16';?>" />
-                                            <dl class="arm_selectbox column_level_dd">
-                                                <dt style="width:70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                            <dl class="arm_selectbox arm_setup_option_input_font_style column_level_dd">
+                                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                 <dd>
                                                     <ul data-id="arm_setup_description_font_size">
                                                         <?php for ($i = 8; $i < 41; $i++):?>
@@ -825,8 +848,8 @@ $setact = $arm_members_activity->$check_sorting();
                                         <div class="arm_setup_option_label"><?php _e('Plan Price', 'ARMember');?></div>
                                         <div class="arm_setup_option_input">
                                             <input type='hidden' id="arm_setup_price_font_size" name="setup_data[setup_modules][style][price_font_size]" class="arm_setup_font_size" value="<?php echo !empty($setup_modules['style']['price_font_size']) ? $setup_modules['style']['price_font_size'] : '30';?>" />
-                                            <dl class="arm_selectbox column_level_dd">
-                                                <dt style="width:70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                            <dl class="arm_selectbox arm_setup_option_input_font_style column_level_dd">
+                                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                 <dd>
                                                     <ul data-id="arm_setup_price_font_size">
                                                         <?php for ($i = 8; $i < 41; $i++):?>
@@ -853,8 +876,8 @@ $setact = $arm_members_activity->$check_sorting();
                                         <div class="arm_setup_option_label"><?php _e('Summary Font', 'ARMember');?></div>
                                         <div class="arm_setup_option_input">
                                             <input type='hidden' id="arm_setup_summary_font_size" name="setup_data[setup_modules][style][summary_font_size]" class="arm_setup_font_size" value="<?php echo !empty($setup_modules['style']['summary_font_size']) ? $setup_modules['style']['summary_font_size'] : '16';?>" />
-                                            <dl class="arm_selectbox column_level_dd">
-                                                <dt style="width:70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                            <dl class="arm_selectbox arm_setup_option_input_font_style column_level_dd">
+                                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                 <dd>
                                                     <ul data-id="arm_setup_summary_font_size">
                                                         <?php for ($i = 8; $i < 41; $i++):?>
@@ -992,3 +1015,6 @@ function arm_setup_skin_default_color_array(){
     return arm_setup_skin_array;
 }
 </script>
+<?php
+    echo $ARMember->arm_get_need_help_html_content('configure-membership-setup—add');
+?>

@@ -8,8 +8,7 @@ include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
 $directaccesskey = "arm999repute";
 
-if(isset($_REQUEST['da']))
-	$directaccess = $_REQUEST['da'];
+$directaccess = isset($_REQUEST['da']) ? $_REQUEST['da'] : '';
 
 if ( is_user_logged_in() || $directaccesskey==$directaccess) 
 {
@@ -18,7 +17,7 @@ if ( is_user_logged_in() || $directaccesskey==$directaccess)
 else
 {
 	$redirect_to = user_admin_url();
-	wp_redirect($redirect_to);
+	wp_safe_redirect($redirect_to);
 }
 
 $geoiploaded = "";
@@ -31,14 +30,11 @@ else
 	$geoiploaded = "Yes";
 }
 
-
 $ziploaded = "";
 
 if(!(extension_loaded('zip'))) {
 	$ziploaded = "No";
-}
-else
-{
+} else {
 	$ziploaded = "Yes";
 }
 
@@ -90,7 +86,9 @@ else
 
 $system_info = php_uname();
 
-$mysql_server_version = @mysqli_get_server_info();
+//$mysql_server_version = mysqli_get_server_info();
+global $wpdb;
+$mysql_server_version = $wpdb->db_version();
 
 //wordpress details
 
@@ -130,20 +128,14 @@ else
 
 if ( is_multisite() ) { $wordpress_multisite = 'Yes'; }else( $wordpress_multisite = "No");
 
-
+$plugin_dir_path = WP_PLUGIN_DIR;
+$upload_dir_path = wp_upload_dir();
+$armember_active = "Deactive";
+$armember_version = "";
 if ( is_plugin_active( 'armember/armember.php' ) ) 
 {
-  	$arprice_active = "Active";
-	$arprice_version = get_option("arm_version");
-	$upload_dir_path = wp_upload_dir();
-	$plugin_dir_path = WP_PLUGIN_DIR;
-}
-else
-{
-	$arprice_active = "Deactive";
-	$arprice_version = "";
-	$upload_dir_path = wp_upload_dir();
-	$plugin_dir_path = WP_PLUGIN_DIR;
+  	$armember_active = "Active";
+	$armember_version = get_option("arm_version");
 }
 
 $folderpermission = substr(sprintf('%o', fileperms($upload_dir_path["basedir"])), -4);
@@ -268,7 +260,7 @@ table
 	<td colspan="2" style="border-bottom:2px solid #cccccc;">&nbsp;</td>
 </tr>
 <tr>
-	<td colspan="2" class="title">Wordpress Details</td>
+	<td colspan="2" class="title">WordPress Details</td>
 </tr>
 <tr>
 	<td class="leftrowtitle">Variable Name</td>
@@ -330,11 +322,11 @@ table
 </tr>
 <tr>
 	<td class="leftrowdetails">ARMember Status</td>
-    <td class="rightrowdetails"><?php echo $arprice_active;?></td>
+    <td class="rightrowdetails"><?php echo $armember_active;?></td>
 </tr>
 <tr>
 	<td class="leftrowdetails">ARMember Version</td>
-    <td class="rightrowdetails"><?php echo $arprice_version;?></td>
+    <td class="rightrowdetails"><?php echo $armember_version;?></td>
 </tr>
 <tr>
 	<td class="leftrowdetails">Upload Basedir</td>

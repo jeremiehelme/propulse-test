@@ -43,17 +43,15 @@ $get_all_armembers = $wpdb->get_results("SELECT arm_member_id,arm_user_id,arm_us
 ?>
 
 <div class="wrap arm_page arm_private_content_main_wrapper armPageContainer">
+	<?php
+    if ($setact != 1) {
+        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
+        ?>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+    <?php } ?>
 	<div class="content_wrapper arm_private_content_wrapper" id="content_wrapper">
 		
 		<div class="page_title"><?php echo $form_mode; ?></div>
-
-		<?php
-        	if ($setact != 1) {
-	            $admin_css_url = admin_url('admin.php?page=arm_manage_license');
-        ?>
-        	<div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
-        <?php } ?>
-
         <div class="armclear"></div>
 
         <form  method="post" id="arm_add_edit_private_content_form" class="arm_add_edit_private_content_form arm_admin_form" onsubmit="return validate_form();">
@@ -77,7 +75,7 @@ $get_all_armembers = $wpdb->get_results("SELECT arm_member_id,arm_user_id,arm_us
                         		<input type="hidden" id="arm_member_item_type" class="arm_rule_item_type_input" name="arm_member_input_hidden" data-type="" value=""/>
 
                         		<input id="arm_member_items_input" type="text" value="" placeholder="<?php esc_html_e('Search by username or email...', 'ARMember');?>" data-msg-required="<?php esc_html_e('Please select atleast one member.', 'ARMember');?>">
-								<div class="arm_private_content_items arm_required_wrapper" id="arm_private_content_items" style="display: none;"></div>
+								<div class="arm_private_content_items arm_required_wrapper arm_display_block" id="arm_private_content_items" style="display: none;"></div>
 
                         	<?php	}
                         	?>
@@ -89,7 +87,7 @@ $get_all_armembers = $wpdb->get_results("SELECT arm_member_id,arm_user_id,arm_us
                         </th>
                         <td>
                         	
-                        	<div class="arm_private_content_editor">
+                        	<div class="arm_private_content_editor arm_margin_bottom_25">
                         	<?php 
 								$arm_message_editor = array('textarea_name' => 'arm_private_content',
 									'editor_class' => 'arm_private_content',
@@ -115,6 +113,7 @@ $get_all_armembers = $wpdb->get_results("SELECT arm_member_id,arm_user_id,arm_us
                 </div>
                 <div class="armclear"></div>
             </div>
+            <?php wp_nonce_field( 'arm_wp_nonce' );?>
      	</form>
         <div class="armclear"></div>
     </div>
@@ -207,3 +206,6 @@ $get_all_armembers = $wpdb->get_results("SELECT arm_member_id,arm_user_id,arm_us
 	});
 
 </script>
+<?php
+	echo $ARMember->arm_get_need_help_html_content('users-private-content-add');
+?>

@@ -1,5 +1,5 @@
 <?php
-global $wpdb, $ARMember, $arm_slugs, $arm_members_class, $arm_global_settings, $arm_manage_coupons, $arm_subscription_plans, $arm_payment_gateways;
+global $wpdb, $ARMember, $arm_slugs, $arm_members_class, $arm_global_settings, $arm_manage_coupons, $arm_subscription_plans, $arm_payment_gateways,$arm_group_membership,$arm_pay_per_post_feature;
 $globals_settings = $arm_global_settings->arm_get_all_global_settings();
 $res_coupons = $arm_manage_coupons->arm_get_all_coupons();
 $global_currency = $arm_payment_gateways->arm_get_global_currency();
@@ -26,15 +26,23 @@ function show_grid_loader() {
 
 function arm_loadCouponData()
 {
-	var __ARM_Showing = '<?php _e('Showing','ARMember'); ?>';
-    var __ARM_Showing_empty = '<?php _e('Showing 0 to 0 of 0 members','ARMember'); ?>';
-    var __ARM_to = '<?php _e('to','ARMember'); ?>';
-    var __ARM_of = '<?php _e('of','ARMember'); ?>';
+	var __ARM_Coupon_List_Left = [1,2,3,7];
+	var __ARM_Coupon_List_Center = [4,5,8,9];
 
-    var __ARM_Entries = ' <?php _e('entries','ARMember'); ?>';
-    var __ARM_Show = '<?php _e('Show','ARMember'); ?>';
-    var __ARM_NO_FOUND = '<?php _e('No any coupon found.','ARMember'); ?>';
-    var __ARM_NO_MATCHING = '<?php _e('No matching coupon found.','ARMember'); ?>';
+	<?php
+	if( isset( $arm_group_membership ) ) {  ?>	
+		__ARM_Coupon_List_Left = [1,2,3,4,8];
+		__ARM_Coupon_List_Center =[5,6,7,9,10];  <?php		
+	} ?>	
+	var __ARM_Showing = '<?php echo addslashes(__('Showing','ARMember')); ?>';
+    var __ARM_Showing_empty = '<?php echo addslashes(__('Showing 0 to 0 of 0 members','ARMember')); ?>';
+    var __ARM_to = '<?php echo addslashes(__('to','ARMember')); ?>';
+    var __ARM_of = '<?php echo addslashes(__('of','ARMember')); ?>';
+
+    var __ARM_Entries = ' <?php echo addslashes(__('entries','ARMember')); ?>';
+    var __ARM_Show = '<?php echo addslashes(__('Show','ARMember')); ?>';
+    var __ARM_NO_FOUND = '<?php echo addslashes(__('No any coupon found.','ARMember')); ?>';
+    var __ARM_NO_MATCHING = '<?php echo addslashes(__('No matching coupon found.','ARMember')); ?>';
 
 	var ajax_url = '<?php echo admin_url("admin-ajax.php"); ?>';
 	var table = jQuery('#armember_datatable').dataTable({
@@ -50,6 +58,10 @@ function arm_loadCouponData()
             "sEmptyTable": __ARM_NO_FOUND,
             "sZeroRecords": __ARM_NO_MATCHING,
         },
+        "language":{
+            "searchPlaceholder": "Search",
+            "search":"",
+        },
         "bProcessing": false,
         "bServerSide": true,
         "sAjaxSource": ajax_url,
@@ -63,6 +75,10 @@ function arm_loadCouponData()
 			{ "bVisible": false, "aTargets": [] },
 			{ "bSortable": false, "aTargets": [0, 5, 9] }
 		],*/
+		"aoColumnDefs": [
+		 	{"sClass": "dt-center", "aTargets": __ARM_Coupon_List_Center},
+         	{"sClass": "dt-left", "aTargets": __ARM_Coupon_List_Left},
+        ],
 		"oColVis": {
 		   "aiExclude": [ 0, 9 ]
 		},
@@ -99,6 +115,7 @@ function arm_loadCouponData()
             aoData.push({'name': 'action', 'value': 'arm_get_coupon_data'});
         },
 		"fnDrawCallback":function(){
+			arm_show_data()
 			jQuery('.arm_loading_grid').hide();
 			if (jQuery.isFunction(jQuery().tipso)) {
                 jQuery('.armhelptip').each(function () {
@@ -132,16 +149,15 @@ function ChangeID(id) {
 
 </script>
 <div class="wrap arm_page arm_manage_coupon_main_wrapper">
-	<div class="content_wrapper" id="content_wrapper">
-		<div class="page_title">
-			<?php _e('Coupons','ARMember');?>
-            <?php
+	<?php
     if ($setact != 1) {
         $admin_css_url = admin_url('admin.php?page=arm_manage_license');
         ?>
-
-        <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
     <?php } ?>
+	<div class="content_wrapper" id="content_wrapper">
+		<div class="page_title">
+			<?php _e('Coupons','ARMember');?>
 			<div class="arm_add_new_item_box">
 				<a class="greensavebtn" href="<?php echo admin_url('admin.php?page='.$arm_slugs->coupon_management.'&action=add_coupon');?>"><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Add Coupon', 'ARMember') ?></span></a>
 				<a class="greensavebtn" href="javascript:void(0)" onclick="arm_open_bulk_coupon_popup();"><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php _e('Bulk Create', 'ARMember') ?></span></a>
@@ -149,13 +165,13 @@ function ChangeID(id) {
 			<div class="armclear"></div>
 		</div>
 		<div class="armclear"></div>
-		<div class="arm_members_list" style="position:relative;top:10px;">
+		<div class="arm_members_list">
 			<div class="arm_filter_wrapper" id="arm_filter_wrapper" style="display:none;">
 				<div class="arm_datatable_filters_options">
 					<div class='sltstandard'>
 						<input type="hidden" id="arm_coupons_bulk_action1" name="action1" value="-1" />
-						<dl class="arm_selectbox column_level_dd">
-							<dt style="width: 120px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+						<dl class="arm_selectbox column_level_dd arm_width_250">
+							<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 							<dd>
 								<ul data-id="arm_coupons_bulk_action1">
 									<li data-label="<?php _e('Bulk Actions','ARMember');?>" data-value="-1"><?php _e('Bulk Actions','ARMember');?></li>
@@ -172,23 +188,23 @@ function ChangeID(id) {
 				<input type="hidden" name="armaction" value="list" />
 				<div id="armmainformnewlist">
             		<div class="arm_loading_grid" style="display: none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/loader.gif" alt="Loading.."></div>
-					<table cellpadding="0" cellspacing="0" border="0" class="display" id="armember_datatable">
+					<table cellpadding="0" cellspacing="0" border="0" class="display arm_hide_datatable" id="armember_datatable">
 						<thead>
 							<tr>
-								<th class="center cb-select-all-th" style="max-width:60px;"><input id="cb-select-all-1" type="checkbox" class="chkstanard"></th>
-								<th style="min-width:120px;"><?php _e('Coupon Label','ARMember');?></th>
-                                                                <th style="min-width:120px;"><?php _e('Coupon Code','ARMember');?></th>
-								<th style="width: 90px;"><?php _e('Discount','ARMember');?></th>
+								<th class="center cb-select-all-th arm_max_width_60" ><input id="cb-select-all-1" type="checkbox" class="chkstanard"></th>
+								<th class="arm_min_width_120"><?php _e('Coupon Label','ARMember');?></th>
+                                <th class="arm_min_width_120"><?php _e('Coupon Code','ARMember');?></th>
+								<th class="arm_width_90"><?php _e('Discount','ARMember');?></th>
 								<?php
 									$arm_coupon_filter_heading = "";
 									echo apply_filters('arm_add_new_coupon_field_heading', $arm_coupon_filter_heading);
 								?>
-								<th style="width: 100px;"><?php _e('Start Date','ARMember');?></th>
-								<th style="width: 100px;"><?php _e('Expire Date','ARMember');?></th>
-								<th style="width:100px;"><?php _e('Active', 'ARMember'); ?></th>
+								<th class="arm_width_100"><?php _e('Start Date','ARMember');?></th>
+								<th class="arm_width_100"><?php _e('Expire Date','ARMember');?></th>
+								<th class="arm_width_100"><?php _e('Active', 'ARMember'); ?></th>
 								<th><?php _e('Subscription','ARMember');?></th>
-								<th class="center" style="width:80px;"><?php _e('Used','ARMember');?></th>
-								<th class="center" style="width:120px;"><?php _e('Allowed Uses','ARMember');?></th>
+								<th class="arm_width_80"><?php _e('Used','ARMember');?></th>
+								<th class="arm_width_120"><?php _e('Allowed Uses','ARMember');?></th>
 								
 								<th class="armGridActionTD"></th>
 							</tr>
@@ -212,7 +228,7 @@ function ChangeID(id) {
 			</form>
 		</div>
 		<div class="armclear"></div>
-		<div class="arm_bulk_coupon_form_fields_popup_div popup_wrapper <?php echo (is_rtl()) ? 'arm_page_rtl' : ''; ?>" style="width:1000px; min-height: 200px;">
+		<div class="arm_bulk_coupon_form_fields_popup_div popup_wrapper <?php echo (is_rtl()) ? 'arm_page_rtl' : ''; ?>" style="">
             <form method="post" action="#" id="arm_add_coupon_wrapper_frm" class="arm_add_edit_coupon_wrapper_frm arm_admin_form">
                 <div>
                     <div class="popup_header">
@@ -261,14 +277,14 @@ function ChangeID(id) {
 					                    <tr class="form-field form-required">
 					                        <th><label><?php _e('Code Length', 'ARMember'); ?></label></th>
 					                        <td>
-					                            <input type="text" id="arm_coupon_code_length" value="5" min="5" max="50" onkeypress="return ArmNumberValidation(event, this)" name="arm_coupon_code_length" class="arm_no_paste" data-msg-required="<?php _e('Please add Coupon Code Length.', 'ARMember'); ?>" required style="width: 100px;min-width:100px;"/>
+					                            <input type="text" class="arm_max_width_93_pct" id="arm_coupon_code_length" value="5" min="5" max="50" onkeypress="return ArmNumberValidation(event, this)" name="arm_coupon_code_length" class="arm_no_paste" data-msg-required="<?php _e('Please add Coupon Code Length.', 'ARMember'); ?>" required />
 					                            <i class="arm_helptip_icon armfa armfa-question-circle" title="<?php echo esc_html("For Bulk Creation Coupon Code Length should be Minimum 5 and Maximum 50.", 'ARMember');?>"></i>
 					                        </td>
 					                    </tr>
 					                    <tr class="form-field form-required">
 					                        <th><label><?php _e('Enter number of Coupon(s) to Generate', 'ARMember'); ?></label></th>
 					                        <td>
-					                            <input type="text" id="arm_coupon_quantity" value="" min="1" max="1000" onkeypress="return ArmNumberValidation(event, this)" name="arm_coupon_quantity" class="arm_no_paste" data-msg-required="<?php _e('Please Enter number of Coupon(s) to Generate.', 'ARMember'); ?>" required style="width: 100px;min-width:100px;"/>
+					                            <input type="text" class="arm_max_width_93_pct" id="arm_coupon_quantity" value="" min="1" max="1000" onkeypress="return ArmNumberValidation(event, this)" name="arm_coupon_quantity" class="arm_no_paste" data-msg-required="<?php _e('Please Enter number of Coupon(s) to Generate.', 'ARMember'); ?>" required />
 					                            <i class="arm_helptip_icon armfa armfa-question-circle" title="<?php echo esc_html("Enter Number of Bulk Creation Coupon Code Which should be Minimum 1 and Maximum 1000.", 'ARMember');?>"></i>
 					                        </td>
 					                    </tr> 
@@ -288,7 +304,7 @@ function ChangeID(id) {
                     </div>
                     <div class="popup_content_btn popup_footer">
                         <div class="popup_content_btn_wrapper">
-                            <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif' ?>" id="arm_loader_img_bulk_coupon_field" class="arm_loader_img" style="position: relative;top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left'; ?>;display: none;" width="20" height="20" />
+                            <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif' ?>" id="arm_loader_img_bulk_coupon_field" class="arm_loader_img arm_submit_btn_loader" style="top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left'; ?>;display: none;" width="20" height="20" />
                             <button class="arm_save_btn" id="arm_coupon_operation" type="submit"><?php _e('Save', 'ARMember') ?></button>
                             <button class="arm_cancel_btn arm_bulk_coupon_fields_close_btn" type="button"><?php _e('Cancel', 'ARMember'); ?></button>
                         </div>
@@ -315,7 +331,7 @@ function ChangeID(id) {
 	</div>
 </div>
 
-<div class="arm_members_list_detail_popup popup_wrapper arm_members_list_detail_popup_wrapper" style="width:810px;min-height: 250px;">
+<div class="arm_members_list_detail_popup popup_wrapper arm_members_list_detail_popup_wrapper">
 	<div class="arm_loading_grid" id="arm_loading_grid_members" style="display: none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL;?>/loader.gif" alt="Loading.."></div>
     <div class="popup_wrapper_inner" style="overflow: hidden;">
         <div class="popup_header">
@@ -323,13 +339,13 @@ function ChangeID(id) {
             <span class="add_rule_content"><?php _e('Members Details', 'ARMember'); ?></span>
         </div>
         <div class="popup_content_text arm_members_list_detail_popup_text">
-            <table width="100%" cellspacing="0" class="display" id="armember_datatable_1" style="min-width: 802px;">
+            <table width="100%" cellspacing="0" class="display arm_min_width_802" id="armember_datatable_1" >
                 <thead>
                     <tr>
                         <th><?php _e('Username', 'ARMember'); ?></th>
                         <th><?php _e('Email', 'ARMember'); ?></th>
-                        <th style="width:170px;"><?php _e('Coupon Code', 'ARMember'); ?></th>
-                        <th class="arm-no-sort" style="width:170px;"><?php _e('View Detail', 'ARMember'); ?></th>
+                        <th class="arm_width_170"><?php _e('Coupon Code', 'ARMember'); ?></th>
+                        <th class="arm-no-sort arm_width_170" ><?php _e('View Detail', 'ARMember'); ?></th>
                     </tr>
                 </thead>
             </table>
@@ -350,12 +366,15 @@ function ChangeID(id) {
 </div>
 
 <script type="text/javascript">
-    __ARM_Showing = '<?php _e('Showing','ARMember'); ?>';
-    __ARM_Showing_empty = '<?php _e('Showing 0 to 0 of 0 members','ARMember'); ?>';
-    __ARM_to = '<?php _e('to','ARMember'); ?>';
-    __ARM_of = '<?php _e('of','ARMember'); ?>';
-    __ARM_members = '<?php _e('members','ARMember'); ?>';
-    __ARM_Show = '<?php _e('Show','ARMember'); ?>';
-    __ARM_NO_FOUNT = '<?php _e('No any coupon found.','ARMember'); ?>';
-    __ARM_NO_MATCHING = '<?php _e('No matching coupon found.','ARMember'); ?>';
+    __ARM_Showing = '<?php echo addslashes(__('Showing','ARMember')); ?>';
+    __ARM_Showing_empty = '<?php echo addslashes(__('Showing 0 to 0 of 0 members','ARMember')); ?>';
+    __ARM_to = '<?php echo addslashes(__('to','ARMember')); ?>';
+    __ARM_of = '<?php echo addslashes(__('of','ARMember')); ?>';
+    __ARM_members = '<?php echo addslashes(__('members','ARMember')); ?>';
+    __ARM_Show = '<?php echo addslashes(__('Show','ARMember')); ?>';
+    __ARM_NO_FOUNT = '<?php echo addslashes(__('No any coupon found.','ARMember')); ?>';
+    __ARM_NO_MATCHING = '<?php echo addslashes(__('No matching coupon found.','ARMember')); ?>';
 </script>
+<?php
+	echo $ARMember->arm_get_need_help_html_content('member-coupon-list');
+?>

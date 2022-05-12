@@ -10,20 +10,118 @@ global $arm_members_activity;
 $setact = 0;
 global $check_sorting;
 $setact = $arm_members_activity->$check_sorting();
+
+$backlist_link = 'javascript:void(0)';
+$show_directories_content = 'arm_visible';
+$show_directories_templates = '';
+$arm_temp_profile_options = '';
+$atm_temp_3_opt = 'style="display:none;"';
+$tempType = 'profile';
+$tempCS = 'blue';
+$template_slug = 'profiletemplate1';
+
+$arm_directory_template_name = "";
+
+$title_color = (isset($tempColorSchemes[$tempCS]['title_color'])) ? $tempColorSchemes[$tempCS]['title_color'] : '#000000';
+$subtitle_color = (isset($tempColorSchemes[$tempCS]['subtitle_color'])) ? $tempColorSchemes[$tempCS]['subtitle_color'] : '#000000';
+$button_color = (isset($tempColorSchemes[$tempCS]['button_color'])) ? $tempColorSchemes[$tempCS]['button_color'] : '#000000';
+$button_font_color = (isset($tempColorSchemes[$tempCS]['button_font_color'])) ? $tempColorSchemes[$tempCS]['button_font_color'] : '#000000';
+$border_color = (isset($tempColorSchemes[$tempCS]['border_color'])) ? $tempColorSchemes[$tempCS]['border_color'] : '#000000';
+$box_bg_color = (isset($tempColorSchemes[$tempCS]['box_bg_color'])) ? $tempColorSchemes[$tempCS]['box_bg_color'] : '#000000';
+$tab_bg_color = (isset($tempColorSchemes[$tempCS]['tab_bg_color'])) ? $tempColorSchemes[$tempCS]['tab_bg_color'] : '#000000';
+$tab_link_color = (isset($tempColorSchemes[$tempCS]['tab_link_color'])) ? $tempColorSchemes[$tempCS]['tab_link_color'] : '#000000';
+$tab_link_bg_color = (isset($tempColorSchemes[$tempCS]['tab_link_bg_color'])) ? $tempColorSchemes[$tempCS]['tab_link_bg_color'] : '#000000';
+$tab_link_hover_color = (isset($tempColorSchemes[$tempCS]['tab_link_hover_color'])) ? $tempColorSchemes[$tempCS]['tab_link_hover_color'] : '#000000';
+$tab_link_hover_bg_color = (isset($tempColorSchemes[$tempCS]['tab_link_hover_bg_color'])) ? $tempColorSchemes[$tempCS]['tab_link_hover_bg_color'] : '#000000';
+$link_color = (isset($tempColorSchemes[$tempCS]['link_color'])) ? $tempColorSchemes[$tempCS]['link_color'] : '#000000';
+$link_hover_color = (isset($tempColorSchemes[$tempCS]['link_hover_color'])) ? $tempColorSchemes[$tempCS]['link_hover_color'] : '#000000';
+$content_font_color = (isset($tempColorSchemes[$tempCS]['content_font_color'])) ? $tempColorSchemes[$tempCS]['content_font_color'] : '#000000';
+
+$fonts_option = array('title_font'=>array('font_family'=>'Poppins','font_size'=>'16','font_bold'=>'1','font_italic'=>'0','font_decoration'=>'',),'subtitle_font'=>array('font_family'=>'Poppins','font_size'=>'13','font_bold'=>'0','font_italic'=>'0','font_decoration'=>'',),'button_font'=>array('font_family'=>'Poppins','font_size'=>'14','font_bold'=>'0','font_italic'=>'0','font_decoration'=>'',),'content_font'=>array('font_family'=>'Poppins','font_size'=>'15','font_bold'=>'1','font_italic'=>'0','font_decoration'=>'',));
+
+$show_admin_users = 0;
+$show_badges = 1;
+$redirect_to_author = 0;
+$redirect_to_buddypress_profile = 0;
+$hide_empty_profile_fields = 1;
+$arm_temp_plans = array();
+$per_page_users = '10';
+$pagination = 'infinite';
+$activeSPF = array('facebook', 'twitter', 'linkedin');
+$searchbox = 1;
+$sortbox = 1;
+$search_type = 1;
+$activePF = array('first_name', 'last_name');
+$display_member_field = array('arm_show_joining_date');
+$display_member_fields_label = array();
+$custom_css = '';
+
+$action = isset($_GET['action']) ? $_GET['action'] : '';
+$temp_id = isset($_GET['temp_id']) ? $_GET['temp_id'] : '';
+if (!empty($action) && $action == 'duplicate_temp' && !empty($temp_id)) {
+    $show_directories_content = '';
+    $show_directories_templates = 'arm_visible';
+    $arm_temp_profile_options = 'style="display:none;"';
+    $backlist_link = admin_url('admin.php?page=' . $arm_slugs->profiles_directories);
+    $tempDetails = $arm_members_directory->arm_get_template_by_id($temp_id);
+    if (!empty($tempDetails)) {
+        $arm_directory_template_name = !empty($tempDetails['arm_title']) ? $tempDetails['arm_title'] : '';
+        $tempType = isset($tempDetails['arm_type']) ? $tempDetails['arm_type'] : 'directory';
+        $template_slug = isset($tempDetails['arm_slug']) ? $tempDetails['arm_slug'] : 'directorytemplate1';
+        $atm_temp_3_opt = ($template_slug == 'directorytemplate3') ? '' : 'style="display:none;"';
+        $arm_options = isset($tempDetails['arm_options']) ? $tempDetails['arm_options'] : array();
+
+        $tempCS = isset($arm_options['color_scheme']) ? $arm_options['color_scheme'] : $tempCS;
+        $title_color = isset($arm_options['title_color']) ? $arm_options['title_color'] : $title_color;
+        $subtitle_color = isset($arm_options['subtitle_color']) ? $arm_options['subtitle_color'] : $subtitle_color;
+        $button_color = isset($arm_options['button_color']) ? $arm_options['button_color'] : $button_color;
+        $button_font_color = isset($arm_options['button_font_color']) ? $arm_options['button_font_color'] : $button_font_color;
+        $border_color = isset($arm_options['border_color']) ? $arm_options['border_color'] : $border_color;
+        $tab_bg_color = isset($arm_options['tab_bg_color']) ? $arm_options['tab_bg_color'] : $tab_bg_color;
+        $tab_link_color = isset($arm_options['tab_link_color']) ? $arm_options['tab_link_color'] : $tab_link_color;
+        $tab_link_bg_color = isset($arm_options['tab_link_bg_color']) ? $arm_options['tab_link_bg_color'] : $tab_link_bg_color;
+        $tab_link_hover_color = isset($arm_options['tab_link_hover_color']) ? $arm_options['tab_link_hover_color'] : $tab_link_hover_color;
+        $tab_link_hover_bg_color = isset($arm_options['tab_link_hover_bg_color']) ? $arm_options['tab_link_hover_bg_color'] : $tab_link_hover_bg_color;
+        $link_color = isset($arm_options['link_color']) ? $arm_options['link_color'] : $link_color;
+        $link_hover_color = isset($arm_options['link_hover_color']) ? $arm_options['link_hover_color'] : $link_hover_color;
+        $content_font_color = isset($arm_options['content_font_color']) ? $arm_options['content_font_color'] : $content_font_color;
+
+        $fonts_option['title_font'] = isset($arm_options['title_font']) ? $arm_options['title_font'] : $fonts_option['title_font'];
+        $fonts_option['subtitle_font'] = isset($arm_options['subtitle_font']) ? $arm_options['subtitle_font'] : $fonts_option['subtitle_font'];
+        $fonts_option['button_font'] = isset($arm_options['button_font']) ? $arm_options['button_font'] : $fonts_option['button_font'];
+        $fonts_option['content_font'] = isset($arm_options['content_font']) ? $arm_options['content_font'] : $fonts_option['content_font'];
+
+        $show_admin_users = isset($arm_options['show_admin_users']) ? $arm_options['show_admin_users'] : 0;
+        $show_badges = isset($arm_options['show_badges']) ? $arm_options['show_badges'] : 0;
+        $redirect_to_author = isset($arm_options['redirect_to_author']) ? $arm_options['redirect_to_author'] : 0;
+        $redirect_to_buddypress_profile = isset($arm_options['redirect_to_buddypress_profile']) ? $arm_options['redirect_to_buddypress_profile'] : 0;
+
+        $arm_temp_plans = isset($arm_options['plans']) ? $arm_options['plans'] : array();
+        $per_page_users = isset($arm_options['per_page_users']) ? $arm_options['per_page_users'] : '10';
+        $pagination = isset($arm_options['pagination']) ? $arm_options['pagination'] : 'infinite';
+        $activeSPF = isset($arm_options['arm_social_fields']) ? $arm_options['arm_social_fields'] : array();
+        $searchbox = isset($arm_options['searchbox']) ? $arm_options['searchbox'] : 0;
+        $sortbox = isset($arm_options['sortbox']) ? $arm_options['sortbox'] : 0;
+        $search_type = isset($arm_options['search_type']) ? $arm_options['search_type'] : 0;
+        $activePF = isset($arm_options['profile_fields']) ? $arm_options['profile_fields'] : array();
+        $display_member_field = isset($arm_options['display_member_fields']) ? $arm_options['display_member_fields'] : array();
+        $display_member_fields_label = isset($arm_options['display_member_fields_label']) ? $arm_options['display_member_fields_label'] : array();
+        $custom_css = isset($arm_options['custom_css']) ? $arm_options['custom_css'] : '';
+    }
+}
 ?>
 <div class="wrap arm_page arm_profiles_directories_main_wrapper armPageContainer">
-	<div class="content_wrapper arm_profiles_directories_container" id="content_wrapper" style="min-height: 500px;">
-		<div class="page_title"><?php _e('Profiles & Directories','ARMember'); ?></div>
-        <?php
+    <?php
     if ($setact != 1) {
         $admin_css_url = admin_url('admin.php?page=arm_manage_license');
         ?>
-
-            <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
-        <?php } ?>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+    <?php } ?>
+	<div class="content_wrapper arm_profiles_directories_container arm_min_height_500" id="content_wrapper" >
+		<div class="page_title"><?php _e('Profiles & Directories','ARMember'); ?></div>
         <div class="armclear"></div>
         <div class="arm_profiles_directories_templates_container">
-            <div class="arm_profiles_directories_content arm_visible">
+            <div class="arm_profiles_directories_content <?php echo $show_directories_content; ?>">
                 <div id="arm_profile_templates_container" class="page_sub_content arm_profile_templates_container">
                     <div class="arm_belt_box">
                         <div class="arm_belt_block">
@@ -31,7 +129,7 @@ $setact = $arm_members_activity->$check_sorting();
                         </div>
                         <div class="arm_belt_block" align="<?php echo is_rtl() ? 'left' : 'right'; ?>">
                             <div class="arm_membership_setup_shortcode_box" >
-                                <span style="font-size: 18px;"><?php _e('Shortcode', 'ARMember'); ?></span>
+                                <span class="arm_font_size_18"><?php _e('Shortcode', 'ARMember'); ?></span>
                                 <?php $shortCode = '[arm_template type="profile" id="1"]'; ?>
                                 <div class="arm_shortcode_text arm_form_shortcode_box" style="width:auto;">
                                     <span class="armCopyText"><?php echo esc_attr($shortCode); ?></span>
@@ -82,9 +180,17 @@ $setact = $arm_members_activity->$check_sorting();
                                 <div class="arm_template_content_wrapper arm_row_temp_<?php echo $t_id; ?> <?php echo $t_container_class; ?> armGridActionTD">
                                     <div class="arm_template_content_main_box">
                                         <a href="javascript:void(0)" class="arm_template_preview" <?php echo $t_link_attr; ?>><img alt="<?php echo $t_title; ?>" src="<?php echo $t_img_url; ?>"></a>
+
+                                        <?php if(!empty($t_title)) { ?>
+                                            <div class="arm_template_name_div">
+                                                <?php echo $t_title; ?>
+                                            </div>
+                                        <?php } ?>
+
                                         <div class="arm_template_content_option_links">
                                             <a href="javascript:void(0)" class="arm_template_preview armhelptip" title="<?php _e('Click to preview', 'ARMember'); ?>" <?php echo $t_link_attr; ?>><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/dir_preview_icon.png" alt="" /></a>
-                                            <a class="arm_template_edit_link armhelptip" title="<?php _e('Edit Template Options', 'ARMember'); ?>" href="<?php echo admin_url('admin.php?page='.$arm_slugs->profiles_directories.'&action=edit_profile&id='.$t_id) ?>" <?php echo $t_link_attr; ?>><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/dir_edit_icon.png" alt="" /></a>
+                                            <a class="arm_template_edit_link armhelptip" title="<?php _e('Edit Template Options', 'ARMember'); ?>" href="<?php echo admin_url('admin.php?page='.$arm_slugs->profiles_directories.'&action=edit_profile&id='.$t_id); ?>" <?php echo $t_link_attr; ?>><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/dir_edit_icon.png" alt="" /></a>
+                                            <a href="<?php echo admin_url('admin.php?page='.$arm_slugs->profiles_directories.'&action=duplicate_profile&id='.$t_id); ?>" class="arm_template_copy_link armhelptip" title="<?php _e('Copy Template', 'ARMember'); ?>" <?php echo $t_link_attr; ?>><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/dir_copy_icon.png" alt="" /></a>
                                             <?php if ($ptemp['arm_default'] != 1) { ?>
                                                 <a href="javascript:void(0)" class="arm_template_delete_link armhelptip" title="<?php _e('Delete Template', 'ARMember'); ?>" <?php echo $t_link_attr; ?> onclick="showConfirmBoxCallback('<?php echo $t_id; ?>');"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/dir_delete_icon.png" alt="" /></a>
                                             <?php } ?>
@@ -109,16 +215,13 @@ $setact = $arm_members_activity->$check_sorting();
                         ?>
                         <div id="arm_add_template_profile" class="arm_add_template_box arm_add_template_profile" data-type="profile">
                             <div class="arm_add_template_box_content">
-                                <label class="arm_add_template_label">Add Template</label>
-                                <span class="arm_fa_add_icon armfa-stack armfa-5x">
-                                    <i class="armfa armfa-circle-thin armfa-stack-2x"></i>
-                                    <i class="armfa armfa-plus armfa-stack-1x"></i>
-                                </span>
+                                <img src="<?php echo MEMBERSHIP_IMAGES_URL.'/pd-add-circle-icon.png'; ?>" alt="add-icon">
+                                <label class="arm_add_template_label">Add Template</label>                                
                             </div>
                         </div>
                     </div>
                     <div class="armclear"></div>
-                    <span class="arm_info_text" style="color: red;">
+                    <span class="arm_info_text arm-note-message --warning arm_margin_0">
                     <?php
                        _e('NOTE : You can create multiple profile templates and associate one/more membership plans with each one. In front end, profile template will be dynamically loaded based on user\'s current plan. To display user profile, use single shortcode.', 'ARMember');
                     ?>
@@ -126,7 +229,7 @@ $setact = $arm_members_activity->$check_sorting();
                     </span>
                     
                     <div class="armclear"></div>
-                    <div class="page_sub_title" style="margin-top: 10px;"><?php _e('Member Profile URL','ARMember'); ?></div>
+                    <div class="page_sub_title arm_margin_top_10" ><?php _e('Member Profile URL','ARMember'); ?></div>
                         <?php 
                         $permalink_base = (isset($arm_global_settings->global_settings['profile_permalink_base'])) ? $arm_global_settings->global_settings['profile_permalink_base'] : 'user_login';
                         if (get_option('permalink_structure')) {
@@ -174,9 +277,16 @@ $setact = $arm_members_activity->$check_sorting();
                                 <div class="arm_template_content_wrapper arm_row_temp_<?php echo $t_id; ?> <?php echo $t_container_class; ?> armGridActionTD">
                                     <div class="arm_template_content_main_box">
                                         <a href="javascript:void(0)" class="arm_template_preview" <?php echo $t_link_attr; ?>><img alt="<?php echo $t_title; ?>" src="<?php echo $t_img_url; ?>"></a>
+                                        <?php if(!empty($t_title)) { ?>
+                                            <div class="arm_template_name_div">
+                                                <?php echo $t_title; ?>
+                                            </div>
+                                        <?php } ?>
                                         <div class="arm_template_content_option_links">
                                             <a href="javascript:void(0)" class="arm_template_preview armhelptip" title="<?php _e('Click to preview', 'ARMember'); ?>" <?php echo $t_link_attr; ?>><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/dir_preview_icon.png" alt="" /></a>
                                             <a href="javascript:void(0)" class="arm_template_edit_link armhelptip" title="<?php _e('Edit Template Options', 'ARMember'); ?>" <?php echo $t_link_attr; ?>><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/dir_edit_icon.png" alt="" /></a>
+                                            <?php $edit_link = admin_url('admin.php?page=' . $arm_slugs->profiles_directories . '&action=duplicate_temp&temp_id=' . $t_id); ?>
+                                            <a href="<?php echo $edit_link; ?>" class="arm_template_copy_link armhelptip" title="<?php _e('Copy Template', 'ARMember'); ?>" <?php echo $t_link_attr; ?>><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/dir_copy_icon.png" alt="" /></a>
                                             <a href="javascript:void(0)" class="arm_template_delete_link armhelptip" title="<?php _e('Delete Template', 'ARMember'); ?>" <?php echo $t_link_attr; ?> onclick="showConfirmBoxCallback('<?php echo $t_id; ?>');"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/dir_delete_icon.png" alt="" /></a>
                                         </div>
                                     </div>
@@ -207,11 +317,8 @@ $setact = $arm_members_activity->$check_sorting();
                         ?>
                         <div id="arm_add_template_profile" class="arm_add_template_box arm_add_template_directory" data-type="directory">
                             <div class="arm_add_template_box_content">
-                                <label class="arm_add_template_label">Add Template</label>
-                                <span class="arm_fa_add_icon armfa-stack armfa-5x">
-                                    <i class="armfa armfa-circle-thin armfa-stack-2x"></i>
-                                    <i class="armfa armfa-plus armfa-stack-1x"></i>
-                                </span>
+                                <img src="<?php echo MEMBERSHIP_IMAGES_URL.'/pd-add-circle-icon.png'; ?>" alt="add-icon">
+                                <label class="arm_add_template_label">Add Template</label>                                
                             </div>
                         </div>
                     </div>
@@ -242,6 +349,11 @@ $setact = $arm_members_activity->$check_sorting();
                     <div class="arm_template_content_wrapper arm_mcard_template_content_wrapper arm_row_temp_<?php echo $t_id; ?> <?php echo $t_container_class; ?> armGridActionTD">
                         <div class="arm_template_content_main_box">
                             <a href="javascript:void(0)" class="arm_mcard_preview_nav" data-slug="<?php echo $template['arm_slug']; ?>" data-id="<?php echo $t_id;?>"><img alt="<?php echo $t_title; ?>" src="<?php echo $t_img_url; ?>"></a>
+                            <?php if(!empty($t_title)) { ?>
+                                <div class="arm_template_name_div">
+                                    <?php echo $t_title; ?>
+                                </div>
+                            <?php } ?>
                             <div class="arm_template_content_option_links">
                                 <a href="javascript:void(0)" class="arm_mcard_preview_nav armhelptip" title="<?php _e('Click to preview', 'ARMember'); ?>" data-slug="<?php echo $template['arm_slug']; ?>" data-id="<?php echo $t_id;?>"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/dir_preview_icon.png" alt="" /></a>
                                 <a href="javascript:void(0)" class="arm_membership_card_template_edit_link armhelptip" title="<?php _e('Edit Template Options', 'ARMember'); ?>" <?php echo $t_link_attr; ?>><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/dir_edit_icon.png" alt="" /></a>
@@ -273,11 +385,8 @@ $setact = $arm_members_activity->$check_sorting();
 
                     <div id="arm_add_membership_card" class="arm_add_template_box arm_add_membership_card" data-type="arm_card">
                         <div class="arm_add_template_box_content arm_add_mcard_template_box_content">
-                            <label class="arm_add_template_label"><?php _e('Add Template', 'ARMember'); ?></label>
-                            <span class="arm_fa_add_icon armfa-stack armfa-5x">
-                                <i class="armfa armfa-circle-thin armfa-stack-2x"></i>
-                                <i class="armfa armfa-plus armfa-stack-1x"></i>
-                            </span>
+                            <img src="<?php echo MEMBERSHIP_IMAGES_URL.'/pd-add-circle-icon.png'; ?>" alt="add-icon">
+                            <label class="arm_add_template_label"><?php _e('Add Template', 'ARMember'); ?></label>                            
                         </div>
                     </div>
                 </div>
@@ -323,10 +432,8 @@ $setact = $arm_members_activity->$check_sorting();
             <!-- Membership Card Setting Popup Over -->
 
 
-            <div id="arm_add_profiles_directories_templates" class="arm_add_profiles_directories_templates">
+            <div id="arm_add_profiles_directories_templates" class="arm_add_profiles_directories_templates <?php echo $show_directories_templates; ?>">
                 <?php
-                $tempCS = 'blue';
-                $tempType = 'profile';
                 $backToListingIcon = MEMBERSHIP_IMAGES_URL . '/back_to_listing_arrow.png';
                 if (is_rtl()) {
                     $backToListingIcon = MEMBERSHIP_IMAGES_URL . '/back_to_listing_arrow_right.png';
@@ -336,7 +443,7 @@ $setact = $arm_members_activity->$check_sorting();
                     <div class="arm_sticky_top_belt" id="arm_sticky_top_belt">
                         <div class="arm_belt_box arm_template_action_belt">
                             <div class="arm_belt_block">
-                                <a href="javascript:void(0)" class="arm_temp_back_to_list armemailaddbtn"><img src="<?php echo $backToListingIcon; ?>"/><?php _e('Back to listing', 'ARMember'); ?></a>
+                                <a href="<?php echo $backlist_link; ?>" class="arm_temp_back_to_list armemailaddbtn"><img src="<?php echo $backToListingIcon; ?>"/><?php _e('Back to listing', 'ARMember'); ?></a>
                             </div>
                             <div class="arm_belt_block arm_temp_action_btns" align="<?php echo (is_rtl()) ? 'left' : 'right'; ?>">
                                 <button type="submit" class="arm_save_btn arm_add_template_submit" data-type="directory"><?php _e('Save', 'ARMember'); ?></button>
@@ -347,7 +454,7 @@ $setact = $arm_members_activity->$check_sorting();
                     </div>
                     <div class="arm_belt_box arm_template_action_belt">
                         <div class="arm_belt_block">
-                            <a href="javascript:void(0)" class="arm_temp_back_to_list armemailaddbtn"><img src="<?php echo $backToListingIcon; ?>"/><?php _e('Back to listing', 'ARMember'); ?></a>
+                            <a href="<?php echo $backlist_link; ?>" class="arm_temp_back_to_list armemailaddbtn"><img src="<?php echo $backToListingIcon; ?>"/><?php _e('Back to listing', 'ARMember'); ?></a>
                         </div>
                         <div class="arm_belt_block arm_temp_action_btns" align="<?php echo (is_rtl()) ? 'left' : 'right'; ?>">
                             <button type="submit" class="arm_save_btn arm_add_template_submit" data-type="directory"><?php _e('Save', 'ARMember'); ?></button>
@@ -360,6 +467,12 @@ $setact = $arm_members_activity->$check_sorting();
                         <div class="page_sub_title"><?php _e('Template Options', 'ARMember'); ?></div>
                         <div class="arm_solid_divider"></div>
                         <div class="arm_template_option_block">
+                            <div class="arm_directory_template_name_div arm_form_fields_wrapper">
+                                <label class="arm_opt_title"><?php _e('Directory Template Name', 'ARMember'); ?></label>
+                                <div class="arm_opt_content">
+                                    <input type="text" name="arm_directory_template_name" class="arm_form_input_box arm_width_100_pct" value="<?php echo $arm_directory_template_name; ?>">
+                                </div>
+                            </div>
                             <div class="arm_opt_title"><?php _e('Select Template', 'ARMember'); ?></div>
                             <div class="arm_opt_content">
                                 <?php if (!empty($defaultTemplates)): ?>
@@ -377,8 +490,8 @@ $setact = $arm_members_activity->$check_sorting();
                                     foreach ($templateTypes as $type => $temps):
                                         ?>
                                         <?php foreach ($temps as $temp): ?>
-                                            <label class="arm_tempalte_type_box arm_temp_<?php echo $type; ?>_options <?php echo ($i == 0) ? 'arm_active_temp' : ''; ?>" data-type="<?php echo $type; ?>" for="arm_temp_type_<?php echo $temp['arm_slug']; ?>" style="<?php echo ($type == $tempType ? '' : 'display:none;'); ?>">
-                                                <input type="radio" name="template_options[<?php echo $type; ?>]" id="arm_temp_type_<?php echo $temp['arm_slug']; ?>" class="arm_temp_type_radio arm_temp_type_radio_<?php echo $type; ?>" value="<?php echo $temp['arm_slug']; ?>" <?php echo ($i == 0) ? 'checked="checked"' : ''; ?> data-type="<?php echo $type; ?>">
+                                            <label class="arm_tempalte_type_box arm_temp_<?php echo $type; ?>_options <?php echo ($temp['arm_slug'] == $template_slug) ? 'arm_active_temp' : ''; ?>" data-type="<?php echo $type; ?>" for="arm_temp_type_<?php echo $temp['arm_slug']; ?>" style="<?php echo ($type == $tempType ? '' : 'display:none;'); ?>">
+                                                <input type="radio" name="template_options[<?php echo $type; ?>]" id="arm_temp_type_<?php echo $temp['arm_slug']; ?>" class="arm_temp_type_radio arm_temp_type_radio_<?php echo $type; ?>" value="<?php echo $temp['arm_slug']; ?>" <?php echo ($temp['arm_slug'] == $template_slug) ? 'checked="checked"' : ''; ?> data-type="<?php echo $type; ?>">
                                                 <img alt="" src="<?php echo MEMBERSHIP_VIEWS_URL . '/templates/' . $temp['arm_slug'] . '.png'; ?>"/>
                                                 <span class="arm_temp_selected_text"><?php _e('Selected', 'ARMember'); ?></span>
                                             </label>
@@ -395,7 +508,7 @@ $setact = $arm_members_activity->$check_sorting();
                         <div class="arm_template_option_block">
                             <div class="arm_opt_title"><?php _e('Color Scheme', 'ARMember'); ?></div>
                             <div class="arm_opt_content">
-                                <div class="c_schemes" style="padding-left: 5px;">
+                                <div class="c_schemes arm_padding_left_5" >
                                     <?php foreach ($tempColorSchemes as $color => $color_opt): ?>
                                         <label class="arm_temp_color_scheme_block arm_temp_color_scheme_block_<?php echo $color; ?> <?php echo ($color == $tempCS) ? 'arm_color_box_active' : ''; ?>">
                                             <span style="background-color:<?php echo $color_opt['button_color']; ?>;"></span>
@@ -407,85 +520,85 @@ $setact = $arm_members_activity->$check_sorting();
                                         <input type="radio" id="arm_temp_color_radio_custom" name="template_options[color_scheme]" value="custom" class="arm_temp_color_radio" data-type="<?php echo $tempType; ?>" <?php checked($tempCS, 'custom'); ?>/>
                                     </label>
                                 </div>
-                                <div class="armclear" style="height: 1px;"></div>
+                                <div class="armclear arm_height_1" ></div>
                                 <div class="arm_temp_color_options" id="arm_temp_color_options" style="<?php echo ($color == 'custom') ? '' : 'display:none;'; ?>">
                                     <div class="arm_custom_color_opts">
                                         <label class="arm_opt_label"><?php _e('Title Color', 'ARMember'); ?></label>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[title_color]" id="arm_title_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['title_color'])) ? $tempColorSchemes[$tempCS]['title_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[title_color]" id="arm_title_color" class="arm_colorpicker" value="<?php echo $title_color; ?>">
                                             <span><?php _e('Main Title', 'ARMember'); ?></span>
                                         </div>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[subtitle_color]" id="arm_subtitle_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['subtitle_color'])) ? $tempColorSchemes[$tempCS]['subtitle_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[subtitle_color]" id="arm_subtitle_color" class="arm_colorpicker" value="<?php echo $subtitle_color; ?>">
                                             <span><?php _e('Sub Title', 'ARMember'); ?></span>
                                         </div>
                                     </div>
                                     <div class="arm_custom_color_opts">
                                         <label class="arm_opt_label"><?php _e('Button Color', 'ARMember'); ?></label>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[button_color]" id="arm_button_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['button_color'])) ? $tempColorSchemes[$tempCS]['button_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[button_color]" id="arm_button_color" class="arm_colorpicker" value="<?php echo $button_color; ?>">
                                             <span><?php _e('Background', 'ARMember'); ?></span>
                                         </div>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[button_font_color]" id="arm_button_font_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['button_font_color'])) ? $tempColorSchemes[$tempCS]['button_font_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[button_font_color]" id="arm_button_font_color" class="arm_colorpicker" value="<?php echo $button_font_color; ?>">
                                             <span><?php _e('Text', 'ARMember'); ?></span>
                                         </div>
                                     </div>
                                     <div class="arm_custom_color_opts arm_temp_directory_options">
                                         <label class="arm_opt_label"><?php _e('Effect Color', 'ARMember'); ?></label>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[border_color]" id="arm_border_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['border_color'])) ? $tempColorSchemes[$tempCS]['border_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[border_color]" id="arm_border_color" class="arm_colorpicker" value="<?php echo $border_color; ?>">
                                             <span><?php _e('Box Hover', 'ARMember'); ?></span>
                                         </div>
                                     </div>
-                                    <div class="arm_custom_color_opts arm_temp_directory_options atm_temp_3_opt">
+                                    <div class="arm_custom_color_opts arm_temp_directory_options atm_temp_3_opt" <?php echo $atm_temp_3_opt; ?>>
                                         <label class="arm_opt_label"><?php _e('Background Color', 'ARMember'); ?></label>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[box_bg_color]" id="arm_box_bg_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['box_bg_color'])) ? $tempColorSchemes[$tempCS]['box_bg_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[box_bg_color]" id="arm_box_bg_color" class="arm_colorpicker" value="<?php echo $box_bg_color; ?>">
                                             <span><?php _e('Top Belt', 'ARMember'); ?></span>
                                         </div>
                                     </div>
-                                    <div class="arm_custom_color_opts arm_temp_profile_options">
+                                    <div class="arm_custom_color_opts arm_temp_profile_options" <?php echo $arm_temp_profile_options; ?>>
                                         <label class="arm_opt_label"><?php _e('Tab Color', 'ARMember'); ?></label>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[tab_bg_color]" id="arm_tab_bg_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['tab_bg_color'])) ? $tempColorSchemes[$tempCS]['tab_bg_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[tab_bg_color]" id="arm_tab_bg_color" class="arm_colorpicker" value="<?php echo $tab_bg_color; ?>">
                                             <span><?php _e('Background', 'ARMember'); ?></span>
                                         </div>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[tab_link_color]" id="arm_tab_link_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['tab_link_color'])) ? $tempColorSchemes[$tempCS]['tab_link_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[tab_link_color]" id="arm_tab_link_color" class="arm_colorpicker" value="<?php echo $tab_link_color; ?>">
                                             <span><?php _e('Link Text', 'ARMember'); ?></span>
                                         </div>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[tab_link_bg_color]" id="arm_tab_link_bg_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['tab_link_bg_color'])) ? $tempColorSchemes[$tempCS]['tab_link_bg_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[tab_link_bg_color]" id="arm_tab_link_bg_color" class="arm_colorpicker" value="<?php echo $tab_link_bg_color; ?>">
                                             <span><?php _e('Link Background', 'ARMember'); ?></span>
                                         </div>
                                     </div>
-                                    <div class="arm_custom_color_opts arm_temp_profile_options">
+                                    <div class="arm_custom_color_opts arm_temp_profile_options" <?php echo $arm_temp_profile_options; ?>>
                                         <label class="arm_opt_label"><?php _e('Active Tab Color', 'ARMember'); ?></label>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[tab_link_hover_color]" id="arm_tab_link_hover_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['tab_link_hover_color'])) ? $tempColorSchemes[$tempCS]['tab_link_hover_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[tab_link_hover_color]" id="arm_tab_link_hover_color" class="arm_colorpicker" value="<?php echo $tab_link_hover_color; ?>">
                                             <span><?php _e('Link Text', 'ARMember'); ?></span>
                                         </div>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[tab_link_hover_bg_color]" id="arm_tab_link_hover_bg_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['tab_link_hover_bg_color'])) ? $tempColorSchemes[$tempCS]['tab_link_hover_bg_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[tab_link_hover_bg_color]" id="arm_tab_link_hover_bg_color" class="arm_colorpicker" value="<?php echo $tab_link_hover_bg_color; ?>">
                                             <span><?php _e('Link Background', 'ARMember'); ?></span>
                                         </div>
                                     </div>
                                     <div class="arm_custom_color_opts">
                                         <label class="arm_opt_label"><?php _e('Other Link Color', 'ARMember'); ?></label>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[link_color]" id="arm_link_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['link_color'])) ? $tempColorSchemes[$tempCS]['link_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[link_color]" id="arm_link_color" class="arm_colorpicker" value="<?php echo $link_color; ?>">
                                             <span><?php _e('Link Text', 'ARMember'); ?></span>
                                         </div>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[link_hover_color]" id="arm_link_hover_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['link_hover_color'])) ? $tempColorSchemes[$tempCS]['link_hover_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[link_hover_color]" id="arm_link_hover_color" class="arm_colorpicker" value="<?php echo $link_hover_color; ?>">
                                             <span><?php _e('Link Hover', 'ARMember'); ?></span>
                                         </div>
                                     </div>
-                                    <div class="arm_custom_color_opts arm_temp_profile_options">
+                                    <div class="arm_custom_color_opts arm_temp_profile_options" <?php echo $arm_temp_profile_options; ?>>
                                         <label class="arm_opt_label"><?php _e('Body Content Color', 'ARMember'); ?></label>
                                         <div class="arm_custom_color_picker">
-                                            <input type="text" name="template_options[content_font_color]" id="arm_content_font_color" class="arm_colorpicker" value="<?php echo (isset($tempColorSchemes[$tempCS]['content_font_color'])) ? $tempColorSchemes[$tempCS]['content_font_color'] : '#000000'; ?>">
+                                            <input type="text" name="template_options[content_font_color]" id="arm_content_font_color" class="arm_colorpicker" value="<?php echo $content_font_color; ?>">
                                             <span><?php _e('Content Text', 'ARMember'); ?></span>
                                         </div>
                                     </div>
@@ -508,22 +621,16 @@ $setact = $arm_members_activity->$check_sorting();
                                     <div class="arm_temp_font_opts_box">
                                         <div class="arm_opt_label"><?php echo $value; ?></div>
                                         <div class="arm_temp_font_opts">
-                                            <input type="hidden" id="arm_template_font_family_<?php echo $key; ?>" name="template_options[<?php echo $key; ?>][font_family]" value="Helvetica"/>
-                                            <dl class="arm_selectbox column_level_dd">
-                                                <dt style="width:160px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                            <input type="hidden" id="arm_template_font_family_<?php echo $key; ?>" name="template_options[<?php echo $key; ?>][font_family]" value="<?php echo $fonts_option[$key]['font_family']; ?>"/>
+                                            <dl class="arm_selectbox column_level_dd arm_margin_right_10 arm_width_220">
+                                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                 <dd>
                                                     <ul data-id="arm_template_font_family_<?php echo $key; ?>"><?php echo $arm_member_forms->arm_fonts_list(); ?></ul>
                                                 </dd>
                                             </dl>
-                                            <?php
-                                            $fontSize = '14';
-                                            if ($key == 'content_font') {
-                                                $fontSize = '16';
-                                            }
-                                            ?>
-                                            <input type="hidden" id="arm_template_font_size_<?php echo $key; ?>" name="template_options[<?php echo $key; ?>][font_size]" value="<?php echo $fontSize; ?>"/>
-                                            <dl class="arm_selectbox column_level_dd">
-                                                <dt style="width:70px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+                                            <input type="hidden" id="arm_template_font_size_<?php echo $key; ?>" name="template_options[<?php echo $key; ?>][font_size]" value="<?php echo $fonts_option[$key]['font_size']; ?>"/>
+                                            <dl class="arm_selectbox column_level_dd arm_margin_right_10 arm_width_90">
+                                                <dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"  /><i class="armfa armfa-caret-down armfa-lg"></i></dt>
                                                 <dd>
                                                     <ul data-id="arm_template_font_size_<?php echo $key; ?>">
                                                         <?php for ($i = 8; $i < 41; $i++): ?>
@@ -533,14 +640,14 @@ $setact = $arm_members_activity->$check_sorting();
                                                 </dd>
                                             </dl>
                                             <div class="arm_font_style_options arm_template_font_style_options">
-                                                <label class="arm_font_style_label" data-value="bold" data-field="arm_template_font_bold_<?php echo $key; ?>"><i class="armfa armfa-bold"></i></label>
-                                                <input type="hidden" name="template_options[<?php echo $key; ?>][font_bold]" id="arm_template_font_bold_<?php echo $key; ?>" class="arm_template_font_bold_<?php echo $key; ?>" value="" />
-                                                <label class="arm_font_style_label" data-value="italic" data-field="arm_template_font_italic_<?php echo $key; ?>"><i class="armfa armfa-italic"></i></label>
-                                                <input type="hidden" name="template_options[<?php echo $key; ?>][font_italic]" id="arm_template_font_italic_<?php echo $key; ?>" class="arm_template_font_italic_<?php echo $key; ?>" value="" />
+                                                <label class="arm_font_style_label <?php echo !empty($fonts_option[$key]['font_bold']) ? 'arm_style_active' : ''; ?>" data-value="bold" data-field="arm_template_font_bold_<?php echo $key; ?>"><i class="armfa armfa-bold"></i></label>
+                                                <input type="hidden" name="template_options[<?php echo $key; ?>][font_bold]" id="arm_template_font_bold_<?php echo $key; ?>" class="arm_template_font_bold_<?php echo $key; ?>" value="<?php echo !empty($fonts_option[$key]['font_bold']) ? '1' : ''; ?>" />
+                                                <label class="arm_font_style_label <?php echo !empty($fonts_option[$key]['font_italic']) ? 'arm_style_active' : ''; ?>" data-value="italic" data-field="arm_template_font_italic_<?php echo $key; ?>"><i class="armfa armfa-italic"></i></label>
+                                                <input type="hidden" name="template_options[<?php echo $key; ?>][font_italic]" id="arm_template_font_italic_<?php echo $key; ?>" class="arm_template_font_italic_<?php echo $key; ?>" value="<?php echo !empty($fonts_option[$key]['font_italic']) ? '1' : ''; ?>" />
 
-											<label class="arm_font_style_label arm_decoration_label" data-value="underline" data-field="arm_template_font_decoration_<?php echo $key;?>"><i class="armfa armfa-underline"></i></label>
-											<label class="arm_font_style_label arm_decoration_label" data-value="line-through" data-field="arm_template_font_decoration_<?php echo $key;?>"><i class="armfa armfa-strikethrough"></i></label>
-											<input type="hidden" name="template_options[<?php echo $key;?>][font_decoration]" id="arm_template_font_decoration_<?php echo $key;?>" class="arm_template_font_decoration_<?php echo $key;?>" value="" />
+											<label class="arm_font_style_label arm_decoration_label <?php if($fonts_option[$key]['font_decoration'] == 'underline') { echo 'arm_style_active'; } ?>" data-value="underline" data-field="arm_template_font_decoration_<?php echo $key;?>"><i class="armfa armfa-underline"></i></label>
+											<label class="arm_font_style_label arm_decoration_label <?php if($fonts_option[$key]['font_decoration'] == 'line-through') { echo 'arm_style_active'; } ?>" data-value="line-through" data-field="arm_template_font_decoration_<?php echo $key;?>"><i class="armfa armfa-strikethrough"></i></label>
+											<input type="hidden" name="template_options[<?php echo $key;?>][font_decoration]" id="arm_template_font_decoration_<?php echo $key;?>" class="arm_template_font_decoration_<?php echo $key;?>" value="<?php echo $fonts_option[$key]['font_decoration']; ?>" />
 										</div>
 									</div>
 								</div>
@@ -552,12 +659,12 @@ $setact = $arm_members_activity->$check_sorting();
 						<div class="arm_template_option_block">
 							<div class="arm_opt_title"><?php _e('Other Options','ARMember'); ?></div>
 							<div class="arm_opt_content">
-                                                                <div class="arm_temp_opt_box">
+                                <div class="arm_temp_opt_box">
 									<div class="arm_opt_label"><?php _e('Display Administrator Users?','ARMember');?></div>
 									<div class="arm_opt_content_wrapper">
 										<div class="arm_temp_switch_wrapper">
 											<div class="armswitch arm_global_setting_switch">
-												<input type="checkbox" id="arm_temp_show_admin_users" value="1" class="armswitch_input" name="template_options[show_admin_users]"/>
+												<input type="checkbox" id="arm_temp_show_admin_users" value="1" class="armswitch_input" name="template_options[show_admin_users]" <?php echo (!empty($show_admin_users)) ? 'checked="checked"' : ''; ?>/>
 												<label for="arm_temp_show_admin_users" class="armswitch_label"></label>
 											</div>
 										</div>
@@ -568,13 +675,13 @@ $setact = $arm_members_activity->$check_sorting();
 									<div class="arm_opt_content_wrapper">
 										<div class="arm_temp_switch_wrapper">
 											<div class="armswitch arm_global_setting_switch">
-												<input type="checkbox" id="arm_temp_show_badges" value="1" class="armswitch_input" name="template_options[show_badges]" checked="checked"/>
+												<input type="checkbox" id="arm_temp_show_badges" value="1" class="armswitch_input" name="template_options[show_badges]" <?php echo (!empty($show_badges)) ? 'checked="checked"' : ''; ?>/>
 												<label for="arm_temp_show_badges" class="armswitch_label"></label>
 											</div>
 										</div>
 									</div>
 								</div>
-                                                                <?php /* ?><div class="arm_temp_opt_box">
+                                <?php /* ?><div class="arm_temp_opt_box">
 									<div class="arm_opt_label"><?php _e('Display Joining Date?','ARMember');?></div>
 									<div class="arm_opt_content_wrapper">
 										<div class="arm_temp_switch_wrapper">
@@ -585,36 +692,36 @@ $setact = $arm_members_activity->$check_sorting();
 										</div>
 									</div>
 								</div><?php */ ?>
-                                                                <div class="arm_temp_opt_box arm_temp_directory_options">
+                                <div class="arm_temp_opt_box arm_temp_directory_options">
 									<div class="arm_opt_label"><?php _e('Redirect To Author Archive Page','ARMember');?></div>
 									<div class="arm_opt_content_wrapper">
 										<div class="arm_temp_switch_wrapper">
 											<div class="armswitch arm_global_setting_switch">
-												<input type="checkbox" id="arm_temp_redirect_to_author" value="1" class="armswitch_input" name="template_options[redirect_to_author]"/>
+												<input type="checkbox" id="arm_temp_redirect_to_author" value="1" class="armswitch_input" name="template_options[redirect_to_author]" <?php echo (!empty($redirect_to_author)) ? 'checked="checked"' : ''; ?>/>
 												<label for="arm_temp_redirect_to_author" class="armswitch_label"></label>
 											</div>
-                                                                                        <div class="armclear" style="height: 1px;"></div>
-                                                                                        <span class="arm_info_text" style="width:450px;">(<?php _e("If Author have no any post than user will be redirect to ARMember Profile Page", 'ARMember');?>)</span>
+                                            <div class="armclear arm_height_1" ></div>
+                                            <span class="arm_info_text arm_width_450" >(<?php _e("If Author have no any post than user will be redirect to ARMember Profile Page", 'ARMember');?>)</span>
 										</div>
 									</div>
 								</div>
-                                                                <div class="arm_temp_opt_box arm_temp_directory_options">
+                                <div class="arm_temp_opt_box arm_temp_directory_options">
 									<div class="arm_opt_label"><?php _e('Redirect to BuddyPress Profile','ARMember');?></div>
 									<div class="arm_opt_content_wrapper">
 										<div class="arm_temp_switch_wrapper">
 											<div class="armswitch arm_global_setting_switch">
-												<input type="checkbox" id="arm_temp_redirect_to_buddypress_profile" value="1" class="armswitch_input" name="template_options[redirect_to_buddypress_profile]"/>
+												<input type="checkbox" id="arm_temp_redirect_to_buddypress_profile" value="1" class="armswitch_input" name="template_options[redirect_to_buddypress_profile]" <?php echo (!empty($redirect_to_buddypress_profile)) ? 'checked="checked"' : ''; ?>/>
 												<label for="arm_temp_redirect_to_buddypress_profile" class="armswitch_label"></label>
 											</div>
 										</div>
 									</div>
 								</div>
-                                                                <div class="arm_temp_opt_box arm_temp_profile_options">
+                                <div class="arm_temp_opt_box arm_temp_profile_options" <?php echo $arm_temp_profile_options; ?>>
 									<div class="arm_opt_label"><?php _e('Hide empty profile fields?','ARMember');?></div>
 									<div class="arm_opt_content_wrapper">
 										<div class="arm_temp_switch_wrapper">
 											<div class="armswitch arm_global_setting_switch">
-												<input type="checkbox" id="arm_temp_hide_empty_profile_fields" value="0" class="armswitch_input" name="template_options[hide_empty_profile_fields]"/>
+												<input type="checkbox" id="arm_temp_hide_empty_profile_fields" value="0" class="armswitch_input" name="template_options[hide_empty_profile_fields]" <?php echo (empty($hide_empty_profile_fields)) ? 'checked="checked"' : ''; ?>/>
 												<label for="arm_temp_hide_empty_profile_fields" class="armswitch_label"></label>
 											</div>
 										</div>
@@ -626,12 +733,12 @@ $setact = $arm_members_activity->$check_sorting();
 										<select id="arm_temp_plans" class="arm_chosen_selectbox arm_template_plans_select" name="template_options[plans][]" data-placeholder="<?php _e('Select Plan(s)..', 'ARMember');?>" multiple="multiple">
 											<?php if (!empty($subs_data)): ?>
 												<?php foreach ($subs_data as $sd): ?>
-													<option class="arm_message_selectbox_op" value="<?php echo $sd['arm_subscription_plan_id'];?>"><?php echo stripslashes($sd['arm_subscription_plan_name']);?></option>
+													<option class="arm_message_selectbox_op" <?php echo (in_array($sd['arm_subscription_plan_id'],$arm_temp_plans)) ? 'selected="selected"' : ''; ?>  value="<?php echo $sd['arm_subscription_plan_id'];?>"><?php echo stripslashes($sd['arm_subscription_plan_name']);?></option>
 												<?php endforeach;?>
 											<?php endif;?>
 										</select>
-										<div class="armclear" style="height: 1px;"></div>
-                                                                                <span class="arm_temp_sub_plan_error" style="display:none; color: red;"><?php _e('Please select atleast one plan', 'ARMember'); ?></span>
+										<div class="armclear arm_height_1" ></div>
+                                        <span class="arm_temp_sub_plan_error arm_color_red" style="display:none;"><?php _e('Please select atleast one plan', 'ARMember'); ?></span>
 										<span class="arm_info_text arm_temp_directory_options">(<?php _e("Leave blank to display all plan's members.", 'ARMember');?>)</span>
 									</div>
 								</div>
@@ -639,14 +746,14 @@ $setact = $arm_members_activity->$check_sorting();
                                 <div class="arm_temp_opt_box arm_temp_directory_options">
 									<div class="arm_opt_label"><?php _e('No. Of Members Per Page','ARMember');?></div>
 									<div class="arm_opt_content_wrapper">
-                                        <input id="arm_temp_per_page_users" type="text" onkeydown="javascript:return checkNumber(event)" value="10" style="width:70px;" name="template_options[per_page_users]">
+                                        <input id="arm_temp_per_page_users" type="text" class="arm_width_70" onkeydown="javascript:return checkNumber(event)" value="<?php echo $per_page_users; ?>"  name="template_options[per_page_users]">
                                     </div>
                                 </div>
                                 <div class="arm_temp_opt_box arm_temp_directory_options">
                                     <div class="arm_opt_label"><?php _e('Pagination Style', 'ARMember'); ?></div>
                                     <div class="arm_opt_content_wrapper">
-                                        <input type="radio" name="template_options[pagination]" value="numeric" id="arm_temp_pagination_numeric" class="arm_iradio" checked="checked"><label for="arm_temp_pagination_numeric"><span><?php echo _e('Numeric', 'ARMember'); ?></span></label>
-                                        <input type="radio" name="template_options[pagination]" value="infinite" id="arm_temp_pagination_infinite" class="arm_iradio" checked="checked"><label for="arm_temp_pagination_infinite"><span><?php echo _e('Load More Link', 'ARMember'); ?></span></label>
+                                        <input type="radio" name="template_options[pagination]" value="numeric" id="arm_temp_pagination_numeric" class="arm_iradio" <?php echo ($pagination == 'numeric') ? 'checked="checked"' : '';?>><label for="arm_temp_pagination_numeric"><span><?php echo _e('Numeric', 'ARMember'); ?></span></label>
+                                        <input type="radio" name="template_options[pagination]" value="infinite" id="arm_temp_pagination_infinite" class="arm_iradio" <?php echo ($pagination == 'infinite') ? 'checked="checked"' : '';?>><label for="arm_temp_pagination_infinite"><span><?php echo _e('Load More Link', 'ARMember'); ?></span></label>
                                     </div>
                                 </div>
                                 <!-- Socail Profile Fields Start-->
@@ -656,7 +763,6 @@ $setact = $arm_members_activity->$check_sorting();
                                         <div class="social_profile_fields">
                                             <?php 
                                             $socialProfileFields = $arm_member_forms->arm_social_profile_field_types();
-											$activeSPF = array('facebook', 'twitter', 'linkedin');
 											if (!empty($socialFieldsOptions)) {
 											    $activeSPF = isset($socialFieldsOptions['arm_form_field_option']['options']) ? $socialFieldsOptions['arm_form_field_option']['options'] : array();
 											}
@@ -674,23 +780,20 @@ $setact = $arm_members_activity->$check_sorting();
                                         </div>
 									</div>
 								</div>
-
 								<!-- Socail Profile Fields End-->
-                                 
-
                                 <div class="arm_temp_opt_box arm_temp_directory_options">
                                     <div class="arm_opt_label"><?php _e('Filter Options','ARMember');?></div>
-                                    <div class="arm_opt_content_wrapper" style="min-width:550px;">
+                                    <div class="arm_opt_content_wrapper arm_min_width_550" >
                                         <div class="arm_temp_switch_wrapper">
                                             <div class="armswitch arm_global_setting_switch">
-                                                <input type="checkbox" id="arm_temp_searchbox" value="1" class="armswitch_input" name="template_options[searchbox]" checked="checked"/>
+                                                <input type="checkbox" id="arm_temp_searchbox" value="1" class="armswitch_input" name="template_options[searchbox]" <?php echo (!empty($searchbox)) ? ' checked="checked"' : '';?>/>
                                                 <label for="arm_temp_searchbox" class="armswitch_label"></label>
                                             </div>
                                             <label for="arm_temp_searchbox"><?php _e('Display Search Box?','ARMember');?></label>
                                         </div>
                                         <div class="arm_temp_switch_wrapper">
                                             <div class="armswitch arm_global_setting_switch">
-                                                <input type="checkbox" id="arm_temp_sortbox" value="1" class="armswitch_input" name="template_options[sortbox]" checked="checked"/>
+                                                <input type="checkbox" id="arm_temp_sortbox" value="1" class="armswitch_input" name="template_options[sortbox]" <?php echo (!empty($sortbox)) ? ' checked="checked"' : '';?>/>
                                                 <label for="arm_temp_sortbox" class="armswitch_label"></label>
                                             </div>
                                             <label for="arm_temp_sortbox"><?php _e('Display Sorting Options?','ARMember');?></label>
@@ -701,23 +804,17 @@ $setact = $arm_members_activity->$check_sorting();
                                 <div class="arm_temp_opt_box arm_temp_directory_options arm_search_type_div">
                                     <div class="arm_opt_label"><?php _e('Search Type', 'ARMember'); ?></div>
                                     <div class="arm_opt_content_wrapper">
-                                        <input type="radio" name="template_options[search_type]" value="0" id="arm_template_search_type_single_search" class="arm_iradio"><label for="arm_template_search_type_single_search"><span><?php echo _e('Single Search Field', 'ARMember'); ?></span></label>
-                                        <input type="radio" name="template_options[search_type]" value="1" id="arm_template_search_type_multi_search" class="arm_iradio" checked="checked"><label for="arm_template_search_type_multi_search"><span><?php echo _e('Multi Search Field', 'ARMember'); ?></span></label>
+                                        <input type="radio" name="template_options[search_type]" value="0" id="arm_template_search_type_single_search" class="arm_iradio" <?php echo (empty($search_type)) ? 'checked="checked"' : ''; ?>><label for="arm_template_search_type_single_search"><span><?php echo _e('Single Search Field', 'ARMember'); ?></span></label>
+                                        <input type="radio" name="template_options[search_type]" value="1" id="arm_template_search_type_multi_search" class="arm_iradio" <?php echo (!empty($search_type)) ? 'checked="checked"' : ''; ?>><label for="arm_template_search_type_multi_search"><span><?php echo _e('Multi Search Field', 'ARMember'); ?></span></label>
                                     </div>
-                                </div>                   
-                                                                
-                                                                
-                                                                <!-- Profile Fields Start-->
+                                </div>
+                                <!-- Profile Fields Start-->
 								<div class="arm_temp_opt_box arm_temp_directory_options arm_search_field_div">
 									<div class="arm_opt_label"><?php _e('Search Members by Profile Fields','ARMember');?></div>
 									<div class="arm_opt_content_wrapper">
                                         <div class="profile_search_fields">
                                             <?php 
                                                 $dbProfileFields = $arm_members_directory->arm_template_profile_fields();
-                                                                                
-                                                                                
-                                                                                
-											$activePF = array('first_name', 'last_name');
 											 ?>
 											<div class="arm_profile_search_fields_list_wrapper">
 								                <?php if (!empty($dbProfileFields)): ?>
@@ -729,7 +826,7 @@ $setact = $arm_members_activity->$check_sorting();
                                                         ?>
                                                         <div class="arm_profile_search_field_item">
                                                             <input type="checkbox" class="arm_icheckbox arm_pf_active_checkbox" value="<?php echo $pfKey; ?>" name="template_options[profile_fields][<?php echo $pfKey; ?>]" id="arm_pf_<?php echo $pfKey; ?>_status" <?php echo (in_array($pfKey, $activePF)) ? 'checked="checked"' : ''; ?>>
-                                                            <label for="arm_pf_<?php echo $pfKey; ?>_status"><?php echo $pfLabel['label']; ?></label>
+                                                            <label for="arm_pf_<?php echo $pfKey; ?>_status"><?php echo stripslashes($pfLabel['label']); ?></label>
                                                         </div>
                                                     <?php endforeach; ?>
                                                 <?php endif; ?>
@@ -745,27 +842,26 @@ $setact = $arm_members_activity->$check_sorting();
                                         <div class="profile_display_member_fields">
                                             <?php 
                                                 $arm_display_members_fields = $arm_members_directory->arm_template_display_member_fields();
-                                                $active_display_member_field = array('arm_show_joining_date');
                                              ?>
                                             <div class="arm_profile_display_member_fields_list_wrapper">
                                                 <?php if (!empty($arm_display_members_fields)): ?>
                                                     <?php
                                                     foreach ($arm_display_members_fields as $pfKey => $pfLabel):
-                                                        if (empty($pfKey) || $pfKey == 'user_pass' || $pfKey == 'first_name' || $pfKey == 'last_name' || in_array($pfLabel['type'], array('html', 'section', 'rememberme', 'file', 'avatar', 'password', 'roles','arm_captcha'))) {
+                                                        if (empty($pfKey) || $pfKey == 'user_pass' || in_array($pfLabel['type'], array('html', 'section', 'rememberme', 'file', 'avatar', 'password', 'roles','arm_captcha'))) {
                                                             continue;
                                                         }
                                                         
                                                         ?>
                                                         <div class="arm_profile_display_member_field_item">
-                                                            <input type="checkbox" class="arm_icheckbox arm_pf_active_checkbox" value="<?php echo $pfKey; ?>" name="template_options[display_member_fields][<?php echo $pfKey; ?>]" id="arm_display_member_field_add_<?php echo $pfKey; ?>_status" <?php echo (in_array($pfKey, $active_display_member_field)) ? 'checked="checked"' : ''; ?>>
+                                                            <input type="checkbox" class="arm_icheckbox arm_pf_active_checkbox" value="<?php echo $pfKey; ?>" name="template_options[display_member_fields][<?php echo $pfKey; ?>]" id="arm_display_member_field_add_<?php echo $pfKey; ?>_status" <?php if(in_array($pfKey, $display_member_field)) { echo 'checked="checked"'; } ?>>
                                                         <?php
                                                         
-                                                        if(in_array($pfKey, array('arm_show_joining_date', 'arm_membership_plan', 'arm_membership_plan_expiry_date')))
+                                                        if(in_array($pfKey, array('arm_display_user_id', 'arm_show_joining_date', 'arm_membership_plan', 'arm_membership_plan_expiry_date')))
                                                         {
                                                             
                                                         ?>
                                                         <span class="arm_display_member_fields_label ">
-                                                        <input type="text"  value="<?php echo $pfLabel['label']; ?>" name="template_options[display_member_fields_label][<?php echo $pfKey; ?>]" id="<?php echo $pfKey; ?>_label" class="display_member_add_field_input" >
+                                                        <input type="text"  value="<?php echo (!empty($display_member_fields_label[$pfKey])) ? $display_member_fields_label[$pfKey] : $pfLabel['label']; ?>" name="template_options[display_member_fields_label][<?php echo $pfKey; ?>]" id="<?php echo $pfKey; ?>_label" class="display_member_add_field_input" >
                                                         </span>
                                                         <span class="arm_display_member_field_icons">
                                                         <span class="arm_display_member_field_icon edit_field " id="arm_add_display_member_field" data-code="<?php echo $pfKey; ?>_label" ></span>
@@ -775,7 +871,7 @@ $setact = $arm_members_activity->$check_sorting();
                                                         else
                                                         {
                                                         ?>
-                                                        <label for="arm_display_member_field_add_<?php echo $pfKey; ?>_status" ><?php echo $pfLabel['label']; ?></label>
+                                                        <label for="arm_display_member_field_add_<?php echo $pfKey; ?>_status" ><?php echo stripslashes($pfLabel['label']); ?></label>
                                                         <?php
                                                         }
                                                         ?>
@@ -792,10 +888,10 @@ $setact = $arm_members_activity->$check_sorting();
 									<div class="arm_opt_label"><?php _e('Custom Css','ARMember'); ?></div>
 									<div class="arm_opt_content_wrapper">
 										<div class="arm_custom_css_wrapper">
-											<textarea class="arm_codemirror_field" name="template_options[custom_css]" cols="10" rows="6" style="width: 500px;"></textarea>
+											<textarea class="arm_codemirror_field arm_width_500" name="template_options[custom_css]" cols="10" rows="6" ><?php echo $custom_css; ?></textarea>
 										</div>
 										<div class="armclear"></div>
-										<div class="arm_temp_custom_class arm_temp_profile_options">
+										<div class="arm_temp_custom_class arm_temp_profile_options" <?php echo $arm_temp_profile_options; ?>>
 											<span class="arm_section_custom_css_eg">(e.g.)&nbsp;&nbsp; .arm_profile_container{color:#000000;}</span>
 											<span class="arm_section_custom_css_section">
 												<a class="arm_section_custom_css_detail arm_section_custom_css_detail_link" href="javascript:void(0)" data-section="arm_profile"><?php _e('CSS Class Information', 'ARMember');?></a>
@@ -840,7 +936,7 @@ $setact = $arm_members_activity->$check_sorting();
                                            
 						$tempType = isset($tempDetails['arm_type']) ? $tempDetails['arm_type'] : 'directory';
 						$tempOptions = $tempDetails['arm_options'];
-						$popup = '<div class="arm_ptemp_add_popup_wrapper popup_wrapper" style="width: 750px;">';
+						$popup = '<div class="arm_ptemp_add_popup_wrapper popup_wrapper" >';
                         $is_rtl_form = is_rtl() ? 'arm_add_form_rtl' : '';
 						$popup .= '<form action="#" method="post" class="arm_profile_template_add_form arm_admin_form '.$is_rtl_form.'" onsubmit="return false;" id="arm_profile_template_add_form" data-temp_id="'.$temp_id.'">';
                                                         $popup .= '<table cellspacing="0">';
@@ -949,3 +1045,6 @@ jQuery(window).on("resize", function(){
 	jQuery('.arm_profiles_directories_templates_container').css('height', contentHeight + 20);
 });
 </script>
+<?php
+echo $ARMember->arm_get_need_help_html_content('members-profile-directories');
+?>

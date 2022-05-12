@@ -9,8 +9,8 @@ if (!class_exists('ARM_multiple_membership_feature')) {
            
             $is_multiple_membership_feature = get_option('arm_is_multiple_membership_feature');
             $this->isMultipleMembershipFeature = ($is_multiple_membership_feature == '1') ? true : false;
-            //add_action('arm_add_new_custom_add_on', array(&$this, 'arm_add_multiple_membership_addon'), 10);
-            add_action('arm_deactivate_feature_settings', array(&$this, 'arm_multiple_membership_update_feature_settings'), 10, 1);
+            //add_action('arm_add_new_custom_add_on', array($this, 'arm_add_multiple_membership_addon'), 10);
+            add_action('arm_deactivate_feature_settings', array($this, 'arm_multiple_membership_update_feature_settings'), 10, 1);
            
          
         }
@@ -40,16 +40,20 @@ if (!class_exists('ARM_multiple_membership_feature')) {
                         $user_id = $usr->ID;
                         $arm_user_plan = get_user_meta($user_id,'arm_user_plan_ids', true);
                         $arm_user_paid_post = get_user_meta($user_id,'arm_user_post_ids', true);
+                        $arm_user_gift_plan = get_user_meta($user_id, 'arm_user_gift_ids', true);
                         
                         if(!empty($arm_user_plan) && is_array($arm_user_plan)){
                             $count = 0;
                             foreach($arm_user_plan as $plan_id)
                             {
-                                if(array_key_exists($plan_id, $arm_user_paid_post))
+                                if(!empty($arm_user_paid_post) && array_key_exists($plan_id, $arm_user_paid_post))
                                 {
                                     continue;
                                 }
-
+                                if(!empty($arm_user_gift_plan) && in_array($plan_id, $arm_user_gift_plan))
+                                {
+                                    continue;
+                                }
 
                                 if(!empty($plan_id)){
                                     $count++;

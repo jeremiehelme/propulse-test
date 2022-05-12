@@ -42,7 +42,7 @@ function arm_load_paid_post_list_grid(is_filtered){
     var __ARM_Showing_empty = '<?php echo addslashes(esc_html__('Showing 0 to 0 of 0 entries','ARMember')); ?>';
     var __ARM_to = '<?php echo addslashes(esc_html__('to','ARMember')); ?>';
     var __ARM_of = '<?php echo addslashes(esc_html__('of','ARMember')); ?>';
-    var __ARM_Entries = ' <?php _e('entries','ARMember'); ?>';
+    var __ARM_Entries = ' <?php echo addslashes(esc_html__('entries','ARMember')); ?>';
     var __ARM_Show = '<?php echo addslashes(esc_html__('Show','ARMember')); ?> ';
     var __ARM_NO_FOUND = '<?php echo addslashes(esc_html__('No paid post found.','ARMember')); ?>';
     var __ARM_NO_MATCHING = '<?php echo addslashes(esc_html__('No matching records found.','ARMember')); ?>';
@@ -60,6 +60,10 @@ function arm_load_paid_post_list_grid(is_filtered){
             "sLengthMenu": __ARM_Show + "_MENU_" + __ARM_Entries,
             "sEmptyTable": __ARM_NO_FOUND,
             "sZeroRecords": __ARM_NO_MATCHING,
+        },
+        "language":{
+            "searchPlaceholder": "Search",
+            "search":"",
         },
         "bProcessing": false,
         "bServerSide": true,
@@ -107,6 +111,7 @@ function arm_load_paid_post_list_grid(is_filtered){
             aoData.push({'name': 'action', 'value': 'get_paid_post_data'});
         },
 		"fnDrawCallback":function(){
+			arm_show_data()
 			jQuery('.arm_loading_grid').hide();
 			if (jQuery.isFunction(jQuery().tipso)) {
                 jQuery('.armhelptip').each(function () {
@@ -168,17 +173,16 @@ if (!empty($custom_post_types)) {
 }
 ?>
 <div class="wrap arm_page arm_paid_posts_main_wrapper">
-	<div class="content_wrapper arm_paid_posts_wrapper" id="content_wrapper" style="position: relative;">
+	<?php
+    if ($setact != 1) {
+        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
+        ?>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+    <?php } ?>
+	<div class="content_wrapper arm_paid_posts_wrapper arm_position_relative" id="content_wrapper" >
 		<div class="arm_loading_grid" style="display: none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL; ?>/loader.gif" alt="Loading.."></div>
 		<div class="page_title">
 			<?php esc_html_e('Manage Paid Posts','ARMember');?>
-			<?php
-		    if ($setact != 1) {
-		        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
-	        ?>
-	        <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
-    		<?php } ?>
-			
 			<div class="arm_add_new_item_box">
 				<a class="greensavebtn arm_add_paid_post_link" href="<?php echo admin_url('admin.php?page=arm_manage_pay_per_post&action=add_paid_post'); ?>"><img align="absmiddle" src="<?php echo MEMBERSHIP_IMAGES_URL ?>/add_new_icon.png"><span><?php esc_html_e('Add Paid Post', 'ARMember') ?></span></a>
 			</div>	
@@ -189,20 +193,20 @@ if (!empty($custom_post_types)) {
 
 		<div class="armclear"></div>
 
-		<div class="arm_paid_posts_list" style="position:relative;top:10px;">
+		<div class="arm_paid_posts_list arm_main_wrapper_seperator" >
 			<form method="GET" id="subscription_plans_list_form" class="data_grid_list" onsubmit="return apply_bulk_action_subscription_plans_list();">
 				<input type="hidden" name="page" value="<?php echo isset( $arm_slugs->paid_post ) ? $arm_slugs->paid_post : '';?>" />
 				<input type="hidden" name="armaction" value="list" />
 
 				<div id="armmainformnewlist">
-					<table cellpadding="0" cellspacing="0" border="0" class="display arm_on_display" id="armember_datatable">
+					<table cellpadding="0" cellspacing="0" border="0" class="display arm_on_display arm_hide_datatable" id="armember_datatable">
 						<thead>
 							<tr>
 								<?php /*<th style="max-width:140px"><?php esc_html_e('Enable / Disable Paid Post','ARMember');?></th>*/ ?>
-								<th style="min-width:50px"><?php esc_html_e('Post ID','ARMember');?></th>
-								<th style="min-width:200px"><?php esc_html_e('Post Title','ARMember');?></th>
-								<th style="max-width:100px"><?php esc_html_e('Post Type','ARMember');?></th>
-								<th style="width:200px"><?php esc_html_e('Paid Post Members','ARMember');?></th>
+								<th class="arm_min_width_50"><?php esc_html_e('Post ID','ARMember');?></th>
+								<th class="arm_min_width_200"><?php esc_html_e('Post Title','ARMember');?></th>
+								<th class="arm_max_width_100"><?php esc_html_e('Post Type','ARMember');?></th>
+								<th class="arm_width_200"><?php esc_html_e('Paid Post Members','ARMember');?></th>
 								
 								
 								<th class="armGridActionTD"></th>
@@ -235,7 +239,7 @@ if (!empty($custom_post_types)) {
 <div class="arm_member_view_detail_container"></div>
 
 <!--./******************** Paid Post Members List ********************/.-->
-<div class="arm_members_list_detail_popup popup_wrapper arm_members_list_detail_popup_wrapper" style="width:810px;min-height: 250px;">
+<div class="arm_members_list_detail_popup popup_wrapper arm_members_list_detail_popup_wrapper" >
 	<div class="arm_loading_grid" id="arm_loading_grid_members" style="display: none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL;?>/loader.gif" alt="Loading.."></div>
     <div class="popup_wrapper_inner" style="overflow: hidden;">
         <div class="popup_header">
@@ -243,12 +247,12 @@ if (!empty($custom_post_types)) {
             <span class="add_rule_content"><?php _e('Members Details', 'ARMember'); ?><span class="arm_member_paid_post_name"></span></span>
         </div>
         <div class="popup_content_text arm_members_list_detail_popup_text">
-            <table width="100%" cellspacing="0" class="display" id="armember_datatable_1" style="min-width: 802px;">
+            <table width="100%" cellspacing="0" class="display arm_min_width_802" id="armember_datatable_1" >
                 <thead>
                     <tr>
                         <th><?php _e('Username', 'ARMember'); ?></th>
                         <th><?php _e('Email', 'ARMember'); ?></th>
-                        <th class="arm-no-sort" style="width:170px;"><?php _e('View Detail', 'ARMember'); ?></th>
+                        <th class="arm-no-sort arm_width_170" ><?php _e('View Detail', 'ARMember'); ?></th>
                     </tr>
                 </thead>
             </table>
@@ -269,7 +273,7 @@ if (!empty($custom_post_types)) {
 </div>
 <!--./******************** Add New Paid Post Form ********************/.-->
 <div class="arm_paid_post_items_list_container" id="arm_paid_post_items_list_container"></div>
-<div class="arm_add_new_paid_post_wrapper popup_wrapper" style="width: 1200px;margin-top: 40px;">
+<div class="arm_add_new_paid_post_wrapper popup_wrapper" >
 	<form method="post" action="#" id="arm_add_new_paid_post_wrapper_frm" class="arm_admin_form arm_add_new_paid_post_wrapper_frm">
 		<table cellspacing="0" style="width:100%;">
 			<tr class="popup_wrapper_inner">	
@@ -287,7 +291,7 @@ if (!empty($custom_post_types)) {
 				</td>
 				<td class="popup_content_btn popup_footer">
 					<div class="popup_content_btn_wrapper">
-						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_add_paid_post" class="arm_loader_img" style="position: relative;top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;display: none;" width="20" height="20" />
+						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_add_paid_post" class="arm_loader_img arm_submit_btn_loader" style="top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;display: none;" width="20" height="20" />
 						<button class="arm_save_btn arm_new_paid_post_button" type="submit" data-type="add"><?php _e('Save', 'ARMember') ?></button>
 						<button class="arm_cancel_btn add_new_paid_post_close_btn" type="button"><?php _e('Cancel','ARMember');?></button>
 					</div>
@@ -298,7 +302,7 @@ if (!empty($custom_post_types)) {
 	</form>
 </div>
 <!--./******************** Edit Paid Post Form ********************/.-->
-<div class="arm_edit_paid_post_wrapper popup_wrapper" style="width: 1200px;margin-top: 40px;">
+<div class="arm_edit_paid_post_wrapper popup_wrapper" >
 	<form method="post" action="#" id="arm_edit_paid_post_wrapper_frm" class="arm_admin_form arm_edit_paid_post_wrapper_frm">
 		<table cellspacing="0" style="width:100%;">
 			<tr class="popup_wrapper_inner">	
@@ -310,7 +314,7 @@ if (!empty($custom_post_types)) {
 				</td>
 				<td class="popup_content_btn popup_footer">
 					<div class="popup_content_btn_wrapper">
-						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_edit_paid_post" class="arm_loader_img" style="position: relative;top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;display: none;" width="20" height="20" />
+						<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" id="arm_loader_img_edit_paid_post" class="arm_loader_img arm_submit_btn_loader" style="top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left';?>;display: none;" width="20" height="20" />
 						<button class="arm_save_btn arm_update_paid_post_button" type="submit" data-type="add"><?php _e('Save', 'ARMember') ?></button>
 						<button class="arm_cancel_btn edit_paid_post_close_btn" type="button"><?php _e('Cancel','ARMember');?></button>
 					</div>
@@ -328,8 +332,8 @@ if (!empty($custom_post_types)) {
             <input type="hidden" id="arm_edit_plan_user_id" />
             <span class="add_rule_content"><?php _e('Paid Post Cycles', 'ARMember'); ?> <span class="arm_paid_post_name"></span></span>
         </div>
-        <div class="popup_content_text arm_paid_post_cycle_text" style="text-align:center;">
-        	<div style="width: 100%; margin: 45px auto;">	<img src="<?php echo MEMBERSHIP_IMAGES_URL."/arm_loader.gif"; ?>"></div>
+        <div class="popup_content_text arm_paid_post_cycle_text arm_text_align_center" >
+        	<div class="arm_width_100_pct" style="margin: 45px auto;">	<img src="<?php echo MEMBERSHIP_IMAGES_URL."/arm_loader.gif"; ?>"></div>
         </div>
         <div class="armclear"></div>
     </div>
@@ -367,3 +371,6 @@ jQuery(document).ready( function ($) {
 
 
 </script>
+<?php
+	echo $ARMember->arm_get_need_help_html_content('paid-posts-list');
+?>

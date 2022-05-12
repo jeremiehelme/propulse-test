@@ -9,9 +9,6 @@ if (isset($user) && !empty($user))
 	$fileContent .= '<div class="arm_user_block '.$separator_class.' '.$first_class.'" >';
 		$fileContent .= '<a href="' . $user['user_link'] . '" class="arm_dp_user_link"><div class="arm_user_avatar">';
             $fileContent .= $user['profile_picture'] ;
-            $fileContent .= "<div class='arm_badges_detail'>";
-            $fileContent .= $user['arm_badges_detail'];
-            $fileContent .= "</div>";
         $fileContent .= '</div></a>';
         $fileContent .= '<div class="armclear"></div>';
 		$fileContent .= '<a class="arm_user_link" href="' . $user['user_link'] . '">' . $user['full_name'];
@@ -21,9 +18,15 @@ if (isset($user) && !empty($user))
         $fileContent .= '<div class="arm_last_active_text">'. $arm_member_since_label . ' ' .$user['user_join_date'].'</div>';
         }
 		$fileContent .= '<div class="armclear"></div>';*/
-        $fileContent .= $arm_members_directory->arm_template_display_member_details($tempopt,$user,1);
+        $member_field_detail_content = $arm_members_directory->arm_template_display_member_details($tempopt,$user,1);
+        $fileContent .= $member_field_detail_content['member_joining_date_content'];
+        $fileContent .= $user['arm_badges_detail'];
+        $fileContent .= $member_field_detail_content['member_detail_content'];
 		//$fileContent .= '<div class="arm_view_profile_btn_wrapper"><a href="' . $user['user_link'] . '" class="arm_view_profile_user_link">' . $arm_view_profile_label . '</a></div>';
 		$fileContent .= '<div class="armclear"></div>';
+        $fileContent .= '<div class="arm_view_profile_btn_wrapper"><a href="' . $user['user_link'] . '" class="arm_view_profile_user_link">' . $arm_view_profile_label . '</a></div>';
+        $fileContent .= '<div class="armclear"></div>';
+        
 		$fileContent .= "<div class='arm_user_social_blocks'>";
         $slected_social_fields = isset($tempopt['arm_social_fields']) ? $tempopt['arm_social_fields'] : array();
         if (!empty($slected_social_fields)) {

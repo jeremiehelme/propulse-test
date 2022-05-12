@@ -19,43 +19,43 @@ if (!class_exists('ARM_buddypress_feature'))
                                     $this->map_with_buddypress_profile_cover = isset($unserialized_bp_settings['profile_cover_map']) ? $unserialized_bp_settings['profile_cover_map'] : '';
                                     $this->show_armember_profile = isset($unserialized_bp_settings['show_armember_profile']) ? $unserialized_bp_settings['show_armember_profile'] : 0;
                             }
-                            add_filter('arm_custom_rule_types', array(&$this, 'arm_add_buddypress_option'), 10, 1);
-                            add_filter('arm_prepare_custom_rule_data', array(&$this, 'arm_add_buddypress_lists'), 10, 2);
+                            add_filter('arm_custom_rule_types', array($this, 'arm_add_buddypress_option'), 10, 1);
+                            add_filter('arm_prepare_custom_rule_data', array($this, 'arm_add_buddypress_lists'), 10, 2);
                             add_filter('arm_before_update_custom_access_rules', array($this, 'arm_arm_before_update_custom_access_rules'), 10, 3);
-                            add_filter('bp_get_group_create_button', array(&$this, 'arm_bp_get_group_create_button'), 10, 1);
-                            add_filter('bp_get_add_friend_button', array(&$this, 'arm_bp_get_add_friend_button'), 10, 1);
-                            add_filter('bp_get_send_message_button_args', array(&$this, 'arm_bp_get_send_message_button_args'), 10, 1);
+                            add_filter('bp_get_group_create_button', array($this, 'arm_bp_get_group_create_button'), 10, 1);
+                            add_filter('bp_get_add_friend_button', array($this, 'arm_bp_get_add_friend_button'), 10, 1);
+                            add_filter('bp_get_send_message_button_args', array($this, 'arm_bp_get_send_message_button_args'), 10, 1);
                             
-                            add_filter('arm_is_allow_access', array(&$this, 'arm_check_buddypress_pages_access'), 10, 2);
-                            add_action('bp_deactivation', array(&$this, 'arm_bp_deactivation'));
-                            add_action('bp_activation', array(&$this, 'arm_bp_activation'));
+                            add_filter('arm_is_allow_access', array($this, 'arm_check_buddypress_pages_access'), 10, 2);
+                            add_action('bp_deactivation', array($this, 'arm_bp_deactivation'));
+                            add_action('bp_activation', array($this, 'arm_bp_activation'));
                             
                             
                             if($this->map_with_buddypress_avatar){
-                                add_action('xprofile_avatar_uploaded', array(&$this, 'arm_xprofile_avatar_uploaded_func'), 10, 3);
-                                add_action('bp_core_delete_existing_avatar', array(&$this, 'arm_bp_core_delete_existing_avatar'));
+                                add_action('xprofile_avatar_uploaded', array($this, 'arm_xprofile_avatar_uploaded_func'), 10, 3);
+                                add_action('bp_core_delete_existing_avatar', array($this, 'arm_bp_core_delete_existing_avatar'));
                                 
-                                add_action('arm_remove_bp_avatar', array(&$this, 'arm_remove_bp_avatar_func'), 10, 1);
-                                add_action('arm_after_upload_bp_avatar', array(&$this, 'arm_upload_bp_avatar_func'), 10, 1);
+                                add_action('arm_remove_bp_avatar', array($this, 'arm_remove_bp_avatar_func'), 10, 1);
+                                add_action('arm_after_upload_bp_avatar', array($this, 'arm_upload_bp_avatar_func'), 10, 1);
                             }
                             
                             if($this->map_with_buddypress_profile_cover){
-                                add_action('xprofile_cover_image_deleted', array(&$this, 'arm_bp_core_delete_existing_profile_cover'));
-                                add_action('xprofile_cover_image_uploaded', array(&$this, 'arm_xprofile_cover_image_uploaded_func'), 10, 1);
+                                add_action('xprofile_cover_image_deleted', array($this, 'arm_bp_core_delete_existing_profile_cover'));
+                                add_action('xprofile_cover_image_uploaded', array($this, 'arm_xprofile_cover_image_uploaded_func'), 10, 1);
                                 
-                                add_action('arm_remove_bp_profile_cover', array(&$this, 'arm_remove_bp_profile_cover_func'), 10, 1);
-                                add_action('arm_after_upload_bp_profile_cover', array(&$this, 'arm_upload_bp_profile_cover_func'), 10, 1);
+                                add_action('arm_remove_bp_profile_cover', array($this, 'arm_remove_bp_profile_cover_func'), 10, 1);
+                                add_action('arm_after_upload_bp_profile_cover', array($this, 'arm_upload_bp_profile_cover_func'), 10, 1);
                             }
                             
-                            add_action('xprofile_updated_profile', array(&$this, 'arm_xprofile_updated_profile'), 11, 5);
-                            add_action('arm_buddypress_xprofile_field_save', array(&$this, 'arm_buddypress_xprofile_field_save_func'), 10, 3);
+                            add_action('xprofile_updated_profile', array($this, 'arm_xprofile_updated_profile'), 11, 5);
+                            add_action('arm_buddypress_xprofile_field_save', array($this, 'arm_buddypress_xprofile_field_save_func'), 10, 3);
                             
-                            add_action('wp_ajax_arm_update_buddypress_settings', array(&$this, 'arm_update_buddypress_settings_func'));
-                            add_action('wp_ajax_arm_buddypress_sync', array(&$this, 'arm_buddypress_sync_func'));
-                            add_action('wp_ajax_arm_buddypress_sync_progress', array(&$this, 'arm_buddypress_sync_progress'));                            
+                            add_action('wp_ajax_arm_update_buddypress_settings', array($this, 'arm_update_buddypress_settings_func'));
+                            add_action('wp_ajax_arm_buddypress_sync', array($this, 'arm_buddypress_sync_func'));
+                            add_action('wp_ajax_arm_buddypress_sync_progress', array($this, 'arm_buddypress_sync_progress'));                            
                             // change link in buddypress
-                            add_filter('bp_get_member_permalink', array(&$this, 'arm_show_armember_profile_func'));
-                            add_filter('bp_core_get_user_domain', array(&$this, 'arm_show_armember_profile_link_func'), 10, 4);
+                            add_filter('bp_get_member_permalink', array($this, 'arm_show_armember_profile_func'));
+                            add_filter('bp_core_get_user_domain', array($this, 'arm_show_armember_profile_link_func'), 10, 4);
                         }
 		}
                 
@@ -439,7 +439,13 @@ if (!class_exists('ARM_buddypress_feature'))
                                 $user_avatar_name = $explode_user_avatar[count($explode_user_avatar)-1];
                                 $user_avatar_url = MEMBERSHIP_UPLOAD_DIR . '/'.$user_avatar_name;
                                 
-                                if(file_exists($user_avatar_url)){
+                                $denyExts = array("php", "php3", "php4", "php5", "pl", "py", "jsp", "asp", "exe", "cgi", "css", "js", "html", "htm");
+                                $file_name_arm = substr($user_avatar_name, 0,3);
+
+                                $checkext = explode(".", $user_avatar_name);
+                                $ext = strtolower( $checkext[count($checkext) - 1] );
+
+                                if(!empty($ext) && !in_array($ext, $denyExts) && !empty($user_avatar_name) && $file_name_arm=='arm' && file_exists($user_avatar_url)){
                                     unlink($user_avatar_url);    
                                 }
                                 
@@ -497,7 +503,13 @@ if (!class_exists('ARM_buddypress_feature'))
                                         $explode_user_avatar = explode('/', $buddypress_cover_image_url);
                                         $user_avatar_name = $explode_user_avatar[count($explode_user_avatar)-1];
                                         $user_avatar_url = bp_core_avatar_upload_path() . '/buddypress/members/'.$user_id.'/cover-image/'. $user_avatar_name;
-                                        @unlink($user_avatar_url);
+
+                                        $denyExts = array("php", "php3", "php4", "php5", "pl", "py", "jsp", "asp", "exe", "cgi", "css", "js", "html", "htm");
+                                        $checkext = explode(".", $user_avatar_name);
+                                        $ext = strtolower( $checkext[count($checkext) - 1] );
+                                        if(!empty($ext) && !in_array($ext, $denyExts) && !empty($user_avatar_name) && file_exists($user_avatar_url)) {
+                                            @unlink($user_avatar_url);
+                                        }
                                     }
                                 }else{
                                     if(!file_exists(bp_core_avatar_upload_path() . '/buddypress/members/'.$user_id)){
@@ -540,7 +552,14 @@ if (!class_exists('ARM_buddypress_feature'))
                                     $explode_user_avatar = explode('/', $buddypress_avatar_url);
                                     $user_avatar_name = $explode_user_avatar[count($explode_user_avatar)-1];
                                     $user_avatar_url = bp_core_avatar_upload_path() . '/buddypress/members/'.$user_id.'/cover-image/'. $user_avatar_name;
-                                    @unlink($user_avatar_url);
+
+                                    $denyExts = array("php", "php3", "php4", "php5", "pl", "py", "jsp", "asp", "exe", "cgi", "css", "js", "html", "htm");
+                                    $checkext = explode(".", $user_avatar_name);
+                                    $ext = strtolower( $checkext[count($checkext) - 1] );
+                                    if(!empty($ext) && !in_array($ext, $denyExts) && !empty($user_avatar_name) && file_exists($user_avatar_url)) 
+                                    {
+                                        @unlink($user_avatar_url);
+                                    }
                                 }
                     }
                 }
@@ -593,14 +612,28 @@ if (!class_exists('ARM_buddypress_feature'))
                                         $explode_user_avatar = explode('/', $buddypress_avatar_url);
                                         $user_avatar_name = $explode_user_avatar[count($explode_user_avatar)-1];
                                         $user_avatar_url = bp_core_avatar_upload_path() . '/avatars/'.$user_id.'/'. $user_avatar_name;
-                                        @unlink($user_avatar_url);
+
+                                        $denyExts = array("php", "php3", "php4", "php5", "pl", "py", "jsp", "asp", "exe", "cgi", "css", "js", "html", "htm");
+                                        $checkext = explode(".", $user_avatar_name);
+                                        $ext = strtolower( $checkext[count($checkext) - 1] );
+                                        if(!empty($ext) && !in_array($ext, $denyExts) && !empty($user_avatar_name) && file_exists($user_avatar_url)) 
+                                        {
+                                            @unlink($user_avatar_url);
+                                        }
                                     }
 
                                     if (strpos($buddypress_thumb_url, 'gravatar.com') === false) {
                                         $explode_user_thumb = explode('/', $buddypress_thumb_url);
                                         $user_thumb_name = $explode_user_thumb[count($explode_user_thumb)-1];
                                         $user_thumb_url = bp_core_avatar_upload_path() . '/avatars/'.$user_id.'/'. $user_thumb_name;
-                                        @unlink($user_thumb_url);
+
+                                        $denyExts = array("php", "php3", "php4", "php5", "pl", "py", "jsp", "asp", "exe", "cgi", "css", "js", "html", "htm");
+                                        $checkext = explode(".", $user_thumb_name);
+                                        $ext = strtolower( $checkext[count($checkext) - 1] );
+                                        if(!empty($ext) && !in_array($ext, $denyExts) && !empty($user_thumb_name) && file_exists($user_thumb_url)) 
+                                        {
+                                            @unlink($user_thumb_url);
+                                        }
                                     }
                                     $remove = $wp_filesystem->rmdir($bp_avatar_dir);
                                 }
@@ -684,14 +717,28 @@ if (!class_exists('ARM_buddypress_feature'))
                                     $explode_user_avatar = explode('/', $buddypress_avatar_url);
                                     $user_avatar_name = $explode_user_avatar[count($explode_user_avatar)-1];
                                     $user_avatar_url = bp_core_avatar_upload_path() . '/avatars/'.$user_id.'/'. $user_avatar_name;
-                                    @unlink($user_avatar_url);
+
+                                    $denyExts = array("php", "php3", "php4", "php5", "pl", "py", "jsp", "asp", "exe", "cgi", "css", "js", "html", "htm");
+                                    $checkext = explode(".", $user_avatar_name);
+                                    $ext = strtolower( $checkext[count($checkext) - 1] );
+                                    if(!empty($ext) && !in_array($ext, $denyExts) && !empty($user_avatar_name) && file_exists($user_avatar_url)) 
+                                    {
+                                        @unlink($user_avatar_url);
+                                    }
                                 }
 
                                 if (strpos($buddypress_thumb_url, 'gravatar.com') === false) {
                                     $explode_user_thumb = explode('/', $buddypress_thumb_url);
                                     $user_thumb_name = $explode_user_thumb[count($explode_user_thumb)-1];
                                     $user_thumb_url = bp_core_avatar_upload_path() . '/avatars/'.$user_id.'/'. $user_thumb_name;
-                                    @unlink($user_thumb_url);
+
+                                    $denyExts = array("php", "php3", "php4", "php5", "pl", "py", "jsp", "asp", "exe", "cgi", "css", "js", "html", "htm");
+                                    $checkext = explode(".", $user_thumb_name);
+                                    $ext = strtolower( $checkext[count($checkext) - 1] );
+                                    if(!empty($ext) && !in_array($ext, $denyExts) && !empty($user_thumb_name) && file_exists($user_thumb_url)) 
+                                    {
+                                        @unlink($user_thumb_url);
+                                    }
                                 }
 
                                 @$wp_filesystem->rmdir($bp_avatar_dir);
@@ -902,7 +949,14 @@ if (!class_exists('ARM_buddypress_feature'))
                                 $explode_user_avatar = explode('/', $user_avatar);
                                 $user_avatar_name = $explode_user_avatar[count($explode_user_avatar)-1];
                                 $user_avatar_url = MEMBERSHIP_UPLOAD_DIR. '/' . $user_avatar_name;
-                                @unlink($user_avatar_url);
+
+                                $denyExts = array("php", "php3", "php4", "php5", "pl", "py", "jsp", "asp", "exe", "cgi", "css", "js", "html", "htm");
+                                $checkext = explode(".", $user_avatar_name);
+                                $ext = strtolower( $checkext[count($checkext) - 1] );
+                                if(!empty($ext) && !in_array($ext, $denyExts) && !empty($user_avatar_name) && file_exists($user_avatar_url)) 
+                                {
+                                    @unlink($user_avatar_url);
+                                }
                                 delete_user_meta($item_id, 'avatar');
                             }
                         }
@@ -917,7 +971,14 @@ if (!class_exists('ARM_buddypress_feature'))
                                 $explode_user_avatar = explode('/', $user_avatar);
                                 $user_avatar_name = $explode_user_avatar[count($explode_user_avatar)-1];
                                 $user_avatar_url = MEMBERSHIP_UPLOAD_DIR. '/' . $user_avatar_name;
-                                @unlink($user_avatar_url);
+
+                                $denyExts = array("php", "php3", "php4", "php5", "pl", "py", "jsp", "asp", "exe", "cgi", "css", "js", "html", "htm");
+                                $checkext = explode(".", $user_avatar_name);
+                                $ext = strtolower( $checkext[count($checkext) - 1] );
+                                if(!empty($ext) && !in_array($ext, $denyExts) && !empty($user_avatar_name) && file_exists($user_avatar_url)) 
+                                {
+                                    @unlink($user_avatar_url);
+                                }
                                 delete_user_meta($user_id, 'profile_cover');
                             }
                     }
@@ -933,7 +994,14 @@ if (!class_exists('ARM_buddypress_feature'))
                                 $explode_user_avatar = explode('/', $user_old_avatar);
                                 $user_avatar_name = $explode_user_avatar[count($explode_user_avatar)-1];
                                 $user_avatar_url = MEMBERSHIP_UPLOAD_DIR . '/'.$user_avatar_name;
-                                @unlink($user_avatar_url);
+
+                                $denyExts = array("php", "php3", "php4", "php5", "pl", "py", "jsp", "asp", "exe", "cgi", "css", "js", "html", "htm");
+                                $checkext = explode(".", $user_avatar_name);
+                                $ext = strtolower( $checkext[count($checkext) - 1] );
+                                if(!empty($ext) && !in_array($ext, $denyExts) && !empty($user_avatar_name) && file_exists($user_avatar_url)) 
+                                {
+                                    @unlink($user_avatar_url);
+                                }
                             }
 
                             $user_avatar_url = html_entity_decode( bp_core_fetch_avatar( array(
@@ -1258,7 +1326,7 @@ if (!class_exists('ARM_buddypress_feature'))
                         }
 			$buddypress_rules = $arm_access_rules->arm_get_custom_access_rules('buddypress');
 			if ($bp_page != '') {
-				if ($allowed && in_array($current_page, array('members', 'profile', 'messages', 'notifications', 'activity', 'friends', 'settings'))) {
+				if ($allowed && in_array($current_page, array('members', 'profile', 'messages', 'notifications', 'activity', 'friends', 'settings', 'overview', 'media', 'info', 'bookmarks', 'posts', 'comments'))) {
 					$bp_members_rule = isset($buddypress_rules['buddypress_members']) ? $buddypress_rules['buddypress_members'] : array();
 					if (isset($bp_members_rule['protection']) && $bp_members_rule['protection'] == '1') {
 						$allowed = false;

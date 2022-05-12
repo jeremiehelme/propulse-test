@@ -8,16 +8,412 @@ if (!class_exists('ARM_payment_gateways')) {
 
         function __construct() {
             global $wpdb, $ARMember, $arm_slugs;
-            add_action('wp_ajax_arm_update_pay_gate_settings', array(&$this, 'arm_update_pay_gate_settings'));
-            add_filter('arm_change_user_meta_before_save', array(&$this, 'arm_filter_form_posted_plan_data'), 10, 2);
-            add_action('wp_ajax_arm_check_currency_status', array(&$this, 'arm_check_currency_status'));
+            add_action('wp_ajax_arm_update_pay_gate_settings', array($this, 'arm_update_pay_gate_settings'));
+            add_filter('arm_change_user_meta_before_save', array($this, 'arm_filter_form_posted_plan_data'), 10, 2);
+            add_action('wp_ajax_arm_check_currency_status', array($this, 'arm_check_currency_status'));
             $this->currency = array(
                 'paypal' => $this->arm_paypal_currency_symbol(),
                 'stripe' => $this->arm_stripe_currency_symbol(),
                 'authorize_net' => $this->arm_authorize_net_currency_symbol(),
                 '2checkout' => $this->arm_2checkout_currency_symbol(),
-                'bank_transfer' => $this->arm_paypal_currency_symbol(),
+                'bank_transfer' => $this->arm_bank_transfer_currency_symbol(),
             );
+
+            add_action('wp_ajax_arm_view_payment_debug_log', array($this, 'arm_view_payment_debug_log'));
+            add_action('wp_ajax_arm_view_general_debug_log', array($this, 'arm_view_general_debug_log'));
+
+            add_action('wp_ajax_arm_download_payment_debug_log', array($this, 'arm_download_payment_debug_log'));
+            add_action('wp_ajax_arm_download_general_debug_log', array($this, 'arm_download_general_debug_log'));
+            
+        }
+
+        function arm_debug_log_download_file(){
+            if( !empty( $_REQUEST['arm_action'] ) && 'download_log' == $_REQUEST['arm_action'] ){
+                global $wpdb, $ARMember, $arm_global_settings, $arm_capabilities_global;
+                
+                $ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_general_settings'], '1');
+
+                $filename = !empty($_REQUEST['file']) ? basename($_REQUEST['file']) : '';
+                if(!empty($filename))
+                {
+                    $file_path = MEMBERSHIP_UPLOAD_DIR . '/' . $filename;
+
+                    $allowexts = array( "txt", "zip" );
+
+                    $file_name_arm = substr($filename, 0,3);
+
+                    $checkext = explode(".", $filename);
+                    $ext = strtolower( $checkext[count($checkext) - 1] );
+
+                    if(!empty($ext) && in_array($ext, $allowexts) && !empty($filename) && file_exists($file_path))
+                    {
+                        ignore_user_abort();
+                        $now = gmdate("D, d M Y H:i:s");
+                        header("Expires: Tue, 03 Jul 2020 06:00:00 GMT");
+                        header("Cache-Control: max-age=0, no-cache, must-revalidate, proxy-revalidate");
+                        header("Last-Modified: {$now} GMT");
+                        header("Content-Type: application/force-download");
+                        header("Content-Type: application/octet-stream");
+                        header("Content-Type: application/download");
+                        header("Content-Disposition: attachment;filename={$filename}");
+                        header("Content-Transfer-Encoding: binary");
+
+                        readfile($file_path);
+
+                        unlink( $file_path );
+
+                        $arm_txt_file_name = str_replace('.zip', '.txt', $filename);
+                        $arm_txt_file_path = MEMBERSHIP_UPLOAD_DIR . '/' . $arm_txt_file_name;
+                        if(file_exists($arm_txt_file_path))
+                        {
+                            unlink($arm_txt_file_path);
+                        }
+
+                        die;
+                    }
+                }
+            }
+        }
+
+        function arm_download_general_debug_log(){
+            global $wpdb, $ARMember, $arm_global_settings, $arm_capabilities_global;
+            $ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_general_settings'], '1');
+            $arm_download_url = '';
+            if(!empty($_POST['arm_download_key']))
+            {
+                $tbl_arm_debug_general_log = $ARMember->tbl_arm_debug_general_log;
+                $arm_download_key = $_POST['arm_download_key'];
+                $arm_selected_download_duration = !empty($_POST['selected_download_duration']) ? $_POST['selected_download_duration'] : 'all';
+
+                $arm_custom_duration_start_date = !empty($_POST['arm_filter_pstart_date']) ? $_POST['arm_filter_pstart_date'] : '';
+                $arm_custom_duration_end_date = !empty($_POST['arm_filter_pend_date']) ? $_POST['arm_filter_pend_date'] : '';
+
+                $arm_debug_general_log_where_cond = "";
+                if(!empty($arm_custom_duration_start_date) && !empty($arm_custom_duration_end_date) && $arm_selected_download_duration == "custom")
+                {
+                    $arm_custom_duration_start_date = date('Y-m-d 00:00:00', strtotime($arm_custom_duration_start_date));
+
+                    $arm_custom_duration_end_date = date('Y-m-d 23:59:59', strtotime($arm_custom_duration_end_date));
+
+                    $arm_debug_general_log_where_cond = " AND (arm_general_log_added_date >= '".$arm_custom_duration_start_date."' AND arm_general_log_added_date <= '".$arm_custom_duration_end_date."')";
+                }
+                else if(!empty($arm_selected_download_duration) && $arm_selected_download_duration != "custom")
+                {
+                    $arm_last_selected_days = date('Y-m-d', strtotime('-'.$arm_selected_download_duration.' days'));
+
+                    $arm_debug_general_log_where_cond = " AND (arm_general_log_added_date >= '".$arm_last_selected_days."')";
+                }
+
+
+                $arm_general_debug_log_selector_search = "";
+                if($arm_download_key!='cron' &&  $arm_download_key!='email') 
+                {
+                    $arm_general_debug_log_selector_search = " `arm_general_log_event`!='cron' AND `arm_general_log_event`!='email' ";
+                }
+                else 
+                {
+                    $arm_general_debug_log_selector_search = " `arm_general_log_event` ='".$arm_download_key."' ";
+                }
+
+                $total_log_data = $wpdb->get_var($wpdb->prepare("SELECT count(arm_general_log_id) as total_records FROM `" . $tbl_arm_debug_general_log . "` WHERE {$arm_general_debug_log_selector_search} ".$arm_debug_general_log_where_cond." ORDER BY arm_general_log_id DESC") );
+                
+                /*if($total_log_data>10000)
+                {
+                   $total_log_data = 10000; 
+                }*/
+
+                $arm_debug_log_data = $arm_debug_log_arr = array();
+                $chunk_data_var = 1000;
+                if(!empty($total_log_data))
+                {
+                    $totaloccurance = ceil($total_log_data/$chunk_data_var);
+                    $startfrom = 0-$chunk_data_var;
+                    $endto = 0;
+                    for($cntr=0;$cntr<$totaloccurance;$cntr++)
+                    {
+                        $arm_debug_log_arr = array();
+                        $startfrom += $chunk_data_var;
+                        $endto += $chunk_data_var;
+
+                        //echo '<br>==>'.$startfrom.', '.$endto.'|';
+
+                        //echo "<pre><br>SELECT * FROM `" . $tbl_arm_debug_general_log . "` WHERE {$arm_general_debug_log_selector_search} ORDER BY arm_general_log_id DESC LIMIT ".$startfrom.", ".$endto;
+
+                        $arm_debug_log_arr = $wpdb->get_results($wpdb->prepare("SELECT * FROM `" . $tbl_arm_debug_general_log . "` WHERE {$arm_general_debug_log_selector_search} ORDER BY arm_general_log_id DESC LIMIT %d,%d", $startfrom, $endto ), ARRAY_A);
+
+                        $arm_debug_log_data = array_merge($arm_debug_log_data,$arm_debug_log_arr);
+                    }
+                }
+
+                $arm_download_data = json_encode($arm_debug_log_data);
+
+                if( !function_exists('WP_Filesystem' ) )
+                {
+                    require_once(ABSPATH . 'wp-admin/includes/file.php');
+                }
+                WP_Filesystem();
+                global $wp_filesystem;
+
+                $arm_debug_log_file_name = "arm_debug_logs_" . $arm_download_key."_".$arm_selected_download_duration ;
+                $result = $wp_filesystem->put_contents( MEMBERSHIP_UPLOAD_DIR."/".$arm_debug_log_file_name.".txt", $arm_download_data, 0777 );
+
+                $debug_log_file_name  = '';
+
+                if(class_exists('ZipArchive'))
+                {
+                    $zip = new ZipArchive();
+                    $zip->open(MEMBERSHIP_UPLOAD_DIR."/".$arm_debug_log_file_name.".zip", ZipArchive::CREATE);
+                    $zip->addFile(MEMBERSHIP_UPLOAD_DIR."/".$arm_debug_log_file_name.".txt", $arm_debug_log_file_name.".txt");
+                    $zip->close();
+
+                    $arm_download_url = MEMBERSHIP_UPLOAD_URL."/".$arm_debug_log_file_name.".zip";
+
+                    $debug_log_file_name = $arm_debug_log_file_name . ".zip";
+                } else {
+                    $arm_download_url = MEMBERSHIP_UPLOAD_URL."/".$arm_debug_log_file_name.".txt";
+                    $debug_log_file_name = $arm_debug_log_file_name . ".txt";
+                }
+            }
+
+            echo admin_url( 'admin.php?page=arm_general_settings&action=debug_logs&arm_action=download_log&file=' . $debug_log_file_name );
+            exit();
+        }
+
+        function arm_download_payment_debug_log()
+        {
+            global $wpdb, $ARMember, $arm_global_settings, $arm_capabilities_global;
+            $ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_general_settings'], '1');
+            $arm_download_url = '';
+            if(!empty($_POST['arm_download_key']))
+            {
+                $tbl_arm_debug_payment_log = $ARMember->tbl_arm_debug_payment_log;
+                $arm_download_key = $_POST['arm_download_key'];
+
+                $arm_debug_payment_log_where_cond = "";
+
+                $arm_selected_download_duration = !empty($_POST['selected_download_duration']) ? $_POST['selected_download_duration'] : 'all';
+
+                $arm_custom_duration_start_date = !empty($_POST['arm_filter_pstart_date']) ? $_POST['arm_filter_pstart_date'] : '';
+                $arm_custom_duration_end_date = !empty($_POST['arm_filter_pend_date']) ? $_POST['arm_filter_pend_date'] : '';
+                if(!empty($arm_custom_duration_start_date) && !empty($arm_custom_duration_end_date) && $arm_selected_download_duration == "custom")
+                {
+                    $arm_custom_duration_start_date = date('Y-m-d 00:00:00', strtotime($arm_custom_duration_start_date));
+
+                    $arm_custom_duration_end_date = date('Y-m-d 23:59:59', strtotime($arm_custom_duration_end_date));
+
+                    $arm_debug_payment_log_where_cond = " AND (arm_payment_log_added_date >= '".$arm_custom_duration_start_date."' AND arm_payment_log_added_date <= '".$arm_custom_duration_end_date."')";
+                }
+                else if(!empty($arm_selected_download_duration) && $arm_selected_download_duration != "custom")
+                {
+                    $arm_last_selected_days = date('Y-m-d', strtotime('-'.$arm_selected_download_duration.' days'));
+                    $arm_debug_payment_log_where_cond = " AND (arm_payment_log_added_date >= '".$arm_last_selected_days."')";
+                }
+
+                $arm_debug_payment_log_query = "SELECT * FROM `" . $tbl_arm_debug_payment_log . "` WHERE `arm_payment_log_gateway` = '".$arm_download_key."' AND `arm_payment_log_status` = 1 ".$arm_debug_payment_log_where_cond." ORDER BY arm_payment_log_id DESC";
+
+
+                $arm_payment_debug_log_data = $wpdb->get_results($arm_debug_payment_log_query, ARRAY_A);
+
+                $arm_download_data = json_encode($arm_payment_debug_log_data);
+
+                if( !function_exists('WP_Filesystem' ) )
+                {
+                    require_once(ABSPATH . 'wp-admin/includes/file.php');
+                }
+                WP_Filesystem();
+                global $wp_filesystem;
+
+                $arm_debug_log_file_name = "arm_debug_logs_".$arm_download_key."_".$arm_selected_download_duration;
+                $result = $wp_filesystem->put_contents( MEMBERSHIP_UPLOAD_DIR."/".$arm_debug_log_file_name.".txt", $arm_download_data, 0777 );
+
+                $debug_log_file_name  = '';
+
+                if(class_exists('ZipArchive'))
+                {
+                    $zip = new ZipArchive();
+                    $zip->open(MEMBERSHIP_UPLOAD_DIR."/".$arm_debug_log_file_name.".zip", ZipArchive::CREATE);
+                    $zip->addFile(MEMBERSHIP_UPLOAD_DIR."/".$arm_debug_log_file_name.".txt", $arm_debug_log_file_name.".txt");
+                    $zip->close();
+
+                    $arm_download_url = MEMBERSHIP_UPLOAD_URL."/".$arm_debug_log_file_name.".zip";
+
+                    $debug_log_file_name = $arm_debug_log_file_name . ".zip";
+                } else {
+                    $arm_download_url = MEMBERSHIP_UPLOAD_URL."/".$arm_debug_log_file_name.".txt";
+                    $debug_log_file_name = $arm_debug_log_file_name . ".txt";
+                }
+            }
+
+            echo admin_url( 'admin.php?page=arm_general_settings&action=debug_logs&arm_action=download_log&file=' . $debug_log_file_name );
+            exit();
+        }
+
+        function arm_view_payment_debug_log()
+        {
+            global $wpdb, $ARMember, $arm_global_settings, $arm_capabilities_global;
+            $ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_general_settings'], '1');
+            $arm_payment_debug_log_html = '';
+            if(!empty($_POST) && !empty($_POST['arm_debug_log_selector']))
+            {
+                $tbl_arm_debug_payment_log = $ARMember->tbl_arm_debug_payment_log;
+
+                $arm_payment_debug_log_selector = $_POST['arm_debug_log_selector'];
+                $date_time_format = $arm_global_settings->arm_get_wp_date_time_format();
+
+                $current_page = !empty($_POST['page']) ? $_POST['page'] : 1;
+                $perPage = !empty($_POST['per_page']) ? intval($_POST['per_page']) : 25;
+
+                $offset = 0;
+                if (!empty($current_page) && $current_page > 1) {
+                    $offset = ($current_page - 1) * $perPage;
+                }
+
+                $totalRecord = $wpdb->get_var("SELECT COUNT('arm_payment_log_id') FROM `" . $tbl_arm_debug_payment_log . "` WHERE `arm_payment_log_gateway` = '".$arm_payment_debug_log_selector."' AND `arm_payment_log_status`= 1 ORDER BY arm_payment_log_id DESC");
+
+                $armPaymentDebugLimit = (!empty($perPage)) ? " LIMIT $offset, $perPage " : "";
+
+                $arm_payment_debug_log_data = $wpdb->get_results($wpdb->prepare("SELECT * FROM `" . $tbl_arm_debug_payment_log . "` WHERE `arm_payment_log_gateway` = %s AND `arm_payment_log_status`=%d ORDER BY arm_payment_log_id DESC {$armPaymentDebugLimit}", $arm_payment_debug_log_selector, 1), ARRAY_A);
+                    $arm_payment_debug_log_html .= '<div class="arm_payment_debug_log_container">';
+                $arm_payment_debug_log_html .= '<table class="form-table arm_member_last_subscriptions_table">';
+                $arm_payment_debug_log_html .= '<tr>';
+                $arm_payment_debug_log_html .= '<td><b>'.__('Log ID', 'ARMember').'</b></td>';
+                $arm_payment_debug_log_html .= '<td><b>'.__('Log Name', 'ARMember').'</b></td>';
+                $arm_payment_debug_log_html .= '<td class="arm_debug_log_raw_data"><b>'.__('Log Data', 'ARMember').'</b></td>';
+                $arm_payment_debug_log_html .= '<td><b>'.__('Log Added Date', 'ARMember').'</b></td>';
+                $arm_payment_debug_log_html .= '</tr>';
+
+
+                foreach($arm_payment_debug_log_data as $arm_payment_debug_log_key => $arm_payment_debug_log_val)
+                {
+                    $arm_payment_debug_log_html .= '<tr>';
+
+                    $arm_payment_debug_log_html .= '<td>'.$arm_payment_debug_log_val['arm_payment_log_id'].'</td>';
+
+                    $arm_payment_debug_log_html .= '<td>'.$arm_payment_debug_log_val['arm_payment_log_event'].'</td>';
+
+                    //$arm_payment_debug_log_html .= '<td>'.$arm_payment_debug_log_val['arm_payment_log_gateway'].'</td>';
+
+                    /*$arm_payment_debug_log_html .= '<td>'.$arm_payment_debug_log_val['arm_payment_log_event'].'</td>';
+
+                    $arm_payment_debug_log_html .= '<td>'.$arm_payment_debug_log_val['arm_payment_log_event_from'].'</td>';*/
+
+                    $arm_payment_debug_log_html .= '<td class="arm_debug_log_raw_data">'.htmlspecialchars(utf8_encode($arm_payment_debug_log_val['arm_payment_log_raw_data'])).'</td>';
+
+                    $arm_created_date = date_i18n($date_time_format, strtotime($arm_payment_debug_log_val['arm_payment_log_added_date']));
+                    $arm_payment_debug_log_html .= '<td>'.$arm_created_date.'</td>';
+
+                    $arm_payment_debug_log_html .= '</tr>';
+                }
+
+                if($totalRecord <= 0)
+                {
+                    $total_column = 4;
+                    $arm_payment_debug_log_html .= '<tr>';
+                    $arm_payment_debug_log_html .= '<td colspan="'.$total_column.'" class="arm_text_align_center" >' . __('No debug logs found.', 'ARMember') . '</td>';
+                    $arm_payment_debug_log_html .= '</tr>';
+                }
+
+                $arm_payment_debug_log_html .= '</table>';
+                $arm_payment_debug_log_html .= '</div>';
+
+                $arm_payment_debug_log_html .= '<div class="arm_membership_history_pagination_block">';
+                $historyPaging = $arm_global_settings->arm_get_paging_links($current_page, $totalRecord, $perPage);
+                $arm_payment_debug_log_html .= '<div class="arm_membership_history_paging_container">' . $historyPaging . '</div>';
+                $arm_payment_debug_log_html .= '</div>';
+
+            }
+            echo $arm_payment_debug_log_html;
+            exit();
+        }
+
+        function arm_view_general_debug_log()
+        {
+            global $wpdb, $ARMember, $arm_global_settings, $arm_capabilities_global;
+            $ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_general_settings'], '1');
+            $arm_general_debug_log_html = '';
+            if(!empty($_POST) && !empty($_POST['arm_debug_log_selector']))
+            {
+                $tbl_arm_debug_general_log = $ARMember->tbl_arm_debug_general_log;
+
+                $arm_general_debug_log_selector = $_POST['arm_debug_log_selector'];
+
+                $arm_general_debug_log_selector_search = "";
+
+                if($arm_general_debug_log_selector!='cron' && $arm_general_debug_log_selector != 'email') {
+                    $arm_general_debug_log_selector_search = " `arm_general_log_event`!='cron' AND `arm_general_log_event`!='email' ";
+                }
+                else {
+                    $arm_general_debug_log_selector_search = " `arm_general_log_event` ='".$arm_general_debug_log_selector."' ";
+                }
+                
+                $date_time_format = $arm_global_settings->arm_get_wp_date_time_format();
+
+                $current_page = !empty($_POST['page']) ? $_POST['page'] : 1;
+                $perPage = !empty($_POST['per_page']) ? intval($_POST['per_page']) : 25;
+
+                $offset = 0;
+                if (!empty($current_page) && $current_page > 1) {
+                    $offset = ($current_page - 1) * $perPage;
+                }
+
+                $totalRecord = $wpdb->get_var("SELECT COUNT('arm_general_log_id') FROM `" . $tbl_arm_debug_general_log . "` WHERE {$arm_general_debug_log_selector_search} ORDER BY arm_general_log_id DESC");
+
+                $arm_general_debug_log_html .= '<div class="arm_general_debug_log_container">';
+                $arm_general_debug_log_html .= '<table class="form-table arm_member_last_subscriptions_table" width="100%">';
+                $arm_general_debug_log_html .= '<tr>';
+                    $arm_general_debug_log_html .= '<td><b>'.__('Log ID', 'ARMember').'</b></td>';
+                    $arm_general_debug_log_html .= '<td><b>'.__('Log Name', 'ARMember').'</b></td>';
+                    $arm_general_debug_log_html .= '<td class="arm_debug_log_raw_data"><b>'.__('Log Data', 'ARMember').'</b></td>';
+                    $arm_general_debug_log_html .= '<td><b>'.__('Log Added Date', 'ARMember').'</b></td>';
+                $arm_general_debug_log_html .= '</tr>';
+                
+                if($totalRecord>0)
+                {
+                    $armgeneralDebugLimit = (!empty($perPage)) ? " LIMIT $offset, $perPage " : "";
+
+                    $arm_general_debug_log_data = $wpdb->get_results($wpdb->prepare( "SELECT * FROM `" . $tbl_arm_debug_general_log . "` WHERE {$arm_general_debug_log_selector_search} ORDER BY arm_general_log_id DESC {$armgeneralDebugLimit}" ), ARRAY_A);
+                    
+                    foreach($arm_general_debug_log_data as $arm_general_debug_log_key => $arm_general_debug_log_val)
+                    {
+                        $arm_general_debug_log_val_raw_data = $arm_general_debug_log_val['arm_general_log_raw_data'];
+                        $arm_general_debug_log_val_raw_data = htmlspecialchars(utf8_encode($arm_general_debug_log_val_raw_data));
+                        if($arm_general_debug_log_val['arm_general_log_event']=='email')
+                        {
+                            $arm_general_debug_log_val_raw_data = str_replace(array("{ARMNL}"), "<br />", $arm_general_debug_log_val_raw_data);
+                        }
+
+                        $arm_general_debug_log_html .= '<tr>';
+
+                            $arm_general_debug_log_html .= '<td>'.$arm_general_debug_log_val['arm_general_log_id'].'</td>';
+                            $arm_general_debug_log_html .= '<td>'.$arm_general_debug_log_val['arm_general_log_event_name'].'</td>';
+                            $arm_general_debug_log_html .= '<td class="arm_debug_log_raw_data">'.$arm_general_debug_log_val_raw_data.'</td>';
+
+                            $arm_created_date = date_i18n($date_time_format, strtotime($arm_general_debug_log_val['arm_general_log_added_date']));
+                            $arm_general_debug_log_html .= '<td>'.$arm_created_date.'</td>';
+
+                        $arm_general_debug_log_html .= '</tr>';
+                    }
+
+                }
+                else 
+                {
+                    $total_column = 4;
+                    $arm_general_debug_log_html .= '<tr>';
+                        $arm_general_debug_log_html .= '<td colspan="'.$total_column.'" class="arm_text_align_center" >' . __('No debug logs found.', 'ARMember') . '</td>';
+                    $arm_general_debug_log_html .= '</tr>';
+                }
+
+                $arm_general_debug_log_html .= '</table>';
+                $arm_general_debug_log_html .= '</div>';
+
+                $arm_general_debug_log_html .= '<div class="arm_membership_history_pagination_block">';
+                    $historyPaging = $arm_global_settings->arm_get_paging_links($current_page, $totalRecord, $perPage);
+                    $arm_general_debug_log_html .= '<div class="arm_membership_history_paging_container">' . $historyPaging . '</div>';
+                $arm_general_debug_log_html .= '</div>';
+
+            }
+            echo $arm_general_debug_log_html;
+            exit();
         }
         
         function arm_need_to_cancel_old_subscription_gateways(){
@@ -76,7 +472,7 @@ if (!class_exists('ARM_payment_gateways')) {
                 'manual' => __('Manual', 'ARMember'),
             );
             $gatewayNames = apply_filters('arm_filter_gateway_names', $gatewayNames);
-            $pgName = (isset($gatewayNames[$gateway_key])) ? $gatewayNames[$gateway_key] : '';
+            $pgName = (isset($gatewayNames[$gateway_key])) ? $gatewayNames[$gateway_key] : $gateway_key;
             return apply_filters('arm_gateway_name_by_key', $pgName, $gateway_key);
         }
 
@@ -101,7 +497,8 @@ if (!class_exists('ARM_payment_gateways')) {
             $stripe_cur = $this->arm_stripe_currency_symbol();
             $authorize_net_cur = $this->arm_authorize_net_currency_symbol();
             $twocheckout_cur = $this->arm_2checkout_currency_symbol();
-            $all_currencies = array_merge($paypal_cur, $stripe_cur, $authorize_net_cur, $twocheckout_cur);
+            $bank_transfer_cur = $this->arm_bank_transfer_currency_symbol();
+            $all_currencies = array_merge($paypal_cur, $stripe_cur, $authorize_net_cur, $twocheckout_cur, $bank_transfer_cur);
             /* Add Custom Currency */
             $global_settings = isset($arm_global_settings->global_settings) ? $arm_global_settings->global_settings : $arm_global_settings->arm_get_all_global_settings(true);
             $custom_currency = isset($global_settings['custom_currency']) ? $global_settings['custom_currency'] : array();
@@ -119,6 +516,7 @@ if (!class_exists('ARM_payment_gateways')) {
             if (isset($custom_currency['status']) && $custom_currency['status'] == 1) {
                 $global_currency = $custom_currency['shortname'];
             }
+            $global_currency = apply_filters('arm_set_global_currency_outside', $global_currency);
             return $global_currency;
         }
 
@@ -128,8 +526,9 @@ if (!class_exists('ARM_payment_gateways')) {
         function arm_currency_symbol_position($currency = '') {
             global $wpdb, $ARMember, $arm_global_settings;
             $symbol_position = array(
-                'prefix' => array('USD', 'AUD', 'BRL', 'CAD', 'HUF', 'ILS', 'JPY', 'MYR', 'MXN', 'NZD', 'PHP', 'PLN', 'GBP', 'RUB', 'SGD', 'CHF', 'TWD', 'THB', 'TRY', 'INR', 'GHS', 'NGN', 'ZAR'),
-                'suffix' => array('CZK', 'SEK', 'DKK', 'NOK', 'HKD'),
+                'prefix' => array('USD', 'AUD', 'BRL', 'CAD', 'HUF', 'ILS', 'JPY', 'MYR', 'MXN', 'NZD', 'PHP', 'GBP', 'RUB', 'SGD', 'CHF', 'TWD', 'THB', 'TRY', 'INR', 'GHS', 'NGN', 'ZAR', 'HKD', 'BTC', 'BTN', 'CUC', 'CUP', 'GGP', 'IMP', 'JEP', 'KPW', 'RMB', 'SDG', 'SSP', 'VEF', 'VES'),
+
+                'suffix' => array('CZK', 'SEK', 'DKK', 'NOK', 'PLN', 'BHD', 'BYR', 'BYN', 'ERN', 'IQD', 'IRR', 'IRT', 'JOD', 'KWD', 'LYD', 'MRU', 'OMR', 'PRB', 'STN', 'TMT', 'TND'),
             );
 
             $current_symbol_pos = 'suffix';
@@ -186,6 +585,7 @@ if (!class_exists('ARM_payment_gateways')) {
             if (is_array($_POST['payment_gateway_settings']) && !empty($_POST['payment_gateway_settings'])) {
                 foreach ($_POST['payment_gateway_settings'] as $key => $pg_setting) {
                     $pay_gate_settings[$key] = isset($_POST['payment_gateway_settings'][$key]) ? $pg_setting : "";
+                    $pay_gate_settings[$key]['payment_debug_logs'] = !empty($old_pay_gate_settings[$key]['payment_debug_logs']) ? $old_pay_gate_settings[$key]['payment_debug_logs'] : 0;
                 }
             }
             $pay_gate_settings = apply_filters('arm_save_payment_gateway_settings', $pay_gate_settings, $_POST);
@@ -193,7 +593,14 @@ if (!class_exists('ARM_payment_gateways')) {
             update_option('arm_payment_gateway_settings', $pay_gate_settings);
             $this->arm_update_payment_gate_status();
 
-            if(($old_pay_gate_settings['stripe']['status'] != $_POST['payment_gateway_settings']['stripe']['status'] && $_POST['payment_gateway_settings']['stripe']['status']==1 ) || ($old_pay_gate_settings['stripe']['stripe_payment_mode'] != $_POST['payment_gateway_settings']['stripe']['stripe_payment_mode']) || ($old_pay_gate_settings['stripe']['stripe_test_secret_key'] != $_POST['payment_gateway_settings']['stripe']['stripe_test_secret_key']) || ($old_pay_gate_settings['stripe']['stripe_test_pub_key'] != $_POST['payment_gateway_settings']['stripe']['stripe_test_pub_key']) || ($old_pay_gate_settings['stripe']['stripe_secret_key'] != $_POST['payment_gateway_settings']['stripe']['stripe_secret_key']) || ($old_pay_gate_settings['stripe']['stripe_pub_key'] != $_POST['payment_gateway_settings']['stripe']['stripe_pub_key']))
+            if( (!empty($old_pay_gate_settings['stripe']) && is_array($old_pay_gate_settings['stripe']) ) && ( ($old_pay_gate_settings['stripe']['status'] != $_POST['payment_gateway_settings']['stripe']['status'] && $_POST['payment_gateway_settings']['stripe']['status']==1 ) 
+                || ($old_pay_gate_settings['stripe']['stripe_payment_mode'] != $_POST['payment_gateway_settings']['stripe']['stripe_payment_mode']) 
+                || ($old_pay_gate_settings['stripe']['stripe_test_secret_key'] != $_POST['payment_gateway_settings']['stripe']['stripe_test_secret_key']) 
+                || ($old_pay_gate_settings['stripe']['stripe_test_pub_key'] != $_POST['payment_gateway_settings']['stripe']['stripe_test_pub_key']) 
+                || ($old_pay_gate_settings['stripe']['stripe_secret_key'] != $_POST['payment_gateway_settings']['stripe']['stripe_secret_key']) 
+                || ($old_pay_gate_settings['stripe']['stripe_pub_key'] != $_POST['payment_gateway_settings']['stripe']['stripe_pub_key'])
+                )
+              )
             {
                 $arm_all_plans = $arm_subscription_plans->arm_get_all_subscription_plans('arm_subscription_plan_id');
                 foreach($arm_all_plans as $arm_plan_key => $arm_plan_val)
@@ -253,6 +660,7 @@ if (!class_exists('ARM_payment_gateways')) {
             global $wpdb, $ARMember, $arm_global_settings;
             $global_currency = $this->arm_get_global_currency();
             $not_allow_payment = $this->arm_check_currency_status_for_gateways($global_currency);
+            $not_allow_payment = apply_filters('arm_check_currency_status', $not_allow_payment, $global_currency);
             if (!empty($not_allow_payment)) {
                 $pg_settings = get_option('arm_payment_gateway_settings', array());
                 $new_pg_settings = maybe_unserialize($pg_settings);
@@ -293,6 +701,14 @@ if (!class_exists('ARM_payment_gateways')) {
                 
                 
                 $setup_id = isset($posted_data['setup_id']) ? intval($posted_data['setup_id']) : 0;
+
+                $entry_id = isset($posted_data['arm_entry_id']) ? $posted_data['arm_entry_id'] : 0;
+                $entry_values = array();
+                if(!empty($entry_id))
+                {
+                    $entry_data = $wpdb->get_row("SELECT * FROM `" . $ARMember->tbl_arm_entries . "` WHERE `arm_entry_id`='" . $entry_id . "' ", ARRAY_A);
+                    $entry_values = maybe_unserialize($entry_data['arm_entry_value']);
+                }
                 
                 $pgateway = isset($posted_data['payment_gateway']) ? sanitize_text_field($posted_data['payment_gateway']) : '';
                 if ($pgateway === '') {
@@ -484,8 +900,18 @@ if (!class_exists('ARM_payment_gateways')) {
                                     /* Set Current Plan Detail */
                                     $curPlanDetail = (array) $plan->plan_detail;
                                     $curPlanDetail['arm_user_selected_payment_cycle'] = $payment_cycle;
-                                    $userPlanData['arm_current_plan_detail'] = $curPlanDetail;
+                                    $arm_meta_plan_options = maybe_unserialize($curPlanDetail['arm_subscription_plan_options']);
 
+                                    $arm_subscription_plan_amount = !empty($arm_meta_plan_options['payment_cycles'][$payment_cycle]) ? $arm_meta_plan_options['payment_cycles'][$payment_cycle]['cycle_amount'] : $curPlanDetail['arm_subscription_plan_amount'];
+                                    $arm_modify_subscription_plan_amount = apply_filters('arm_modify_webhook_discount_amount', $arm_subscription_plan_amount, $plan->ID, $entry_id, $entry_values, $pgateway);
+                                    
+                                    $arm_modify_subscription_plan_amount = apply_filters('arm_modify_subscription_plan_amount_outside', $arm_subscription_plan_amount, $plan, $entry_id, $payment_cycle);
+                                    
+                                    $curPlanDetail['arm_subscription_plan_amount'] = $arm_modify_subscription_plan_amount;
+                                    $arm_meta_plan_options['payment_cycles'][$payment_cycle]['cycle_amount'] = $arm_modify_subscription_plan_amount;
+                                    $curPlanDetail['arm_subscription_plan_options'] =  maybe_serialize($arm_meta_plan_options);
+
+                                    $userPlanData['arm_current_plan_detail'] = $curPlanDetail;
                                 }
                                 update_user_meta($user_ID, 'arm_user_plan_'.$plan->ID, $userPlanData);
                                 if(!in_array($plan->ID, $old_plan_ids)){
@@ -532,11 +958,12 @@ if (!class_exists('ARM_payment_gateways')) {
                                             if (isset($extra_vars['card_number']) && !empty($extra_vars['card_number'])) {
                                                 $extra_vars['card_number'] = $extra_vars['card_number'];
                                             } else {
-                                                $extra_vars['card_number'] = isset($posted_data[$pgateway]['card_number']) ? $posted_data[$pg]['card_number'] : '-';
+                                                $extra_vars['card_number'] = isset($posted_data[$pgateway]['card_number']) ? $posted_data[$pgateway]['card_number'] : '-';
                                             }
                                             $upData['arm_extra_vars'] = maybe_serialize($extra_vars);
                                         }
                                         $wpdb->update($armLogTable, $upData, array('arm_log_id' => $log_id));
+                                        do_action('arm_after_new_user_update_transaction', $user_ID, $pid, $log_id, $pgateway);
                                         if ($pgateway == 'stripe') {
                                             $userPlanData['arm_stripe'] = array('customer_id' => $log_detail->arm_token, 'transaction_id' => $log_detail->arm_transaction_id);
                                         }
@@ -582,7 +1009,7 @@ if (!class_exists('ARM_payment_gateways')) {
                                             if (isset($extra_vars['card_number']) && !empty($extra_vars['card_number'])) {
                                                 $extra_vars['card_number'] = $extra_vars['card_number'];
                                             } else {
-                                                $extra_vars['card_number'] = isset($posted_data[$pgateway]['card_number']) ? $posted_data[$pg]['card_number'] : '-';
+                                                $extra_vars['card_number'] = isset($posted_data[$pgateway]['card_number']) ? $posted_data[$pgateway]['card_number'] : '-';
                                             }
                                             $upData['arm_extra_vars'] = maybe_serialize($extra_vars);
                                         }
@@ -594,9 +1021,6 @@ if (!class_exists('ARM_payment_gateways')) {
                         }
                     }
                     else{
-
-
-                       
                         $userPlanDatameta = get_user_meta($user_ID, 'arm_user_plan_'.$subscription_plan, true);
                         $userPlanDatameta = !empty($userPlanDatameta) ? $userPlanDatameta : array();
                         $userPlanData = shortcode_atts($defaultPlanData, $userPlanDatameta);
@@ -747,8 +1171,20 @@ if (!class_exists('ARM_payment_gateways')) {
                         /* Set Current Plan Detail */
 
                         $curPlanDetail = (array) $plan->plan_detail;
-
                         $curPlanDetail['arm_user_selected_payment_cycle'] = $payment_cycle;
+                        $arm_meta_plan_options = maybe_unserialize($curPlanDetail['arm_subscription_plan_options']);
+
+                        $arm_subscription_plan_amount = !empty($arm_meta_plan_options['payment_cycles'][$payment_cycle]) ? $arm_meta_plan_options['payment_cycles'][$payment_cycle]['cycle_amount'] : $curPlanDetail['arm_subscription_plan_amount'];
+
+                        $arm_modify_subscription_plan_amount = apply_filters('arm_modify_webhook_discount_amount', $arm_subscription_plan_amount, $plan->ID, $entry_id, $entry_values, $pgateway);
+
+                        
+                        $arm_modify_subscription_plan_amount = apply_filters('arm_modify_subscription_plan_amount_outside', $arm_subscription_plan_amount, $plan, $entry_id, $payment_cycle);
+                        
+                        $curPlanDetail['arm_subscription_plan_amount'] = $arm_modify_subscription_plan_amount;
+                        $arm_meta_plan_options['payment_cycles'][$payment_cycle]['cycle_amount'] = $arm_modify_subscription_plan_amount;
+                        $curPlanDetail['arm_subscription_plan_options'] =  maybe_serialize($arm_meta_plan_options);
+
                         $userPlanData['arm_current_plan_detail'] = $curPlanDetail;
 
                     }
@@ -798,15 +1234,16 @@ if (!class_exists('ARM_payment_gateways')) {
                             $upData['arm_first_name']=$arm_first_name;
                             $upData['arm_last_name']=$arm_last_name;
                             if ($pgateway != 'bank_transfer') {
-                                $extra_vars = maybe_unserialize($log_detail->arm_extra_vars);
+                                $extra_vars = !empty($log_detail->arm_extra_vars) ? maybe_unserialize($log_detail->arm_extra_vars) : array();
                                 if (isset($extra_vars['card_number']) && !empty($extra_vars['card_number'])) {
                                     $extra_vars['card_number'] = $extra_vars['card_number'];
                                 } else {
-                                    $extra_vars['card_number'] = isset($posted_data[$pgateway]['card_number']) ? $posted_data[$pg]['card_number'] : '-';
+                                    $extra_vars['card_number'] = isset($posted_data[$pgateway]['card_number']) ? $posted_data[$pgateway]['card_number'] : '-';
                                 }
                                 $upData['arm_extra_vars'] = maybe_serialize($extra_vars);
                             }
                             $wpdb->update($armLogTable, $upData, array('arm_log_id' => $log_id));
+                            do_action('arm_after_new_user_update_transaction', $user_ID, $pid, $log_id, $pgateway);
                             if ($pgateway == 'stripe') {
                                 $userPlanData['arm_stripe'] = array('customer_id' => $log_detail->arm_token, 'transaction_id' => $log_detail->arm_transaction_id);
                             }
@@ -853,7 +1290,7 @@ if (!class_exists('ARM_payment_gateways')) {
                             if (isset($extra_vars['card_number']) && !empty($extra_vars['card_number'])) {
                                 $extra_vars['card_number'] = $extra_vars['card_number'];
                             } else {
-                                $extra_vars['card_number'] = isset($posted_data[$pgateway]['card_number']) ? $posted_data[$pg]['card_number'] : '-';
+                                $extra_vars['card_number'] = isset($posted_data[$pgateway]['card_number']) ? $posted_data[$pgateway]['card_number'] : '-';
                             }
                             $upData['arm_extra_vars'] = maybe_serialize($extra_vars);
                         }
@@ -1045,14 +1482,16 @@ if (!class_exists('ARM_payment_gateways')) {
         }
 
         function arm_bank_transfer_payment_gateway_action($payment_gateway, $payment_gateway_options, $posted_data, $entry_id = 0) {
-            global $wpdb, $ARMember, $arm_global_settings, $payment_done, $arm_membership_setup, $arm_manage_coupons, $arm_subscription_plans, $arm_transaction;
+            global $wpdb, $ARMember, $arm_global_settings, $payment_done, $arm_membership_setup, $arm_manage_coupons, $arm_subscription_plans, $arm_transaction, $arm_debug_payment_log_id;
             if ($payment_gateway == 'bank_transfer') {
+                do_action('arm_payment_log_entry', 'bank_transfer', 'Bank Transfer Posted Data', 'armember', $posted_data, $arm_debug_payment_log_id);
                 $entry_data = $this->arm_get_entry_data_by_id($entry_id);
                 if (!empty($entry_data)) {
                     $posted_data = apply_filters('arm_handle_bank_transfer_before_payment_from_outside',$posted_data,$entry_data);
                     
                     $user_id = $entry_data['arm_user_id'];
                     $entry_values = maybe_unserialize($entry_data['arm_entry_value']);
+                    do_action('arm_payment_log_entry', 'bank_transfer', 'Bank Transfer Entry values', 'armember', $entry_values, $arm_debug_payment_log_id);
                     $payment_cycle = $entry_values['arm_selected_payment_cycle']; 
                     $tax_percentage = isset($entry_values['tax_percentage']) ? $entry_values['tax_percentage'] : 0; 
                   
@@ -1086,6 +1525,7 @@ if (!class_exists('ARM_payment_gateways')) {
                     if($plan->is_recurring())
                     {
                         $recurring_data = $plan->prepare_recurring_data($payment_cycle);
+                        $recurring_data = apply_filters('arm_modify_recurring_data_outside', $recurring_data, $plan, $plan->amount, $entry_id, $payment_cycle);
                         $amount = $recurring_data['amount'];
                     }
                     else{
@@ -1192,6 +1632,8 @@ if (!class_exists('ARM_payment_gateways')) {
                         $arm_last_invoice_id++;
                         $payment_data['arm_invoice_id'] = $arm_last_invoice_id;
                         
+                        do_action('arm_payment_log_entry', 'bank_transfer', 'Save payment log data', 'armember', $payment_data, $arm_debug_payment_log_id);
+
                         $payment_log = $wpdb->insert($ARMember->tbl_arm_payment_log, $payment_data);
                         $payment_log_id = $wpdb->insert_id;
 
@@ -1502,7 +1944,7 @@ if (!class_exists('ARM_payment_gateways')) {
          */
         function arm_paypal_currency_symbol() {
             
-            /* 25 currency */
+            /* 26 currency */
             $currency_symbol = array(
                 
                 'AUD' => '$',
@@ -1511,7 +1953,7 @@ if (!class_exists('ARM_payment_gateways')) {
                 'CZK' => '&#75;&#269;',
                 'DKK' => '&nbsp;&#107;&#114;',
                 'EUR' => '&#128;',
-                'HKD' => '&#20803;',
+                'HKD' => '&#36;',
                 'HUF' => '&#70;&#116;',
                 'ILS' => '&#8362;',
                 'JPY' => '&#165;',
@@ -1531,6 +1973,184 @@ if (!class_exists('ARM_payment_gateways')) {
                 'USD' => '$',
                 'TRY' => '&#89;&#84;&#76;',
                 'INR' => '&#8377;',
+            );
+            return $currency_symbol;
+        }
+
+        /**
+         * Get Currency Name/Label From Currency Code For Bank Transfer - Total 168
+         */
+        function arm_bank_transfer_currency_symbol()
+        {
+            $currency_symbol = array(
+                'AED' => '&#x62f;&#x2e;&#x625;',
+                'AFN' => '&#1547;',
+                'ALL' => 'L',
+                'AMD' => '&#1423;',
+                'ANG' => '$',
+                'AOA' => 'Kz',
+                'ARS' => '&#36;',
+                'AUD' => '$',
+                'AWG' => '&#x192;',
+                'AZN' => 'maH',
+                'BAM' => '&#x4b;&#x4d',
+                'BBD' => 'Bds&#36;',
+                'BDT' => '&#2547;',
+                'BGN' => '&#1074;',
+                'BHD' => '.&#x62f;.&#x628;',
+                'BIF' => 'FBu',
+                'BMD' => 'BD$',
+                'BND' => 'B$',
+                'BOB' => 'Bs.',
+                'BRL' => 'R$',
+                'BSD' => '&#x0024;',
+                'BTC' => '&#3647;',
+                'BTN' => 'Nu.',
+                'BWP' => 'P',
+                'BYN' => 'Br',
+                'BYR' => 'Br',
+                'BZD' => 'BZ$',
+                'CAD' => '$',
+                'CDF' => 'FC',
+                'CHF' => '&#67;&#72;&#70;',
+                'CLP' => '&#36;',
+                'CNY' => '&#165;',
+                'COP' => '&#36;',
+                'CRC' => '&#8353;',
+                'CUC' => '&#36;',
+                'CUP' => '&#36;',
+                'CVE' => 'Esc',
+                'CZK' => '&#75;&#269;',
+                'DJF' => 'Fdj',
+                'DKK' => '&nbsp;&#107;&#114;',
+                'DOP' => 'RD$',
+                'DZD' => 'DA',
+                'EGP' => 'E&#163;',
+                'ERN' => 'Nfk',
+                'ETB' => 'Br',
+                'EUR' => '&#128;',
+                'FJD' => 'FJ$',
+                'FKP' => '&#xa3;',
+                'GBP' => '&#163;',
+                'GEL' => '&#x20be;',
+                'GGP' => '&pound;',
+                'GHS' => '&#x20b5;',
+                'GIP' => '&#xa3;',
+                'GMD' => 'D',
+                'GNF' => 'FG',
+                'GTQ' => 'Q',
+                'GYD' => '&#x24;',
+                'HKD' => '&#36;',
+                'HNL' => 'L',
+                'HRK' => 'kn',
+                'HTG' => 'G',
+                'HUF' => '&#70;&#116;',
+                'IDR' => 'Rp',
+                'ILS' => '&#8362;',
+                'IMP' => '&pound;',
+                'INR' => '&#8377;',
+                'IQD' => '&#x639;.&#x62f;',
+                'IRR' => '&#xfdfc;',
+                'IRT' => '&#x062A;&#x0648;&#x0645;&#x0627;&#x0646;',
+                'ISK' => '&nbsp;&#x6b;&#x72;',
+                'JEP' => '&pound;',
+                'JMD' => 'J$',
+                'JOD' => '&#x62f;.&#x627;',
+                'JPY' => '&#165;',
+                'KES' => 'KSh',
+                'KGS' => '&#x43b;&#x432;',
+                'KHR' => '&#x17db;',
+                'KMF' => 'CF',
+                'KPW' => '&#x20a9;',
+                'KRW' => '&#8361;',
+                'KWD' => '&#x62f;.&#x643;',
+                'KYD' => '$',
+                'KZT' => '&#8376;',
+                'LAK' => '&#8365;',
+                'LBP' => 'L&#163;',
+                'LKR' => '&#8360;',
+                'LRD' => 'L$',
+                'LSL' => 'L',
+                'LYD' => '&#x644;.&#x62f;',
+                'MAD' => '&#x2e;&#x62f;&#x2e;&#x645;',
+                'MDL' => 'MDL',
+                'MGA' => 'Ar',
+                'MKD' => '&#x434;&#x435;&#x43d;',
+                'MMK' => 'K',
+                'MNT' => '&#x20ae;',
+                'MOP' => 'P',
+                'MRO' => 'UM',
+                'MRU' => 'UM',
+                'MUR' => '&#8360;',
+                'MVR' => 'Rf',
+                'MWK' => 'MK',
+                'MXN' => '&#36;',
+                'MYR' => '&#82;&#77;',
+                'MZN' => '&#x4d;&#x54;',
+                'NAD' => '$',
+                'NGN' => '&#x20a6;',
+                'NIO' => 'C$',
+                'NOK' => '&nbsp;&#107;&#114;',
+                'NPR' => '&#8360;',
+                'NZD' => '&#36;',
+                'OMR' => '&#x631;.&#x639;.',
+                'PAB' => 'B/.',
+                'PEN' => 'S/.',
+                'PGK' => 'K',
+                'PHP' => '&#8369;',
+                'PKR' => '&#8360;',
+                'PLN' => '&#122;&#322;',
+                'PRB' => '&#x440;.',
+                'PYG' => 'Gs',
+                'QAR' => '&#65020;',
+                'RMB' => '&yen;',
+                'RON' => 'L',
+                'RSD' => '&#x414;&#x438;&#x43d;&#x2e;',
+                'RUB' => '&#1088;&#1091;',
+                'RWF' => 'RF',
+                'SAR' => '&#65020;',
+                'SBD' => 'SI$',
+                'SCR' => '&#8360;',
+                'SDG' => '&pound;SD',
+                'SEK' => '&nbsp;&#107;&#114;',
+                'SGD' => '&#36;',
+                'SGF' => 'S$',
+                'SHP' => '&#xa3;',
+                'SYP' => 'S&#163;',
+                'TJS' => 'TSh',
+                'SLL' => 'Le',
+                'SOS' => 'S',
+                'SRD' => '$',
+                'SSP' => '&pound;',
+                'STD' => 'Db',
+                'STN' => 'Db',
+                'SVC' => '$',
+                'SZL' => 'SZL',
+                'THB' => '&#3647;',
+                'TMT' => 'm',
+                'TND' => '&#x62f;.&#x62a;',
+                'TOP' => 'T$',
+                'TRY' => '&#89;&#84;&#76;',
+                'TTD' => 'TT$',
+                'TWD' => '&#36;',
+                'TZS' => 'x',
+                'UAH' => '&#8372;',
+                'UGX' => 'USh',
+                'USD' => '$',
+                'UYU' => '$U',
+                'UZS' => '&#x43b;&#x432;',
+                'VEF' => 'Bs F',
+                'VES' => 'Bs.S',
+                'VND' => '&#8363;',
+                'VUV' => 'VT',
+                'WST' => 'T',
+                'XAF' => 'FCFA',
+                'XCD' => 'EC$',
+                'XOF' => 'CFA',
+                'XPF' => 'F',
+                'YER' => '&#65020;',
+                'ZAR' => 'R',
+                'ZMW' => 'ZK',               
             );
             return $currency_symbol;
         }
@@ -1588,7 +2208,7 @@ if (!class_exists('ARM_payment_gateways')) {
                 'GNF' => 'FG',
                 'GTQ' => 'Q',
                 'GYD' => '&#x24;',
-                'HKD' => '&#20803;',
+                'HKD' => '&#36;',
                 'HNL' => 'L',
                 'HRK' => 'kn',
                 'HTG' => 'G',
@@ -1740,7 +2360,7 @@ if (!class_exists('ARM_payment_gateways')) {
                 
                 'FJD' => 'FJ$',
                 'GTQ' => 'Q',
-                'HKD' => '&#20803;',
+                'HKD' => '&#36;',
                 'HNL' => 'L',
                 'HUF' => '&#70;&#116;',
                 'ILS' => '&#8362;',
@@ -2092,7 +2712,21 @@ if (!class_exists('ARM_payment_gateways')) {
                                 "VUV"=> array( 'decimal' => '', 'thousand' => ',' ), "VND"=> array( 'decimal' => '', 'thousand' => ',' ), 
                                 "XOF"=> array( 'decimal' => '', 'thousand' => ',' ), "DJF"=> array( 'decimal' => '', 'thousand' => ',' ),
                                 "GNF"=> array( 'decimal' => '', 'thousand' => ',' ), "KMF"=> array( 'decimal' => '', 'thousand' => ',' ),
-                                "GHS"=> array( 'decimal' => '.', 'thousand' => ',' ),
+                                "GHS"=> array( 'decimal' => '.','thousand' => ',' ),"BHD"=> array( 'decimal' => '.', 'thousand' => ','),
+                                "BTC" => array('decimal' => '.','thousand' => ','), "BTN"=> array( 'decimal' => '.', 'thousand' => ','),
+                                "BYR" => array('decimal' => '.','thousand' => ','),"BYN" => array( 'decimal' => '.', 'thousand' => ','),
+                                "CUC" => array('decimal' => '.','thousand' => ','),"CUP" => array( 'decimal' => '.', 'thousand' => ','),
+                                "ERN" => array('decimal' => '.','thousand' => ','), "GGP"=> array( 'decimal' => '.', 'thousand' => ','),
+                                "IMP" => array('decimal' => '.','thousand' => ','), "IQD" => array( 'decimal' => '.', 'thousand' => ','),
+                                "IRR" => array('decimal' => '.','thousand' => ','), "IRT" => array( 'decimal' => '.', 'thousand' => ','),
+                                "JEP" => array('decimal' => '.','thousand' => ','), "JOD" => array( 'decimal' => '.', 'thousand' => ','),
+                                "KPW" => array('decimal' => '.','thousand' => ','), "KWD" => array( 'decimal' => '.', 'thousand' => ','),
+                                "LYD" => array('decimal' => '.','thousand' => ','), "MRU" => array( 'decimal' => '.', 'thousand' => ','),
+                                "OMR" => array('decimal' => '.','thousand' => ','), "PRB" => array( 'decimal' => '.', 'thousand' => ','),
+                                "RMB" => array('decimal' => '.','thousand' => ','), "SDG" => array( 'decimal' => '.', 'thousand' => ','),
+                                "SSP" => array('decimal' => '.','thousand' => ','), "STN" => array( 'decimal' => '.', 'thousand' => ','),
+                                "TMT" => array('decimal' => '.','thousand' => ','), "TND" => array( 'decimal' => '.', 'thousand' => ','),
+                                "VEF" => array('decimal' => '.','thousand' => ','), "VES" => array( 'decimal' => '.', 'thousand' => ','),
                 );
             return $separator;
         }
@@ -2109,7 +2743,16 @@ if (!class_exists('ARM_payment_gateways')) {
         }
 
         function get_other_seperator_currencies() {
-            $currency_separators = array( "BRL" => array( 'decimal' => ',', 'thousand' => '.' ), );
+            $currency_separators = array( "BRL" => array( 'decimal' => ',', 'thousand' => '.' ),
+                                        "BYR" => array('decimal' => ',', 'thousand' => ''),
+                                        "BYN" => array('decimal' => ',', 'thousand' => ''),
+                                        "CUC" => array('decimal' => ',', 'thousand' => '.'),
+                                        "CUP" => array('decimal' => ',', 'thousand' => '.'),
+                                        "TMT" => array('decimal' => ',', 'thousand' => ''),
+                                        "TND" => array('decimal' => ',', 'thousand' => '.'),
+                                        "VEF" => array('decimal' => ',', 'thousand' => '.'), 
+                                        "VES" => array('decimal' => ',', 'thousand' => '.'),
+                );
             return $currency_separators;
         }
     }

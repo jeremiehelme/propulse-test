@@ -94,7 +94,7 @@ $is_debug_enable = 0;
     <div class="content_wrapper arm_feature_settings_content" id="content_wrapper">
         <div class="page_title"><?php _e('Manage ARMember License', 'ARMember'); ?></div>
         <form method="post" action="#" id="arm_global_settings" class="arm_global_settings arm_admin_form" onsubmit="return false;">
-            <div class="arm_feature_settings_container" style="margin-top:30px;">
+            <div class="arm_feature_settings_container arm_feature_settings_wrapper" style="margin-top:30px;">
                         <?php if ($setact != 1 && $is_debug_enable == 0) { ?>
             <div class="page_sub_title"><?php _e('ARMember License','ARMember');?></div>
             <p>In order to receive all benefits of ARMember, you need to activate your copy of the plugin. By activating ARMember license you will unlock features like - Access of all ARMember addons, automatic updates and official support.</p>
@@ -132,7 +132,7 @@ $is_debug_enable = 0;
                 <tr class="form-field">
                     <th class="arm-form-table-label">&nbsp;</th>
                     <td class="arm-form-table-content">
-                        <span id="license_link"><button type="button" id="verify-purchase-code" name="continue" style="width:150px; border:0px; color:#FFFFFF; height:40px; border-radius:3px;" class="greensavebtn"><?php _e('Activate', 'ARMember'); ?></button></span>
+                        <span id="license_link"><button type="button" id="verify-purchase-code" name="continue" style="width:150px; border:0px; color:#FFFFFF; height:40px; border-radius:3px;cursor:pointer;" class="greensavebtn"><?php _e('Activate', 'ARMember'); ?></button></span>
                         &nbsp;&nbsp;<a href="https://help.market.envato.com/hc/en-us/articles/202822600-Where-can-I-find-my-Purchase-Code-" target="_blank" title="Get Your Purchase Code">Where can I find my Purchase Code?</a> <br><br>
                         Don't have direct license yet? <a href="https://codecanyon.net/item/armember-complete-wordpress-membership-system/17785056?ref=utsavinfotech" target="_blank" title="Purchase ARMember License">Purchase ARMember license.</a>
                         <span id="license_loader" style="display:none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL . '/loading_activation.gif'; ?>" height="15" /></span>           
@@ -149,7 +149,8 @@ $is_debug_enable = 0;
         <?php
         if ($setact == 1 && $is_debug_enable == 0) {
         $get_purchased_info = get_option('armSortInfo');
-
+		$get_purchased_val = get_option('armSortOrder');
+		
                             $sortorderval = base64_decode($get_purchased_info);
                             $ordering = array();
 
@@ -202,7 +203,7 @@ $is_debug_enable = 0;
             <tr class="form-field">
                 <th class="arm-form-table-label">&nbsp;</th>
                 <td class="arm-form-table-content">
-                <span id="license_link"><button type="button" id="remove-license-purchase-code" name="remove_license" style="width:150px; border:0px; color:#FFFFFF; height:40px; border-radius:3px;" onclick="deactivate_license();" class="red_remove_license_btn"><?php _e('Remove License', 'ARMember'); ?></button></span>
+                <span id="license_link"><button type="button" id="remove-license-purchase-code" name="remove_license" style="width:170px; border:0px; color:#FFFFFF; height:40px; border-radius:6px;" onclick="deactivate_license();" class="red_remove_license_btn"><?php _e('Remove License', 'ARMember'); ?></button></span>
 
                                     <span id="deactivate_loader" style="display:none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL . '/loading_activation.gif'; ?>" height="15" /></span>        
                                     <span id="deactivate_error" style="display:none;"><?php _e('Invalid Request', 'ARMember'); ?></span>
@@ -211,7 +212,7 @@ $is_debug_enable = 0;
                 </tr>
                 <?php if ($get_purchased_info != "") { ?>
                 <tr class="form-field">
-                    <th class="arm-form-table-label"><label class="lblsubtitle" style="font-weight:bold;font-size:16px;margin-left:-135px;"><?php _e('Activation Information:', 'ARMember') ?>&nbsp;&nbsp;</label></th>
+                    <th class="arm-form-table-label"><label class="lblsubtitle" style="font-weight:bold;font-size:16px;margin-left:0px;"><?php _e('Activation Information:', 'ARMember') ?>&nbsp;&nbsp;</label></th>
                     <td class="arm-form-table-content">&nbsp;
                                 
                     </td>
@@ -253,7 +254,7 @@ $is_debug_enable = 0;
 
                          <p>It seems <span style="color:#FF0000;">Your ARMember support period is expired.</span> To continue receiving our prompt support you need to renew your support. Please  <a href='https://codecanyon.net/item/armember-complete-wordpress-membership-system/17785056?ref=utsavinfotech' target='_blank'>click here</a> to extend support. <br/>If you already bought support extension then kindly click button below to refresh support expiry date.</p>
                         <br>
-                          <span id="license_link"><button type="button" id="renew-license-purchase-code" name="renew_license" style="width:160px; border:0px; color:#FFFFFF; height:40px; border-radius:3px; box-shadow:0 4px 0 0 #459765;" class="greensavebtn"><?php _e('Renew License', 'ARMember'); ?></button></span>
+                          <span id="license_link"><button type="button" id="renew-license-purchase-code" name="renew_license" style="width:160px; border:0px; color:#FFFFFF; cursor:pointer;" class="greensavebtn"><?php _e('Renew License', 'ARMember'); ?></button></span>
 
                                     <span id="renew_loader" style="display:none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL . '/loading_activation.gif'; ?>" height="15" /></span>        
                                     <span id="renew_error" style="display:none;"><?php _e('Invalid Request', 'ARMember'); ?></span>
@@ -263,6 +264,27 @@ $is_debug_enable = 0;
                                     <?php 
                         }
                         } ?>
+						
+						<?php 
+						$is_badge_update_required = 0;
+						$is_badge_update_required = get_option('arm_badgeupdaterequired');
+						
+						if($is_badge_update_required > 0)
+						{ ?>
+							<br><br>
+							<p>It seems <span style="color:#FF0000;">your Server is changed.</span> To receive regular updates, please click button below to refresh your license.</p>
+                        <br>
+                          <span id="license_link"><button type="button" id="renew-user-badge" name="renew_user_badge" style="width:200px; border:0px; color:#FFFFFF;" class="greensavebtn"><?php _e('Refresh License', 'ARMember'); ?></button></span>
+
+                                    <span id="renew_user_badge_loader" style="display:none;"><img src="<?php echo MEMBERSHIP_IMAGES_URL . '/loading_activation.gif'; ?>" height="15" /></span>        
+                                    <span id="renew_user_badge_error" style="display:none;color:#FF0000;"><?php _e('Invalid Request', 'ARMember'); ?></span>
+                                    <span id="renew_user_badge_error_renew" style="display:none;color:#FF0000;"><?php echo "It seems something went wrong. <a href='https://support.arpluginshop.com/' target='_blank'>click  here</a> to contact our support staff."; ?></span>
+                                    <span id="renew_user_badge_success" style="display:none;color:#459765;"><?php _e('License Refreshed Successfully.', 'ARMember'); ?></span>
+                                    <input type="hidden" name="li_purchase_val" id="li_purchase_val" value="<?php echo $get_purchased_val; ?>" autocomplete="off" />
+							
+						<?php }
+						
+						?>
 
 
 

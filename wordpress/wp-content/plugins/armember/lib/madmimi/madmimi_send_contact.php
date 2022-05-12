@@ -35,7 +35,11 @@ if (!empty($responder_list_id) && !empty($api_key) && !empty($madmimi_email)) {
 		);
 		$url = "https://api.madmimi.com/audience_lists/$responder_list_id/add?email=$armemail&name=$armfname&username=$madmimi_email&api_key=$api_key";
 
+        do_action('arm_general_log_entry', 'madmimi', 'subscriber parameters', 'armember', $url);
+
 		$response = wp_remote_post( $url, $args );
+
+        do_action('arm_general_log_entry', 'madmimi', 'subscriber add response', 'armember', $response);
 
 		if( is_wp_error( $response ) ) {
 		    return false;

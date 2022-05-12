@@ -39,7 +39,7 @@
 
 .membershipcard1 .arm_card_left_logo img {
 	width: 150px;
-	margin: 20px auto;
+	margin: 0 0 20px auto;
 }
 
 .membershipcard1 .arm_card_details {
@@ -68,6 +68,7 @@
 	vertical-align: middle;
 	text-align: left;
 	word-break: break-word;
+	float: left;
 }
 
 .membershipcard1 .arm_card_value {
@@ -77,6 +78,7 @@
 	word-break: break-word;
 	vertical-align: middle;
 	text-align: left;
+	float: left;
 }
 
 /* --------------- Preview Popup --------------- */

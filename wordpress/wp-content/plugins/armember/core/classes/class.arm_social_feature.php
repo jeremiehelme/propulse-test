@@ -17,34 +17,34 @@ if (!class_exists('ARM_social_feature')) {
             if ($is_social_login_feature == '1') {
                 $this->social_settings = $this->arm_get_social_settings();
                 /* Handle Social Logins */
-                add_action('wp_ajax_arm_social_login_callback', array(&$this, 'arm_social_login_callback'));
-                add_action('wp_ajax_nopriv_arm_social_login_callback', array(&$this, 'arm_social_login_callback'));
+                add_action('wp_ajax_arm_social_login_callback', array($this, 'arm_social_login_callback'));
+                add_action('wp_ajax_nopriv_arm_social_login_callback', array($this, 'arm_social_login_callback'));
                 /* Handle Twitter Response */
-                /*add_action('wp', array(&$this, 'arm_twitter_login_callback'), 5);
-                add_action('wp', array(&$this, 'arm_login_with_twitter'), 1);
-                add_action('wp', array(&$this, 'arm_login_with_linkedin'), 1);*/
-                add_action('wp_ajax_arm_linkedin_login_callback', array(&$this, 'arm_linkedin_login_callback'));
-                add_action('wp_ajax_nopriv_arm_linkedin_login_callback', array(&$this, 'arm_linkedin_login_callback'));
+                /*add_action('wp', array($this, 'arm_twitter_login_callback'), 5);
+                add_action('wp', array($this, 'arm_login_with_twitter'), 1);
+                add_action('wp', array($this, 'arm_login_with_linkedin'), 1);*/
+                add_action('wp_ajax_arm_linkedin_login_callback', array($this, 'arm_linkedin_login_callback'));
+                add_action('wp_ajax_nopriv_arm_linkedin_login_callback', array($this, 'arm_linkedin_login_callback'));
+                add_shortcode('arm_social_login', array($this, 'arm_social_login_shortcode_func'));
             }
 
-            add_action('wp_ajax_arm_update_social_settings', array(&$this, 'arm_update_social_settings_func'));
-            add_action('wp_ajax_arm_update_social_network_from_form', array(&$this, 'arm_update_social_network_from_form_func'));
-
-            add_shortcode('arm_social_login', array(&$this, 'arm_social_login_shortcode_func'));
+            add_action('wp_ajax_arm_update_social_settings', array($this, 'arm_update_social_settings_func'));
+            add_action('wp_ajax_arm_update_social_network_from_form', array($this, 'arm_update_social_network_from_form_func'));
 
 
 
-            add_action('wp_ajax_arm_install_free_plugin', array(&$this, 'arm_install_free_plugin'));
+
+            add_action('wp_ajax_arm_install_free_plugin', array($this, 'arm_install_free_plugin'));
 
 
-            add_action('wp_ajax_arm_install_plugin', array(&$this, 'arm_plugin_install'), 10);
-            add_action('wp_ajax_arm_active_plugin', array(&$this, 'arm_activate_plugin'), 10);
-            add_action('wp_ajax_arm_deactive_plugin', array(&$this, 'arm_deactivate_plugin'), 10);
+            add_action('wp_ajax_arm_install_plugin', array($this, 'arm_plugin_install'), 10);
+            add_action('wp_ajax_arm_active_plugin', array($this, 'arm_activate_plugin'), 10);
+            add_action('wp_ajax_arm_deactive_plugin', array($this, 'arm_deactivate_plugin'), 10);
 
-            add_filter('plugins_api_args', array(&$this, 'arm_plugin_api_args'), 100000, 2);
-            add_filter('plugins_api', array(&$this, 'arm_plugin_api'), 100000, 3);
-            add_filter('plugins_api_result', array(&$this, 'arm_plugins_api_result'), 100000, 3);
-            add_filter('upgrader_package_options', array(&$this, 'arm_upgrader_package_options'), 100000);
+            add_filter('plugins_api_args', array($this, 'arm_plugin_api_args'), 100000, 2);
+            add_filter('plugins_api', array($this, 'arm_plugin_api'), 100000, 3);
+            add_filter('plugins_api_result', array($this, 'arm_plugins_api_result'), 100000, 3);
+            add_filter('upgrader_package_options', array($this, 'arm_upgrader_package_options'), 100000);
         }
 
         function arm_upgrader_package_options($options) {
@@ -308,6 +308,7 @@ if (!class_exists('ARM_social_feature')) {
                 $options['twitter']['label'] = __('Twitter', 'ARMember');
                 $options['linkedin']['label'] = __('LinkedIn', 'ARMember');
                 $options['vk']['label'] = __('VK', 'ARMember');
+                $options['tumblr']['label'] = __('Tumblr', 'ARMember');
                 $options['insta']['label'] = __('Instagram', 'ARMember');
                 $options['google']['label'] = __('Google', 'ARMember');
                 $social_settings['options'] = $options;
@@ -377,97 +378,111 @@ if (!class_exists('ARM_social_feature')) {
         }
 
         function arm_get_social_network_icons($type = '', $icon = '') {
-            global $wpdb, $ARMember, $arm_members_class, $arm_member_forms;
-            $networkIcons = array();
-            /* Query Monitor Change */
-            $iconName = "";
-            if( $icon != '' ){
-                $last_pos = strrpos($icon,'/');
-                $iconName = substr($icon,($last_pos + 1),strlen($icon));
-            }
-            $is_custom_icon = false;
-            if (!empty($type)) {
-                switch ($type) {
-                    case 'facebook':
-                        $fb_icons = array('fb_1.png', 'fb_2.png', 'fb_3.png', 'fb_4.png', 'fb_5.png', 'fb_6.png', 'fb_7.png');
-                        if( !in_array($iconName,$fb_icons) ){
-                            $is_custom_icon = true;
-                        }
-                        foreach ($fb_icons as $icon) {
-                            if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
-                                $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
-                            }
-                        }
-                        break;
-                    case 'twitter':
-                        $tw_icons = array('tw_1.png', 'tw_2.png', 'tw_3.png', 'tw_4.png', 'tw_5.png', 'tw_6.png', 'tw_7.png');
-                        if( !in_array($iconName,$tw_icons) ){
-                            $is_custom_icon = true;
-                        }
-                        foreach ($tw_icons as $icon) {
-                            if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
-                                $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
-                            }
-                        }
-                        break;
-                    case 'linkedin':
-                        $li_icons = array('li_1.png', 'li_2.png', 'li_3.png', 'li_4.png', 'li_5.png', 'li_6.png', 'li_7.png');
-                        if( !in_array($iconName,$li_icons) ){
-                            $is_custom_icon = true;
-                        }
-                        foreach ($li_icons as $icon) {
-                            if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
-                                $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
-                            }
-                        }
-                        break;
-                    case 'google':
-                        $google_icons = array('google_1.png', 'google_2.png', 'google_3.png', 'google_4.png', 'google_5.png', 'google_6.png', 'google_7.png');
-                        if( !in_array($iconName,$google_icons) ){
-                            $is_custom_icon = true;
-                        }
-                        foreach ($google_icons as $icon) {
-                            if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
-                                $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
-                            }
-                        }
-                        break;
-                    case 'vk':
-                        $vk_icons = array('vk_1.png', 'vk_2.png', 'vk_3.png', 'vk_4.png', 'vk_5.png', 'vk_6.png', 'vk_7.png');
-                        if( !in_array($iconName,$vk_icons) ){
-                            $is_custom_icon = true;
-                        }
-                        foreach ($vk_icons as $icon) {
-                            if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
-                                $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
-                            }
-                        }
-                        break;
-                    case 'insta':
-                        $insta_icons = array('insta_1.png', 'insta_2.png', 'insta_3.png', 'insta_4.png', 'insta_5.png', 'insta_6.png', 'insta_7.png');
-                        if( !in_array($iconName,$insta_icons) ){
-                            $is_custom_icon = true;
-                        }
-                        foreach ($insta_icons as $icon) {
-                            if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
-                                $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
-                            }
-                        }
-                        break;
-                    default:
-                        break;
-                }
+            global $wpdb, $ARMember, $arm_members_class, $arm_member_forms, $arm_social_feature;
+            if($arm_social_feature->isSocialLoginFeature)
+            {
+                $networkIcons = array();
                 /* Query Monitor Change */
-
-                if( true == $is_custom_icon ){
-                    $networkCustomIcons = $this->arm_get_social_network_custom_icons($type);
-                } else {
-                    $networkCustomIcons = array();
+                $iconName = "";
+                if( $icon != '' ){
+                    $last_pos = strrpos($icon,'/');
+                    $iconName = substr($icon,($last_pos + 1),strlen($icon));
                 }
-                
-                $networkIcons = array_merge($networkIcons, $networkCustomIcons);
+                $is_custom_icon = false;
+                if (!empty($type)) {
+                    switch ($type) {
+                        case 'facebook':
+                            $fb_icons = array('fb_1.png', 'fb_2.png', 'fb_3.png', 'fb_4.png', 'fb_5.png', 'fb_6.png', 'fb_7.png');
+                            if( !in_array($iconName,$fb_icons) ){
+                                $is_custom_icon = true;
+                            }
+                            foreach ($fb_icons as $icon) {
+                                if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
+                                    $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
+                                }
+                            }
+                            break;
+                        case 'twitter':
+                            $tw_icons = array('tw_1.png', 'tw_2.png', 'tw_3.png', 'tw_4.png', 'tw_5.png', 'tw_6.png', 'tw_7.png');
+                            if( !in_array($iconName,$tw_icons) ){
+                                $is_custom_icon = true;
+                            }
+                            foreach ($tw_icons as $icon) {
+                                if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
+                                    $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
+                                }
+                            }
+                            break;
+                        case 'linkedin':
+                            $li_icons = array('li_1.png', 'li_2.png', 'li_3.png', 'li_4.png', 'li_5.png', 'li_6.png', 'li_7.png');
+                            if( !in_array($iconName,$li_icons) ){
+                                $is_custom_icon = true;
+                            }
+                            foreach ($li_icons as $icon) {
+                                if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
+                                    $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
+                                }
+                            }
+                            break;
+                        case 'google':
+                            $google_icons = array('google_1.png', 'google_2.png', 'google_3.png', 'google_4.png', 'google_5.png', 'google_6.png', 'google_7.png');
+                            if( !in_array($iconName,$google_icons) ){
+                                $is_custom_icon = true;
+                            }
+                            foreach ($google_icons as $icon) {
+                                if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
+                                    $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
+                                }
+                            }
+                            break;
+                        case 'vk':
+                            $vk_icons = array('vk_1.png', 'vk_2.png', 'vk_3.png', 'vk_4.png', 'vk_5.png', 'vk_6.png', 'vk_7.png');
+                            if( !in_array($iconName,$vk_icons) ){
+                                $is_custom_icon = true;
+                            }
+                            foreach ($vk_icons as $icon) {
+                                if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
+                                    $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
+                                }
+                            }
+                            break;
+                        case 'insta':
+                            $insta_icons = array('insta_1.png', 'insta_2.png', 'insta_3.png', 'insta_4.png', 'insta_5.png', 'insta_6.png', 'insta_7.png');
+                            if( !in_array($iconName,$insta_icons) ){
+                                $is_custom_icon = true;
+                            }
+                            foreach ($insta_icons as $icon) {
+                                if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
+                                    $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
+                                }
+                            }
+                            break;
+                         case 'tumblr':
+                          $tu_icons = array('tu_1.png', 'tu_2.png', 'tu_3.png', 'tu_4.png', 'tu_5.png', 'tu_6.png', 'tu_7.png');
+                            if( !in_array($iconName,$tu_icons) ){
+                                $is_custom_icon = true;
+                            }
+                            foreach ($tu_icons as $icon) {
+                                if (file_exists(MEMBERSHIP_IMAGES_DIR . '/social_icons/' . $icon)) {
+                                    $networkIcons[$icon] = MEMBERSHIP_IMAGES_URL . '/social_icons/' . $icon;
+                                }
+                            }
+                            break;    
+                        default:
+                            break;
+                    }
+                    /* Query Monitor Change */
+
+                    if( true == $is_custom_icon ){
+                        $networkCustomIcons = $this->arm_get_social_network_custom_icons($type);
+                    } else {
+                        $networkCustomIcons = array();
+                    }
+                    
+                    $networkIcons = array_merge($networkIcons, $networkCustomIcons);
+                }
+                return $networkIcons;
             }
-            return $networkIcons;
         }
 
         function arm_get_social_network_custom_icons($type = '') {
@@ -680,6 +695,12 @@ if (!class_exists('ARM_social_feature')) {
                                 wp_enqueue_script('arm_google_social_login_script','https://apis.google.com/js/api:client.js',array(),$arm_version);
 
                                 break;
+                                case 'tumblr':
+                                $authUrl = get_the_permalink();
+                                $authUrl = $arm_global_settings->add_query_arg('redirect_to', ARM_HOME_URL, $authUrl);
+                                $authUrl = $arm_global_settings->add_query_arg('page', 'arm_login_with_tumblr', $authUrl);
+                                $a_tag_attr = ' href="#" data-url="' . $authUrl . '" title="' . __('Login With Tumblr', 'ARMember') . '" ';
+                                break;
                             default:
                                 break;
                         }
@@ -769,7 +790,7 @@ if (!class_exists('ARM_social_feature')) {
                         $redirect_to = str_replace('{ARMCURRENTUSERNAME}', $username, $redirect_to);
                         $redirect_to = str_replace('{ARMCURRENTUSERID}', $user_id, $redirect_to);
                         wp_set_auth_cookie($user_id);
-                        $current_user = wp_set_current_user($user_id);
+                        $current_user = $this->arm_set_current_member($user_id);
                         $return = array('status' => 'success', 'type' => 'redirect', 'message' => $redirect_to);
                     } else {
                         /* Redirect User To Registration Page. */
@@ -822,7 +843,7 @@ if (!class_exists('ARM_social_feature')) {
                             $user_id = $arm_member_forms->arm_register_new_member($user_data, $reg_form, 'social_signup');
                             if (is_numeric($user_id) && !is_array($user_id)) {
                                 wp_set_auth_cookie($user_id);
-                                wp_set_current_user($user_id, $user_login);
+                                $this->arm_set_current_member($user_id, $user_login);
                                 update_user_meta($user_id, 'arm_last_login_date', date('Y-m-d H:i:s'));
                                 $ip_address = $ARMember->arm_get_ip_address();
                                 update_user_meta($user_id, 'arm_last_login_ip', $ip_address);
@@ -899,7 +920,7 @@ if (!class_exists('ARM_social_feature')) {
                                     $redirect_url = $arm_global_settings->add_query_arg('arm_' . $action_type . '_id', $social_id, $redirect_url);
                                     $redirect_url = $arm_global_settings->add_query_arg('social_form', $social_reg_form, $redirect_url);
 
-                                    if( !empty($user_data["display_name"]) && $action_type == "insta" ) {
+                                    if( !empty($user_data["display_name"]) && $action_type == "insta" ||  $action_type == "tumblr"  ) {
                                         $redirect_url = $arm_global_settings->add_query_arg('display_name', $user_data["display_name"], $redirect_url);
                                     }
                                     if (!empty($posted_data['user_profile_picture'])) {
@@ -936,8 +957,8 @@ if (!class_exists('ARM_social_feature')) {
                             }
                         }
                     }
-                    /* Return Responce For Twitter Login. */
-                    if ($action_type == 'twitter') {
+                    /* Return Responce For Twitter & Tumblr Login. */
+                    if ($action_type == 'twitter' ||  $action_type == 'tumblr' ) {
                         return $return;
                     }
                 }
@@ -973,8 +994,8 @@ if (!class_exists('ARM_social_feature')) {
         }
 
         function arm_login_with_twitter() {
-            global $wp, $wpdb, $ARMember, $arm_global_settings;
-            if (isset($_GET['page']) && in_array($_GET['page'], array('arm_login_with_twitter'))) {
+            global $wp, $wpdb, $ARMember, $arm_global_settings, $arm_social_feature;
+            if (isset($_GET['page']) && in_array($_GET['page'], array('arm_login_with_twitter')) && !empty($arm_social_feature->isSocialFeature) ) {
                 $ARMember->arm_session_start();
                 $social_options = $this->arm_get_active_social_options();
                 $customer_key = $social_options['twitter']['customer_key'];
@@ -987,8 +1008,8 @@ if (!class_exists('ARM_social_feature')) {
                 /* Saving them into the session */
                 $request_token['oauth_token'] = isset($request_token['oauth_token']) ? $request_token['oauth_token'] : '';
                 $request_token['oauth_token_secret'] = isset($request_token['oauth_token_secret']) ? $request_token['oauth_token_secret'] : '';
-                $_SESSION['oauth_token'] = $request_token['oauth_token'];
-                $_SESSION['oauth_token_secret'] = $request_token['oauth_token_secret'];
+                $_SESSION['arm_tw_oauth_token'] = $request_token['oauth_token'];
+                $_SESSION['arm_tw_oauth_token_secret'] = $request_token['oauth_token_secret'];
                 $auth_url = $Twitter->getAuthorizeURL($request_token['oauth_token']);
                 wp_redirect($auth_url);
                 die();
@@ -996,19 +1017,19 @@ if (!class_exists('ARM_social_feature')) {
         }
 
         function arm_twitter_login_callback() {
-            global $wp, $wpdb, $ARMember, $arm_slugs, $arm_global_settings, $arm_member_forms, $arm_case_types;
+            global $wp, $wpdb, $ARMember, $arm_slugs, $arm_global_settings, $arm_member_forms, $arm_case_types, $arm_social_feature;
             $posted_data = $_POST;
             $slc_return = array();
-            if (isset($_REQUEST['page']) && in_array($_REQUEST['page'], array('arm_twitter_return'))) {
+            if (isset($_REQUEST['page']) && in_array($_REQUEST['page'], array('arm_twitter_return')) && !empty($arm_social_feature->isSocialFeature)) {
                 $ARMember->arm_session_start();
                 $post_data = array();
                 $social_options = $this->arm_get_active_social_options();
                 $tw_conf = $social_options['twitter'];
                 require_once (MEMBERSHIP_LIBRARY_DIR . '/twitter/twitteroauth.php');
-                $_SESSION['oauth_token'] = isset($_SESSION['oauth_token']) ? $_SESSION['oauth_token'] : '-';
-                $_SESSION['oauth_token_secret'] = isset($_SESSION['oauth_token_secret']) ? $_SESSION['oauth_token_secret'] : '-';
+                $_SESSION['arm_tw_oauth_token'] = isset($_SESSION['arm_tw_oauth_token']) ? $_SESSION['arm_tw_oauth_token'] : '-';
+                $_SESSION['arm_tw_oauth_token_secret'] = isset($_SESSION['arm_tw_oauth_token_secret']) ? $_SESSION['arm_tw_oauth_token_secret'] : '-';
                 $oauth_verifier = isset($_GET['oauth_verifier']) ? $_GET['oauth_verifier'] : '';
-                $twitteroauth = new TwitterOAuth($tw_conf['customer_key'], $tw_conf['customer_secret'], $_SESSION['oauth_token'], $_SESSION['oauth_token_secret']);
+                $twitteroauth = new TwitterOAuth($tw_conf['customer_key'], $tw_conf['customer_secret'], $_SESSION['arm_tw_oauth_token'], $_SESSION['arm_tw_oauth_token_secret']);
                 /* Let's request the access token */
                 $access_token = $twitteroauth->getAccessToken($oauth_verifier);
                 /* Save it in a session var */
@@ -1016,6 +1037,7 @@ if (!class_exists('ARM_social_feature')) {
                 /* Let's get the user's info */
                 $params = array('include_email' => 'true', 'include_entities' => 'false', 'skip_status' => 'true');
                 $user_info = $twitteroauth->get('account/verify_credentials', $params);
+                
                 if (isset($user_info->error) || !isset($user_info->id) || empty($oauth_verifier)) {
                     if (MEMBERSHIP_DEBUG_LOG == true) {
                         $arm_case_types['shortcode']['protected'] = true;
@@ -1078,9 +1100,9 @@ if (!class_exists('ARM_social_feature')) {
         }
 
         function arm_login_with_linkedin() {
-            global $wp, $wpdb, $ARMember, $arm_global_settings;
+            global $wp, $wpdb, $ARMember, $arm_global_settings, $arm_social_feature;
             
-            if (isset($_GET['action']) && in_array($_GET['action'], array('arm_login_with_linkedin'))) {
+            if (isset($_GET['action']) && in_array($_GET['action'], array('arm_login_with_linkedin')) && !empty($arm_social_feature->isSocialFeature) ) {
                 $social_options = $this->arm_get_active_social_options();
                 $client_id = $social_options['linkedin']['client_id'];
                 $client_secret = $social_options['linkedin']['client_secret'];
@@ -1125,47 +1147,155 @@ if (!class_exists('ARM_social_feature')) {
         }
 
         function arm_linkedin_login_callback() {
-            global $wp, $wpdb, $ARMember, $arm_slugs, $arm_global_settings, $arm_member_forms, $arm_case_types;
-            $posted_data = $_POST;
-            $access_token = isset($_REQUEST['access_token']) ? $_REQUEST['access_token'] : '';
-            $arm_linkedin_profile_response = array();
-            $param = array(
-                'oauth2_access_token' => $access_token
-            );
+            global $wp, $wpdb, $ARMember, $arm_slugs, $arm_global_settings, $arm_member_forms, $arm_case_types, $arm_social_feature;
+            if( !empty($arm_social_feature->isSocialFeature) )
+            {
+                $posted_data = $_POST;
+                $access_token = isset($_REQUEST['access_token']) ? $_REQUEST['access_token'] : '';
+                $arm_linkedin_profile_response = array();
+                $param = array(
+                    'oauth2_access_token' => $access_token
+                );
 
-            $url = 'https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))';
-            $raw_response = wp_remote_get($url,array(
-                'timeout' => 15,
-                'sslverify' => false,
-                'body' => $param,
-                'headers' => array(
-                    'X-Restli-Protocol-Version' => '2.0.0'
-                ),
-            ));
+                $url = 'https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))';
+                $raw_response = wp_remote_get($url,array(
+                    'timeout' => 15,
+                    'sslverify' => false,
+                    'body' => $param,
+                    'headers' => array(
+                        'X-Restli-Protocol-Version' => '2.0.0'
+                    ),
+                ));
 
-            $arm_linkedin_profile_response['email_response'] = json_decode($raw_response['body']);
-            
-            $arm_linkedin_get_url = 'https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))';
-
-            $arm_linkedin_profile_resp = wp_remote_get($arm_linkedin_get_url,array(
-                'timeout' => 15,
-                'sslverify' => false,
-                'headers' => array(
-                    'Authorization' => 'Bearer '.$access_token,
-                    'X-RestLi-Protocol-Version' =>'2.0.0'
-                ),
-            ));
-
-            
-            if( !is_wp_error($arm_linkedin_profile_resp) && isset($arm_linkedin_profile_resp['response']) && $arm_linkedin_profile_resp['response']['code'] == '200' ){
-
-                $arm_linkedin_profile_response['profile_response'] = json_decode($arm_linkedin_profile_resp['body']);
-                echo json_encode($arm_linkedin_profile_response);
+                $arm_linkedin_profile_response['email_response'] = json_decode($raw_response['body']);
                 
-            } else {
-                echo json_encode(array('error'=> true));
+                $arm_linkedin_get_url = 'https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,profilePicture(displayImage~:playableStreams))';
+
+                $arm_linkedin_profile_resp = wp_remote_get($arm_linkedin_get_url,array(
+                    'timeout' => 15,
+                    'sslverify' => false,
+                    'headers' => array(
+                        'Authorization' => 'Bearer '.$access_token,
+                        'X-RestLi-Protocol-Version' =>'2.0.0'
+                    ),
+                ));
+
+                
+                if( !is_wp_error($arm_linkedin_profile_resp) && isset($arm_linkedin_profile_resp['response']) && $arm_linkedin_profile_resp['response']['code'] == '200' ){
+
+                    $arm_linkedin_profile_response['profile_response'] = json_decode($arm_linkedin_profile_resp['body']);
+                    echo json_encode($arm_linkedin_profile_response);
+                    
+                } else {
+                    echo json_encode(array('error'=> true));
+                }
             }
             die;
+        }
+        function arm_login_with_tumblr() {
+            global $wp, $wpdb, $ARMember, $arm_global_settings, $arm_social_feature;
+                
+            if (isset($_GET['page']) && in_array($_GET['page'], array('arm_login_with_tumblr')) && !empty($arm_social_feature->isSocialFeature) ) {
+
+                $ARMember->arm_session_start();
+                $social_options = $this->arm_get_active_social_options();
+                $consumer_key = $social_options['tumblr']['consumer_key'];
+                $consumer_secret = $social_options['tumblr']['consumer_secret'];
+                require_once (MEMBERSHIP_LIBRARY_DIR . '/tumblr/tumblroauth.php');
+                $Tumblr = new TumblrOAuth($consumer_key, $consumer_secret);
+                $redirect_to = $_GET['redirect_to'];
+                $CALLBACK_URL = $arm_global_settings->add_query_arg('page', 'arm_tumblr_return', rtrim($redirect_to, '/') 
+                    . '/'); 
+                $request_token = $Tumblr->Request_Token($CALLBACK_URL);                
+               /* Saving them into the session */
+                $request_token['oauth_token'] = isset($request_token['oauth_token']) ? $request_token['oauth_token'] : '';
+                $request_token['oauth_token_secret'] = isset($request_token['oauth_token_secret']) ? $request_token['oauth_token_secret'] : '';
+                $_SESSION['oauth_token'] = $request_token['oauth_token'];
+                $_SESSION['oauth_token_secret'] = $request_token['oauth_token_secret'];
+                $auth_url ='https://tumblr.com/oauth/authorize?oauth_token='.$request_token['oauth_token'];
+                wp_redirect($auth_url);
+                die();                
+            }
+        }
+        
+        function arm_tumblr_login_callback() {
+            global $wp, $wpdb, $ARMember, $arm_slugs, $arm_global_settings, $arm_member_forms, $arm_social_feature; 
+
+            $posted_data = $_POST;
+            $slc_return = array();
+                        
+            if (isset($_REQUEST['page']) && in_array($_REQUEST['page'], array('arm_tumblr_return')) && !empty($arm_social_feature->isSocialFeature) ) {
+                $ARMember->arm_session_start();                
+                $post_data = array();
+                $social_options = $this->arm_get_active_social_options();                
+                $tu_conf = $social_options['tumblr'];
+                require_once (MEMBERSHIP_LIBRARY_DIR . '/tumblr/tumblroauth.php');                
+                $_SESSION['oauth_token'] = isset($_SESSION['oauth_token']) ? $_SESSION['oauth_token'] : ' ';
+                $_SESSION['oauth_token_secret'] = isset($_SESSION['oauth_token_secret']) ? $_SESSION['oauth_token_secret'] : '';
+                $oauth_verifier = isset($_GET['oauth_verifier']) ? $_GET['oauth_verifier'] : '';                                 
+                $tumblroauth = new TumblrOAuth($tu_conf['consumer_key'], $tu_conf['consumer_secret'] );
+                /* Let's request the access token */                           
+                $access_token = $tumblroauth->getAccessToken($_SESSION['oauth_token'],$_SESSION['oauth_token_secret'],$oauth_verifier);            
+                /* Let's request the user information */
+                if(isset($access_token['oauth_token']) && $access_token['oauth_token_secret']){             
+                    $user_info = $tumblroauth->get($access_token['oauth_token'],$access_token['oauth_token_secret']);
+                }else {                    
+                    echo "<script data-cfasync='false'>alert('" . __('There is an error while connecting tumblr, Please try again.', 'ARMember') . "');window.close();</script>";
+                }                
+                if(isset($user_info->errors) && !isset($user_info->meta)) {
+                    if (MEMBERSHIP_DEBUG_LOG == true) {
+                        $arm_case_types['shortcode']['protected'] = true;
+                        $arm_case_types['shortcode']['type'] = 'login_via_tumblr';
+                        $arm_case_types['shortcode']['message'] = __('Couldn\'t login with tumblr', 'ARMember');
+                        $ARMember->arm_debug_response_log('arm_tumblr_login_callback', $arm_case_types, $user_info, $wpdb->last_query, false);
+                    }
+                    echo "<script data-cfasync='false'>alert('" . __('There is an error while connecting tumblr, Please try again.', 'ARMember') . "');window.close();</script>";
+                
+                } elseif(isset($user_info->meta) && $user_info->meta->status == 200) {
+                    
+                    $user_response = $user_info->response;
+                    $full_name = isset($user_response->user->name) ? $user_response->user->name : '';                            
+                    $user_id = isset($user_response->user->blogs[0]->uuid) ? $user_response->user->blogs[0]->uuid : '';
+                    $profile_url = isset($user_response->user->blogs[0]->theme->header_image) ? $user_response->user->blogs[0]->theme->header_image : '';
+                    $post_data = array(
+                        'action' => 'arm_social_login_callback',
+                        'action_type' => 'tumblr',
+                        'id' => $user_id,
+                        'first_name' => $full_name,
+                        'display_name' => $full_name,
+                        'redirect_to' => ARM_HOME_URL,
+                        'user_profile_picture'=> $profile_url,
+                        'picture' => $profile_url,
+                        'user_login' => $full_name,                        
+                    );                                                                                                  
+                    
+                    $slc_return = $this->arm_social_login_callback($post_data);                                  
+                }
+                /* Unset Session Details. */                
+
+                unset($_SESSION['oauth_token']);
+                unset($_SESSION['oauth_token_secret']);
+
+                if (isset($slc_return['status']) && $slc_return['status'] == 'success') {
+                    if ($slc_return['type'] == 'redirect') {
+                        $redirect_url = $slc_return['message'];
+                    } else {
+                        $redirect_url = ARM_HOME_URL;
+                    }
+                    echo "<script data-cfasync='false'>
+                    window.opener.document.getElementById('arm_social_tumblr_container').style.display = 'none';
+                    window.opener.document.getElementById('arm_social_connect_loader').style.display = 'block';
+                    window.opener.location.href='" . $redirect_url . "';window.close();
+                    </script>";
+                    exit;
+                } else {
+                    $fail_msg = (!empty($arm_global_settings->common_message['social_login_failed_msg'])) ? $arm_global_settings->common_message['social_login_failed_msg'] : __('Login Failed, please try again.', 'ARMember');
+                    $fail_msg = (!empty($fail_msg)) ? $fail_msg : __('Sorry, Something went wrong. Please try again.', 'ARMember');
+                    echo "<script data-cfasync='false'>alert('" . $fail_msg . "');window.close();</script>";
+                    exit;
+                }
+            }
+            return; 
         }
 
         function get_rand_alphanumeric($length) {
@@ -1417,6 +1547,7 @@ if (!class_exists('ARM_social_feature')) {
              * Check to see if this plugin is known to be installed,
              * and has an update awaiting it.
              */
+            $version = '';
             $update_plugins = get_site_transient('update_plugins');
             if (isset($update_plugins->response)) {
                 foreach ((array) $update_plugins->response as $file => $plugin) {
@@ -1466,6 +1597,11 @@ if (!class_exists('ARM_social_feature')) {
 
             $file = $update_file;
             return compact('status', 'url', 'version', 'file');
+        }
+
+        function arm_set_current_member($user_id, $username='')
+        {
+            return wp_set_current_user($user_id, $username);
         }
 
     }

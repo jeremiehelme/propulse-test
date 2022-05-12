@@ -15,12 +15,14 @@ if (isset($user) && !empty($user))
     
     $default_cover = $profile_template_opt['default_cover'];
     $cover_img_url = ($user['profile_cover'] !== '' ) ? "<img src='" . $cover_url . "' style='width:100%;height:100%;'>" : '<img src="'.$default_cover.'" style="width:100%;height:100%;" />';
+        $member_field_detail_content = $arm_members_directory->arm_template_display_member_details($tempopt,$user,1);
 		$fileContent .= '<div class="arm_cover_bg_wrapper">'.$cover_img_url.'</div>';
 		$fileContent .= '<a href="' . $user['user_link'] . '" class="arm_dp_user_link"><div class="arm_user_avatar">' . $user['profile_picture'] . '</div></a>';
 		$fileContent .= '<div class="armclear"></div>';
 		$fileContent .= '<a class="arm_user_link" href="' . $user['user_link'] . '"><span>' . $user['full_name'].'</span></a>';
+        $fileContent .= $member_field_detail_content['member_joining_date_content'];
 		$fileContent .= $user['arm_badges_detail'];
-		$fileContent .= $arm_members_directory->arm_template_display_member_details($tempopt,$user,1);
+		$fileContent .= $member_field_detail_content['member_detail_content'];
 		$fileContent .= '<div class="armclear"></div>';
         $fileContent .= '<div class="arm_view_profile_btn_wrapper"><a href="' . $user['user_link'] . '" class="arm_view_profile_user_link">' . $arm_view_profile_label . '</a></div>';
 		$fileContent .= '<div class="armclear"></div>';

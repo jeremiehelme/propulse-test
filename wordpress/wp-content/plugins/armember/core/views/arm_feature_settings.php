@@ -13,6 +13,7 @@ $multiple_membership_feature = get_option('arm_is_multiple_membership_feature');
 $arm_is_mycred_active = get_option('arm_is_mycred_feature');
 $woocommerce_feature = get_option('arm_is_woocommerce_feature');
 $arm_pay_per_post = get_option('arm_is_pay_per_post_feature');
+$arm_api_service_feature = get_option('arm_is_api_service_feature');
 
 $featureActiveIcon = MEMBERSHIP_IMAGES_URL . '/feature_active_icon.png';
 if (is_rtl()) {
@@ -115,15 +116,14 @@ $setact = $arm_members_activity->$check_sorting();
     margin-bottom: 10px; }
 </style>
 <div class="wrap arm_page arm_feature_settings_main_wrapper">
-    <div class="content_wrapper arm_feature_settings_content" id="content_wrapper">
-        <div class="page_title"><?php _e('Additional Membership Modules', 'ARMember'); ?></div>
-        <?php
+    <?php
     if ($setact != 1) {
         $admin_css_url = admin_url('admin.php?page=arm_manage_license');
         ?>
-
-        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
     <?php } ?>
+    <div class="content_wrapper arm_feature_settings_content" id="content_wrapper">
+        <div class="page_title"><?php _e('Additional Membership Modules', 'ARMember'); ?></div>
         <div class="armclear"></div>
         <div class="arm_feature_settings_wrapper">            
             <div class="arm_feature_settings_container">
@@ -468,6 +468,45 @@ $setact = $arm_members_activity->$check_sorting();
                     </div>
                     <a class="arm_ref_info_links arm_feature_link arm_advanced_link" target="_blank" href="https://www.armemberplugin.com/documents/single-vs-multiple-membership/"><?php _e('More Info', 'ARMember'); ?></a>
                 </div>
+		
+                <div class="arm_feature_list api_service_enable <?php echo ($arm_api_service_feature == 1) ? 'active' : '';?>">
+                    <div class="arm_feature_icon"></div>
+                    <div class="arm_feature_active_icon"><div class="arm_check_mark"></div></div>
+                    <div class="arm_feature_content">
+                        <div class="arm_feature_title"><?php _e('API Services', 'ARMember'); ?></div>
+                        <div class="arm_feature_text"><?php _e("With this feature, you will able to use Membership API Services for your Application.", 'ARMember');?></div>
+                        <?php if ($setact != 1) { ?>
+                        <div class="arm_feature_button_activate_wrapper <?php echo ($arm_api_service_feature == 1) ? 'hidden_section':'';?>">
+                            <a href="javascript:void(0)" class="arm_feature_activate_btn arm_feature_activation_license" data-feature_val="1" data-feature="api_service"><?php _e('Activate','ARMember'); ?></a>
+                            <span class="arm_addon_loader">
+                                <svg class="arm_circular" viewBox="0 0 60 60">
+                                    <circle class="path" cx="25px" cy="23px" r="18" fill="none" stroke-width="4" stroke-miterlimit="7"></circle>
+                                </svg>
+                            </span>
+                        </div>
+                        <?php } else { ?>
+                        <div class="arm_feature_button_activate_wrapper <?php echo ($arm_api_service_feature == 1) ? 'hidden_section':'';?>">
+                            <a href="javascript:void(0)" class="arm_feature_activate_btn arm_feature_settings_switch" data-feature_val="1" data-feature="api_service"><?php _e('Activate','ARMember'); ?></a>
+                            <span class="arm_addon_loader">
+                                <svg class="arm_circular" viewBox="0 0 60 60">
+                                    <circle class="path" cx="25px" cy="23px" r="18" fill="none" stroke-width="4" stroke-miterlimit="7"></circle>
+                                </svg>
+                            </span>
+                        </div>
+                        <?php } ?>
+                        <div class="arm_feature_button_deactivate_wrapper <?php echo ($arm_api_service_feature == 1) ? '':'hidden_section';?>">
+                            <a href="javascript:void(0)" class="arm_feature_deactivate_btn arm_feature_settings_switch" data-feature_val="0" data-feature="api_service"><?php _e('Deactivate','ARMember'); ?></a>
+                            <a href="<?php echo admin_url('admin.php?page=' . $arm_slugs->general_settings);?>&action=api_service_feature" class="arm_feature_configure_btn"><?php _e('Configure','ARMember'); ?></a>
+                            <span class="arm_addon_loader">
+                                <svg class="arm_circular" viewBox="0 0 60 60">
+                                    <circle class="path" cx="25px" cy="23px" r="18" fill="none" stroke-width="4" stroke-miterlimit="7"></circle>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                    <a class="arm_ref_info_links arm_feature_link arm_advanced_link" target="_blank" href="https://www.armemberplugin.com/documents/api-service-feature/"><?php _e('More Info', 'ARMember'); ?></a>
+                </div>
+
                 <div class="arm_feature_list buddypress_enable <?php echo ($buddypress_feature == 1) ? 'active':'';?>">
                     <div class="arm_feature_icon"></div>
                     <div class="arm_feature_active_icon"><div class="arm_check_mark"></div></div>
@@ -512,7 +551,7 @@ $setact = $arm_members_activity->$check_sorting();
                     <div class="arm_feature_content">
                         <div class="arm_feature_title"><?php _e('Woocommerce Integration','ARMember'); ?></div>
                         <div class="arm_feature_text" style=" min-height: 0;"><?php _e("Integrate Woocommerce with ARMember.", 'ARMember');?></div>
-                        <div class="arm_feature_text" style=" font-size: 15px; font-weight: bold;  color: #969699; min-height: 0;"><?php _e('Min Required Woocommerce Ver.: 3.0.2', 'ARMember');?></div>
+                        <div class="arm_feature_text arm_woocommerce_feature_version_required_notice" ><?php _e('Min Required Woocommerce Ver.: 3.0.2', 'ARMember');?></div>
                         <?php if ($setact != 1) { ?>
                         <div class="arm_feature_button_activate_wrapper <?php echo ($woocommerce_feature == 1) ? 'hidden_section':'';?>">
                             <a href="javascript:void(0)" class="arm_feature_activate_btn arm_feature_activation_license" data-feature_val="1" data-feature="woocommerce"><?php _e('Activate','ARMember'); ?></a>
@@ -586,7 +625,7 @@ $setact = $arm_members_activity->$check_sorting();
                 <?php echo do_action('arm_add_new_custom_add_on'); ?>
             </div>
             
-            <div class="arm_feature_settings_container" style="margin-top:30px;">
+            <div class="arm_feature_settings_container arm_margin_top_30 arm_margin_bottom_25">
 				<?php
 				global $arm_social_feature;
 				global $arm_version;
@@ -641,7 +680,7 @@ $setact = $arm_members_activity->$check_sorting();
 					<?php } ?>
 				    </div>
                     <?php if(!empty($plug['armember_version']) && $plug['armember_version']>$arm_version) { ?>
-                            <div class="arm_feature_text arm_feature_vesrion_compatiblity" style=" font-size: 15px; font-weight: bold; color: #ff0000;"><?php _e('Minimum Required ARMember Version:', 'ARMember'); echo " ".$plug['armember_version']?></div>
+                            <div class="arm_feature_text arm_feature_vesrion_compatiblity arm_color_red arm_font_size_15" style="font-weight: bold;"><?php _e('Minimum Required ARMember Version:', 'ARMember'); echo " ".$plug['armember_version']?></div>
                     <?php } ?>
 				    <a class="arm_ref_info_links arm_feature_link arm_advanced_link" target="_blank" href="<?php echo $plug['detail_url']; ?>"><?php _e('More Info', 'ARMember'); ?></a>
 				</div>
@@ -681,7 +720,7 @@ $addon_content = '<span class="arm_confirm_text">'.__("You need to have ARMember
         
        <table class="form-table">
             <tr class="form-field">
-                <th class="arm-form-table-label" style="font-size:16px;">You need to have ARMember version 1.6 OR higher to install this addon.</th>
+                <th class="arm-form-table-label arm_font_size_16" >You need to have ARMember version 1.6 OR higher to install this addon.</th>
             </tr>				
 		</table>
 </div>
@@ -735,7 +774,39 @@ $addon_content = '<span class="arm_confirm_text">'.__("You need to have ARMember
 </div> 
 <script type="text/javascript">
     var ADDON_NOT_COMPATIBLE_MESSAGE = "<?php _e('This Addon is not compatible with current ARMember version. Please update ARMember to latest version.','ARMember'); ?>";
-    </script>
+    <?php 
+        if(!empty($_REQUEST['arm_activate_social_feature']))
+        {
+    ?>
+            armToast("<?php _e('Please activate the \"Social Feature\" module to make this feature work.','ARMember'); ?>", 'error', 5000, false);
+    <?php 
+        }
+        else if(!empty($_REQUEST['arm_activate_drip_feature'])) 
+        {
+    ?>
+            armToast("<?php _e('Please activate the \"Drip Content\" module to make this feature work.','ARMember'); ?>", 'error', 5000, false);
+    <?php 
+        }
+        else if(!empty($_REQUEST['arm_activate_private_content_feature']))
+        {
+    ?>
+            armToast("<?php _e('Please activate the \"User Private Content\" module to make this feature work.','ARMember'); ?>", 'error', 5000, false);
+    <?php
+        }
+        else if(!empty($_REQUEST['arm_activate_coupon_feature']))
+        {
+    ?>
+            armToast("<?php _e('Please activate the \"Coupon\" module to make this feature work.','ARMember'); ?>", 'error', 5000, false);
+    <?php
+        }
+        else if(!empty($_REQUEST['arm_activate_pay_per_pst_feature']))
+        {
+    ?>
+            armToast("<?php _e('Please activate the \"Pay Per Post\" module to make this feature work.','ARMember'); ?>", 'error', 5000, false);
+    <?php
+        }
+    ?>
+</script>
     
 <?php
 $_SESSION['arm_member_addon'] = $myplugarr;

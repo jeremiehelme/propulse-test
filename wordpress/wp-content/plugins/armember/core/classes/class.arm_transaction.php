@@ -6,18 +6,33 @@ if (!class_exists('ARM_transaction'))
 		function __construct()
 		{
 			global $wpdb, $ARMember, $arm_slugs;
-			add_action('wp_ajax_arm_transaction_ajax_action', array(&$this, 'arm_transaction_ajax_action'));
-			add_action('wp_ajax_arm_bulk_delete_transactions', array(&$this, 'arm_bulk_delete_transactions'));
-			add_action('wp_ajax_arm_filter_transactions_list', array(&$this, 'arm_filter_transactions_list'));
-			add_action('wp_ajax_arm_transaction_hide_show_columns', array(&$this, 'arm_transaction_hide_show_columns'));
-			add_action('wp_ajax_arm_change_bank_transfer_status', array(&$this, 'arm_change_bank_transfer_status'));
-			add_action('wp_ajax_arm_preview_log_detail', array(&$this, 'arm_preview_log_detail'));
-			add_action('wp_ajax_arm_invoice_detail', array(&$this, 'arm_invoice_detail'));
-			add_action('wp_ajax_arm_preview_failed_log_detail', array(&$this, 'arm_preview_failed_log_detail'));
-			add_action('arm_save_manual_payment', array(&$this, 'arm_add_manual_payment'));
-			add_action('wp_ajax_arm_load_transactions', array(&$this, 'arm_load_transaction_grid'));
-			add_action('wp_ajax_arm_get_user_transactions_paging_action', array(&$this, 'arm_get_user_transactions_paging_action'));
+			add_action('wp_ajax_arm_transaction_ajax_action', array($this, 'arm_transaction_ajax_action'));
+			add_action('wp_ajax_arm_bulk_delete_transactions', array($this, 'arm_bulk_delete_transactions'));
+			add_action('wp_ajax_arm_filter_transactions_list', array($this, 'arm_filter_transactions_list'));
+			add_action('wp_ajax_arm_transaction_hide_show_columns', array($this, 'arm_transaction_hide_show_columns'));
+			add_action('wp_ajax_arm_change_bank_transfer_status', array($this, 'arm_change_bank_transfer_status'));
+			add_action('wp_ajax_arm_preview_log_detail', array($this, 'arm_preview_log_detail'));
+			add_action('wp_ajax_arm_invoice_detail', array($this, 'arm_invoice_detail'));
+			add_action('wp_ajax_arm_preview_failed_log_detail', array($this, 'arm_preview_failed_log_detail'));
+			add_action('arm_save_manual_payment', array($this, 'arm_add_manual_payment'));
+			add_action('wp_ajax_arm_load_transactions', array($this, 'arm_load_transaction_grid'));
+			add_action('wp_ajax_arm_get_user_transactions_paging_action', array($this, 'arm_get_user_transactions_paging_action'));
 			add_action('wp_ajax_arm_filter_pp_transactions_list', array( $this, 'arm_filter_pp_transactions_list'));
+		}
+
+		function arm_load_init_data()
+		{
+			if(!empty($_REQUEST['log_id']) && !empty($_REQUEST['log_type']) && !empty($_REQUEST['is_display_invoice']) && $_REQUEST['is_display_invoice'])
+			{
+
+				require_once( MEMBERSHIP_VIEWS_DIR.'/arm_invoice_template.php');
+				exit();
+			}
+			else if(!empty($_REQUEST['is_display_card_data']) && $_REQUEST['is_display_card_data'] && !empty($_REQUEST['arm_mcard_id']) && !empty($_REQUEST['plan_id']) && !empty($_REQUEST['iframe_id']))
+            {
+                require_once( MEMBERSHIP_VIEWS_DIR . '/arm_membership_card_template.php');
+                exit();
+            }
 		}
 
 		function arm_transaction_hide_show_columns()
@@ -30,7 +45,17 @@ if (!class_exists('ARM_transaction'))
 				$user_id = get_current_user_id();
 				$column_list = explode(',', $column_list);
 				$transaction_columns = maybe_serialize($column_list);
-				update_user_meta($user_id, 'arm_transaction_hide_show_columns', $transaction_columns);
+				$transaction_history_type = isset($_POST['transaction_history_type']) ? $_POST['transaction_history_type'] : '';
+				if($transaction_history_type=='paid_post')
+				{
+					update_user_meta($user_id, 'arm_transaction_paid_post_hide_show_columns', $transaction_columns);
+				}
+				else if($transaction_history_type=='plan'){
+					update_user_meta($user_id, 'arm_transaction_hide_show_columns', $transaction_columns);
+				}
+				else {
+					do_action('arm_transaction_hide_show_column_action', $user_id, $transaction_history_type, $transaction_columns, $_POST);
+				}
 			}
 			die();
 		}
@@ -68,7 +93,7 @@ if (!class_exists('ARM_transaction'))
 				{
 					$extraVars = (isset($log_detail['arm_extra_vars'])) ? maybe_unserialize($log_detail['arm_extra_vars']) : array();
 				?>
-					<div class="arm_preview_failed_log_detail_popup popup_wrapper arm_preview_log_detail_popup_wrapper" style="width:800px;">
+					<div class="arm_preview_failed_log_detail_popup popup_wrapper arm_preview_log_detail_popup_wrapper" >
 						<div class="popup_wrapper_inner" style="overflow: hidden;">
 							<div class="popup_header">
 								<span class="popup_close_btn arm_popup_close_btn arm_preview_failed_log_detail_close_btn"></span>
@@ -134,16 +159,17 @@ if (!class_exists('ARM_transaction'))
 						iframeDoc.contentWindow.arm_print_invoice_content();
 					}
 				</script>
-				<div class="arm_invoice_detail_popup popup_wrapper arm_invoice_detail_popup_wrapper" style="width:800px;">
+				<div class="arm_invoice_detail_popup popup_wrapper arm_invoice_detail_popup_wrapper">
 					<div class="popup_wrapper_inner" style="overflow: hidden;">
-						<div class="popup_header" style="text-align: center;">
+						<div class="popup_header arm_text_align_center" >
 							<span class="popup_close_btn arm_popup_close_btn arm_invoice_detail_close_btn"></span>
 							<span class="add_rule_content"><?php _e('Invoice Detail','ARMember' );?></span>
 						</div>
-						<div class="popup_content_text arm_invoice_detail_popup_text" id="arm_invoice_detail_popup_text" style="padding: 0;">
-							<iframe src="<?php echo MEMBERSHIP_VIEWS_URL."/arm_invoice_template.php?log_id=".$log_id."&log_type=".$log_type ; ?>" id="arm_invoice_iframe" style="width: 100%;height:665px;"></iframe>
+						<div class="popup_content_text arm_invoice_detail_popup_text arm_padding_0" id="arm_invoice_detail_popup_text" >
+							
+							<iframe src="<?php echo ARM_HOME_URL."/?log_id=".$log_id."&log_type=".$log_type."&is_display_invoice=1" ; ?>" id="arm_invoice_iframe" class="arm_width_100_pct" style="height:665px;"></iframe>
 						</div>
-						<div class="popup_footer" style="text-align: center; padding: 0 0 35px;">
+						<div class="popup_footer arm_text_align_center" style=" padding: 0 0 35px;">
 							<button type="button" name="print" onclick="arm_print_invoice();" value="Print" class="armemailaddbtn"><?php _e('Print', 'ARMember'); ?></button>
 							<?php 
 							$invoice_pdf_icon_html='';
@@ -207,7 +233,7 @@ if (!class_exists('ARM_transaction'))
 		                    $arm_user_plan_details = new ARM_Plan($plan_id);
 		                }
 		                $payment_type = !empty($arm_user_plan_details->options['payment_type']) ? $arm_user_plan_details->options['payment_type'] : '';
-						$log_detail = array (
+		                $log_detail = array (
 							'arm_log_id' => $log_data->arm_log_id,
 							'arm_invoice_id' => $log_data->arm_invoice_id,
 							'arm_user_id' => $log_data->arm_user_id,
@@ -224,14 +250,20 @@ if (!class_exists('ARM_transaction'))
 							'arm_amount' => $log_data->arm_amount,
 							'arm_currency' => $log_data->arm_currency,
 							'arm_extra_vars' => $log_data->arm_extra_vars,
-							'arm_response_text' => maybe_serialize((array) $log_data),
-                                                        'arm_coupon_code' => $log_data->arm_coupon_code,
-                                			'arm_coupon_discount' => $log_data->arm_coupon_discount,
-                                                	'arm_coupon_discount_type' => $log_data->arm_coupon_discount_type,
+							'arm_coupon_code' => $log_data->arm_coupon_code,
+							'arm_coupon_discount' => $log_data->arm_coupon_discount,
+							'arm_coupon_discount_type' => $log_data->arm_coupon_discount_type,
 							'arm_created_date' => $log_data->arm_created_date,
 							'arm_coupon_on_each_subscriptions' => $arm_coupon_on_each_subscriptions,
+							'arm_bank_name' => $log_data->arm_bank_name,
+							'arm_account_name' => $log_data->arm_account_name,
+							'arm_additional_info' => $log_data->arm_additional_info,
+							'arm_payment_transfer_mode' => $log_data->arm_payment_transfer_mode,
 						);
-					}
+						if(!empty($arm_user_plan_details->isGiftPlan)) {
+							 $log_detail['arm_is_gift_payment']	= 1;
+						}
+					}						
 				}
 				else
 				{
@@ -240,10 +272,13 @@ if (!class_exists('ARM_transaction'))
 				if(!empty($log_detail))
 				{
 					$extra_vars = (isset($log_detail['arm_extra_vars'])) ? maybe_unserialize($log_detail['arm_extra_vars']) : array();
-					$response_text = (isset($log_detail['arm_response_text'])) ? maybe_unserialize($log_detail['arm_response_text']) : array();
 					$arm_is_post_payment = (!empty($log_detail['arm_is_post_payment'])) ? maybe_unserialize($log_detail['arm_is_post_payment']) : 0;
-			?>
-					<div class="arm_preview_log_detail_popup popup_wrapper arm_preview_log_detail_popup_wrapper" style="width:800px;">
+					$arm_is_gift_payment = (!empty($log_detail['arm_is_gift_payment'])) ? maybe_unserialize($log_detail['arm_is_gift_payment']) : 0;		
+
+					$log_detail = apply_filters('arm_filter_preview_log_details', $log_detail, $log_id, $_POST);
+
+					?>
+					<div class="arm_preview_log_detail_popup popup_wrapper arm_preview_log_detail_popup_wrapper" >
 						<div class="popup_wrapper_inner" style="overflow: hidden;">
 							<div class="popup_header">
 								<span class="popup_close_btn arm_popup_close_btn arm_preview_log_detail_close_btn"></span>
@@ -265,7 +300,22 @@ if (!class_exists('ARM_transaction'))
 										?></td>
 									</tr>
 									<tr>
-										<th><?php echo !empty($arm_is_post_payment) ? __('Post','ARMember' ) : __('Plan','ARMember' );?></th>
+										<th>
+											<?php 
+												if(!empty($arm_is_post_payment)) 
+												{ 
+													_e('Post','ARMember' ); 
+												} 
+												else if(!empty($arm_is_gift_payment)) 
+												{ 
+													_e('Gift','ARMember' ); 
+												} 
+												else 
+												{ 
+													_e('Plan','ARMember' ); 
+												} 
+											?>
+										</th>
 										<td><?php echo (!empty($log_detail['arm_plan_id'])) ? $arm_subscription_plans->arm_get_plan_name_by_id($log_detail['arm_plan_id']): '--';?></td>
 									</tr>
 									<tr>
@@ -386,40 +436,40 @@ if (!class_exists('ARM_transaction'))
 									
 									<?php endif;?>
 									<?php if ($log_detail['arm_payment_gateway'] == "bank_transfer"):
-                                        $bank_name_field_label = !empty($bank_transfer_gateways_opts['bank_name_label']) ? stripslashes($bank_transfer_gateways_opts['bank_name_label']) : __('Bank Name', 'ARMember');
+										$bank_name_field_label = !empty($bank_transfer_gateways_opts['bank_name_label']) ? stripslashes($bank_transfer_gateways_opts['bank_name_label']) : __('Bank Name', 'ARMember');
                                         $account_name_field_label = !empty($bank_transfer_gateways_opts['account_name_label']) ? stripslashes($bank_transfer_gateways_opts['account_name_label']) : __('Account Holder Name', 'ARMember');
                                         $additional_info_field_label = !empty($bank_transfer_gateways_opts['additional_info_label']) ? stripslashes($bank_transfer_gateways_opts['additional_info_label']) : __('Additional Note', 'ARMember');
                                         $transfer_mode_field_label = !empty($bank_transfer_gateways_opts['transfer_mode_label']) ? stripslashes($bank_transfer_gateways_opts['transfer_mode_label']) : __('Payment Mode', 'ARMember');
                                         ?>
-										<?php if (isset($response_text['arm_bank_name']) && !empty($response_text['arm_bank_name'])): ?>
+										<?php if (isset($log_detail['arm_bank_name']) && !empty($log_detail['arm_bank_name'])): ?>
 											<tr>
 												<th><?php echo $bank_name_field_label;?></th>
-												<td><?php echo $response_text['arm_bank_name'];?></td>
+												<td><?php echo $log_detail['arm_bank_name'];?></td>
 											</tr>
 										<?php endif;?>
-										<?php if (isset($response_text['arm_account_name']) && !empty($response_text['arm_account_name'])): ?>
+										<?php if (isset($log_detail['arm_account_name']) && !empty($log_detail['arm_account_name'])): ?>
 											<tr>
 												<th><?php echo $account_name_field_label;?></th>
-												<td><?php echo $response_text['arm_account_name'];?></td>
+												<td><?php echo $log_detail['arm_account_name'];?></td>
 											</tr>
 										<?php endif;?>
-										<?php if (isset($response_text['arm_additional_info']) && !empty($response_text['arm_additional_info'])): ?>
+										<?php if (isset($log_detail['arm_additional_info']) && !empty($log_detail['arm_additional_info'])): ?>
 											<tr>
 												<th><?php echo $additional_info_field_label;?></th>
-												<td><?php echo nl2br($response_text['arm_additional_info']);?></td>
+												<td><?php echo nl2br($log_detail['arm_additional_info']);?></td>
 											</tr>
 										<?php endif;?>
-										<?php if (isset($response_text['arm_payment_transfer_mode']) && !empty($response_text['arm_payment_transfer_mode'])): ?>
+										<?php if (isset($log_detail['arm_payment_transfer_mode']) && !empty($log_detail['arm_payment_transfer_mode'])): ?>
 											<tr>
 												<th><?php echo $transfer_mode_field_label;?></th>
-												<td><?php echo nl2br($response_text['arm_payment_transfer_mode']);?></td>
+												<td><?php echo nl2br($log_detail['arm_payment_transfer_mode']);?></td>
 											</tr>
 										<?php endif;?>
 									<?php endif;?>
-									<?php if ($log_detail['arm_payment_gateway'] == "manual" && !empty($response_text['note'])): ?>
+									<?php if ($log_detail['arm_payment_gateway'] == "manual" && !empty($extra_vars['note'])): ?>
 									<tr>
 										<th><?php _e('Note','ARMember' );?></th>
-										<td><?php echo nl2br(stripslashes($response_text['note']));?></td>
+										<td><?php echo nl2br(stripslashes($extra_vars['note']));?></td>
 									</tr>
 									<?php endif;
 
@@ -446,7 +496,7 @@ if (!class_exists('ARM_transaction'))
 											$tax_amount = '-';
 											if(isset($extra_vars['tax_amount']))
 											{
-												$tax_amount = ($extra_vars['tax_amount']!='') ? $extra_vars['tax_amount'].strtoupper($log_detail['arm_currency']): '-';
+												$tax_amount = ($extra_vars['tax_amount']!='') ? $extra_vars['tax_amount'].' '.strtoupper($log_detail['arm_currency']): '-';
 											}
 											echo $tax_amount;	
 											?></td>
@@ -460,6 +510,10 @@ if (!class_exists('ARM_transaction'))
 									</tr>
 								</table>
 							</div>
+
+							<?php
+								do_action('arm_add_preview_log_data_action', $log_detail, $log_id, $_POST);
+							?>
 							<div class="armclear"></div>
 						</div>
 					</div>
@@ -536,8 +590,10 @@ if (!class_exists('ARM_transaction'))
 
 			$btids = $arm_global_settings->get_param('bt-item-action', '');
 			$ids = $arm_global_settings->get_param('item-action', '');
+			$ppids = $arm_global_settings->get_param('pp-item-action', '');
+			$gpids = $arm_global_settings->get_param('gp-item-action', '');
 			
-			if(empty($ids) && empty($btids))
+			if(empty($ids) && empty($btids) && empty($ppids) && empty($gpids))
 			{
 				$errors[] = __('Please select one or more records.', 'ARMember');
 			}
@@ -553,6 +609,8 @@ if (!class_exists('ARM_transaction'))
 					{
 						$btids = (!is_array($btids)) ? explode(',', $btids) : $btids;
 						$ids = (!is_array($ids)) ? explode(',', $ids) : $ids;
+						$ppids = (!is_array($ids)) ? explode(',', $ppids) : $ppids;
+						$gpids = (!is_array($ids)) ? explode(',', $gpids) : $gpids;
 
 						if (is_array($btids))
 						{
@@ -564,6 +622,20 @@ if (!class_exists('ARM_transaction'))
 						if (is_array($ids))
 						{
 							foreach ($ids as $id)
+							{
+								$res_var = $wpdb->delete($ARMember->tbl_arm_payment_log, array('arm_log_id' => $id));
+							}
+						}
+						if (is_array($ppids))
+						{
+							foreach ($ppids as $id)
+							{
+								$res_var = $wpdb->delete($ARMember->tbl_arm_payment_log, array('arm_log_id' => $id));
+							}
+						}
+						if (is_array($gpids))
+						{
+							foreach ($gpids as $id)
 							{
 								$res_var = $wpdb->delete($ARMember->tbl_arm_payment_log, array('arm_log_id' => $id));
 							}
@@ -585,6 +657,9 @@ if (!class_exists('ARM_transaction'))
 
 		function arm_filter_transactions_list()
 		{
+			global $ARMember, $arm_capabilities_global;
+			$ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_transactions'], '1');
+
 			if(file_exists(MEMBERSHIP_VIEWS_DIR.'/arm_transactions_list_records.php'))
 			{
 				include(MEMBERSHIP_VIEWS_DIR.'/arm_transactions_list_records.php');
@@ -593,6 +668,10 @@ if (!class_exists('ARM_transaction'))
 		}
 
 		function arm_filter_pp_transactions_list(){
+			
+			global $ARMember, $arm_capabilities_global;
+			$ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_transactions'], '1');
+
 			if( file_exists( MEMBERSHIP_VIEWS_DIR . '/arm_paid_post_transaction_list_records.php' ) ){
 				include( MEMBERSHIP_VIEWS_DIR . '/arm_paid_post_transaction_list_records.php' );
 			}
@@ -601,18 +680,19 @@ if (!class_exists('ARM_transaction'))
 
 		function arm_add_manual_payment($data = array())
 		{
-			global $wp, $wpdb, $ARMember, $arm_slugs, $arm_global_settings, $arm_subscription_plans,$arm_pay_per_post_feature;
+			global $wp, $wpdb, $ARMember, $arm_slugs, $arm_global_settings, $arm_subscription_plans,$arm_pay_per_post_feature, $arm_capabilities_global;
+
+			$ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_transactions'], '1');
+
 			$redirect_to = admin_url('admin.php?page=' . $arm_slugs->transactions);
 			if (!empty($data))
 			{
 				$manual_data = $data['manual_payment'];
 				$user_id = intval($data['arm_user_id_hidden']);
-				$is_post_payment = $data['plan_type'];
+				$is_post_payment = ($data['plan_type']==1) ? 1 : 0;
+				$is_gift_payment = ($data['plan_type']==2) ? 1 : 0;
 				
 				$arm_paid_post_id = !empty($data['arm_paid_post_id'])?$data['arm_paid_post_id']:0;	
-				
-				
-
 				if(empty($user_id)){
 					$ARMember->arm_set_message('error', __('Sorry, User not found.', 'ARMember'));
 					$redirect_to = $arm_global_settings->add_query_arg("action", "new", $redirect_to);
@@ -620,6 +700,10 @@ if (!class_exists('ARM_transaction'))
 					exit;
 				}
 				$plan_id = intval($manual_data['plan_id']);
+				if(!empty($is_gift_payment))
+				{
+					$plan_id = intval($manual_data['gift_id']);
+				}
 				$user_info = get_user_by('id', $user_id);
 				$plan = new ARM_Plan($plan_id);
 				/* Add transaction payment log */
@@ -635,11 +719,13 @@ if (!class_exists('ARM_transaction'))
 					'arm_transaction_status' => sanitize_text_field($manual_data['transaction_status']),
 					'arm_amount' => $manual_data['amount'],
 					'arm_currency' => sanitize_text_field($manual_data['currency']),
-					'arm_response_text' => maybe_serialize($manual_data),
 					'arm_is_post_payment' => $is_post_payment,
+					'arm_is_gift_payment' => $is_gift_payment,
 					'arm_paid_post_id' => $arm_paid_post_id,
+					'arm_extra_vars' => maybe_serialize(array('note' => $manual_data['note'])),
 
 				);
+				$manual_log = apply_filters('arm_modify_payment_data_before_add_manual_payment', $manual_log, $data);
 				$log_id = $this->arm_add_transaction($manual_log);
 				if($log_id)
 				{
@@ -681,7 +767,6 @@ if (!class_exists('ARM_transaction'))
 				'arm_amount' => 0,
 				'arm_currency' => $currency,
 				'arm_extra_vars' => '',
-				'arm_response_text' => '',
 				'arm_coupon_code' => '',
 				'arm_coupon_discount' => 0,
 				'arm_coupon_discount_type' => '',
@@ -690,9 +775,12 @@ if (!class_exists('ARM_transaction'))
                 'arm_display_log' => '1',
                 'arm_coupon_on_each_subscriptions' => '0',
                 'arm_is_post_payment' => '0',
+                'arm_is_gift_payment' => '0',
                 'arm_paid_post_id' => '0',
 
 			);
+
+			$default_log_data = apply_filters('arm_add_default_log_data_value', $default_log_data);
 
 			$log_data = shortcode_atts($default_log_data, $log_data); /* Merge Default Values */
 
@@ -758,6 +846,20 @@ if (!class_exists('ARM_transaction'))
 			$log_data['arm_invoice_id'] = $arm_last_invoice_id;
 			do_action('arm_before_add_transaction', $log_data);
 			$payment_log = $wpdb->insert($ARMember->tbl_arm_payment_log, $log_data);
+			if(!$payment_log)
+			{
+				//try again for make an entry for payment history due to first entry is failed.
+				$arm_insert_data_keys = "";
+				$arm_insert_data_values = "";
+
+				foreach($log_data as $arm_log_data_key => $arm_log_data_value)
+				{
+					$arm_insert_data_keys .= (!empty($arm_insert_data_keys)) ? ",".$arm_log_data_key : $arm_log_data_key;
+					$arm_insert_data_values .= (!empty($arm_insert_data_values)) ? ",'".$arm_log_data_value."'" : "'".$arm_log_data_value."'";
+				}
+				$arm_payment_log = $wpdb->query("INSERT INTO ".$ARMember->tbl_arm_payment_log." (".$arm_insert_data_keys.") VALUES(".$arm_insert_data_values.")");
+				
+			}
 			$payment_log_id = $wpdb->insert_id;
 
             if (!empty($payment_log_id) && $payment_log_id != 0)
@@ -786,10 +888,13 @@ if (!class_exists('ARM_transaction'))
 			$where_plog.= " AND `arm_user_id`='$user_id' ";
 			}
 
-			if(!empty($is_paid_post)){
+			if(!empty($is_paid_post) && $is_paid_post==1){
 
 				$where_plog.= " AND `arm_paid_post_id`> 0";	
 				$where_plog.= " AND `arm_is_post_payment`= 1";
+			}
+			else if(!empty($is_paid_post) && $is_paid_post==2){
+				$where_plog.= " AND `arm_is_gift_payment`= 1";
 			}else{
 				$where_plog.= " AND `arm_paid_post_id`= 0";	
 				$where_plog.= " AND `arm_is_post_payment`= 0";
@@ -803,7 +908,7 @@ if (!class_exists('ARM_transaction'))
 
 		function arm_get_all_transaction($user_id = 0, $offset = 0, $perPage = 5,$is_paid_post= 0) {
 			global $ARMember, $wp, $wpdb;
-			$ctquery = "SELECT pt.arm_log_id,pt.arm_invoice_id,pt.arm_user_id,pt.arm_first_name,pt.arm_last_name,pt.arm_plan_id,pt.arm_transaction_id,pt.arm_amount,pt.arm_currency,pt.arm_payment_gateway,pt.arm_transaction_status,pt.arm_payment_type,pt.arm_extra_vars,wpu.user_login as arm_user_login,pt.arm_display_log as arm_display_log, pt.arm_payment_date, pt.arm_coupon_code, pt.arm_coupon_discount_type, pt.arm_coupon_discount, pt.arm_created_date,pt.arm_is_post_payment,pt.arm_paid_post_id FROM `" . $ARMember->tbl_arm_payment_log . "` pt LEFT JOIN `" . $ARMember->tbl_arm_subscription_plans . "` sp ON pt.arm_plan_id = sp.arm_subscription_plan_id LEFT JOIN `" . $wpdb->users . "` wpu ON pt.arm_user_id = wpu.ID ";
+			$ctquery = "SELECT pt.arm_log_id,pt.arm_invoice_id,pt.arm_user_id,pt.arm_first_name,pt.arm_last_name,pt.arm_plan_id,pt.arm_transaction_id,pt.arm_amount,pt.arm_currency,pt.arm_payment_gateway,pt.arm_transaction_status,pt.arm_payment_type,pt.arm_extra_vars,wpu.user_login as arm_user_login,pt.arm_display_log as arm_display_log, pt.arm_payment_date, pt.arm_coupon_code, pt.arm_coupon_discount_type, pt.arm_coupon_discount, pt.arm_created_date,pt.arm_is_post_payment,pt.arm_paid_post_id,pt.arm_is_gift_payment FROM `" . $ARMember->tbl_arm_payment_log . "` pt LEFT JOIN `" . $ARMember->tbl_arm_subscription_plans . "` sp ON pt.arm_plan_id = sp.arm_subscription_plan_id LEFT JOIN `" . $wpdb->users . "` wpu ON pt.arm_user_id = wpu.ID ";
 
 			$ptquery = "{$ctquery}";
 
@@ -812,13 +917,19 @@ if (!class_exists('ARM_transaction'))
 			{
 				$where_plog.= " AND `arm_user_id`='$user_id' ";
 			}
-			if(!empty($is_paid_post)){
+			if(!empty($is_paid_post) && $is_paid_post==1){
 
 				$where_plog.= " AND `arm_paid_post_id`> 0";	
 				$where_plog.= " AND `arm_is_post_payment`= 1";
-			}else{
+			}
+			else if(!empty($is_paid_post) && $is_paid_post==2)
+			{
+				$where_plog.= " AND `arm_is_gift_payment`= 1";
+			}
+			else{
 				$where_plog.= " AND `arm_paid_post_id`= 0";	
 				$where_plog.= " AND `arm_is_post_payment`= 0";
+				$where_plog.= " AND `arm_is_gift_payment`= 0";
 			}
 			$orderby = " order by arm_payment_date desc, arm_invoice_id desc ";
 			$phlimit = " LIMIT {$offset},{$perPage}";
@@ -854,8 +965,13 @@ if (!class_exists('ARM_transaction'))
 				$trans_records .= '<table class="form-table arm_member_last_subscriptions_table" width="100%">';
 				$trans_records .= '<tr>';
 				$trans_records .= '<td>#</td>';
-				$trans_records .= '<td>'.__('Membership','ARMember').'</td>';
-				$trans_records .= '<td>'.__('Payment Type','ARMember').'</td>';
+				if($is_paid_post!= 2){
+					$trans_records .= '<td>'.__('Membership','ARMember').'</td>';
+					$trans_records .= '<td>'.__('Payment Type','ARMember').'</td>';
+				}
+				else if($is_paid_post == 2){
+					$trans_records .= '<td>'.__('Gift','ARMember').'</td>';
+				}
 				$trans_records .= '<td>'.__('Transaction Status','ARMember').'</td>';
 				$trans_records .= '<td>'.__('Gateway','ARMember').'</td>';
 				$trans_records .= '<td>'.__('Amount','ARMember').'</td>';
@@ -863,8 +979,11 @@ if (!class_exists('ARM_transaction'))
 					$trans_records .= '<td>'.__('Tax Percentage','ARMember').'</td>';
 					$trans_records .= '<td>'.__('Tax Amount','ARMember').'</td>';
 				}
-				$trans_records .= '<td>'.__('Used Coupon Code','ARMember').'</td>';
-				$trans_records .= '<td>'.__('Used Coupon Discount','ARMember').'</td>';
+				if($is_paid_post != 2)
+				{
+					$trans_records .= '<td>'.__('Used Coupon Code','ARMember').'</td>';
+					$trans_records .= '<td>'.__('Used Coupon Discount','ARMember').'</td>';
+				}
 				$trans_records .= '<td>'.__('Payment Date','ARMember').'</td>';
 				$trans_records .= '</tr>';
                                 
@@ -876,10 +995,10 @@ if (!class_exists('ARM_transaction'))
 				{
 					$rc = (object) $user_log;
 					if(in_array($rc->arm_plan_id, $plan_ids_array)) {
-						$subs_plan = $plan_ids_name_array[$rc->arm_plan_id];
+						$subs_plan = stripslashes_deep($plan_ids_name_array[$rc->arm_plan_id]);
 					}
 					else {
-						$subs_plan = $plan_id_name_array[$rc->arm_plan_id];
+						$subs_plan = stripslashes_deep($plan_id_name_array[$rc->arm_plan_id]);
 					}
 					$plan_ids_name_array[$rc->arm_plan_id] = $subs_plan;
 					$plan_ids_array[] = $rc->arm_plan_id;
@@ -891,7 +1010,7 @@ if (!class_exists('ARM_transaction'))
 					{
 						if(isset($extraVars['manual_by']))
 						{
-							$payment_type.= '<div style="font-size: 12px;"><em>(' . __($extraVars['manual_by'], 'ARMember') . ')</em></div>';
+							$payment_type.= '<div class="arm_font_size_12"><em>(' . __($extraVars['manual_by'], 'ARMember') . ')</em></div>';
 						}
 					}
 					$arm_transaction_status = $rc->arm_transaction_status;
@@ -992,7 +1111,10 @@ if (!class_exists('ARM_transaction'))
 					$trans_records .= '<tr class="arm_member_last_subscriptions_data">';
 					$trans_records .= '<td>'.$i.'</td>';
 					$trans_records .= '<td class="rec_center">'.$membership.'</td>';
-					$trans_records .= '<td class="rec_center">'.$payment_type.'</td>';
+
+					if($is_paid_post != 2){
+						$trans_records .= '<td class="rec_center">'.$payment_type.'</td>';
+					}
 					$trans_records .= '<td>'.$arm_transaction_status.'</td>';
 					$trans_records .= '<td>'.$arm_gateway.'</td>';
 					$trans_records .= '<td>'.$transAmount.'</td>';
@@ -1021,9 +1143,11 @@ if (!class_exists('ARM_transaction'))
 						}
 						$trans_records .= '</td>';
 					}
-					$trans_records .= '<td>'.$arm_used_coupon_code.'</td>';
-					$trans_records .= '<td>'.$arm_used_coupon_discount.'</td>';
-					$trans_records .= '<td>'.date_i18n($date_format, strtotime($rc->arm_payment_date)).'</td>';
+					if($is_paid_post != 2){
+						$trans_records .= '<td>'.$arm_used_coupon_code.'</td>';
+						$trans_records .= '<td>'.$arm_used_coupon_discount.'</td>';
+					}
+					$trans_records .= '<td>'.date_i18n($date_format, strtotime($rc->arm_created_date)).'</td>';
 					$trans_records .= '</tr>';
 					$i++;
 				}
@@ -1039,7 +1163,7 @@ if (!class_exists('ARM_transaction'))
 					}
 
 					$trans_records .= '<tr>';
-					$trans_records .= '<td colspan="'.$total_column.'" style="text-align: center;">' . __('No Payment History Found.', 'ARMember') . '</td>';
+					$trans_records .= '<td colspan="'.$total_column.'" class="arm_text_align_center">' . __('No Payment History Found.', 'ARMember') . '</td>';
 					$trans_records .= '</tr>';
 				}
                                 
@@ -1085,7 +1209,7 @@ if (!class_exists('ARM_transaction'))
 							$where_btlog .= " AND `arm_transaction_status`='2'";
 						}
 					}
-					$where_btlog .= " AND `arm_is_post_payment`='0' AND `arm_paid_post_id`='0'";
+					$where_btlog .= " AND `arm_is_post_payment`='0' AND `arm_is_gift_payment`='0' AND `arm_paid_post_id`='0'";
                     $sqlLimit = '';
                     if (!empty($limit) && $limit != 0) {
                         $sqlLimit = "LIMIT {$limit}";
@@ -1130,7 +1254,6 @@ if (!class_exists('ARM_transaction'))
 					'arm_payment_date' => $data->arm_created_date,
 					'arm_amount' => $data->arm_amount,
 					'arm_currency' => $data->arm_currency,
-					'arm_response_text' => maybe_serialize($data),
 					'arm_extra_vars' => maybe_unserialize($data->arm_extra_vars),
 					'arm_coupon_code' => $data->arm_coupon_code,
 					'arm_coupon_discount' => $data->arm_coupon_discount,
@@ -1141,9 +1264,13 @@ if (!class_exists('ARM_transaction'))
 			}
 			return $main_log;
 		}
-		function arm_change_bank_transfer_status($log_id = 0, $new_status = 0)
+		function arm_change_bank_transfer_status($log_id = 0, $new_status = 0, $check_permission = 1)
 		{
-			global $wp, $wpdb, $current_user, $arm_errors, $ARMember, $arm_global_settings, $arm_subscription_plans,$arm_manage_coupons;
+			global $wp, $wpdb, $current_user, $arm_errors, $ARMember, $arm_global_settings, $arm_subscription_plans,$arm_manage_coupons, $arm_debug_payment_log_id, $arm_capabilities_global;
+			if(!empty($check_permission))
+			{
+				$ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_transactions'], '1');
+			}
 			
 			$logid_exit_flag = '1';
 			if(empty($log_id))
@@ -1159,6 +1286,9 @@ if (!class_exists('ARM_transaction'))
 			$response = array('status' => 'error', 'message' => __('Sorry, Something went wrong. Please try again.', 'ARMember'));
 			if (!empty($log_id) && $log_id != 0) {
 				$log_data = $wpdb->get_row("SELECT `arm_log_id`, `arm_user_id`, `arm_plan_id`, `arm_payment_cycle` FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_log_id`='" . $log_id . "'");
+
+				do_action('arm_payment_log_entry', 'bank_transfer', 'Change status log data', 'armember', $log_data, $arm_debug_payment_log_id);
+
 				if(!empty($log_data))
 				{
 					$user_id = $log_data->arm_user_id;
@@ -1184,7 +1314,7 @@ if (!class_exists('ARM_transaction'))
 							do_action('arm_after_recurring_payment_success_outside', $user_id, $plan_id, 'bank_transfer', $plan_payment_mode);
 						}
 						
-                        do_action('arm_after_accept_bank_transfer_payment',$user_id,$plan_id);
+                        do_action('arm_after_accept_bank_transfer_payment', $user_id, $plan_id, $log_id);
 						$response = array('status' => 'success', 'message' => __('Bank transfer request has been approved.', 'ARMember'));
 					} else {
 						delete_user_meta($user_id, 'arm_change_plan_to');
@@ -1194,6 +1324,9 @@ if (!class_exists('ARM_transaction'))
 					}
 				}
 			}
+
+			do_action('arm_payment_log_entry', 'bank_transfer', 'Change bank transfer response', 'armember', $response, $arm_debug_payment_log_id);
+
 			if(empty($logid_exit_flag))
 			{
 				echo json_encode($response);
@@ -1246,6 +1379,7 @@ if (!class_exists('ARM_transaction'))
             $payment_start_date = isset($_REQUEST['payment_start_date']) ? $_REQUEST['payment_start_date'] : '';
             $payment_end_date = isset($_REQUEST['payment_end_date']) ? $_REQUEST['payment_end_date'] : '';
             $arm_is_post_payment = isset($_REQUEST['arm_is_post_payment']) ? $_REQUEST['arm_is_post_payment'] : 0;
+            $arm_is_gift_payment = isset($_REQUEST['arm_is_gift_payment']) ? $_REQUEST['arm_is_gift_payment'] : 0;
             $response_data = array();
             $nowDate = current_time('mysql');
             $where_plog = "WHERE 1=1 AND arm_display_log = 1 ";
@@ -1258,7 +1392,7 @@ if (!class_exists('ARM_transaction'))
             if (!empty($filter_pmode) && $filter_pmode != '0') {
                 $where_plog .= " AND `arm_payment_mode`='$filter_pmode'";
             }
-	    $where_plog .= " AND `arm_is_post_payment`='$arm_is_post_payment'";
+	    	$where_plog .= " AND `arm_is_post_payment`='$arm_is_post_payment' AND `arm_is_gift_payment`='$arm_is_gift_payment'";
             
             if (!empty($filter_pstatus) && $filter_pstatus != '0') {
                 $filter_pstatus = strtolower($filter_pstatus);
@@ -1315,21 +1449,24 @@ if (!class_exists('ARM_transaction'))
                     $column_name = "`arm_user_login`";
                     break;
                 case 6:
-                    $column_name = "`arm_subscription_plan_name`";
+                    $column_name = "`arm_user_email`";
                     break;
                 case 7:
-                    $column_name = "`arm_payment_gateway`";
+                    $column_name = "`arm_subscription_plan_name`";
                     break;
                 case 8:
-                    $column_name = "`arm_payment_type`";
+                    $column_name = "`arm_payment_gateway`";
                     break;
                 case 9:
-                    $column_name = "`arm_payer_email`";
+                    $column_name = "`arm_payment_type`";
                     break;
                 case 10:
+                    $column_name = "`arm_payer_email`";
+                    break;
+                case 11:
                     $column_name = "`arm_transaction_status`";
                     break;
-                case 12:
+                case 13:
                     $column_name = "`arm_amount`";
                     break;
                 default:
@@ -1341,10 +1478,10 @@ if (!class_exists('ARM_transaction'))
             $sSearch = isset($_REQUEST['sSearch']) ? $_REQUEST['sSearch'] : '';
             $search_ = "";
             if ($sSearch != '') {
-                $search_ = " AND (`arm_payment_history_log`.`arm_transaction_id` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_payer_email` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_created_date` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_first_name` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_last_name` LIKE '%{$sSearch}%' ) ";
+                $search_ = " AND (`arm_payment_history_log`.`arm_transaction_id` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_token` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_payer_email` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_created_date` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_first_name` LIKE '%{$sSearch}%' OR `arm_payment_history_log`.`arm_last_name` LIKE '%{$sSearch}%' OR `arm_user_login` LIKE '%{$sSearch}%' OR `arm_user_email` LIKE '%{$sSearch}%' ) ";
             }
 
-            $pt_where = " WHERE `arm_is_post_payment`='".$arm_is_post_payment."' ";
+            $pt_where = " WHERE `arm_is_post_payment`='".$arm_is_post_payment."' AND `arm_is_gift_payment`='".$arm_is_gift_payment."' ";
             if(!empty($payment_start_date)) {
             	$payment_start_date = date("Y-m-d", strtotime($payment_start_date));
             	$pt_where .= " AND `pt`.`arm_created_date` >= '$payment_start_date' ";
@@ -1356,10 +1493,10 @@ if (!class_exists('ARM_transaction'))
             	$pt_where .= " `pt`.`arm_created_date` < '$payment_end_date' ";
             }
             
-            $ctquery = "SELECT pt.arm_log_id,pt.arm_invoice_id,pt.arm_user_id,pt.arm_first_name,pt.arm_last_name,pt.arm_plan_id,pt.arm_payer_email,pt.arm_transaction_id,pt.arm_amount,pt.arm_currency,pt.arm_is_trial,pt.arm_payment_gateway,pt.arm_payment_mode,pt.arm_transaction_status,pt.arm_created_date,pt.arm_payment_type,pt.arm_extra_vars,sp.arm_subscription_plan_name,wpu.user_login as arm_user_login,pt.arm_display_log as arm_display_log,pt.arm_is_post_payment as arm_is_post_payment FROM `" . $ARMember->tbl_arm_payment_log . "` pt LEFT JOIN `" . $ARMember->tbl_arm_subscription_plans . "` sp ON pt.arm_plan_id = sp.arm_subscription_plan_id LEFT JOIN `" . $wpdb->users . "` wpu ON pt.arm_user_id = wpu.ID " . $pt_where;
+            $ctquery = "SELECT pt.arm_log_id,pt.arm_invoice_id,pt.arm_user_id,pt.arm_first_name,pt.arm_last_name,pt.arm_plan_id,pt.arm_payer_email,pt.arm_token,pt.arm_transaction_id,pt.arm_amount,pt.arm_currency,pt.arm_is_trial,pt.arm_payment_gateway,pt.arm_payment_mode,pt.arm_transaction_status,pt.arm_created_date,pt.arm_payment_type,pt.arm_extra_vars,sp.arm_subscription_plan_name,wpu.user_login as arm_user_login, wpu.user_email as arm_user_email,pt.arm_display_log as arm_display_log,pt.arm_is_post_payment as arm_is_post_payment,pt.arm_is_gift_payment as arm_is_gift_payment  FROM `" . $ARMember->tbl_arm_payment_log . "` pt LEFT JOIN `" . $ARMember->tbl_arm_subscription_plans . "` sp ON pt.arm_plan_id = sp.arm_subscription_plan_id LEFT JOIN `" . $wpdb->users . "` wpu ON pt.arm_user_id = wpu.ID " . $pt_where;
             $ptquery = "{$ctquery}";
             
-            $total_payment_rows = "SELECT (SELECT COUNT(*) FROM `".$ARMember->tbl_arm_payment_log."` WHERE `arm_display_log` = 1 AND `arm_is_post_payment`='".$arm_is_post_payment."') as total_payment_log";
+            $total_payment_rows = "SELECT (SELECT COUNT(*) FROM `".$ARMember->tbl_arm_payment_log."` WHERE `arm_display_log` = 1 AND `arm_is_post_payment`='".$arm_is_post_payment."' AND `arm_is_gift_payment`='".$arm_is_gift_payment."') as total_payment_log";
             
             $payment_rows = $wpdb->get_results($total_payment_rows);
             $before_filter = intval($payment_rows[0]->total_payment_log);
@@ -1377,6 +1514,8 @@ if (!class_exists('ARM_transaction'))
             if (!empty($payment_log)) {
                 $effectiveData = array();
                 $ai = 0;
+                $defaultPlanData = $arm_subscription_plans->arm_default_plan_array();
+                $arm_all_plan_arr = array();
                 foreach ($payment_log as $rc) {
                     $rc = (object) $rc;
                     $transactionID = $rc->arm_log_id;
@@ -1400,6 +1539,9 @@ if (!class_exists('ARM_transaction'))
                     if( $arm_is_post_payment ){
                     	$bulkCheckId = 'pp-cb-item-action-' . $rc->arm_log_id;
                     	$bulkCheckName = 'pp-';
+                    } else if( $arm_is_gift_payment ){
+                    	$bulkCheckId = 'gp-cb-item-action-' . $rc->arm_log_id;
+                    	$bulkCheckName = 'gp-';
                     } else {
                     	$bulkCheckId = 'cb-item-action-' . $rc->arm_log_id;
                     	$bulkCheckName = '';
@@ -1425,14 +1567,17 @@ if (!class_exists('ARM_transaction'))
                         $response_data[$ai][4] = (!empty($rc->arm_last_name))? $rc->arm_last_name:'-';
 			
                         $response_data[$ai][5] = "<a class='arm_openpreview_popup' href='javascript:void(0)' data-id='".$rc->arm_user_id."' >".$data->user_login."</a>";
+			$response_data[$ai][6] = !empty($rc->arm_user_email) ? $rc->arm_user_email : '-';
                     }
                     else
                     {
                         $response_data[$ai][3] = $arm_default_user_details_text;
                         $response_data[$ai][4] = $arm_default_user_details_text;
                         $response_data[$ai][5] = $arm_default_user_details_text;
+			$response_data[$ai][6] = $arm_default_user_details_text;
                     }
-                    $response_data[$ai][6] = $arm_subscription_plans->arm_get_plan_name_by_id($rc->arm_plan_id);
+                    
+                    $response_data[$ai][7] = $arm_subscription_plans->arm_get_plan_name_by_id($rc->arm_plan_id);
                     
                     $userPlanData = get_user_meta($rc->arm_user_id, 'arm_user_plan_'.$rc->arm_plan_id, true);
                     
@@ -1443,7 +1588,7 @@ if (!class_exists('ARM_transaction'))
                     }
                     
                     if (!isset($effectiveData[$rc->arm_user_id]) && !empty($change_plan) && $change_plan == $rc->arm_plan_id && $subscr_effective > strtotime($nowDate)) {
-                        $response_data[$ai][6] .= '<div>' . __('Effective from', 'ARMember') . ' ' . date_i18n($date_format, $subscr_effective) . '</div>';
+                        $response_data[$ai][7] .= '<div>' . __('Effective from', 'ARMember') . ' ' . date_i18n($date_format, $subscr_effective) . '</div>';
                         $effectiveData[$rc->arm_user_id][] = $change_plan;
                     }
                     if($rc->arm_payment_gateway == '')
@@ -1453,11 +1598,11 @@ if (!class_exists('ARM_transaction'))
                     else {
                         $payment_gateway = $arm_payment_gateways->arm_gateway_name_by_key($rc->arm_payment_gateway);
                     } 
-                    $response_data[$ai][7] = $payment_gateway;
+                    $response_data[$ai][8] = $payment_gateway;
                     $payment_type = $rc->arm_payment_type;
                     $payment_type_text = '';
                     
-                    $defaultPlanData = $arm_subscription_plans->arm_default_plan_array();
+                    
                     $plan_id = $rc->arm_plan_id;
                     $userPlanDatameta = get_user_meta($rc->arm_user_id, 'arm_user_plan_' . $plan_id, true);
                     $userPlanDatameta = !empty($userPlanDatameta) ? $userPlanDatameta : array();
@@ -1469,7 +1614,15 @@ if (!class_exists('ARM_transaction'))
                 	}
                 	else
                 	{
-                		$plan_info = new ARM_Plan($plan_id);
+                		if(!empty($arm_all_plan_arr[$plan_id]))
+		                {
+		                    $plan_info = $arm_all_plan_arr[$plan_id];
+		                }
+		                else
+		                {
+		                    $plan_info = new ARM_Plan($plan_id);
+		                    $arm_all_plan_arr[$plan_id] = $plan_info;
+		                }
                 	}
 
                     $user_payment_mode = "";
@@ -1502,9 +1655,9 @@ if (!class_exists('ARM_transaction'))
                     		$payment_type_text = __('Subscription', 'ARMember');
                     }
                     
-                    $arm_trial_tran = ($rc->arm_is_trial == 1) ? ' (Trial Transaction)' : '';
+                    $arm_trial_tran = ($rc->arm_is_trial == 1) ? ' (' . __('Trial Transaction','ARMember') . ')' : '';
                     
-                    $response_data[$ai][8] = $payment_type_text.' '.$user_payment_mode.$arm_trial_tran;
+                    $response_data[$ai][9] = $payment_type_text.' '.$user_payment_mode.$arm_trial_tran;
                     $payer_email = '';
                     if($rc->arm_payer_email == '')
                     {
@@ -1527,19 +1680,19 @@ if (!class_exists('ARM_transaction'))
                     	$payer_email = $arm_default_user_details_text;
                     }
 
-                    $response_data[$ai][9] = $payer_email;
+                    $response_data[$ai][10] = $payer_email;
 
                     $transStatus = $this->arm_get_transaction_status_text($arm_transaction_status);
                     $failed_reason = (isset($extraVars['error']) && !empty($extraVars['error'])) ? $extraVars['error'] : '';
                     if ($rc->arm_transaction_status == 'failed' && !empty($failed_reason)) {
                         $transStatus = '<span class="armhelptip" title="' . $failed_reason . '">' . $transStatus . '</span>';
                     }
-                    $response_data[$ai][10] = $transStatus;
-                    $response_data[$ai][11] = date_i18n($date_time_format, strtotime($rc->arm_created_date));
+                    $response_data[$ai][11] = $transStatus;
+                    $response_data[$ai][12] = date_i18n($date_time_format, strtotime($rc->arm_created_date));
                     $rc->arm_currency = (isset($rc->arm_currency) && !empty($rc->arm_currency)) ? strtoupper($rc->arm_currency) : strtoupper($global_currency);
-                    $response_data[$ai][12] = $arm_payment_gateways->arm_amount_set_separator($rc->arm_currency, $rc->arm_amount) . ' ' . strtoupper($rc->arm_currency);
+                    $response_data[$ai][13] = $arm_payment_gateways->arm_amount_set_separator($rc->arm_currency, $rc->arm_amount) . ' ' . strtoupper($rc->arm_currency);
 
-                    $response_data[$ai][13] = (isset($extraVars['card_number']) && !empty($extraVars['card_number'])) ? $extraVars['card_number'] : '-';
+                    $response_data[$ai][14] = (isset($extraVars['card_number']) && !empty($extraVars['card_number'])) ? $extraVars['card_number'] : '-';
                     $gridAction = "<div class='arm_grid_action_btn_container'>";
                     if ($rc->arm_payment_gateway == 'bank_transfer' && $arm_transaction_status == 'pending') {
                     	$changeStatusFun = 'ChangeStatus(' . $transactionID .',1);';
@@ -1549,6 +1702,11 @@ if (!class_exists('ARM_transaction'))
                     		$changeStatusFun = 'ArmPPChangeStatus(' . $transactionID .',1);';
                     		$chagneStatusFun2 = 'ArmPPChangeStatus(' . $transactionID . ',2);';
                     		$armbPopupArg = 'change_pp_transaction_status_message';
+                    	}
+                    	else if( $arm_is_gift_payment ){
+                    		$changeStatusFun = 'ArmGPChangeStatus(' . $transactionID .',1);';
+                    		$chagneStatusFun2 = 'ArmGPChangeStatus(' . $transactionID . ',2);';
+                    		$armbPopupArg = 'change_gp_transaction_status_message';
                     	}
 
                         $gridAction .= "<a class='armhelptip arm_change_btlog_status' href='javascript:void(0)' onclick=\"{$changeStatusFun}armBpopup('{$armbPopupArg}');\" data-status='1' data-log_id='" . $transactionID . "' title='" . __('Approve', 'ARMember') . "'><img src='" . MEMBERSHIP_IMAGES_URL . "/grid_approved.png' onmouseover=\"this.src='" . MEMBERSHIP_IMAGES_URL . "/grid_approved_hover.png';\" onmouseout=\"this.src='" . MEMBERSHIP_IMAGES_URL . "/grid_approved.png';\" /></a>";
@@ -1563,9 +1721,12 @@ if (!class_exists('ARM_transaction'))
                     if( $arm_is_post_payment ){
                     	$arm_transaction_del_cls .= ' arm_pp_transaction_delete_btn';
                     }
+                    else if( $arm_is_gift_payment ){
+                    	$arm_transaction_del_cls .= ' arm_gp_transaction_delete_btn';
+                    }
                     $gridAction .= $arm_global_settings->arm_get_confirm_box($transactionID, __("Are you sure you want to delete this transaction?", 'ARMember'), $arm_transaction_del_cls, $log_type);
                     $gridAction .= "</div>";
-                    $response_data[$ai][14] = $gridAction;
+                    $response_data[$ai][15] = $gridAction;
                     $ai++;
                 }
             }

@@ -21,7 +21,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
 						<tr class="form-field">
 							<th class="arm-form-table-label"><?php _e('Membership Plans','ARMember');?></th>
 							<td class="arm-form-table-content">
-								<select name="subscription_plan[]" id="subscription_plan_select" class="arm_chosen_selectbox" data-placeholder="<?php _e('Select Plan(s)..', 'ARMember');?>" multiple style="width: 320px;">
+								<select name="subscription_plan[]" id="subscription_plan_select" class="arm_chosen_selectbox arm_width_320" data-placeholder="<?php _e('Select Plan(s)..', 'ARMember');?>" multiple >
 									<?php
 									if (!empty($all_plans)) {
                                         foreach ($all_plans as $plan) {
@@ -39,7 +39,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
 							<td class="arm-form-table-content">
 								<input type="hidden" id="arm_primary_status" name="primary_status" value="" />
 								<dl class="arm_selectbox column_level_dd">
-									<dt style="width: 300px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+									<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 									<dd>
 										<ul data-id="arm_primary_status">
 											<li data-label="<?php _e('All Status','ARMember');?>" data-value=""><?php _e('All Status','ARMember');?></li>
@@ -58,14 +58,14 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
 						<tr class="form-field">
 							<th class="arm-form-table-label"><?php _e('Joining Date','ARMember');?></th>
 							<td class="arm-form-table-content arm_import_export_date_fields">
-								<input type="text" name="start_date" placeholder="<?php _e('Start Date', 'ARMember');?>" class="arm_admin_import_export_datepicker" data-date_format="<?php echo $arm_common_date_format; ?>">
-								<input type="text" name="end_date" placeholder="<?php _e('End Date', 'ARMember');?>" class="arm_admin_import_export_datepicker" data-date_format="<?php echo $arm_common_date_format; ?>">
+								<input type="text" name="start_date" placeholder="<?php _e('Start Date', 'ARMember');?>" id="arm_admin_import_export_start_date" class="arm_admin_import_export_datepicker" data-date_format="<?php echo $arm_common_date_format; ?>">
+								<input type="text" name="end_date" placeholder="<?php _e('End Date', 'ARMember');?>" id="arm_admin_import_export_end_date" class="arm_admin_import_export_datepicker arm_margin_left_10" data-date_format="<?php echo $arm_common_date_format; ?>">
 							</td>
 						</tr>
                         <tr class="form-field">
                             <th class="arm-form-table-label"></th>
                             <td class="arm-form-table-content arm_import_export_date_fields">
-                                <button id="arm_user_meta_to_export" class="armemailaddbtn" name="arm_action" value="select_meta" onClick="arm_open_user_meta_popup();" type="button" style="min-width: 120px;"><?php _e('Select Meta', 'ARMember');?></button>
+                                <button id="arm_user_meta_to_export" class="armemailaddbtn arm_min_width_120" name="arm_action" value="select_meta" onClick="arm_open_user_meta_popup();" type="button" ><?php _e('Select Meta', 'ARMember');?></button>
                             </td>
                             <?php
                             $defaultMetas = array();
@@ -84,8 +84,8 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
 						<tr class="form-field">
 							<th></th>
 							<td class="arm-form-table-content">
-								<button id="arm_user_export_btn_csv" class="armemailaddbtn" name="arm_action" value="user_export_csv" type="submit" style="min-width: 120px;"><?php _e('Export as csv', 'ARMember');?></button>
-								<button id="arm_user_export_btn_xml" class="armemailaddbtn" name="arm_action" value="user_export_xml" type="submit" style="min-width: 120px;"><?php _e('Export as xml', 'ARMember');?></button>
+								<button id="arm_user_export_btn_csv" class="armemailaddbtn arm_min_width_120" name="arm_action" value="user_export_csv" type="submit" ><?php _e('Export as csv', 'ARMember');?></button>
+								<button id="arm_user_export_btn_xml" class="armemailaddbtn arm_min_width_120 arm_margin_0" name="arm_action" value="user_export_xml" type="submit" ><?php _e('Export as xml', 'ARMember');?></button>
 								<span class="arm_info_text">(<?php _e("User having role 'administrator' will not be exported.", 'ARMember');?>)
 								</span>
 							</td>
@@ -113,7 +113,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
 							<td class="arm-form-table-content">
 								<input type="hidden" id="arm_plan_id" name="plan_id" value="" data-msg-required="<?php _e('Please select atleast one plan.', 'ARMember');?>" required/>
 								<dl class="arm_selectbox column_level_dd">
-									<dt style="width: 300px;"><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
+									<dt><span></span><input type="text" style="display:none;" value="" class="arm_autocomplete"/><i class="armfa armfa-caret-down armfa-lg"></i></dt>
 									<dd>
 										<ul data-id="arm_plan_id">
 											<li data-label="<?php _e('Select Plan', 'ARMember'); ?>" data-value=""><?php _e('Select Plan', 'ARMember'); ?></li>
@@ -136,11 +136,12 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
 							<th></th>
 							<td class="arm-form-table-content">
                                                                 <input type="hidden" name="arm_user_metas_to_import" id="arm_user_metas_to_import" value="" />
-								<button id="arm_user_import_btn" class="armemailaddbtn" name="arm_action" value="user_import" type="submit"><?php _e('Import', 'ARMember');?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" class="arm_loader_img_import_user" style="position:relative;top:8px;display:none;" width="24" height="24" />
+								<button id="arm_user_import_btn" class="armemailaddbtn" name="arm_action" value="user_import" type="submit"><?php _e('Import', 'ARMember');?></button>&nbsp;<img src="<?php echo MEMBERSHIP_IMAGES_URL.'/arm_loader.gif' ?>" class="arm_loader_img_import_user arm_submit_btn_loader" style="display:none;" width="24" height="24" />
 							</td>
 						</tr>
                         <tr class="form-field">
-                            <td colspan="2">
+                        	<th></th>
+                            <td>
 								<span class="">
 									<?php _e("Please download sample csv", 'ARMember');?>&nbsp;<a href="<?php echo admin_url('admin.php?page=' . $arm_slugs->general_settings . '&action=import_export&arm_action=download_sample');?>" class="arm_download_sample_csv_link" target="_blank"><?php _e('here', 'ARMember');?></a>.
 								</span>
@@ -164,31 +165,31 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
 							<td colspan="2" class="arm_export_settings_container">
 								<label>
 									<input type="checkbox" name="global_options" value="1" class="arm_icheckbox"/>
-									<?php _e('General Options','ARMember');?>
+									<span><?php _e('General Options','ARMember');?></span>
 									<?php 
 									$gen_opt_note = __('All general options will be exported.', 'ARMember');
 									?>
-									<i class="arm_helptip_icon armfa armfa-question-circle" title="<?php echo $gen_opt_note;?>"></i>
 								</label>
+								<i class="arm_helptip_icon armfa armfa-question-circle" title="<?php echo $gen_opt_note;?>"></i>
 								<div class="armclear"></div>
 								<label>
 									<input type="checkbox" name="block_options" value="1" class="arm_icheckbox"/>
-									<?php _e('Security Options','ARMember');?>
+									<span><?php _e('Security Options','ARMember');?></span>
 									<?php 
 									$blk_opt_note = __('Export all security options.', 'ARMember');
 									?>
-									<i class="arm_helptip_icon armfa armfa-question-circle" title="<?php echo $blk_opt_note;?>"></i>
 								</label>
+								<i class="arm_helptip_icon armfa armfa-question-circle" title="<?php echo $blk_opt_note;?>"></i>
 								
 								<div class="armclear"></div>
 								<label>
 									<input type="checkbox" name="common_messages" value="1" class="arm_icheckbox"/>
-									<?php _e('Common Messages','ARMember');?>
+									<span><?php _e('Common Messages','ARMember');?></span>
 									<?php 
 									$com_msg_note = __('Export all common messages.', 'ARMember');
 									?>
-									<i class="arm_helptip_icon armfa armfa-question-circle" title="<?php echo $com_msg_note;?>"></i>
 								</label>
+								<i class="arm_helptip_icon armfa armfa-question-circle" title="<?php echo $com_msg_note;?>"></i>
 								<div class="armclear"></div>
 							</td>
 						</tr>
@@ -208,7 +209,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
 						<tr class="form-field">
 							<th class="arm-form-table-label"><?php _e('Import Settings','ARMember');?></th>
 							<td class="arm-form-table-content">
-								<textarea name="settings_import_text" id="settings_import_text" rows="8" cols="30" style="min-width: 100%;" required></textarea>
+								<textarea name="settings_import_text" id="settings_import_text" rows="8" cols="30" class="arm_min_width_100_pct" required></textarea>
 							</td>
 						</tr>
 						<tr class="form-field">
@@ -226,7 +227,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
 	</div>
 	<div class="arm_import_user_list_detail_container"></div>
 </div>
-<div class="arm_import_user_list_detail_popup popup_wrapper arm_import_user_list_detail_popup_wrapper" style="width:900px;">
+<div class="arm_import_user_list_detail_popup popup_wrapper arm_import_user_list_detail_popup_wrapper" >
     <form method="GET" id="arm_add_import_user_form" class="arm_admin_form" onsubmit="return arm_add_import_user_form_action();">
         <div class="popup_wrapper_inner" style="overflow: hidden;">
             <div class="popup_header">
@@ -267,7 +268,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                     <div class="arm_import_progressbar_inner"></div>
                 </div>
                 <div class="popup_content_btn_wrapper">
-                    <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif'; ?>" class="arm_loader_img" style="position: relative;top: 15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left'; ?>;" width="20" height="20"/>
+                    <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif'; ?>" class="arm_loader_img arm_submit_btn_loader" style="top:15px;display: none;float: <?php echo (is_rtl()) ? 'right' : 'left'; ?>;" width="20" height="20"/>
                     <button class="arm_cancel_btn arm_import_user_list_detail_previous_btn" type="button"><?php _e('Previous', 'ARMember'); ?></button>
                     <button class="arm_submit_btn arm_add_import_user_submit_btn" type="submit"><?php _e('Add', 'ARMember'); ?></button>
                     <button class="arm_cancel_btn arm_import_user_list_detail_close_btn" type="button"><?php _e('Cancel', 'ARMember'); ?></button>
@@ -332,7 +333,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                 </td>
                 <td class="popup_content_btn popup_footer">
                     <div class="popup_content_btn_wrapper">
-                        <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif' ?>" id="arm_loader_img_clear_field" class="arm_loader_img" style="position: relative;top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left'; ?>;display: none;" width="20" height="20" />
+                        <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif' ?>" id="arm_loader_img_clear_field" class="arm_loader_img arm_submit_btn_loader" style=" top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left'; ?>;display: none;" width="20" height="20" />
                         <button class="arm_save_btn arm_user_meta_to_export" id="arm_select_metas_to_export" type="button" data-type="add"><?php _e('Ok', 'ARMember') ?></button>
                         <button class="arm_cancel_btn arm_select_user_meta_close_btn" type="button"><?php _e('Cancel', 'ARMember'); ?></button>
                     </div>
@@ -349,7 +350,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                 <td class="arm_select_user_meta_close_btn arm_popup_close_btn"></td>
                 <td class="popup_header"><?php _e('Select User Meta Fields', 'ARMember'); ?></td>
                 <td class="popup_content_text popup_header">
-                    <span class="arm_info_text" style="margin:0;">
+                    <span class="arm_info_text arm_margin_0" >
                         <?php _e(" Note that if you will select new meta then new meta will be set as", 'ARMember'); ?>
                         <strong> <?php _e('Preset Fields', 'ARMember'); ?> </strong>
                         <?php _e("and the field type will be", 'ARMember'); ?>   
@@ -360,7 +361,7 @@ $arm_common_date_format = $arm_global_settings->arm_check_common_date_format(get
                 <td class="popup_content_text arm_select_user_meta_wrapper" id="arm_select_user_meta_wrapper"> </td>
                 <td class="popup_content_btn popup_footer">
                     <div class="popup_content_btn_wrapper">
-                        <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif' ?>" id="arm_loader_img_clear_field" class="arm_loader_img" style="position: relative;top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left'; ?>;display: none;" width="20" height="20" />
+                        <img src="<?php echo MEMBERSHIP_IMAGES_URL . '/arm_loader.gif' ?>" id="arm_loader_img_clear_field" class="arm_loader_img arm_submit_btn_loader" style="top: 15px;float: <?php echo (is_rtl()) ? 'right' : 'left'; ?>;display: none;" width="20" height="20" />
                         <button class="arm_save_btn arm_user_meta_to_import_next" id="arm_user_meta_to_import_next" type="button" data-type="add"><?php _e('Next', 'ARMember') ?></button>
                         <button class="arm_cancel_btn arm_select_user_meta_close_btn" type="button"><?php _e('Cancel', 'ARMember'); ?></button>
                     </div>

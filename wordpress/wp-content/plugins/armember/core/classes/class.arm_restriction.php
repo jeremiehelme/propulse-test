@@ -6,30 +6,30 @@ if (!class_exists('ARM_restriction')) {
 
         function __construct() {
             global $wp, $wpdb, $ARMember, $arm_slugs, $arm_global_settings;
-            //add_action('init', array(&$this, 'arm_set_current_user'), 11);
+            //add_action('init', array($this, 'arm_set_current_user'), 11);
 
-            //add_action('init', array(&$this, 'arm_restriction_init'), 12);
+            //add_action('init', array($this, 'arm_restriction_init'), 12);
 
-            add_action('parse_request', array(&$this, 'arm_restrict_all_access'), 1);
-            add_filter('the_content', array(&$this, 'arm_the_content_filter'), 11);
-            add_filter('arm_restricted_site_access_allow_pages', array(&$this, 'arm_filter_allow_page_ids'), 10, 1);
+            add_action('parse_request', array($this, 'arm_restrict_all_access'), 1);
+            add_filter('the_content', array($this, 'arm_the_content_filter'), 11);
+            add_filter('arm_restricted_site_access_allow_pages', array($this, 'arm_filter_allow_page_ids'), 10, 1);
 
-            //add_action('wp', array(&$this, 'arm_wp_head_redirect'), 6);
-            add_action('pre_get_posts', array(&$this, 'arm_pre_get_posts'), 11);
-            add_filter('get_terms_args', array(&$this, 'arm_get_terms_args'), 20, 2);
-            add_filter('wp_get_nav_menu_items', array(&$this, 'arm_wp_get_nav_menu_items'), 50, 3);
-            add_action('wp_nav_menu_objects', array(&$this, 'arm_wp_nav_menu_items'), 10, 2);
+            //add_action('wp', array($this, 'arm_wp_head_redirect'), 6);
+            add_action('pre_get_posts', array($this, 'arm_pre_get_posts'), 11);
+            add_filter('get_terms_args', array($this, 'arm_get_terms_args'), 20, 2);
+            add_filter('wp_get_nav_menu_items', array($this, 'arm_wp_get_nav_menu_items'), 50, 3);
+            add_action('wp_nav_menu_objects', array($this, 'arm_wp_nav_menu_items'), 10, 2);
 
-            add_filter('widget_posts_args', array(&$this, 'arm_widget_posts_args'));
-            add_filter('widget_pages_args', array(&$this, 'arm_widget_pages_args'));
+            add_filter('widget_posts_args', array($this, 'arm_widget_posts_args'));
+            add_filter('widget_pages_args', array($this, 'arm_widget_pages_args'));
 
             /*             * ******************./Begin Feeds Protection/.******************** */
-            add_filter('feed_link', array(&$this, 'arm_feed_link'), 99, 2);
+            add_filter('feed_link', array($this, 'arm_feed_link'), 99, 2);
             /*             * ******************./End Feeds Protection./******************** */
 
-            add_filter('posts_join', array(&$this, 'arm_custom_posts_join'), 11);
-            add_filter('posts_where', array(&$this, 'arm_filter_where'), 11, 2);
-            add_filter('posts_distinct', array(&$this, 'arm_search_distinct'));
+            add_filter('posts_join', array($this, 'arm_custom_posts_join'), 11);
+            add_filter('posts_where', array($this, 'arm_filter_where'), 11, 2);
+            add_filter('posts_distinct', array($this, 'arm_search_distinct'));
         }
 
         function arm_search_distinct() {
@@ -146,12 +146,7 @@ if (!class_exists('ARM_restriction')) {
                                         }
                                     }
 
-
-
-
-                              // no need to plas -2 in blank array because in arm_restriction post where condition allready passed
-
-
+                                    // no need to plas -2 in blank array because in arm_restriction post where condition allready passed
                                     if (!empty($current_user_plan_array)) {
                                         $openPosts = array();
                                         $post_type = (isset($obj->post_type) && !empty($obj->post_type)) ? $obj->post_type : '';
@@ -164,16 +159,12 @@ if (!class_exists('ARM_restriction')) {
                                             $openPosts = $arm_drip_rules->arm_get_user_dripped_post_ids($current_user->ID, $current_user_plan_array, 'post');
                                         }
 
-                                   
-
-
                                         if (!empty($openPosts)) {
                                             $wherePost = implode(',', $openPosts);
                                             $where .= " OR {$wpdb->posts}.ID IN ({$wherePost}) ";
                                         }
                                     }
                                 }
-
 
                                 $where .= ")";
 
@@ -395,12 +386,9 @@ if (!class_exists('ARM_restriction')) {
                 }
             }/* End `(!empty($block_urls))` */
 
-
-
             /* Restrict `wp-login.php` & `wp-signup.php` page. */
 
             $hide_wp_login = isset($all_settings['hide_wp_login']) ? $all_settings['hide_wp_login'] : 0;
-
             if ($hide_wp_login == 1) {
 
                 $GLOBALS['pagenow'] = (isset($GLOBALS['pagenow'])) ? $GLOBALS['pagenow'] : $pagenow;
@@ -476,18 +464,11 @@ if (!class_exists('ARM_restriction')) {
             if (isset($pageIDs['cancel_payment_page_id'])) {
                 $allowIDs[] = $pageIDs['cancel_payment_page_id'];
             }
-
-
-
             $arm_default_redirection_settings = get_option('arm_redirection_settings');
             $arm_default_redirection_settings = maybe_unserialize($arm_default_redirection_settings);
-
-
-
-
-            $access_rules_options = $arm_default_redirection_settings['default_access_rules'];
+            $access_rules_options = (!empty($arm_default_redirection_settings['default_access_rules']) && is_array($arm_default_redirection_settings['default_access_rules'])) ? $arm_default_redirection_settings['default_access_rules'] : array();
             if (!empty($access_rules_options['non_logged_in'])) {
-                if ($access_rules_options['non_logged_in']['type'] == 'specific' && !empty($access_rules_options['non_logged_in']['redirect_to'])) {
+                if (!empty($access_rules_options['non_logged_in']['redirect_to']) && $access_rules_options['non_logged_in']['type'] == 'specific') {
                     $allowIDs[] = $access_rules_options['non_logged_in']['redirect_to'];
                 }
             }
@@ -521,7 +502,7 @@ if (!class_exists('ARM_restriction')) {
 
         function arm_restrict_all_access($wp) {
             global $current_user;
-            remove_action('parse_request', array(&$this, 'arm_restrict_all_access'), 1); /* only need it the first time */
+            remove_action('parse_request', array($this, 'arm_restrict_all_access'), 1); /* only need it the first time */
             global $wp, $wpdb, $current_user, $arm_errors, $ARMember, $arm_global_settings, $arm_subscription_plans;
 
             $this->arm_add_required_core_file();
@@ -560,7 +541,7 @@ if (!class_exists('ARM_restriction')) {
                 if ($is_feed_access) {
                     return;
                 } else {
-                    add_filter('the_posts', array(&$this, 'show_noaccess_feed'), 1);
+                    add_filter('the_posts', array($this, 'show_noaccess_feed'), 1);
                 }
             }
             if (TRUE === (is_admin() || is_user_logged_in() || current_user_can('administrator') || (defined('WP_INSTALLING') && isset($_GET['key'])))) {
@@ -871,11 +852,7 @@ if (!class_exists('ARM_restriction')) {
                     include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
                 }
 
-
-
                 if (is_plugin_active('bbpress/bbpress.php') || is_plugin_active('woocommerce/woocommerce.php')) {
-                    $get_bbp_slug = get_option('_bbp_root_slug');
-                    //$get_wc_slug = get_option( 'woocommerce_shop_page_id' );
                     $request_uri = "";
                     if (isset($queried_object->has_archive))
                         $request_uri = $queried_object->has_archive;
@@ -933,6 +910,10 @@ if (!class_exists('ARM_restriction')) {
                                 do_action('arm_before_restricted_site_access_redirect', $redirect_url, $wp);
                                 $redirect_url = apply_filters('arm_restricted_site_access_redirect_url', $redirect_url, $wp, $extraVars);
                                 $redirect_code = apply_filters('arm_restricted_site_access_head', $redirect_code, $wp);
+                                $ARMember->arm_session_start();
+				if (!isset($_SESSION['arm_restricted_page_url'])) {
+					$_SESSION['arm_restricted_page_url'] = $this->curPageURL();
+		                }
                                 wp_redirect($redirect_url, $redirect_code);
                                 die;
                             }
@@ -1203,6 +1184,7 @@ if (!class_exists('ARM_restriction')) {
                 } else {
                     $user_id = $current_user->ID;
                     $user_plans = get_user_meta($user_id, 'arm_user_plan_ids', true);
+                    $user_plans = apply_filters('arm_allow_specific_user_restricted_access', $user_plans, $user_id);
                     $user_plans = !empty($user_plans) ? $user_plans : array(-2);
 
                     $suspended_plan_ids = get_user_meta($user_id, 'arm_user_suspended_plan_ids', true);
@@ -1616,6 +1598,7 @@ if (!class_exists('ARM_restriction')) {
             if (!is_admin() && !current_user_can('administrator')) {
                 if (is_user_logged_in()) {
                     $current_user_plan = get_user_meta($current_user->ID, 'arm_user_plan_ids', true);
+                    $current_user_plan = apply_filters('arm_allow_specific_user_restricted_access', $current_user_plan, $current_user->ID);
                     $current_user_plan = !empty($current_user_plan) ? $current_user_plan : array(-2);
 
                     $suspended_plan_ids = get_user_meta($current_user->ID, 'arm_user_suspended_plan_ids', true);
@@ -1895,6 +1878,7 @@ if (!class_exists('ARM_restriction')) {
 
             if (is_user_logged_in()) {
                 $current_user_plan = get_user_meta($current_user->ID, 'arm_user_plan_ids', true);
+                $current_user_plan = apply_filters('arm_allow_specific_user_restricted_access', $current_user_plan, $current_user->ID);
                 $current_user_plan = !empty($current_user_plan) ? $current_user_plan : array(-2);
 
                 $suspended_plan_ids = get_user_meta($current_user->ID, 'arm_user_suspended_plan_ids', true);
@@ -2024,7 +2008,8 @@ if (!class_exists('ARM_restriction')) {
             $post = new stdClass;
             $post->post_author = 1;
             $post->post_name = '';
-            add_filter('the_permalink', create_function('$permalink', 'return "' . ARM_HOME_URL . '";'));
+            //add_filter('the_permalink', create_function('$permalink', 'return "' . ARM_HOME_URL . '";'));
+            add_filter('the_permalink', function($permalink) {return ARM_HOME_URL;} );
             $post->guid = site_url();
             $post->post_title = __('No Feed Access', 'ARMember');
             $post->post_content = __('Sorry, You Don\'t Have Feed Access', 'ARMember');
@@ -2062,6 +2047,7 @@ if (!class_exists('ARM_restriction')) {
                         $user_id = (int) $user_id;
                         if ($user_id > 0) {
                             $user_plan = get_user_meta($user_id, 'arm_user_plan_ids', true);
+                            $user_plan = apply_filters('arm_allow_specific_user_restricted_access', $user_plan, $user_id);
                             $user_plan = (!empty($user_plan)) ? $user_plan : array(-2);
 
                             $arm_primary_status = arm_get_member_status($user_id);
@@ -2115,7 +2101,7 @@ if (!class_exists('ARM_restriction')) {
             }
         }
         function arm_elementor_templates_content_check_access_rules($elementor_content,$ele_temp_post_id){
-            global $arm_access_rules,$current_user;
+            global $arm_access_rules,$current_user, $arm_drip_rules;
             if (!current_user_can('administrator') && is_singular() && in_the_loop() && is_main_query() ) 
             {    
                 if ($ele_temp_post_id > 0) {
@@ -2137,11 +2123,23 @@ if (!class_exists('ARM_restriction')) {
                                 }
                             }
                             
-                            $current_user_plan = (!empty($current_user_plan)) ? $current_user_plan : array(-2);
-                            $return_current_user_plan_array = array_intersect($current_user_plan, $ele_temp_post_plans);
+                            $current_user_plan_all = (!empty($current_user_plan)) ? $current_user_plan : array(-2);
+                            $return_current_user_plan_array = array_intersect($current_user_plan_all, $ele_temp_post_plans);
                             
                             if (!empty($ele_temp_post_plans) && !empty($return_current_user_plan_array)) {
                                 return $elementor_content;
+                            }
+                            else if(!empty($current_user_plan) && $arm_drip_rules->isDripFeature) {
+                                $extraVars = array(
+                                                'post_type'       => '1', //get_post_type($ele_temp_post_id)
+                                                'post_id'         => $ele_temp_post_id,
+                                            );
+                                $allow_access = false;
+                                $allow_access = $arm_drip_rules->arm_filter_drip_access($allow_access, $extraVars);
+                                if($allow_access)
+                                {
+                                    return $elementor_content;
+                                }
                             }
                         }
                         return '';
@@ -2704,7 +2702,7 @@ if (!function_exists('wp_authenticate')) {
              * Fires after a user login has failed.
              * @param string $username User login.
              */
-            do_action('wp_login_failed', $username);
+            do_action('wp_login_failed', $username, $user);
         } else {
             if (!is_wp_error($user)) {
                 $statuses = $wpdb->get_row("SELECT `arm_primary_status`, `arm_secondary_status` FROM `" . $ARMember->tbl_arm_members . "` WHERE `arm_user_id`='" . $user->ID . "' ");

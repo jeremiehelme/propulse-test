@@ -7,41 +7,42 @@ if (!class_exists('ARM_members_activity'))
 		{
 			global $wpdb, $ARMember, $arm_slugs;
 			
-			add_action('arm_record_activity', array(&$this, 'arm_add_activity'), 1);
-			add_action('wp_ajax_arm_delete_member_activities', array(&$this, 'arm_delete_member_activities'));
+			add_action('arm_record_activity', array($this, 'arm_add_activity'), 1);
+			add_action('wp_ajax_arm_delete_member_activities', array($this, 'arm_delete_member_activities'));
 			/* Ajax Load More Activities */
-			add_action('wp_ajax_nopriv_arm_crop_iamge', array(&$this, 'arm_crop_image'));
-            add_action('wp_ajax_arm_crop_iamge', array(&$this, 'arm_crop_image'));
+			add_action('wp_ajax_nopriv_arm_crop_iamge', array($this, 'arm_crop_image'));
+            add_action('wp_ajax_arm_crop_iamge', array($this, 'arm_crop_image'));
 
 
-            add_action('wp_ajax_arm_upload_front', array(&$this, 'arm_upload_front'), 1);
-	        add_action('wp_ajax_nopriv_arm_upload_front', array(&$this, 'arm_upload_front'), 1);
+            add_action('wp_ajax_arm_upload_front', array($this, 'arm_upload_front'), 1);
+	        add_action('wp_ajax_nopriv_arm_upload_front', array($this, 'arm_upload_front'), 1);
 
-	        add_action('wp_ajax_arm_upload_cover', array(&$this, 'arm_upload_cover'), 1);
-	        add_action('wp_ajax_nopriv_arm_upload_cover', array(&$this, 'arm_upload_cover'), 1);
+	        add_action('wp_ajax_arm_upload_cover', array($this, 'arm_upload_cover'), 1);
+	        add_action('wp_ajax_nopriv_arm_upload_cover', array($this, 'arm_upload_cover'), 1);
 
-	        add_action('wp_ajax_arm_upload_profile', array(&$this, 'arm_upload_profile'), 1);
-	        add_action('wp_ajax_nopriv_arm_upload_profile', array(&$this, 'arm_upload_profile'), 1);
+	        add_action('wp_ajax_arm_upload_profile', array($this, 'arm_upload_profile'), 1);
+	        add_action('wp_ajax_nopriv_arm_upload_profile', array($this, 'arm_upload_profile'), 1);
 
-	        add_action('wp_ajax_arm_upload_badge', array(&$this, 'arm_upload_badge'), 1);
+	        add_action('wp_ajax_arm_upload_badge', array($this, 'arm_upload_badge'), 1);
 
-	        add_action('wp_ajax_arm_upload_social_icon', array(&$this, 'arm_upload_social_icon'), 1);
+	        add_action('wp_ajax_arm_upload_social_icon', array($this, 'arm_upload_social_icon'), 1);
 
-	        add_action('wp_ajax_arm_import_user', array(&$this, 'arm_import_user'), 1);
+	        add_action('wp_ajax_arm_import_user', array($this, 'arm_import_user'), 1);
 			
-			add_action('wp_ajax_armactivatelicense', array(&$this, 'armreqact'));
+			add_action('wp_ajax_armactivatelicense', array($this, 'armreqact'));
 
-			add_action('wp_ajax_armrenewlicense', array(&$this, 'arm_renew_license'));
+			add_action('wp_ajax_armrenewlicense', array($this, 'arm_renew_license'));
 
+			add_action('wp_ajax_armrenewuserbadge', array($this, 'arm_renew_user_badge'));
 			
-			add_action('wp_ajax_armdeactlic', array(&$this, 'armreqlicdeact'));
+			add_action('wp_ajax_armdeactlic', array($this, 'armreqlicdeact'));
 			global $check_sorting;
        		$check_sorting = "checksorting";
 			
 			global $check_version;
        		$check_version = "checkversion";
                 
-            add_action('admin_init', array(&$this, 'upgrade_data'));
+            add_action('admin_init', array($this, 'upgrade_data'));
 		}
                 
         function upgrade_data() {
@@ -60,7 +61,7 @@ if (!class_exists('ARM_members_activity'))
 			    }
 			}
 	
-            if (version_compare($arm_newdbversion, '4.1.4', '<') && version_compare($arm_newdbversion,'1.8.1','>')) {
+            if (version_compare($arm_newdbversion, '5.1', '<') && version_compare($arm_newdbversion,'1.8.1','>')) {
 				$path = MEMBERSHIP_VIEWS_DIR . '/upgrade_latest_data.php';
 				include($path);
 			}
@@ -94,7 +95,6 @@ if (!class_exists('ARM_members_activity'))
 			$isinfo = get_option("armSortInfo");
 	
 			if ($sortorder == "" || $sortid == "" || $issorted == "") {
-				//update_option('ARM_NEW_LOG_IS_LICENSE_ERROR_'.time(), 'MAIN_CASE_'.$case.'FIRST_CASE_SORTORDER_'.$sortorder.'_SORTID_'.$sortid.'_ISSORTED_'.$issorted);
 				return 0;
 			} else {
 				$sortfield = $sortorder;
@@ -112,27 +112,94 @@ if (!class_exists('ARM_members_activity'))
 				$servername = isset($_SERVER["SERVER_NAME"]) ? $_SERVER["SERVER_NAME"] : '';
 				$serverhost = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : '';
 				$mysitedomain = str_replace('www.', '', $servername);
-			$mysitedomain1 = str_replace('www.', '', $serverhost);
-			$mysitedomain2 = str_replace('www.', '', $siteipaddr);
+				$mysitedomain1 = str_replace('www.', '', $serverhost);
+				$mysitedomain2 = str_replace('www.', '', $siteipaddr);
 			
-            if (($domain_name == $mysitedomain || $domain_name == $mysitedomain1 || $domain_name == $mysitedomain2) && ($recordid == $sortid)) {
-                return 1;
-            } else {
-					//update_option('ARM_NEW_LOG_IS_LICENSE_ERROR_'.time(), 'MAIN_CASE_'.$case.'SECOND_CASE_DOMAINNAME_'.$domain_name.'_MYSITEDOMAIN_'.$mysitedomain.'_RECORDID_'.$recordid.'_SORTID_'.$sortid);
+				if (($domain_name == $mysitedomain || $domain_name == $mysitedomain1 || $domain_name == $mysitedomain2) && ($recordid == $sortid)) {
+					return 1;
+				} else {
 					return 0;
 				}
-			}
+				}
 		}
 		
+		function arm_renew_user_badge()
+		{
+			global $wp_version;
+			$lidata = "";
+			$verifycode = get_option("armSortOrder");
+			
+			if($verifycode == "")
+			{
+				echo "Invalid Request Parameters";
+				exit;
+			}
+			
+			$urltopost = "https://www.reputeinfosystems.com/tf/plugins/armember/verify/update_arm_badge.php";
+			$response = wp_remote_post($urltopost, array(
+				'method' => 'POST',
+				'timeout' => 45,
+				'redirection' => 5,
+				'httpversion' => '1.0',
+				'blocking' => true,
+				'headers' => array(),
+				'body' => array('verifycode' => $verifycode),
+				'user-agent' => 'ARM-WordPress/' . $wp_version . '; ' . ARM_HOME_URL,
+				'cookies' => array()
+					)
+			);
+
+			if (array_key_exists('body', $response) && isset($response["body"]) && $response["body"] != "")
+				$responsemsg = $response["body"];
+			else
+				$responsemsg = "";
+
+			if ($responsemsg != "") {
+				$responsemsg = explode("|^|", $responsemsg);
+				if (is_array($responsemsg) && count($responsemsg) > 0) {
+
+					if (isset($responsemsg[0]) && $responsemsg[0] != "") {
+						$msg = $responsemsg[0];
+					} else {
+						$msg = "";
+					}
+					
+					if (isset($responsemsg[1]) && $responsemsg[1] != "") {
+						$info = $responsemsg[1];
+					} else {
+						$info = "";
+					}
+
+					if ($msg == "1") {
+						update_option("armSortOrder", $info);
+						update_option("armIsBadgeUpdated", $info);
+						delete_option('arm_badgeupdaterequired');
+						echo "VERIFIED";
+						exit;
+					}
+					else 
+					{
+						echo $msg;
+						exit;
+					}
+				}
+			}
+			else 
+			{
+				echo "Invalid Request";
+				exit;
+			}			
+		}
+		
+		
 		function checksorting() {
-	
+			
 			$sortorder = get_option("armSortOrder");
 			$sortid = get_option("armSortId");
 			$issorted = get_option("armIsSorted");
 			$isinfo = get_option("armSortInfo");
 	
 			if ($sortorder == "" || $sortid == "" || $issorted == "") {
-				//update_option('ARM_NEW_ADMIN_LOG_IS_LICENSE_ERROR_'.time(), 'FIRST_CASE_SORTORDER_'.$sortorder.'_SORTID_'.$sortid.'_ISSORTED_'.$issorted);
 				return 0;
 			} else {
 				$sortfield = $sortorder;
@@ -140,7 +207,7 @@ if (!class_exists('ARM_members_activity'))
 	
 				$ordering = array();
 				$ordering = explode("^", $sortorderval);
-	
+				
 				$domain_name = str_replace('www.', '', $ordering[3]);
 				$recordid = $ordering[4];
 				$ipaddress = $ordering[5];
@@ -149,25 +216,21 @@ if (!class_exists('ARM_members_activity'))
 				$siteipaddr = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : '';
 				$servername = isset($_SERVER["SERVER_NAME"]) ? $_SERVER["SERVER_NAME"] : '';
 				$serverhost = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : '';
+				
 				$mysitedomain = str_replace('www.', '', $servername);
-			$mysitedomain1 = str_replace('www.', '', $serverhost);
-			$mysitedomain2 = str_replace('www.', '', $siteipaddr);
-			
-            if (($domain_name == $mysitedomain || $domain_name == $mysitedomain1 || $domain_name == $mysitedomain2) && ($recordid == $sortid)) {
-                return 1;
-            } else {
+				$mysitedomain1 = str_replace('www.', '', $serverhost);
+				$mysitedomain2 = str_replace('www.', '', $siteipaddr);
+				
+				if (($domain_name == $mysitedomain || $domain_name == $mysitedomain1 || $domain_name == $mysitedomain2) && ($recordid == $sortid)) {
+					return 1;
+				}else {
 					
-					  //update_option('ARM_NEW_ADMIN_LOG_IS_LICENSE_ERROR_'.time(), 'SECOND_CASE_DOMAINNAME_'.$domain_name.'_MYSITEDOMAIN_'.$mysitedomain.'_RECORDID_'.$recordid.'_SORTID_'.$sortid);
 					  $isoptionstored = "";
-					 //$isoptionstored = get_option("arm_isoptionstored");
-					  
-					  //if(!isset($isoptionstored) || $isoptionstored == "" || $isoptionstored != "1" )
-					 // {
-						  update_option('arm_is_social_feature', 0);
-						  update_option('arm_is_social_login_feature', 0);
-				                update_option('arm_is_drip_content_feature', 0);
-				                update_option('arm_is_opt_ins_feature', 0);
-				                update_option('arm_is_coupon_feature', 0);
+					  update_option('arm_is_social_feature', 0);
+					  update_option('arm_is_social_login_feature', 0);
+					  update_option('arm_is_drip_content_feature', 0);
+				      update_option('arm_is_opt_ins_feature', 0);
+				      update_option('arm_is_coupon_feature', 0);
 				                update_option('arm_is_buddypress_feature', 0);
 				                update_option('arm_is_woocommerce_feature', 0);
 				                update_option('arm_is_multiple_membership_feature', 0);
@@ -178,21 +241,24 @@ if (!class_exists('ARM_members_activity'))
 						  delete_option("armSortOrder");
 						  delete_option("armSortId");
 						  delete_option("armSortInfo");
+						  delete_option("armBadgeUpdated");
+						  delete_option("armIsBadgeUpdated");
 			  
 						  delete_site_option("armIsSorted");
 						  delete_site_option("armSortOrder");
 						  delete_site_option("armSortId");
 						  delete_site_option("armSortInfo");
+						  delete_site_option("armBadgeUpdated");
+						  delete_site_option("armIsBadgeUpdated");
 						  
 						  update_option('arm_isoptionstored', 1);
-					  //}
-
 					return 0;
 				}
 			}
 		}
 		
 		function arm_renew_license() {
+			global $wp_version;
        
         $lidata = "";
 
@@ -211,6 +277,7 @@ if (!class_exists('ARM_members_activity'))
             'blocking' => true,
             'headers' => array(),
             'body' => array('verifyrenew' => $valstring, 'verifycode' => $verifycode),
+			'user-agent' => 'ARM-WordPress/' . $wp_version . '; ' . ARM_HOME_URL,
             'cookies' => array()
                 )
         );
@@ -256,6 +323,7 @@ if (!class_exists('ARM_members_activity'))
 
 
 		function armdeactivatelicense() {
+			global $wp_version;
 			$siteinfo = array();
 	
 			$siteinfo[] = get_bloginfo('name');
@@ -281,6 +349,7 @@ if (!class_exists('ARM_members_activity'))
 					'blocking' => true,
 					'headers' => array(),
 					'body' => array('verifypurchase' => $verifycode, 'postval' => $postval),
+					'user-agent' => 'ARM-WordPress/' . $wp_version . '; ' . ARM_HOME_URL,
 					'cookies' => array()
 						)
 				);
@@ -298,6 +367,7 @@ if (!class_exists('ARM_members_activity'))
 						'blocking' => true,
 						'headers' => array(),
 						'body' => array('verifypurchase' => $verifycode, 'postval' => $postval),
+						'user-agent' => 'ARM-WordPress/' . $wp_version . '; ' . ARM_HOME_URL,
 						'cookies' => array()
 							)
 					);
@@ -501,7 +571,7 @@ if (!class_exists('ARM_members_activity'))
 	  	 
 		 
 		 function armverifypurchasecode() {
-       
+       global $wp_version;
         $lidata = array();
 
         $lidata[] = $_POST["cust_name"];
@@ -530,6 +600,7 @@ if (!class_exists('ARM_members_activity'))
             'blocking' => true,
             'headers' => array(),
             'body' => array('verifypurchase' => $encodedval),
+			'user-agent' => 'ARM-WordPress/' . $wp_version . '; ' . ARM_HOME_URL,
             'cookies' => array()
                 )
         );
@@ -546,6 +617,7 @@ if (!class_exists('ARM_members_activity'))
 				'blocking' => true,
 				'headers' => array(),
 				'body' => array('verifypurchase' => $encodedval),
+				'user-agent' => 'ARM-WordPress/' . $wp_version . '; ' . ARM_HOME_URL,
 				'cookies' => array()
 					)
 			);
@@ -774,22 +846,24 @@ if (!class_exists('ARM_members_activity'))
 
             $info = getimagesize(MEMBERSHIP_UPLOAD_DIR . '/' . basename($_POST['src']));
             $file = $_POST['src'];
+        	$file1 = MEMBERSHIP_UPLOAD_DIR . '/' . basename($_POST['src']);
+            $orgnl_hw = getimagesize($file1);
+            $orgnl_w = $orgnl_hw[0];
+            $orgnl_h = $orgnl_hw[1];
+            $targ_x1 = 0;
+            $targ_y1 = 0;
+            $targ_x2 = $orgnl_w;
+            $targ_y2 = $orgnl_h;
+            $is_crop = false;
             if(isset($_POST['cord'])) {
             	$crop = explode(',', $_POST['cord']);
-	            $targ_x1 = $crop[0];
-	            $targ_y1 = $crop[1];
-	            $targ_x2 = $crop[2];
-	            $targ_y2 = $crop[3];
-            }
-            else {
-            	$file = MEMBERSHIP_UPLOAD_DIR . '/' . basename($_POST['src']);
-                $orgnl_hw = getimagesize($file);
-                $orgnl_w = $orgnl_hw[0];
-                $orgnl_h = $orgnl_hw[1];
-                $targ_x1 = 0;
-	            $targ_y1 = 0;
-	            $targ_x2 = $orgnl_w;
-	            $targ_y2 = $orgnl_h;
+            	if ($crop[2] != 0 && $crop[3] != 0) {
+		            $targ_x1 = $crop[0];
+		            $targ_y1 = $crop[1];
+		            $targ_x2 = $crop[2];
+		            $targ_y2 = $crop[3];
+            		$is_crop = true;
+            	}
             }
 
             if ($_POST['type'] == 'profile') {
@@ -810,56 +884,87 @@ if (!class_exists('ARM_members_activity'))
                     do_action('arm_upload_bp_profile_cover', $user_id);
                 }
             }
-            
-            $file = MEMBERSHIP_UPLOAD_DIR . '/' . basename($_POST['src']); 
-
-            if ($info['mime'] == 'image/gif') {
-
-                $img_r = imagecreatefromgif($file);
-                $dst_r = imagecreatetruecolor($targ_x2, $targ_y2);
-                imagecopy($dst_r, $img_r, 0, 0, $targ_x1, $targ_y1, $targ_x2, $targ_y2);
-                imagegif($dst_r, MEMBERSHIP_UPLOAD_DIR . '/' . basename($file));
-
-                $original_info = getimagesize($file);
-                $original_w = $original_info[0];
-                $original_h = $original_info[1];
-                $original_img = imagecreatefromgif($file);
-                $thumb_img = imagecreatetruecolor($thumb_w, $thumb_h);
-                imagecopy($thumb_img, $original_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $original_w, $original_h);
-                imagegif($thumb_img, MEMBERSHIP_UPLOAD_DIR . '/' . basename($file));
-            } else if ($info['mime'] == 'image/png') {
- 
-
-                $img_r = imagecreatefrompng($file);
-                $dst_r = imagecreatetruecolor($targ_x2, $targ_y2);
-                imagealphablending($dst_r, false);
-                imagesavealpha($dst_r, true);
-                imagecopy($dst_r, $img_r, 0, 0, $targ_x1, $targ_y1, $targ_x2, $targ_y2);
-                imagepng($dst_r, MEMBERSHIP_UPLOAD_DIR . '/' . basename($file));
-                $original_info = getimagesize($file);
-                $original_w = $original_info[0];
-                $original_h = $original_info[1];
-                $original_img = imagecreatefrompng($file);
-                $thumb_img = imagecreatetruecolor($thumb_w, $thumb_h);
-                imagealphablending($thumb_img, false);
-                imagesavealpha($thumb_img, true);
-                imagecopyresampled($thumb_img, $original_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $original_w, $original_h);
-                imagepng($thumb_img, MEMBERSHIP_UPLOAD_DIR . '/' . basename($file));
-            } else {
-
-                $img_r = imagecreatefromjpeg($file);
-                $dst_r = imagecreatetruecolor($targ_x2, $targ_y2);
-                imagecopy($dst_r, $img_r, 0, 0, $targ_x1, $targ_y1, $targ_x2, $targ_y2);
-                imagejpeg($dst_r, MEMBERSHIP_UPLOAD_DIR . '/' . basename($file), 100);
-                $original_info = getimagesize($file);
-                $original_w = $original_info[0];
-                $original_h = $original_info[1];
-                $original_img = imagecreatefromjpeg($file);
-                $thumb_img = imagecreatetruecolor($thumb_w, $thumb_h);
-                imagecopyresampled($thumb_img, $original_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $original_w, $original_h);
-                imagejpeg($thumb_img, MEMBERSHIP_UPLOAD_DIR . '/' . basename($file));
+            if ($_POST['rotate'] != 'undefined') {
+	            $rotation = $_POST['rotate'];
+	            if ($rotation == -90 || $rotation == 270) {
+	                $rotation = 90;
+	            } elseif ($rotation == -180 || $rotation == 180) {
+	                $rotation = 180;
+	            } elseif ($rotation == -270 || $rotation == 90) {
+	                $rotation = 270;
+	            }
+            	$new_targ_x1 = $targ_x1;
+            	$new_targ_y1 = $targ_y1;
+	            $fileTemp = MEMBERSHIP_UPLOAD_DIR . '/' . basename($_POST['src']);
+	            $image_info = getimagesize($fileTemp);
+				$original_width = $image_info[0];
+				$original_height = $image_info[1];
+				$new_width = abs($targ_x2 - $new_targ_x1);
+				$new_height = abs($targ_y2 - $new_targ_y1);
+	            if ($info['mime'] == 'image/png') {
+	            	$source = imagecreatefrompng($fileTemp);
+		            $imageRotate = imagerotate($source, $rotation, 0);
+		            $rotated_width = imagesx($imageRotate);
+					$rotated_height = imagesy($imageRotate);
+					$dx = $rotated_width - $original_width;
+					$dy = $rotated_height - $original_height;
+					$crop_x = 0;
+					$crop_y = 0;
+					if($is_crop) {
+						$crop_x = $dx/2 + $new_targ_x1;
+						$crop_y = $dy/2 + $new_targ_y1;
+					}
+					$new_image = imagecreatetruecolor($targ_x2, $targ_y2);
+	            	if($is_crop) {
+		            	imagealphablending($new_image, false);
+	                	imagesavealpha($new_image, true);
+						imagecopyresampled($new_image, $imageRotate, 0, 0, $targ_x1, $targ_y1, $targ_x2, $targ_y2, $targ_x2, $targ_y2);
+	            		$upload = imagepng($new_image, $fileTemp);
+					} else {
+	            		$upload = imagepng($imageRotate, $fileTemp);
+					}
+	            	$file = MEMBERSHIP_UPLOAD_DIR . '/' . basename($_POST['src']);
+	            	$original_info = getimagesize($file);
+	                $original_w = $original_info[0];
+	                $original_h = $original_info[1];
+	                $original_img = imagecreatefrompng($file);
+	                $thumb_img = imagecreatetruecolor($thumb_w, $thumb_h);
+	                imagealphablending($thumb_img, false);
+	                imagesavealpha($thumb_img, true);
+	                imagecopyresampled($thumb_img, $original_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $original_w, $original_h);
+	                imagepng($thumb_img, MEMBERSHIP_UPLOAD_DIR . '/' . basename($file));
+	            } else {
+	            	$source = imagecreatefromjpeg($fileTemp);
+		            $imageRotate = imagerotate($source, $rotation, 0);
+		            $rotated_width = imagesx($imageRotate);
+					$rotated_height = imagesy($imageRotate);
+					$dx = $rotated_width - $original_width;
+					$dy = $rotated_height - $original_height;
+					$crop_x = 0;
+					$crop_y = 0;
+					$targ_x1 = $new_targ_x1;
+					if($is_crop) {
+						$crop_x = $dx/2 + $new_targ_x1;
+						$crop_y = $dy/2 + $new_targ_y1;
+					}
+					$new_image = imagecreatetruecolor($targ_x2, $targ_y2);
+	            	if($is_crop) {
+						imagecopyresampled($new_image, $imageRotate, 0, 0, $targ_x1, $targ_y1, $targ_x2, $targ_y2, $targ_x2, $targ_y2);
+	            		$upload = imagejpeg($new_image, $fileTemp);
+					} else {
+	            		$upload = imagejpeg($imageRotate, $fileTemp);
+					}
+	            	$file = MEMBERSHIP_UPLOAD_DIR . '/' . basename($_POST['src']);
+	            	$original_info = getimagesize($file);
+	                $original_w = $original_info[0];
+	                $original_h = $original_info[1];
+	                $original_img = imagecreatefromjpeg($file);
+	                $thumb_img = imagecreatetruecolor($thumb_w, $thumb_h);
+	                imagecopyresampled($thumb_img, $original_img, 0, 0, 0, 0, $thumb_w, $thumb_h, $original_w, $original_h);
+	                imagejpeg($thumb_img, MEMBERSHIP_UPLOAD_DIR . '/' . basename($file));
+	            }
             }
-            
+
             if ($_POST['type'] == 'profile') {
                 if ($_POST['update_meta'] != 'no') {
                     update_user_meta($user_id, 'avatar', $_POST['src']);
@@ -1161,18 +1266,19 @@ if (!class_exists('ARM_members_activity'))
         function arm_import_user() 
 	    {
 	    	global $ARMember, $arm_capabilities_global;
-	    	
 	    	$ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_general_settings'], '1');
 
 	        $upload_dir = MEMBERSHIP_UPLOAD_DIR.'/';
 	        $upload_url = MEMBERSHIP_UPLOAD_URL.'/';
-	        
+
 	        $file_name = (isset($_SERVER['HTTP_X_FILENAME']) ? $_SERVER['HTTP_X_FILENAME'] : false);
 	        $response = "";
 	        $userID = get_current_user_id();
 	        if ($file_name && !empty($userID) && $userID != 0) {
 	        	$file_size_new = $_FILES['armfileselect']['size'];
 	        	$file_size_new = number_format($file_size_new / 1048576, 2, '.', '');
+
+	        	add_filter( 'upload_mimes', array($this, 'arm_allow_mime_type'), 1);
 
 	            $arm_is_valid_file = $this->arm_check_valid_file_ext_data($file_name, $file_size_new, $_FILES['armfileselect'] );
 	        	if($arm_is_valid_file)
@@ -1186,6 +1292,14 @@ if (!class_exists('ARM_members_activity'))
 	        }
 	        echo $response;
 	        exit;
+	    }
+	    function arm_allow_mime_type($mime_type_array)
+	    {
+	    	if(is_array($mime_type_array) && !array_key_exists('xml', $mime_type_array))
+	    	{
+	    		$mime_type_array['xml'] = 'text/xml';
+	    	}
+	    	return $mime_type_array;
 	    }
 
 	    function arm_upload_file_function($source, $destination){

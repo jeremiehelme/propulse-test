@@ -49,7 +49,13 @@ if( isset( $_GET['status'] ) && 'success' == $_GET['status'] ){
 ?>
 
 <div class="wrap arm_page arm_paid_posts_main_wrapper">
-	<div class="content_wrapper arm_paid_posts_wrapper" id="content_wrapper" style="position: relative;">
+	<?php
+    if ($setact != 1) {
+        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
+        ?>
+        <div style="margin-top:20px;margin-bottom:20px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 0px 10px 10px;background-color:#ffffff;color:#000000;font-size:16px;display:block;visibility:visible;text-align:left;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
+    <?php } ?>
+	<div class="content_wrapper arm_paid_posts_wrapper arm_position_relative" id="content_wrapper" >
 		<div class="page_title">
 			<?php
 				if( 'edit_paid_post' == $action ){
@@ -58,13 +64,6 @@ if( isset( $_GET['status'] ) && 'success' == $_GET['status'] ){
 					esc_html_e('Add Paid Posts','ARMember');
 				}
 			?>
-			<?php
-		    if ($setact != 1) {
-		        $admin_css_url = admin_url('admin.php?page=arm_manage_license');
-	        ?>
-	        <div style="margin-top:20px;margin-bottom:10px;border-left: 4px solid #ffba00;box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);height:20px;width:99%;padding:10px 25px 10px 0px;background-color:#f2f2f2;color:#000000;font-size:17px;display:block;visibility:visible;text-align:right;" >ARMember License is not activated. Please activate license from <a href="<?php echo $admin_css_url; ?>">here</a></div>
-    		<?php } ?>
-			
 			<div class="armclear"></div>
 		</div>
 		<div class="armclear"></div>
@@ -184,3 +183,6 @@ if( isset( $_GET['status'] ) && 'success' == $_GET['status'] ){
 		return false;
 	});	
 </script>
+<?php
+	echo $ARMember->arm_get_need_help_html_content('paid-posts-list-add');
+?>

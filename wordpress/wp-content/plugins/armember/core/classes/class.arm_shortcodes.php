@@ -6,61 +6,58 @@ if (!class_exists('ARM_shortcodes')) {
         function __construct() {
             global $wpdb, $ARMember, $arm_slugs;
             /* Build Shortcodes For `armif` */
-            add_action('parse_request', array(&$this, 'arm_build_armif_shortcodes'), 1);
-            add_action('parse_request', array(&$this, 'arm_build_armnotif_shortcodes'), 1);
+            add_action('parse_request', array($this, 'arm_build_armif_shortcodes'), 1);
+            add_action('parse_request', array($this, 'arm_build_armnotif_shortcodes'), 1);
             /* Build Shortcodes For Subscription Plans */
-            add_shortcode('arm_plan', array(&$this, 'arm_plan_shortcode_func'));
-            add_shortcode('arm_plan_not', array(&$this, 'arm_plan_not_shortcode_func'));
+            add_shortcode('arm_plan', array($this, 'arm_plan_shortcode_func'));
+            add_shortcode('arm_plan_not', array($this, 'arm_plan_not_shortcode_func'));
 
-            add_shortcode('arm_restrict_content', array(&$this, 'arm_restrict_content_shortcode_func'));
-            add_shortcode('arm_content', array(&$this, 'arm_content_shortcode_func'));
-            add_shortcode('arm_not_login_content', array(&$this, 'arm_not_login_content_shortcode_func'));
-            add_shortcode('arm_template', array(&$this, 'arm_template_shortcode_func'));
-            add_shortcode('arm_account_detail', array(&$this, 'arm_account_detail_shortcode_func'));
-            add_shortcode('arm_view_profile', array(&$this, 'arm_view_profile_shortcode_func'));
-            add_shortcode('arm_subscription_detail', array(&$this, 'arm_subscription_detail_shortcode_func'));
-            add_shortcode('arm_member_transaction', array(&$this, 'arm_member_transaction_func'));
-            add_shortcode('arm_close_account', array(&$this, 'arm_close_account_shortcode_func'));
-            add_shortcode('arm_membership', array(&$this, 'arm_membership_detail_shortcode_func'));
+            add_shortcode('arm_restrict_content', array($this, 'arm_restrict_content_shortcode_func'));
+            add_shortcode('arm_content', array($this, 'arm_content_shortcode_func'));
+            add_shortcode('arm_not_login_content', array($this, 'arm_not_login_content_shortcode_func'));
+            add_shortcode('arm_template', array($this, 'arm_template_shortcode_func'));
+            add_shortcode('arm_account_detail', array($this, 'arm_account_detail_shortcode_func'));
+            add_shortcode('arm_view_profile', array($this, 'arm_view_profile_shortcode_func'));
+            add_shortcode('arm_subscription_detail', array($this, 'arm_subscription_detail_shortcode_func'));
+            add_shortcode('arm_member_transaction', array($this, 'arm_member_transaction_func'));
+            add_shortcode('arm_close_account', array($this, 'arm_close_account_shortcode_func'));
+            add_shortcode('arm_membership', array($this, 'arm_membership_detail_shortcode_func'));
            
-            add_shortcode('arm_conditional_redirection', array(&$this, 'arm_conditional_redirection_shortcode_func'));
-            add_shortcode('arm_conditional_redirection_role', array(&$this, 'arm_conditional_redirection_by_user_role_shortcode_func'));
-            add_shortcode('arm_username', array(&$this, 'arm_username_func'));
-            add_shortcode('arm_userid', array(&$this, 'arm_userid_func'));
-            add_shortcode('arm_displayname', array(&$this, 'arm_displayname_func'));
-            add_shortcode('arm_avatar', array(&$this, 'arm_avatar_func'));
-            add_shortcode('arm_if_user_in_trial', array(&$this, 'arm_if_user_in_trial_func'));
-            add_shortcode('arm_not_if_user_in_trial', array(&$this, 'arm_not_if_user_in_trial_func'));
-            add_shortcode('arm_firstname_lastname', array(&$this, 'arm_firstname_lastname_func'));
-            add_shortcode('arm_user_plan', array(&$this, 'arm_user_plan_func'));
-            add_shortcode('arm_usermeta', array(&$this, 'arm_usermeta_func'));
-            add_shortcode('arm_user_badge', array(&$this, 'arm_user_badge_func'));
-            add_shortcode('arm_user_planinfo', array(&$this, 'arm_user_planinfo_func'));
-            add_shortcode('arm_purchased_paid_post_list', array(&$this, 'arm_membership_detail_shortcode_func'));
-            add_shortcode('arm_paid_post_member_transaction', array(&$this, 'arm_member_transaction_func'));
+            add_shortcode('arm_conditional_redirection', array($this, 'arm_conditional_redirection_shortcode_func'));
+            add_shortcode('arm_conditional_redirection_role', array($this, 'arm_conditional_redirection_by_user_role_shortcode_func'));
+            add_shortcode('arm_username', array($this, 'arm_username_func'));
+            add_shortcode('arm_userid', array($this, 'arm_userid_func'));
+            add_shortcode('arm_displayname', array($this, 'arm_displayname_func'));
+            add_shortcode('arm_avatar', array($this, 'arm_avatar_func'));
+            add_shortcode('arm_if_user_in_trial', array($this, 'arm_if_user_in_trial_func'));
+            add_shortcode('arm_not_if_user_in_trial', array($this, 'arm_not_if_user_in_trial_func'));
+            add_shortcode('arm_firstname_lastname', array($this, 'arm_firstname_lastname_func'));
+            add_shortcode('arm_user_plan', array($this, 'arm_user_plan_func'));
+            add_shortcode('arm_usermeta', array($this, 'arm_usermeta_func'));
+            add_shortcode('arm_user_badge', array($this, 'arm_user_badge_func'));
+            add_shortcode('arm_user_planinfo', array($this, 'arm_user_planinfo_func'));
+            add_shortcode('arm_purchased_paid_post_list', array($this, 'arm_membership_detail_shortcode_func'));
+            add_shortcode('arm_paid_post_member_transaction', array($this, 'arm_member_transaction_func'));
 
-            add_action('wp_ajax_arm_directory_paging_action', array(&$this, 'arm_directory_paging_action'));
-            add_action('wp_ajax_nopriv_arm_directory_paging_action', array(&$this, 'arm_directory_paging_action'));
-            add_action('wp_ajax_arm_transaction_paging_action', array(&$this, 'arm_transaction_paging_action'));
-            add_action('wp_ajax_nopriv_arm_transaction_paging_action', array(&$this, 'arm_transaction_paging_action'));
-            add_action('wp_ajax_arm_login_history_paging_action', array(&$this, 'arm_login_history_paging_action'));
-            add_action('wp_ajax_nopriv_arm_login_history_paging_action', array(&$this, 'arm_login_history_paging_action'));
-            add_action('wp_ajax_arm_close_account_form_submit_action', array(&$this, 'arm_close_account_form_action'));
-            add_action('wp_ajax_nopriv_arm_close_account_form_submit_action', array(&$this, 'arm_close_account_form_action'));
-            add_action('wp_ajax_arm_membership_paging_action', array(&$this, 'arm_membership_paging_action'));
+            add_action('wp_ajax_arm_directory_paging_action', array($this, 'arm_directory_paging_action'));
+            add_action('wp_ajax_nopriv_arm_directory_paging_action', array($this, 'arm_directory_paging_action'));
+            add_action('wp_ajax_arm_transaction_paging_action', array($this, 'arm_transaction_paging_action'));
+            add_action('wp_ajax_arm_login_history_paging_action', array($this, 'arm_login_history_paging_action'));
+            add_action('wp_ajax_arm_close_account_form_submit_action', array($this, 'arm_close_account_form_action'));
+            add_action('wp_ajax_arm_membership_paging_action', array($this, 'arm_membership_paging_action'));
             
             /* Add Buttons Into WordPress(TinyMCE) Editor */
-            //add_action('admin_footer', array(&$this, 'arm_insert_shortcode_popup'));
-            add_action('media_buttons', array(&$this, 'arm_insert_shortcode_button'), 20);
-            //add_action('admin_init', array(&$this, 'arm_add_tinymce_styles'));
-            add_action('admin_enqueue_scripts', array(&$this, 'arm_add_tinymce_styles'));
+            //add_action('admin_footer', array($this, 'arm_insert_shortcode_popup'));
+            add_action('media_buttons', array($this, 'arm_insert_shortcode_button'), 20);
+            //add_action('admin_init', array($this, 'arm_add_tinymce_styles'));
+            add_action('admin_enqueue_scripts', array($this, 'arm_add_tinymce_styles'));
             /* Add Font Support Into WordPress(TinyMCE) Editor */
-            add_filter('mce_buttons', array(&$this, 'arm_editor_mce_buttons'));
-            add_filter('mce_buttons_2', array(&$this, 'arm_editor_mce_buttons_2'));
-            add_filter('tiny_mce_before_init', array(&$this, 'arm_editor_font_sizes'));
-            add_filter('arm_change_advanced_shortcode_names', array(&$this, 'arm_change_advanced_shortcode_functions'));
-            add_filter('arm_change_armif_shortcode_before_displayed', array(&$this, 'arm_change_armif_shortcode_before_displayed_func'), 10, 2);
-            add_filter('arm_change_armnotif_shortcode_before_displayed', array(&$this, 'arm_change_armnotif_shortcode_before_displayed_func'), 10, 2);
+            add_filter('mce_buttons', array($this, 'arm_editor_mce_buttons'));
+            add_filter('mce_buttons_2', array($this, 'arm_editor_mce_buttons_2'));
+            add_filter('tiny_mce_before_init', array($this, 'arm_editor_font_sizes'));
+            add_filter('arm_change_advanced_shortcode_names', array($this, 'arm_change_advanced_shortcode_functions'));
+            add_filter('arm_change_armif_shortcode_before_displayed', array($this, 'arm_change_armif_shortcode_before_displayed_func'), 10, 2);
+            add_filter('arm_change_armnotif_shortcode_before_displayed', array($this, 'arm_change_armnotif_shortcode_before_displayed_func'), 10, 2);
             /* Shortcode for Display Current User Login History */
         }
 
@@ -133,7 +130,7 @@ if (!class_exists('ARM_shortcodes')) {
                 '______armIf', '_______armIf', '________armIf', '_________armIf', '__________armIf',
             );
             foreach ($armif_shortcodes as $code) {
-                add_shortcode($code, array(&$this, 'armif_shortcode_func'));
+                add_shortcode($code, array($this, 'armif_shortcode_func'));
             }
         }
 
@@ -145,7 +142,7 @@ if (!class_exists('ARM_shortcodes')) {
                 '______armNotIf', '_______armNotIf', '________armNotIf', '_________armNotIf', '__________armNotIf',
             );
             foreach ($armnotif_shortcodes as $code) {
-                add_shortcode($code, array(&$this, 'armnotif_shortcode_func'));
+                add_shortcode($code, array($this, 'armnotif_shortcode_func'));
             }
         }
 
@@ -1271,7 +1268,8 @@ if (!class_exists('ARM_shortcodes')) {
         }
 
         function arm_template_shortcode_func($atts, $content, $tag) {
-            global $wpdb, $ARMember, $arm_global_settings, $arm_members_directory, $arm_members_class, $arm_social_feature, $arm_member_forms;
+            global $wpdb, $ARMember, $arm_global_settings, $arm_members_directory, $arm_members_class, $arm_social_feature, $arm_member_forms, $arm_capabilities_global;
+            
             $arm_check_is_gutenberg_page = $ARMember->arm_check_is_gutenberg_page();
             if($arm_check_is_gutenberg_page)
             {
@@ -1369,19 +1367,24 @@ if (!class_exists('ARM_shortcodes')) {
                     if($type == 'profile'){
                         
                         $user_plans = get_user_meta($user_id, 'arm_user_plan_ids', true);
-                        $temp_id_admin = $wpdb->get_row($wpdb->prepare('SELECT `arm_id` FROM `'. $ARMember->tbl_arm_member_templates.'` WHERE `arm_enable_admin_profile` = %d ORDER BY `arm_id` ASC LIMIT %d',1,1));
-                        
+                        if(!empty($_REQUEST['action']) && $_REQUEST['action'] == "arm_template_preview"){
+                            $ARMember->arm_check_user_cap($arm_capabilities_global['arm_manage_member_templates'], '1');
+                            $temp_id_admin = $_REQUEST['temp_id'];
+                        }else{
+                            $temp_id_admin = $wpdb->get_row($wpdb->prepare('SELECT `arm_id` FROM `'. $ARMember->tbl_arm_member_templates.'` WHERE `arm_enable_admin_profile` = %d ORDER BY `arm_id` ASC LIMIT %d',1,1));
+                            $temp_id_admin = isset($temp_id_admin->arm_id) ? $temp_id_admin->arm_id : 0;
+                        }
+
                         $admin_template_data = array();
                         if(empty($user_plans) || $is_admin_user ){
-                            if( $is_admin_user && isset($temp_id_admin->arm_id) && $temp_id_admin->arm_id > 0 && $temp_id_admin->arm_id != '' ){
-                                $temp_data = $wpdb->get_row("SELECT * FROM `" . $ARMember->tbl_arm_member_templates . "` WHERE `arm_id`='{$temp_id_admin->arm_id}' AND `arm_type`='{$type}'");
+                            if( $is_admin_user && isset($temp_id_admin) && $temp_id_admin > 0 && $temp_id_admin != '' ){
+                                $temp_data = $wpdb->get_row("SELECT * FROM `" . $ARMember->tbl_arm_member_templates . "` WHERE `arm_id`='{$temp_id_admin}' AND `arm_type`='{$type}'");
                                 $display_admin_user = 1;
 
                             } else {
                                 $temp_data = $wpdb->get_row("SELECT * FROM `" . $ARMember->tbl_arm_member_templates . "` WHERE `arm_id`='{$id}' AND `arm_type`='{$type}'");
                             }
                         }else{
-                            
                             foreach($user_plans as $user_plan){
                                 $temp_count = $wpdb->get_var("SELECT count(*) FROM `" . $ARMember->tbl_arm_member_templates . "` WHERE FIND_IN_SET(" . $user_plan . ", `arm_subscription_plan`) AND `arm_type`='{$type}'"); 
                                 if($temp_count > 0){
@@ -1429,13 +1432,20 @@ if (!class_exists('ARM_shortcodes')) {
 
                     $enable_crop = isset($general_settings['enable_crop']) ? $general_settings['enable_crop'] : 1;
 
-                    if($enable_crop){
+                    global $arm_is_enable_crop;
+                    if($enable_crop && empty($arm_is_enable_crop)){
+                        $arm_is_enable_crop = 1;
                         $content .='<div id="arm_crop_div_wrapper" class="arm_crop_div_wrapper" style="display:none;">';
                         $content .='<div id="arm_crop_div_wrapper_close" class="arm_clear_field_close_btn arm_popup_close_btn"></div>';
-                        $content .='<div id="arm_crop_div"><img id="arm_crop_image" alt="" src="" style="max-width:100%;" /></div>';
+                        $content .='<div id="arm_crop_div"><img id="arm_crop_image" alt="" src="" style="max-width:100%;" data-rotate="0" /></div>';
                         $content .='<div class="arm_skip_avtr_crop_button_wrapper_admn arm_inht_front_usr_avtr">';
-                        $content .='<button  class="arm_crop_button">' . __('crop', 'ARMember') . '</button>';
-                        $content .='<label id="arm_skip_avtr_crop_nav_front" title="'.__("Skip Avatar Cropping", 'ARMember').'" class="armhelptip tipso_style">' . __('Skip', 'ARMember') . '</label>';
+                        $content .='<button class="arm_crop_button arm_img_setting armhelptip tipso_style" title="' . __('Crop', 'ARMember') . '" data-method="crop"><span class="armfa armfa-crop"></span></button>';
+                        $content .='<button class="arm_clear_button arm_img_setting armhelptip tipso_style" title="' . __('Clear', 'ARMember') . '" data-method="clear" style="display:none;"><span class="armfa armfa-times"></span></button>';
+                        $content .='<button class="arm_zoom_button arm_zoom_plus arm_img_setting armhelptip tipso_style" data-method="zoom" data-option="0.1" title="' . __('Zoom In', 'ARMember') . '"><span class="armfa armfa-search-plus"></span></button>';
+                        $content .='<button class="arm_zoom_button arm_zoom_minus arm_img_setting armhelptip tipso_style" data-method="zoom" data-option="-0.1" title="' . __('Zoom Out', 'ARMember') . '"><span class="armfa armfa-search-minus"></span></button>';
+                        $content .='<button class="arm_rotate_button arm_img_setting armhelptip tipso_style" data-method="rotate" data-option="90" title="' . __('Rotate', 'ARMember') . '"><span class="armfa armfa-rotate-right"></span></button>';
+                        $content .='<button class="arm_reset_button arm_img_setting armhelptip tipso_style" title="' . __('Reset', 'ARMember') . '" data-method="reset"><span class="armfa armfa-refresh"></span></button>';
+                        $content .='<button id="arm_skip_avtr_crop_nav_front" class="arm_avtr_done_front">' . __('Done', 'ARMember') . '</button>';
                         $content .='</div>';
                         $content .='<p class="arm_discription">' . __('(Use Cropper to set image and <br/>use mouse scroller for zoom image.)', 'ARMember') . '</p>';
                         $content .='</div>';
@@ -1443,10 +1453,15 @@ if (!class_exists('ARM_shortcodes')) {
 
                         $content .='<div id="arm_crop_cover_div_wrapper" class="arm_crop_cover_div_wrapper" style="display:none;">';
                         $content .='<div id="arm_crop_cover_div_wrapper_close" class="arm_clear_field_close_btn arm_popup_close_btn"></div>';
-                        $content .='<div id="arm_crop_cover_div"><img id="arm_crop_cover_image" alt="" src="" style="max-width:100%;" /></div>';
+                        $content .='<div id="arm_crop_cover_div"><img id="arm_crop_cover_image" alt="" src="" style="max-width:100%;" data-rotate="0" /></div>';
                         $content .='<div class="arm_skip_cvr_crop_button_wrapper_admn arm_inht_front_usr_cvr">';
-                        $content .='<button  class="arm_crop_cover_button">' . __('crop', 'ARMember') . '</button>';
-                        $content .='<label id="arm_skip_cvr_crop_nav_front" title="'.__("Skip Cover Cropping", 'ARMember').'" class="armhelptip tipso_style">' . __('Skip', 'ARMember') . '</label>';
+                        $content .='<button class="arm_crop_cover_button arm_img_cover_setting armhelptip tipso_style" title="' . __('Crop', 'ARMember') . '" data-method="crop"><span class="armfa armfa-crop"></span></button>';
+                        $content .='<button class="arm_clear_cover_button arm_img_cover_setting armhelptip tipso_style" title="' . __('Clear', 'ARMember') . '" data-method="clear" style="display:none;"><span class="armfa armfa-times"></span></button>';
+                        $content .='<button class="arm_zoom_cover_button arm_zoom_plus arm_img_cover_setting armhelptip tipso_style" data-method="zoom" data-option="0.1" title="' . __('Zoom In', 'ARMember') . '"><span class="armfa armfa-search-plus"></span></button>';
+                        $content .='<button class="arm_zoom_cover_button arm_zoom_minus arm_img_cover_setting armhelptip tipso_style" data-method="zoom" data-option="-0.1" title="' . __('Zoom Out', 'ARMember') . '"><span class="armfa armfa-search-minus"></span></button>';
+                        $content .='<button class="arm_rotate_cover_button arm_img_cover_setting armhelptip tipso_style" data-method="rotate" data-option="90" title="' . __('Rotate', 'ARMember') . '"><span class="armfa armfa-rotate-right"></span></button>';
+                        $content .='<button class="arm_reset_cover_button arm_img_cover_setting armhelptip tipso_style" title="' . __('Reset', 'ARMember') . '" data-method="reset"><span class="armfa armfa-refresh"></span></button>';
+                        $content .='<button id="arm_skip_cvr_crop_nav_front" class="arm_cvr_done_front">' . __('Done', 'ARMember') . '</button>';
                         $content .='</div>';
                         $content .='<p class="arm_discription">' . __('(Use Cropper to set image and use mouse scroller for zoom image.)', 'ARMember') . '</p>';
                         $content .='</div>';
@@ -1466,283 +1481,508 @@ if (!class_exists('ARM_shortcodes')) {
                             $content .= $arm_members_directory->arm_profile_template_blocks((array) $temp_data, $_data, $opts);
                         }
                         $content .= '</div>';
+                        $content .= '</div>';                    
                     } elseif ($type == 'directory') {
-                        $arm_search_position = "top";
+
+                        if($temp_data->arm_slug == 'directorytemplate6')
+                        {
+                            $arm_search_position = "top";
+                            $arm_advanced_search_position = 'left';
+                            $directoryno='directorytemplate6';
+                        }
+                        else
+                        {
+                            $arm_search_position = "top";
+                            $directoryno=$temp_data->arm_slug;
+                            $arm_advanced_search_position = 'top';
+                        }
+                        
+                       
                         $content .= '<form method="POST" class="arm_directory_form_'.$arm_search_position.' arm_directory_form_container ' . $arm_directory_form_rtl . '" data-temp="' . $id . '" onsubmit="return false;" action="#">';
                         $content .= '<div class="arm_template_loading" style="display: none;"><img src="' . MEMBERSHIP_IMAGES_URL . '/loader_template.gif" alt="Loading.."></div>';
                         /* For Filter User List */
                         $sortbox = (isset($opts['template_options']['sortbox']) && $opts['template_options']['sortbox'] == '1') ? true : false;
                         $searchbox = (isset($opts['template_options']['searchbox']) && $opts['template_options']['searchbox'] == '1') ? true : false;
-                        if ($sortbox || $searchbox || (is_user_logged_in())) {
 
-                            // For New Filters
-                            //-------------------------------------------------------
-                                $dbProfileFields = $arm_members_directory->arm_template_profile_fields();
-                                $orderedFields = array();
+                        // For New Filters
+                        //-------------------------------------------------------
+                        $dbProfileFields = $arm_members_directory->arm_template_profile_fields();
+                        $orderedFields = array();
 
-                                if (!empty($opts['profile_fields'])) {
-                                   foreach($opts['profile_fields'] as $fieldK) {
-                                       if (isset($dbProfileFields[$fieldK])) {
-                                            $orderedFields[$fieldK] = $dbProfileFields[$fieldK];
-                                            unset($dbProfileFields[$fieldK]);
-                                       }
-                                   }
-                                }
+                        if (!empty($opts['profile_fields'])) {
+                           foreach($opts['profile_fields'] as $fieldK) {
+                               if (isset($dbProfileFields[$fieldK])) {
+                                    $orderedFields[$fieldK] = $dbProfileFields[$fieldK];
+                                    unset($dbProfileFields[$fieldK]);
+                               }
+                           }
+                        }
 
-                                $arm_search_filter_title = !empty($common_messages['profile_template_search_filter_title']) ? $common_messages['profile_template_search_filter_title'] : __('Search Members', 'ARMember');
+                        $arm_search_filter_title = !empty($common_messages['profile_template_search_filter_title']) ? $common_messages['profile_template_search_filter_title'] : __('Search Members', 'ARMember');
 
-                                
+                        $tempOptions = !empty($temp_data->arm_options) ? $temp_data->arm_options : '';
+                        
+                        $armSearchType = !empty($tempOptions['search_type']) ? $tempOptions['search_type'] : '0';
+                        $content .= '<div class="arm_search_filter_fields_wrapper arm_search_filter_fields_wrapper_'.$arm_search_position.' arm_search_filter_container_type_'.$armSearchType.'">';
 
-                                $tempOptions = !empty($temp_data->arm_options) ? $temp_data->arm_options : '';
-                                
-                                $armSearchType = !empty($tempOptions['search_type']) ? $tempOptions['search_type'] : '0';
-                                $content .= '<div class="arm_search_filter_fields_wrapper arm_search_filter_fields_wrapper_'.$arm_search_position.' arm_search_filter_container_type_'.$armSearchType.'">';
+                        if(!empty($armSearchType) && $searchbox && $directoryno != 'directorytemplate6')
+                        {
+                            $content .= '<div class="arm_search_filter_title_div"><label class="arm_search_filter_title_label">'.$arm_search_filter_title.'</label></div>';
+                            foreach($orderedFields as $armSearchkey => $armSearchValue)
+                            {
+                                $armSearchFieldType = isset($armSearchValue['type']) ? $armSearchValue['type'] : '';
+                                $armSearchFieldId = isset($armSearchValue['id']) ? $armSearchValue['id'] : '';
+                                $armSearchFieldLabel = isset($armSearchValue['label']) ? stripslashes_deep($armSearchValue['label']) : '';
+                                $armSearchFieldId = 'arm_'.$armSearchFieldId.'_'.$randomTempID;
 
-                                $content .= '<div class="arm_search_filter_title_div"><label class="arm_search_filter_title_label">'.$arm_search_filter_title.'</label></div>';
-
-                                if($armSearchType != "0" && $searchbox)
+                                if($armSearchFieldType=='profile_cover')
                                 {
-                                    foreach($orderedFields as $armSearchkey => $armSearchValue)
-                                    {
-                                        $armSearchFieldType = isset($armSearchValue['type']) ? $armSearchValue['type'] : '';
-                                        $armSearchFieldId = isset($armSearchValue['id']) ? $armSearchValue['id'] : '';
-                                        $armSearchFieldLabel = isset($armSearchValue['label']) ? stripslashes_deep($armSearchValue['label']) : '';
-                                        $armSearchFieldId = 'arm_'.$armSearchFieldId.'_'.$randomTempID;
-
-                                        if($armSearchFieldType=='profile_cover')
-                                        {
-                                            continue;
-                                        }
-
-                                        $arm_search_field_item = '<div class="arm_search_filter_field_item_'.$arm_search_position.'" armSearchFieldType='.$armSearchFieldType.'>';
-                                        
-                                        $arm_search_field_item_label_start = '<div class="arm_dir_filter_label">';
-                                        $arm_search_field_item_label_end = '</div>';
-
-                                        $arm_search_field_item_input_start = '<div class="arm_dir_filter_input">';
-                                        $arm_search_field_item_input_end = '</div>';
-
-                                        if( $armSearchFieldType == "text" || $armSearchFieldType == "url" || $armSearchFieldType == "textarea")
-                                        {
-                                            $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label" for="'.$armSearchFieldId.'">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
-                                            
-                                            $arm_search_field_item .= $arm_search_field_item_input_start.'<input type="text" name="arm_directory_field_list['.$armSearchkey.']" placeholder="'.$armSearchValue['placeholder'].'" id="'.$armSearchFieldId.'">'.$arm_search_field_item_input_end;
-                                        }
-                                        else if($armSearchFieldType == "date")
-                                        {
-                                            if( !wp_script_is('arm_bootstrap_datepicker_with_locale_js','enqueued')){
-                                                wp_enqueue_script('arm_bootstrap_datepicker_with_locale_js');
-                                            }
-                                            $arm_search_field_item .= '<div class="arm_datetimepicker_field">';
-                                            $armform = new ARM_Form();
-                                            $userRegForm = $arm_member_forms->arm_get_single_member_forms('101');
-                                            $arm_exists_form = $armform->arm_is_form_exists('101');
-                                            if ($arm_exists_form) {
-                                                $armform->init((object) $userRegForm);
-                                            }
-                                            $formSettings = $armform->settings;
-                                            
-                                            $dateFormatTypes = array(
-                                                'm/d/Y' => 'MM/DD/YYYY',
-                                                'd/m/Y' => 'DD/MM/YYYY',
-                                                'Y/m/d' => 'YYYY/MM/DD',
-                                                'M d, Y' => 'MMM DD, YYYY',
-                                                'd M, Y' => 'DD MMM, YYYY',
-                                                'Y, M d' => 'YYYY, MMM DD',
-                                                'F d, Y' => 'MMMM DD, YYYY',
-                                                'd F, Y' => 'DD MMMM, YYYY',
-                                                'Y, F d' => 'YYYY, MMMM DD',
-                                                'Y-m-d'  => 'YYYY-MM-DD'
-                                            );
-                                            $dateFormat = $dateFormatTypes[$formSettings['date_format']];
-                                            $showTimePicker = '0';
-                                            if (!empty($formSettings['show_time'])) {
-                                                $showTimePicker = $formSettings['show_time'];
-                                            }
-                                            $calLocalization = '';
-                                            $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label" for="'.$armSearchFieldId.'">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
-
-                                            $arm_search_field_item .= $arm_search_field_item_input_start.'<input type="text" name="arm_directory_field_list['.$armSearchkey.']" class="arm_front_filter_datepicker arm_datepicker arm_datepicker_front" id="'.$armSearchFieldId.'" data-dateformat="' . $dateFormat . '" data-date_field="arm_date_field_101" data-show_timepicker="' . $showTimePicker . '" data-cal_localization="' . $calLocalization . '">'.$arm_search_field_item_input_end;
-                                            $arm_search_field_item .= '</div>';
-                                        }
-                                        else if($armSearchFieldType == "email")
-                                        {
-                                            $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
-                                            $arm_search_field_item .= $arm_search_field_item_input_start.'<input type="email" name="arm_directory_field_list['.$armSearchkey.']" placeholder="'.$armSearchValue['placeholder'].'" id="'.$armSearchFieldId.'">'.$arm_search_field_item_input_end;
-                                        }
-                                        else if($armSearchFieldType == "radio")
-                                        {
-                                            $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
-                                            $arm_search_field_item .= $arm_search_field_item_input_start.'<div class="arm_search_filter_radio">';
-                                            foreach($armSearchValue['options'] as $armSearchOptKey => $armSearchOptValue)
-                                            {
-                                                $armRadioLabelValue = $armSearchOptValue;
-                                                $armRadioValue = $armSearchOptValue;
-                                                if(strpos($armSearchOptValue, ':') !== false)
-                                                {
-                                                    $armRadioValue = explode(':', $armSearchOptValue);
-                                                    $armRadioValue = end($armRadioValue);
-                                                    $armRadioLabelValue = substr($armSearchOptValue, 0, strrpos($armSearchOptValue, ':'));
-                                                }
-                                                $arm_search_field_item .= '<input type="radio" name="arm_directory_field_list['.$armSearchkey.']" placeholder="'.$armSearchValue['placeholder'].'" id="'.$armSearchFieldId.'_'.$armSearchOptKey.'" value="'.$armRadioValue.'">';
-
-                                                $arm_search_field_item .= '<label class="arm_search_filter_field_radio_item_label" for="'.$armSearchFieldId.'_'.$armSearchOptKey.'">'.$armRadioLabelValue.'</label>';
-                                            }
-                                            $arm_search_field_item .= '</div>'.$arm_search_field_item_input_end;
-                                        }
-                                        else if($armSearchFieldType == "checkbox")
-                                        {
-                                            $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
-                                            $arm_search_field_item .= $arm_search_field_item_input_start.'<div class="arm_search_filter_chk">';
-                                            foreach($armSearchValue['options'] as $armSearchOptKey => $armSearchOptValue)
-                                            {
-                                                $armChkLabelValue = $armSearchOptValue;
-                                                $armChkValue = $armSearchOptValue;
-                                                if(strpos($armSearchOptValue, ':') !== false)
-                                                {
-                                                    $armChkValue = explode(':', $armSearchOptValue);
-                                                    $armChkValue = end($armChkValue);
-                                                    $armChkLabelValue = substr($armSearchOptValue, 0, strrpos($armSearchOptValue, ':'));
-                                                }
-                                                
-                                                $arm_search_field_item .= '<div class="arm_chk_field_div">';
-                                                $arm_search_field_item .= '<input type="checkbox" name="arm_directory_field_list['.$armSearchkey.'][]" id="'.$armSearchFieldId.'_'.$armSearchOptKey.'" value="'.$armChkValue.'">';
-
-                                                $arm_search_field_item .= '<label class="arm_search_filter_field_radio_item_label" for="'.$armSearchFieldId.'_'.$armSearchOptKey.'">'.$armChkLabelValue.'</label>';
-                                                $arm_search_field_item .= '</div>';
-                                            }
-                                            $arm_search_field_item .= '</div>'.$arm_search_field_item_input_end;
-                                        }
-                                        else if($armSearchFieldType == "select")
-                                        {
-                                            $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label" for="'.$armSearchFieldId.'">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
-                                            $arm_search_field_item .= $arm_search_field_item_input_start.'<select name="arm_directory_field_list['.$armSearchkey.']" id="'.$armSearchFieldId.'">';
-                                            foreach($armSearchValue['options'] as $armSearchOptKey => $armSearchOptValue)
-                                            {
-                                                $armSelectLabelValue = $armSearchOptValue;
-                                                $armSelectValue = $armSearchOptValue;
-                                                if(strpos($armSearchOptValue, ':') !== false)
-                                                {
-                                                    $armSelectValue = explode(':', $armSearchOptValue);
-                                                    $armSelectValue = end($armSelectValue);
-                                                    $armSelectLabelValue = substr($armSearchOptValue, 0, strrpos($armSearchOptValue, ':'));
-                                                }
-
-                                                $armSearchOptValueArr = explode(':', $armSearchOptValue);
-                                                $arm_search_field_item .= '<option value="'.$armSelectValue.'">'.$armSelectLabelValue.'</option>';
-                                            }
-                                            $arm_search_field_item .= '</select>'.$arm_search_field_item_input_end;
-                                        }
-                                        $arm_search_field_item .= '</div>';
-
-                                        $content .= $arm_search_field_item;
-                                    }
+                                    continue;
                                 }
                                 
+                                $arm_search_field_item = '<div class="arm_search_filter_field_item_'.$arm_advanced_search_position.'" armSearchFieldType='.$armSearchFieldType.'>';
                                 
+                                $arm_search_field_item_label_start = '<div class="arm_dir_filter_label">';
+                                $arm_search_field_item_label_end = '</div>';
+
+                                $arm_search_field_item_input_start = '<div class="arm_dir_filter_input">';
+                                $arm_search_field_item_input_end = '</div>';
+
+                                if( $armSearchFieldType == "text" || $armSearchFieldType == "url" || $armSearchFieldType == "textarea")
+                                {
+                                    $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label" for="'.$armSearchFieldId.'">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
+                                    
+                                    $arm_search_field_item .= $arm_search_field_item_input_start.'<input type="text" name="arm_directory_field_list['.$armSearchkey.']" placeholder="'.$armSearchFieldLabel.'" id="'.$armSearchFieldId.'">'.$arm_search_field_item_input_end;
+                                }
+                                else if($armSearchFieldType == "date")
+                                {
+                                    if( !wp_script_is('arm_bootstrap_datepicker_with_locale_js','enqueued')){
+                                        wp_enqueue_script('arm_bootstrap_datepicker_with_locale_js');
+                                    }
+                                    $arm_search_field_item .= '<div class="arm_datetimepicker_field">';
+                                    $armform = new ARM_Form();
+                                    $userRegForm = $arm_member_forms->arm_get_single_member_forms('101');
+                                    $arm_exists_form = $armform->arm_is_form_exists('101');
+                                    if ($arm_exists_form) {
+                                        $armform->init((object) $userRegForm);
+                                    }
+                                    $formSettings = $armform->settings;
+                                    
+                                    $dateFormatTypes = array(
+                                        'm/d/Y' => 'MM/DD/YYYY',
+                                        'd/m/Y' => 'DD/MM/YYYY',
+                                        'Y/m/d' => 'YYYY/MM/DD',
+                                        'M d, Y' => 'MMM DD, YYYY',
+                                        'd M, Y' => 'DD MMM, YYYY',
+                                        'Y, M d' => 'YYYY, MMM DD',
+                                        'F d, Y' => 'MMMM DD, YYYY',
+                                        'd F, Y' => 'DD MMMM, YYYY',
+                                        'Y, F d' => 'YYYY, MMMM DD',
+                                        'Y-m-d'  => 'YYYY-MM-DD'
+                                    );
+                                    $dateFormat = $dateFormatTypes[$formSettings['date_format']];
+                                    $showTimePicker = '0';
+                                    if (!empty($formSettings['show_time'])) {
+                                        $showTimePicker = $formSettings['show_time'];
+                                    }
+                                    $calLocalization = '';
+                                    $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label" for="'.$armSearchFieldId.'">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
+
+                                    $arm_search_field_item .= $arm_search_field_item_input_start.'<input type="text" name="arm_directory_field_list['.$armSearchkey.']" class="arm_front_filter_datepicker arm_datepicker arm_datepicker_front" id="'.$armSearchFieldId.'" data-dateformat="' . $dateFormat . '" data-date_field="arm_date_field_101" data-show_timepicker="' . $showTimePicker . '" data-cal_localization="' . $calLocalization . '" placeholder="'.$armSearchFieldLabel.'">'.$arm_search_field_item_input_end;
+                                    $arm_search_field_item .= '</div>';
+                                }
+                                else if($armSearchFieldType == "email")
+                                {
+                                    $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
+                                    $arm_search_field_item .= $arm_search_field_item_input_start.'<input type="email" name="arm_directory_field_list['.$armSearchkey.']" placeholder="'.$armSearchValue['placeholder'].'" id="'.$armSearchFieldId.'">'.$arm_search_field_item_input_end;
+                                }
+                                else if($armSearchFieldType == "radio")
+                                {
+                                    $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
+                                    $arm_search_field_item .= $arm_search_field_item_input_start.'<div class="arm_search_filter_radio">';
+                                    foreach($armSearchValue['options'] as $armSearchOptKey => $armSearchOptValue)
+                                    {
+                                        $armRadioLabelValue = $armSearchOptValue;
+                                        $armRadioValue = $armSearchOptValue;
+                                        if(strpos($armSearchOptValue, ':') !== false)
+                                        {
+                                            $armRadioValue = explode(':', $armSearchOptValue);
+                                            $armRadioValue = end($armRadioValue);
+                                            $armRadioLabelValue = substr($armSearchOptValue, 0, strrpos($armSearchOptValue, ':'));
+                                        }
+                                        $arm_search_field_item .= '<div class="arm_radio_field_div">';
+                                        $arm_search_field_item .= '<input type="radio" name="arm_directory_field_list['.$armSearchkey.']" placeholder="'.$armSearchValue['placeholder'].'" id="'.$armSearchFieldId.'_'.$armSearchOptKey.'" value="'.$armRadioValue.'">';
+
+                                        $arm_search_field_item .= '<label class="arm_search_filter_field_radio_item_label" for="'.$armSearchFieldId.'_'.$armSearchOptKey.'">'.$armRadioLabelValue.'</label>';
+                                        $arm_search_field_item .= '</div>';
+                                    }
+                                    $arm_search_field_item .= '</div>'.$arm_search_field_item_input_end;
+                                }
+                                else if($armSearchFieldType == "checkbox")
+                                {
+                                    $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
+                                    $arm_search_field_item .= $arm_search_field_item_input_start.'<div class="arm_search_filter_chk">';
+                                    foreach($armSearchValue['options'] as $armSearchOptKey => $armSearchOptValue)
+                                    {
+                                        $armChkLabelValue = $armSearchOptValue;
+                                        $armChkValue = $armSearchOptValue;
+                                        if(strpos($armSearchOptValue, ':') !== false)
+                                        {
+                                            $armChkValue = explode(':', $armSearchOptValue);
+                                            $armChkValue = end($armChkValue);
+                                            $armChkLabelValue = substr($armSearchOptValue, 0, strrpos($armSearchOptValue, ':'));
+                                        }
+                                        
+                                        $arm_search_field_item .= '<div class="arm_chk_field_div">';
+                                        $arm_search_field_item .= '<input type="checkbox" name="arm_directory_field_list['.$armSearchkey.'][]" id="'.$armSearchFieldId.'_'.$armSearchOptKey.'" value="'.$armChkValue.'">';
+                                        //$arm_search_field_item .= '<input type="hidden" name="arm_directory_field_list['.$armSearchkey.'][]" id="'.$armSearchFieldId.'_'.$armSearchOptKey.'" value="'.$armChkValue.'">';
 
 
-                            if($armSearchType != "0" && $searchbox)
+                                        $arm_search_field_item .= '<label class="arm_search_filter_field_radio_item_label" for="'.$armSearchFieldId.'_'.$armSearchOptKey.'">'.$armChkLabelValue.'</label>';
+                                        $arm_search_field_item .= '</div>';
+                                    }
+                                    $arm_search_field_item .= '</div>'.$arm_search_field_item_input_end;
+                                }
+                                else if($armSearchFieldType == "select")
+                                {
+                                    $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label" for="'.$armSearchFieldId.'">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
+                                    $arm_search_field_item .= $arm_search_field_item_input_start.'<select name="arm_directory_field_list['.$armSearchkey.']" id="'.$armSearchFieldId.'">';
+                                    foreach($armSearchValue['options'] as $armSearchOptKey => $armSearchOptValue)
+                                    {
+                                        $armSelectLabelValue = $armSearchOptValue;
+                                        $armSelectValue = $armSearchOptValue;
+                                        if(strpos($armSearchOptValue, ':') !== false)
+                                        {
+                                            $armSelectValue = explode(':', $armSearchOptValue);
+                                            $armSelectValue = end($armSelectValue);
+                                            $armSelectLabelValue = substr($armSearchOptValue, 0, strrpos($armSearchOptValue, ':'));
+                                        }
+
+                                        $armSearchOptValueArr = explode(':', $armSearchOptValue);
+                                        $arm_search_field_item .= '<option value="'.$armSelectValue.'">'.$armSelectLabelValue.'</option>';
+                                    }
+                                    $arm_search_field_item .= '</select>'.$arm_search_field_item_input_end;
+                                }
+                                $arm_search_field_item .= '</div>';
+
+                                $content .= $arm_search_field_item;
+                            }
+                               
+                        }
+                        
+                        if(!empty($armSearchType) && $searchbox)
+                        {
+                            if($directoryno == 'directorytemplate6')
+                            {
+                                $arm_search_position = 'top';
+                                $content .= '<div class="arm_search_filter_title_div"><label class="arm_search_filter_title_label">'.$arm_search_filter_title.'</label></div>';
+                            }
+                             
+                            $arm_directory_search_placeholder = isset($common_messages['arm_directory_search_placeholder']) ? $common_messages['arm_directory_search_placeholder'] : __('Search','ARMember');
+                            $content .= '<div class="arm_directory_filters_wrapper arm_directory_filters_wrapper_'.$arm_search_position.'">';
+                            $armFilterSortByTxt = !empty($common_messages['directory_sort_by_field']) ? $common_messages['directory_sort_by_field'] : __('Sort By', 'ARMember');
+                            $content .= '<input type="hidden" name="listof" value="all">';
+                           
+                            if ($searchbox) {
+
+                                $arm_directory_filter_btn_content = "";
+                                if(!empty($armSearchType)){
+                                    $arm_directory_search_button = isset($common_messages['arm_directory_search_button']) ? $common_messages['arm_directory_search_button'] : __('Search','ARMember');
+                                    $arm_directory_reset_button = isset($common_messages['arm_directory_reset_button']) ? $common_messages['arm_directory_reset_button'] : __('Reset','ARMember');
+                                    $arm_directory_filter_btn_content .= '<div class="arm_button_search_filter_btn_div arm_button_search_filter_btn_div_'.$arm_search_position.'">';
+                                    $arm_directory_filter_btn_content .= '<button type="button" class="arm_directory_search_btn"><i class="armfa armfa-search"></i>&nbsp;<span>'.$arm_directory_search_button.'</span></button>';
+                                    $arm_directory_filter_btn_content .= '<button class="arm_directory_clear_btn"><img id="arm_reset_img" width="24" height="24" style="" src="' . MEMBERSHIP_IMAGES_URL . '/reset-button.png"><span>'.$arm_directory_reset_button.'</span></button>';
+                                    $arm_directory_filter_btn_content .= '<img id="arm_loader_img" width="24" height="24" src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" alt="Loading..">';
+
+                                    $arm_directory_filter_btn_content .= '</div>';
+                                }
+
+                                $content .= '<div class="arm_directory_search_wrapper">';
+                                $content .= '<input type="text" name="search" value="' . esc_attr($search) . '" class="arm_directory_search_box" placeholder="'.$arm_directory_search_placeholder.'">';
+                                     if ($sortbox) {
+                                        $content .= '<div class="arm_directory_list_by_filters">';
+                                        $content .= '<select name="orderby" class="arm_directory_listby_select">';
+                                        $content .= '<option value="login" ' . selected($orderby, 'login', false) . '>' . __('Sort By', 'ARMember') . '</option>';
+                                        $content .= '<option value="display_name" ' . selected($orderby, 'display_name', false) . '>' . $alphabaticalSortByTxt . '</option>';
+                                        $content .= '<option value="user_registered" ' . selected($orderby, 'user_registered', false) . '>' . $recentlyJoinedTxt . '</option>';
+                                        $content .= '</select>';
+                                        $content .= '</div>';
+                                    }
+                                    else {
+                                        $content .= '<input type="hidden" name="orderby" value="login">';
+                                    }
+                                $content .= $arm_directory_filter_btn_content;
+                                $content .= '</div>';
+                                
+                            } else {
+                                $content .= '<input type="hidden" name="search" value="">';
+                            }
+
+                            
+                            $content .= '<div class="armclear"></div>';
+                            $content .= '</div>';
+                            $content .= '<div class="armclear"></div>';
+                        }
+                        else
+                        {
+                            $content .= '<div class="arm_directory_filters_wrapper">';
+                            if ($searchbox) {
+                                $content .= '<div class="arm_directory_field_list_filter">';
+                                $content .= '<select name="arm_directory_field_list" class="arm_directory_fieldlistby_select">';
+                                $content .= '<option value="all" ' . selected(esc_attr($arm_directory_field_list), 'all', false) . '>' . __('All', 'ARMember') . '</option>';
+                                if(!empty($opts['profile_fields']) && is_array($opts['profile_fields']))
+                                {
+                                    $armFormFields = $arm_members_directory->arm_template_profile_fields();
+                                    
+                                    foreach($opts['profile_fields'] as $arm_profile_fields_key )
+                                    {
+                                        if(isset($armFormFields[$arm_profile_fields_key]))
+                                        {
+                                            $content .= '<option value="'.$arm_profile_fields_key.'" ' . selected($arm_directory_field_list, $arm_profile_fields_key, false) . '>' . $armFormFields[$arm_profile_fields_key]['label'] . '</option>';
+                                        }
+                                    }                                        
+                                }
+                                $content .= '</select>';
+                                $content .= '</div>';
+                                $content .= '<div class="arm_directory_search_wrapper">';
+                                $content .= '<input type="text" name="search" value="' . esc_attr($search) . '" class="arm_directory_search_box">';
+                                $content .= '<a class="arm_directory_search_btn"><i class="armfa armfa-search"></i></a>';
+                                $content .= '</div>';
+
+                                $content .= '<div class="arm_directory_clear_wrapper">';
+                                $content .= '<a class="arm_directory_clear_btn"><img id="arm_reset_img" width="24" height="24" style="" src="' . MEMBERSHIP_IMAGES_URL . '/reset-button.png"></a>';
+                                $content .= '<img id="arm_loader_img" width="24" height="24" style="position: relative; display: none; float: right; margin-left: 5px; " src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" alt="Loading..">';
+                                $content .= '</div>';
+                            } else {
+                                $content .= '<input type="hidden" name="search" value="">';
+                            }
+                            $content .= '<input type="hidden" name="listof" value="all">';
+
+                            if ($sortbox) {
+                                $content .= '<div class="arm_directory_list_by_filters">';
+                                $content .= '<select name="orderby" class="arm_directory_listby_select">';
+                                $content .= '<option value="login" ' . selected($orderby, 'login', false) . '>' . __('Sort By', 'ARMember') . '</option>';
+                                $content .= '<option value="display_name" ' . selected($orderby, 'display_name', false) . '>' . $alphabaticalSortByTxt . '</option>';
+                                $content .= '<option value="user_registered" ' . selected($orderby, 'user_registered', false) . '>' . $recentlyJoinedTxt . '</option>';
+                                $content .= '</select>';
+                                $content .= '</div>';
+                            }
+                            else {
+                                $content .= '<input type="hidden" name="orderby" value="login">';
+                            }
+                            
+                            $content .= '<div class="armclear"></div>';
+                            $content .= '</div>';
+                            $content .= '<div class="armclear"></div>';
+
+                        }
+                        
+                        $content .= '</div>';
+
+                        //Search Filter Div Ends
+                        //-------------------------------------------------------
+                        if($directoryno == 'directorytemplate6')
+                        {
+                            $arm_body_container_template6_search_cls = "";
+                            if(!empty($armSearchType)) { $arm_body_container_template6_search_cls = " arm_search_filter_type_1"; }
+                            $content .='<div class="arm_body_container'.$arm_body_container_template6_search_cls.'">';
+                        }
+                        if(!empty($armSearchType) && $searchbox && $directoryno == 'directorytemplate6')
+                        {
+                            $arm_search_position = 'left';
+                            
+                            $content .= '<div class="arm_template_container_left arm_template_advanced_search">';
+                            $content .= '<div class="arm_search_filter_title_div"><label class="arm_search_filter_title_label_advanced">'. __('Advance Search', 'ARMember') .'</label></div>';
+                            foreach($orderedFields as $armSearchkey => $armSearchValue)
                             {
 
-                                $arm_directory_search_placeholder = isset($common_messages['arm_directory_search_placeholder']) ? $common_messages['arm_directory_search_placeholder'] : __('Search','ARMember');
-                                $content .= '<div class="arm_directory_filters_wrapper arm_directory_filters_wrapper_'.$arm_search_position.'">';
+                                $armSearchFieldType = isset($armSearchValue['type']) ? $armSearchValue['type'] : '';
+                                $armSearchFieldId = isset($armSearchValue['id']) ? $armSearchValue['id'] : '';
+                                $armSearchFieldLabel = isset($armSearchValue['label']) ? stripslashes_deep($armSearchValue['label']) : '';
+                                $armSearchFieldId = 'arm_'.$armSearchFieldId.'_'.$randomTempID;
+
+                                if($armSearchFieldType=='profile_cover')
+                                {
+                                    continue;
+                                }
+                                
+                                $arm_search_field_item = '<div class="arm_search_filter_field_item_'.$arm_advanced_search_position.'" armSearchFieldType='.$armSearchFieldType.'>';
+                                
+                                $arm_search_field_item_label_start = '<div class="arm_dir_filter_label">';
+                                $arm_search_field_item_label_end = '</div>';
+
+                                $arm_search_field_item_input_start = '<div class="arm_dir_filter_input">';
+                                $arm_search_field_item_input_end = '</div>';
+
+                                if( $armSearchFieldType == "text" || $armSearchFieldType == "url" || $armSearchFieldType == "textarea")
+                                {
+                                    $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label" for="'.$armSearchFieldId.'">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
+                                    
+                                    $arm_search_field_item .= $arm_search_field_item_input_start.'<input type="text" name="arm_directory_field_list['.$armSearchkey.']" placeholder=" Enter '.$armSearchFieldLabel.'" id="'.$armSearchFieldId.'" style="padding:10px 10px">'.$arm_search_field_item_input_end;
+                                }
+                                else if($armSearchFieldType == "date")
+                                {
+                                    if( !wp_script_is('arm_bootstrap_datepicker_with_locale_js','enqueued')){
+                                        wp_enqueue_script('arm_bootstrap_datepicker_with_locale_js');
+                                    }
+                                    $arm_search_field_item .= '<div class="arm_datetimepicker_field">';
+                                    $armform = new ARM_Form();
+                                    $userRegForm = $arm_member_forms->arm_get_single_member_forms('101');
+                                    $arm_exists_form = $armform->arm_is_form_exists('101');
+                                    if ($arm_exists_form) {
+                                        $armform->init((object) $userRegForm);
+                                    }
+                                    $formSettings = $armform->settings;
+                                    
+                                    $dateFormatTypes = array(
+                                        'm/d/Y' => 'MM/DD/YYYY',
+                                        'd/m/Y' => 'DD/MM/YYYY',
+                                        'Y/m/d' => 'YYYY/MM/DD',
+                                        'M d, Y' => 'MMM DD, YYYY',
+                                        'd M, Y' => 'DD MMM, YYYY',
+                                        'Y, M d' => 'YYYY, MMM DD',
+                                        'F d, Y' => 'MMMM DD, YYYY',
+                                        'd F, Y' => 'DD MMMM, YYYY',
+                                        'Y, F d' => 'YYYY, MMMM DD',
+                                        'Y-m-d'  => 'YYYY-MM-DD'
+                                    );
+                                    $dateFormat = $dateFormatTypes[$formSettings['date_format']];
+                                    $showTimePicker = '0';
+                                    if (!empty($formSettings['show_time'])) {
+                                        $showTimePicker = $formSettings['show_time'];
+                                    }
+                                    $calLocalization = '';
+                                    $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label" for="'.$armSearchFieldId.'">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
+
+                                    $arm_search_field_item .= $arm_search_field_item_input_start.'<input type="text" name="arm_directory_field_list['.$armSearchkey.']" class="arm_front_filter_datepicker arm_datepicker arm_datepicker_front" id="'.$armSearchFieldId.'" data-dateformat="' . $dateFormat . '" data-date_field="arm_date_field_101" data-show_timepicker="' . $showTimePicker . '" data-cal_localization="' . $calLocalization . '">'.$arm_search_field_item_input_end;
+                                    $arm_search_field_item .= '</div>';
+                                }
+                                else if($armSearchFieldType == "email")
+                                {
+                                    $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
+                                    $arm_search_field_item .= $arm_search_field_item_input_start.'<input type="email" name="arm_directory_field_list['.$armSearchkey.']" placeholder=" '.__("Enter",'ARMember').' '.$armSearchFieldLabel.'" id="'.$armSearchFieldId.'" style="padding:10px 10px">'.$arm_search_field_item_input_end;
+                                }
+                                else if($armSearchFieldType == "radio")
+                                {
+                                    $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
+                                    $arm_search_field_item .= $arm_search_field_item_input_start.'<div class="arm_search_filter_radio">';
+                                    foreach($armSearchValue['options'] as $armSearchOptKey => $armSearchOptValue)
+                                    {
+                                        $armRadioLabelValue = $armSearchOptValue;
+                                        $armRadioValue = $armSearchOptValue;
+                                        if(strpos($armSearchOptValue, ':') !== false)
+                                        {
+                                            $armRadioValue = explode(':', $armSearchOptValue);
+                                            $armRadioValue = end($armRadioValue);
+                                            $armRadioLabelValue = substr($armSearchOptValue, 0, strrpos($armSearchOptValue, ':'));
+                                        }
+                                        $arm_search_field_item .= '<div class="arm_radio_field_div">';
+                                        $arm_search_field_item .= '<input type="radio" name="arm_directory_field_list['.$armSearchkey.']" placeholder="'.$armSearchValue['placeholder'].'" id="'.$armSearchFieldId.'_'.$armSearchOptKey.'" value="'.$armRadioValue.'">';
+
+                                        $arm_search_field_item .= '<label class="arm_search_filter_field_radio_item_label" for="'.$armSearchFieldId.'_'.$armSearchOptKey.'">'.$armRadioLabelValue.'</label>';
+                                        $arm_search_field_item .= '</div>';
+                                    }
+                                    $arm_search_field_item .= '</div>'.$arm_search_field_item_input_end;
+                                }
+                                else if($armSearchFieldType == "checkbox")
+                                {
+                                    $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
+                                    $arm_search_field_item .= $arm_search_field_item_input_start.'<div class="arm_search_filter_chk">';
+                                    foreach($armSearchValue['options'] as $armSearchOptKey => $armSearchOptValue)
+                                    {
+                                        $armChkLabelValue = $armSearchOptValue;
+                                        $armChkValue = $armSearchOptValue;
+                                        if(strpos($armSearchOptValue, ':') !== false)
+                                        {
+                                            $armChkValue = explode(':', $armSearchOptValue);
+                                            $armChkValue = end($armChkValue);
+                                            $armChkLabelValue = substr($armSearchOptValue, 0, strrpos($armSearchOptValue, ':'));
+                                        }
+                                        
+                                        $arm_search_field_item .= '<div class="arm_chk_field_div">';
+                                        $arm_search_field_item .= '<input type="checkbox" name="arm_directory_field_list['.$armSearchkey.'][]" id="'.$armSearchFieldId.'_'.$armSearchOptKey.'" value="'.$armChkValue.'">';
+
+                                        $arm_search_field_item .= '<label class="arm_search_filter_field_radio_item_label" for="'.$armSearchFieldId.'_'.$armSearchOptKey.'">'.$armChkLabelValue.'</label>';
+                                        $arm_search_field_item .= '</div>';
+                                    }
+                                    $arm_search_field_item .= '</div>'.$arm_search_field_item_input_end;
+                                }
+                                else if($armSearchFieldType == "select")
+                                {
+                                    $arm_search_field_item .= $arm_search_field_item_label_start.'<label class="arm_search_filter_field_item_label" for="'.$armSearchFieldId.'">'.$armSearchFieldLabel.'</label>'.$arm_search_field_item_label_end;
+                                    $arm_search_field_item .= $arm_search_field_item_input_start.'<select name="arm_directory_field_list['.$armSearchkey.']" id="'.$armSearchFieldId.'">';
+                                    foreach($armSearchValue['options'] as $armSearchOptKey => $armSearchOptValue)
+                                    {
+                                        $armSelectLabelValue = $armSearchOptValue;
+                                        $armSelectValue = $armSearchOptValue;
+                                        if(strpos($armSearchOptValue, ':') !== false)
+                                        {
+                                            $armSelectValue = explode(':', $armSearchOptValue);
+                                            $armSelectValue = end($armSelectValue);
+                                            $armSelectLabelValue = substr($armSearchOptValue, 0, strrpos($armSearchOptValue, ':'));
+                                        }
+
+                                        $armSearchOptValueArr = explode(':', $armSearchOptValue);
+                                        $arm_search_field_item .= '<option value="'.$armSelectValue.'">'.$armSelectLabelValue.'</option>';
+                                    }
+                                    $arm_search_field_item .= '</select>'.$arm_search_field_item_input_end;
+                                }
+                                $arm_search_field_item .= '</div>';
+
+                                $content .= $arm_search_field_item;
+                            }
+                                
                                 if ($searchbox) {
-                                    $content .= '<div class="arm_directory_search_wrapper">';
-                                    $content .= '<input type="text" name="search" value="' . esc_attr($search) . '" class="arm_directory_search_box" placeholder="'.$arm_directory_search_placeholder.'">';
-                                    $content .= '</div>';
-                                } else {
-                                    $content .= '<input type="hidden" name="search" value="">';
-                                }
-                                $armFilterSortByTxt = !empty($common_messages['directory_sort_by_field']) ? $common_messages['directory_sort_by_field'] : __('Sort By', 'ARMember');
-                                $content .= '<input type="hidden" name="listof" value="all">';
-                                if ($sortbox) {
-                                    $content .= '<div class="arm_directory_list_by_filters">';
-                                    $content .= '<select name="orderby" class="arm_directory_listby_select">';
-                                    $content .= '<option value="login" ' . selected($orderby, 'login', false) . '>' . $armFilterSortByTxt . '</option>';
-                                    $content .= '<option value="display_name" ' . selected($orderby, 'display_name', false) . '>' . $alphabaticalSortByTxt . '</option>';
-                                    $content .= '<option value="user_registered" ' . selected($orderby, 'user_registered', false) . '>' . $recentlyJoinedTxt . '</option>';
-                                    $content .= '</select>';
-                                    $content .= '</div>';
-                                } else {
-                                    $content .= '<input type="hidden" name="orderby" value="display_name">';
-                                }
-                                $content .= '<div class="armclear"></div>';
+
+                                $arm_directory_filter_btn_content = "";
+                                //if(!empty($armSearchType)){
+                                    $arm_directory_search_button = isset($common_messages['arm_directory_search_button']) ? $common_messages['arm_directory_search_button'] : __('Search','ARMember');
+                                    $arm_directory_reset_button = isset($common_messages['arm_directory_reset_button']) ? $common_messages['arm_directory_reset_button'] : __('Reset','ARMember');
+                                    $arm_directory_filter_btn_content .= '<div class="arm_button_search_filter_btn_div arm_button_search_filter_btn_div_'.$arm_search_position.'">';
+                                    $arm_directory_filter_btn_content .= '<button class="arm_directory_clear_btn" style="width:80px; margin:0 auto"><span>'.$arm_directory_reset_button.'</span></button>';
+                                    $arm_directory_filter_btn_content .= '<button type="button" class="arm_directory_search_btn" style="margin-left:10px;width:80px;"><span>'.$arm_directory_search_button.'</span></button>';
+                                    $arm_directory_filter_btn_content .= '<img id="arm_loader_img_left" width="24" height="24" src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" alt="Loading..">';
+
+                                    $arm_directory_filter_btn_content .= '</div>';
+                                //}
+
+                                $content .= '<div class="arm_directory_search_wrapper_left">';
+                                $content .= $arm_directory_filter_btn_content;
                                 $content .= '</div>';
-                                $content .= '<div class="armclear"></div>';
+                            } else {
+                                $content .= '<input type="hidden" name="search" value="">';
+                            }
+
+                               
+                               $content .= '</div>';
+                        }
+                        if($directoryno == 'directorytemplate6')
+                        {
+                            if(!empty($armSearchType) && $searchbox)
+                            {
+                                $content .= '<div class="arm_template_container_top arm_template_container arm_directory_container arm_directory_container_'.$arm_search_position.'_multi" id="arm_template_container_' . $randomTempID . '">';
                             }
                             else
                             {
-                                $content .= '<div class="arm_directory_filters_wrapper">';
-                                if ($searchbox) {
-                                    $content .= '<div class="arm_directory_field_list_filter">';
-                                    $content .= '<select name="arm_directory_field_list" class="arm_directory_fieldlistby_select">';
-                                    $content .= '<option value="all" ' . selected(esc_attr($arm_directory_field_list), 'all', false) . '>' . __('All', 'ARMember') . '</option>';
-                                    if(!empty($opts['profile_fields']) && is_array($opts['profile_fields']))
-                                    {
-                                        $armFormFields = $arm_members_directory->arm_template_profile_fields();
-                                        
-                                        foreach($opts['profile_fields'] as $arm_profile_fields_key )
-                                        {
-                                            if(isset($armFormFields[$arm_profile_fields_key]))
-                                            {
-                                                $content .= '<option value="'.$arm_profile_fields_key.'" ' . selected($arm_directory_field_list, $arm_profile_fields_key, false) . '>' . $armFormFields[$arm_profile_fields_key]['label'] . '</option>';
-                                            }
-                                        }                                        
-                                    }
-                                    $content .= '</select>';
-                                    $content .= '</div>';
-                                    $content .= '<div class="arm_directory_search_wrapper">';
-                                    $content .= '<input type="text" name="search" value="' . esc_attr($search) . '" class="arm_directory_search_box">';
-                                    $content .= '<a class="arm_directory_search_btn"><i class="armfa armfa-search"></i></a>';
-                                    $content .= '</div>';
-                                    $content .= '<div class="arm_directory_clear_wrapper">';
-                                    $content .= '<a class="arm_directory_clear_btn"><img id="arm_reset_img" width="24" height="24" style="" src="' . MEMBERSHIP_IMAGES_URL . '/reset-button.png"></a>';
-                                    $content .= '<img id="arm_loader_img" width="24" height="24" style="position: relative; display: none; float: right; margin-left: 5px; " src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" alt="Loading..">';
-                                    $content .= '</div>';
-                                } else {
-                                    $content .= '<input type="hidden" name="search" value="">';
-                                }
-                                $content .= '<input type="hidden" name="listof" value="all">';
-                                if ($sortbox) {
-                                    $content .= '<div class="arm_directory_list_by_filters">';
-                                    $content .= '<select name="orderby" class="arm_directory_listby_select">';
-                                    $content .= '<option value="login" ' . selected($orderby, 'login', false) . '>' . __('Sort By', 'ARMember') . '</option>';
-                                    $content .= '<option value="display_name" ' . selected($orderby, 'display_name', false) . '>' . $alphabaticalSortByTxt . '</option>';
-                                    $content .= '<option value="user_registered" ' . selected($orderby, 'user_registered', false) . '>' . $recentlyJoinedTxt . '</option>';
-                                    $content .= '</select>';
-                                    $content .= '</div>';
-                                } else {
-                                    $content .= '<input type="hidden" name="orderby" value="login">';
-                                }
-                                $content .= '<div class="armclear"></div>';
-                                $content .= '</div>';
-                                $content .= '<div class="armclear"></div>';
+                                $content .= '<div class="arm_template_container_top arm_template_container arm_directory_container arm_directory_container_'.$arm_search_position.'" id="arm_template_container_' . $randomTempID . '">';
                             }
                         }
-
-                        if($armSearchType != "0" && $searchbox)
+                        else
                         {
-                            $arm_directory_search_button = isset($common_messages['arm_directory_search_button']) ? $common_messages['arm_directory_search_button'] : __('Search','ARMember');
-                            $arm_directory_reset_button = isset($common_messages['arm_directory_reset_button']) ? $common_messages['arm_directory_reset_button'] : __('Reset','ARMember');
-                            $content .= '<div class="arm_button_search_filter_btn_div arm_button_search_filter_btn_div_'.$arm_search_position.'">';
-                        $content .= '<button type="button" class="arm_directory_search_btn"><i class="armfa armfa-search"></i> <span>'.$arm_directory_search_button.'</span></button>';
-                        $content .= '<button class="arm_directory_clear_btn"><img id="arm_reset_img" width="24" height="24" style="" src="' . MEMBERSHIP_IMAGES_URL . '/reset-button.png"> <span>'.$arm_directory_reset_button.'</span></button>';
-                        $content .= '<img id="arm_loader_img" width="24" height="24" src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" alt="Loading..">';
-                        $content .= '</div>';
+                            $content .= '<div class="arm_template_container_top arm_template_container arm_directory_container arm_directory_container_'.$arm_search_position.'" id="arm_template_container_' . $randomTempID . '">';
                         }
-
-                        $content .= '</div>';
-                        //Search Filter Div Ends
-                        //-------------------------------------------------------
-
-                        $content .= '<div class="arm_template_container_top arm_template_container arm_directory_container arm_directory_container_'.$arm_search_position.'" id="arm_template_container_' . $randomTempID . '">';
                         $content .= $arm_members_directory->arm_get_directory_members($temp_data, $opts);
                         /* Template Arguments Inputs */
-                        foreach (array('id', 'type', 'user_id', 'role', 'order', 'per_page', 'pagination', 'sample', 'temp_data', 'is_preview', 'default_search_field', 'default_search_value') as $k) {
+                        foreach (array('id', 'type', 'user_id', 'role', 'order', 'per_page', 'pagination', 'sample', 'temp_data', 'is_preview', 'default_search_field', 'default_search_value') as $k) 
+                        {
                             $content .= '<input type="hidden" class="arm_temp_field_' . $k . '" name="' . $k . '" value="' . esc_attr($opts[$k]) . '">';
                         }
+                        
                         $content .= '</div>';
+                        if($directoryno == 'directorytemplate6')
+                        {
+                            $content .='</div>';
+                        }
                         $content .= '</form>';
                     }
                     $content .= '<div class="armclear"></div>';
@@ -1787,11 +2027,14 @@ if (!class_exists('ARM_shortcodes')) {
                         $shortcode_param .= $k . '="' . $v . '" ';
                     }
 
+                    $arm_return_content = do_shortcode("[arm_member_transaction $shortcode_param]");
+
                     if($_POST['is_paid_post']==1){
-                        echo do_shortcode("[arm_paid_post_member_transaction $shortcode_param]");    
-                    }else{
-                        echo do_shortcode("[arm_member_transaction $shortcode_param]");
+                        $arm_return_content = do_shortcode("[arm_paid_post_member_transaction $shortcode_param]");    
                     }
+
+                    $arm_return_content = apply_filters('arm_filter_transaction_paging_content', $arm_return_content, $_POST, $shortcode_param);
+                    echo $arm_return_content;
                     
                     exit;
                 }
@@ -1824,11 +2067,14 @@ if (!class_exists('ARM_shortcodes')) {
                         $shortcode_param .= $k . '="' . $v . '" ';
                     }
 
+                    $arm_return_content = do_shortcode("[arm_membership $shortcode_param]");
+
                     if($_POST['is_paid_post']==1){
-                        echo do_shortcode("[arm_purchased_paid_post_list $shortcode_param]");    
-                    }else{
-                        echo do_shortcode("[arm_membership $shortcode_param]");
+                        $arm_return_content = do_shortcode("[arm_purchased_paid_post_list $shortcode_param]");
                     }
+
+                    $arm_return_content = apply_filters('arm_filter_membership_paging_content', $arm_return_content, $_POST, $shortcode_param);
+                    echo $arm_return_content;
                     
                     exit;
                 }
@@ -1874,22 +2120,25 @@ if (!class_exists('ARM_shortcodes')) {
             $values = explode(',', rtrim($args['value'], ','));
 
             if (is_user_logged_in()) {
-                $user_id = $args['user_id'];
-                if (empty($user_id) || $user_id == 0 || $user_id == 'current') {
+                if(current_user_can('arm_manage_members') && is_admin())
+                {
+                    $user_id = $args['user_id'];
+                }
+                else {
                     $user_id = get_current_user_id();
                 }
                 wp_enqueue_style('arm_form_style_css');
-                $offset = (!empty($current_page) && $current_page > 1) ? (($current_page - 1) * $per_page) : 0;
-		$transaction_container_class = 'arm_transactions_container';
+                $transaction_container_class = 'arm_transactions_container';
                 $is_paid_post = 0;
 
                 if($tag=="arm_paid_post_member_transaction"){
                     $is_paid_post = 1;
-		    $transaction_container_class = 'arm_paid_post_transactions_container';   
+                    $transaction_container_class = 'arm_paid_post_transactions_container';
                 }
-		
-		$trans_count = $arm_transaction->arm_get_total_transaction($user_id,$is_paid_post);
-                $transactions = $arm_transaction->arm_get_all_transaction($user_id, $offset, $per_page,$is_paid_post);   
+
+                $all_transactions = $arm_subscription_plans->arm_member_payments($user_id, $is_paid_post, $current_page, $per_page);
+                $trans_count = $all_transactions['total'];
+                $transactions = $all_transactions['payments'];
 
                 $content = apply_filters('arm_before_member_transaction_shortcode_content', $content, $args);
                 $content .= "<div class='{$transaction_container_class}' id='arm_tm_container'>";
@@ -2019,7 +2268,7 @@ if (!class_exists('ARM_shortcodes')) {
                     }
                     if (in_array('used_coupon_discount', $labels)) {
                         $label_key = array_search('used_coupon_discount', $labels);
-                        $l_couponDiscount = !empty($values[$label_key]) ? $values[$label_key] : __('Used Couupon DIscount', 'ARMember');
+                        $l_couponDiscount = !empty($values[$label_key]) ? $values[$label_key] : __('Used Coupon Discount', 'ARMember');
                     } else {
                         $has_used_coupon_discount = false;
                     }
@@ -2087,176 +2336,150 @@ if (!class_exists('ARM_shortcodes')) {
 
                     $content .= "</tr>";
                     $content .= "</thead>";
-                    foreach ($transactions as $r) {
+                    foreach ($transactions as $transaction) {
+                        $transaction = (object)$transaction;
 
-                        $r = (object) $r;
-
-                        $currency = (!empty($r->arm_currency) && isset($all_currencies[strtoupper($r->arm_currency)])) ? $all_currencies[strtoupper($r->arm_currency)] : $global_currency_sym;
-                        $content .="<tr class='arm_transaction_list_item' id='arm_transaction_list_item_" . $r->arm_transaction_id . "'>";
+                        $content .="<tr class='arm_transaction_list_item' id='arm_transaction_list_item_" . $transaction->arm_transaction_id . "'>";
                         if ($has_transaction_id) :
                             $content .="<td data-label='{$l_transID}'>";
-                            if (!empty($r->arm_transaction_id)) {
-                                $content .= $r->arm_transaction_id;
-                                $arm_token_transaction = $arm_transaction->arm_get_single_transaction($r->arm_log_id);
-                                if(!empty($arm_token_transaction))
+                            if (!empty($transaction->arm_transaction_id)) {
+                                $content .= $transaction->arm_transaction_id;
+                                if(!empty($transaction->arm_2checkout_order_id))
                                 {
-                                    $arm_order_id = '';
-                                    if($arm_token_transaction['arm_payment_mode']=='auto_debit_subscription' && $r->arm_payment_gateway=='2checkout')
-                                    {
-                                        
-                                        $arm_order_id = '<b>'.$order_id_text.':</b> '.$arm_token_transaction['arm_token'];
-                                        $content .= '<br>'.$arm_order_id;
-                                    }
+                                    $arm_order_id = '<b>'.$order_id_text.':</b> '.$transaction->arm_2checkout_order_id;
+                                    $content .= '<br>'.$arm_order_id;
                                 }
-                            } else {
-                                $content .= __('Manual', 'ARMember');
                             }
                             $content .="</td>";
                         endif;
                         if ($has_invoice_id):
-                            $log_type = ($r->arm_payment_gateway == 'bank_transfer') ? 'bt_log' : 'other';
+                            $log_type = ($transaction->arm_payment_gateway == 'bank_transfer') ? 'bt_log' : 'other';
 
-                            $arm_invoice_id = $arm_global_settings->arm_manipulate_invoice_id(((!empty($r->arm_invoice_id)) ? $r->arm_invoice_id : 0));
+                            $arm_invoice_id = $transaction->arm_invoice_id;
 
-                            if(($r->arm_transaction_status == 'success' || $r->arm_transaction_status==1) && $arm_invoice_tax_feature == 1 ){
-                                $content .="<td data-label='{$l_invID}' id='arm_transaction_list_item_td_" . $r->arm_transaction_id . "'><a class='armhelptip arm_front_invoice_detail' href='javascript:void(0)' data-log_type='" . $log_type . "' data-log_id='" . $r->arm_log_id . "' title='" . __('View Invoice', 'ARMember') . "'>" . $arm_invoice_id . "</a></td>";
+                            if(($transaction->arm_payment_status == 'success' || $transaction->arm_payment_status==1) && $arm_invoice_tax_feature == 1 ){
+                                $content .="<td data-label='{$l_invID}' id='arm_transaction_list_item_td_" . $transaction->arm_transaction_id . "'><a class='armhelptip arm_front_invoice_detail' href='javascript:void(0)' data-log_type='" . $log_type . "' data-log_id='" . $transaction->arm_log_id . "' title='" . __('View Invoice', 'ARMember') . "'>" . $arm_invoice_id . "</a></td>";
                             }
                             else{
-                                $content .="<td data-label='{$l_invID}' id='arm_transaction_list_item_td_" . $r->arm_transaction_id . "'>" . $arm_invoice_id . "</td>";
+                                $content .="<td data-label='{$l_invID}' id='arm_transaction_list_item_td_" . $transaction->arm_transaction_id . "'>" . $arm_invoice_id . "</td>";
                             }
 
                             
                         endif;
                         if ($has_plan):
-                            $content .="<td data-label='{$l_plan}' id='arm_transaction_list_item_td_" . $r->arm_transaction_id . "'>" . $arm_subscription_plans->arm_get_plan_name_by_id($r->arm_plan_id) . "</td>";
+                            $content .="<td data-label='{$l_plan}' id='arm_transaction_list_item_td_" . $transaction->arm_transaction_id . "'>";
+                             if($is_paid_post==1)
+                             {
+                                $planData = get_user_meta($user_id, 'arm_user_plan_' . $transaction->arm_plan_id, true);
+                                $curPlanDetail = !empty($planData['arm_current_plan_detail']) ? $planData['arm_current_plan_detail'] : '';
+
+                                if (!empty($curPlanDetail)) {
+                                    $plan_info = new ARM_Plan(0);
+                                    $plan_info->init((object) $curPlanDetail);
+                                } else {
+                                    $plan_info = new ARM_Plan($transaction->arm_plan_id);
+                                }
+                                $arm_paid_post_id = !empty($plan_info->isPaidPost) ? $plan_info->isPaidPost : 0;
+                                $content .= "<a href=".get_permalink($arm_paid_post_id)." target='_blank'>" . stripslashes($plan_info->name) . "</a>";  
+                            } else {
+                                $content .= $transaction->arm_plan;
+                            }
+
+                             $content .="</td>";
                         endif;
                         if ($has_payment_gateway):
-                            $content .="<td data-label='{$l_pg}' id='arm_transaction_list_item_td_" . $r->arm_transaction_id . "'>" . $arm_payment_gateways->arm_gateway_name_by_key($r->arm_payment_gateway) . "</td>";
+                            $content .="<td data-label='{$l_pg}' id='arm_transaction_list_item_td_" . $transaction->arm_transaction_id . "'>" . $transaction->arm_payment_gateway . "</td>";
                         endif;
                         if ($has_payment_type):
-                            $payment_type = (isset($r->arm_payment_type) && $r->arm_payment_type == 'subscription') ? __('Subscription', 'ARMember') : __('One Time', 'ARMember');
-                            $arm_is_trial = (isset($r->arm_is_trial) && $r->arm_is_trial == 1) ? ' '.__('(Trial Transaction)', 'ARMember') : '';
-                            $content .="<td data-label='{$l_pType}' id='arm_transaction_list_item_td_" . $r->arm_transaction_id . "'>" . $payment_type . $arm_is_trial . "</td>";
+                            $payment_type = $transaction->arm_payment_type;
+                            $arm_is_trial = $transaction->arm_is_trial;
+                            $content .="<td data-label='{$l_pType}' id='arm_transaction_list_item_td_" . $transaction->arm_transaction_id . "'>" . $payment_type . $arm_is_trial . "</td>";
                         endif;
                         if ($has_transaction_status):
-                            $arm_transaction_status = $r->arm_transaction_status;
-                            switch ($arm_transaction_status) {
-                                case '0':
-                                    $arm_transaction_status = 'pending';
-                                    break;
-                                case '1':
-                                    $arm_transaction_status = 'success';
-                                    break;
-                                case '2':
-                                    $arm_transaction_status = 'canceled';
-                                    break;
-                                default:
-                                    $arm_transaction_status = $r->arm_transaction_status;
-                                    break;
-                            }
-                            $arm_transaction_status_html = $arm_transaction->arm_get_transaction_status_text($arm_transaction_status);
+                            $arm_transaction_status = $transaction->arm_payment_status;
+                            $arm_transaction_status_html = $transaction->arm_payment_status_html;
                             $content .="<td data-label='{$l_transStatus}' id='arm_transaction_list_item_td_" . $arm_transaction_status . "'>" . $arm_transaction_status_html . "</td>";
                         endif;
                         if ($has_amount):
-                            $content .="<td data-label='{$l_amount}' id='arm_transaction_list_item_td_" . $r->arm_transaction_id . "'>";
+                            $content .="<td data-label='{$l_amount}' id='arm_transaction_list_item_td_" . $transaction->arm_transaction_id . "'>";
                             $extraVars = (!empty($r->arm_extra_vars)) ? maybe_unserialize($r->arm_extra_vars) : array();
-                            if (!empty($extraVars) && !empty($extraVars['plan_amount']) && $extraVars['plan_amount'] != 0 && $extraVars['plan_amount'] != $r->arm_amount) {
-                                $content .= '<span class="arm_transaction_list_plan_amount">' . $arm_payment_gateways->arm_prepare_amount($r->arm_currency, $extraVars['plan_amount']) . '</span>';
+                            if (!empty($transaction->arm_plan_amount)) {
+                                $content .= '<span class="arm_transaction_list_plan_amount">' . $transaction->arm_plan_amount . '</span>';
                             }
                             $content .= '<span class="arm_transaction_list_paid_amount">';
-                            if (!empty($r->arm_amount) && $r->arm_amount > 0) {
-                                $content .= $arm_payment_gateways->arm_prepare_amount($r->arm_currency, $r->arm_amount);
-                                if ($global_currency_sym == $currency && strtoupper($global_currency) != strtoupper($r->arm_currency)) {
-                                    $content .= " (" . strtoupper($r->arm_currency) . ")";
-                                }
-                            } else {
-                                $content .= $arm_payment_gateways->arm_prepare_amount($r->arm_currency, $r->arm_amount);
+                            if (!empty($transaction->arm_paid_amount)) {
+                                $content .= $transaction->arm_paid_amount;
                             }
                             $content .= '</span>';
-                            if (!empty($extraVars) && isset($extraVars['trial'])) {
+                            if (!empty($transaction->arm_trial_text) && !empty($extraVars['trial'])) {
                                 $trialInterval = $extraVars['trial']['interval'];
                                 $content .= '<span class="arm_transaction_list_trial_text">';
-                                $content .= __('Trial Period', 'ARMember') . ": {$trialInterval} ";
-                                if ($extraVars['trial']['period'] == 'Y') {
-                                    $content .= ($trialInterval > 1) ? __('Years', 'ARMember') : __('Year', 'ARMember');
-                                } elseif ($extraVars['trial']['period'] == 'M') {
-                                    $content .= ($trialInterval > 1) ? __('Months', 'ARMember') : __('Month', 'ARMember');
-                                } elseif ($extraVars['trial']['period'] == 'W') {
-                                    $content .= ($trialInterval > 1) ? __('Weeks', 'ARMember') : __('Week', 'ARMember');
-                                } elseif ($extraVars['trial']['period'] == 'D') {
-                                    $content .= ($trialInterval > 1) ? __('Days', 'ARMember') : __('Day', 'ARMember');
-                                }
+                                $content .= $transaction->arm_trial_text;
                                 $content .= '</span>';
                             }
                             $content .= "</td>";
                         endif;
                         if ($has_used_coupon_code):
-                            $content .="<td data-label='{$l_coupon}' id='arm_transaction_list_item_td_" . $r->arm_transaction_id . "'>";
-                            if (!empty($r->arm_coupon_code)) {
-                                $content .= $r->arm_coupon_code;
+                            $content .="<td data-label='{$l_coupon}' id='arm_transaction_list_item_td_" . $transaction->arm_transaction_id . "'>";
+                            if (!empty($transaction->arm_coupon_code)) {
+                                $content .= $transaction->arm_coupon_code;
                             } else {
                                 $content .= '-';
                             }
                             $content .= "</td>";
                         endif;
                         if ($has_used_coupon_discount):
-                            $content .="<td data-label='{$l_couponDiscount}' id='arm_transaction_list_item_td_" . $r->arm_transaction_id . "'>";
-                            if (!empty($r->arm_coupon_code)) {
-                                if (!empty($r->arm_coupon_discount) && $r->arm_coupon_discount > 0) {
-                                    $content .= number_format((float) $r->arm_coupon_discount, 2);
-                                    $discount_type = ($r->arm_coupon_discount_type != "percentage") ? ' ' . $r->arm_coupon_discount_type : '%';
-                                    $content .= $discount_type;
-                                } else {
-                                    $content .= '0.00';
-                                }
+                            $content .="<td data-label='{$l_couponDiscount}' id='arm_transaction_list_item_td_" . $transaction->arm_transaction_id . "'>";
+                            if (!empty($transaction->arm_coupon_discount)) {
+                                $content .= $transaction->arm_coupon_discount;
                             } else {
                                 $content .= '-';
                             }
                             $content .= "</td>";
                         endif;
                         if ($has_payment_date):
-                            $content .="<td data-label='{$l_pDate}' id='arm_transaction_list_item_td_" . $r->arm_transaction_id . "'>" . date_i18n($date_time_format, strtotime($r->arm_created_date)) . "</td>";
+                            $content .="<td data-label='{$l_pDate}' id='arm_transaction_list_item_td_" . $transaction->arm_transaction_id . "'>" . $transaction->arm_payment_date . "</td>";
                         endif;
 
                         if($enable_tax){
-                        if ($has_tax_percentage) {
-                            $content .="<td data-label='{$l_tPer}' id='tax_percentage_".$r->arm_transaction_id."'>";
-                            if (!empty($extraVars) && isset($extraVars['tax_percentage']) &&  $extraVars['tax_percentage']!= "" ) {
-                                $content .= $extraVars['tax_percentage'] . "%";
-                            }
-    			    else{
-    			    	$content .= '-';
-    			    }
+                            if ($has_tax_percentage) {
+                                $content .="<td data-label='{$l_tPer}' id='tax_percentage_".$transaction->arm_transaction_id."'>";
+                                if (!empty($transaction->arm_tax_percentage)) {
+                                    $content .= $transaction->arm_tax_percentage;
+                                }
+                                else{
+                                    $content .= '-';
+                                }
                                 $content .="</td>";
                             }
                             if ($has_tax_amount) {
-                                $content .="<td data-label='{$l_tPer}' id='tax_amount_".$r->arm_transaction_id."'>";
-                                if (!empty($extraVars) && isset($extraVars['tax_amount']) && $extraVars['tax_amount'] != "" ) {
-                                    $content .= $arm_payment_gateways->arm_prepare_amount($r->arm_currency, $extraVars['tax_amount']);
+                                $content .="<td data-label='{$l_tPer}' id='tax_amount_".$transaction->arm_transaction_id."'>";
+                                if (!empty($transaction->arm_tax_amount)) {
+                                    $content .= $transaction->arm_tax_amount;
                                 }
-    			    else{
-    			    	$content .= '-';
-    			    }
+                                else{
+                                    $content .= '-';
+                                }
                                 $content .= "</td>";
                             }
                         }
-                            if ($has_action):
-                                $content .="<td data-label='".__('Payment Action', 'ARMember')."' id='arm_transaction_list_item_td_" . $r->arm_transaction_id . "'>";
-                            $log_type = ($r->arm_payment_gateway == 'bank_transfer') ? 'bt_log' : 'other';
-                            if($r->arm_transaction_status == 'success' || $r->arm_transaction_status == 1){
-                             $view_invoice_content = '<button type="button" class= "arm_view_invoice_button arm_front_invoice_detail" data-log_id="'.$r->arm_log_id.'" data-log_type="'.$log_type.'" >' . $view_invoice_text . '</button>';
-                         }
-                         else{
-                            $view_invoice_content = '';
-                         }
+                        if ($has_action):
+                            $content .="<td data-label='".__('Payment Action', 'ARMember')."' id='arm_transaction_list_item_td_" . $transaction->arm_transaction_id . "'>";
+                            $log_type = ($transaction->arm_payment_gateway == 'bank_transfer') ? 'bt_log' : 'other';
+                            if($transaction->arm_payment_status == 'success' || $transaction->arm_payment_status == 1){
+                             $view_invoice_content = '<button type="button" class= "arm_view_invoice_button arm_front_invoice_detail" data-log_id="'.$transaction->arm_log_id.'" data-log_type="'.$log_type.'" >' . $view_invoice_text . '</button>';
+                            }
+                            else{
+                                $view_invoice_content = '';
+                            }
 
-                              $content .= $view_invoice_content;
-                                $content .="</td>";
+                            $content .= $view_invoice_content;
+                            $content .="</td>";
 
-                            endif;
-                            $content .="</tr>";
-                        }
-                        $content .= "</table>";
+                        endif;
+                        $content .="</tr>";
+                    }
+                    $content .= "</table>";
 
                         $content .= "</div>";
                         $transPaging = $arm_global_settings->arm_get_paging_links($current_page, $trans_count, $per_page, 'transaction');
@@ -2717,11 +2940,13 @@ if (!class_exists('ARM_shortcodes')) {
                             $key = array_search($fieldMeta_key, $display_fields);
 
                             $fieldMeta_value = (isset($user->$fieldMeta_key) ? $user->$fieldMeta_key : '');
-                            $pattern = '/^(date\_(.*))/';
+                            //$pattern = '/^(date\_(.*))/';
 
-                            if(preg_match($pattern, $fieldMeta_key)){
+                            /*
+			    if(preg_match($pattern, $fieldMeta_key)){
                                 $fieldMeta_value  =  date_i18n($date_time_format, strtotime($fieldMeta_value));
                             }
+			    */
 
                             if (is_array($fieldMeta_value)) {
                                 $fieldMeta_value = $ARMember->arm_array_trim($fieldMeta_value);
@@ -2865,7 +3090,7 @@ if (!class_exists('ARM_shortcodes')) {
                     $validation_pos = "bottom";
                 }
                 $content .= '<div class="arm_close_account_container arm_account_detail_block">';
-                $content .= '<div class="arm_close_account_form_container arm_form_msg arm_member_form_container">';
+                $content .= '<div class="arm_close_account_form_container arm_member_form_container">';
 
                 $content .= '<div class="arm_form_message_container">';
                 $content .= '<div class="arm_error_msg" id="arm_message_text" style="display:none;"></div>';
@@ -2995,6 +3220,7 @@ if (!class_exists('ARM_shortcodes')) {
                 'cancel_css' => '',
                 'cancel_hover_css' => '',
                 'cancel_text' => __('Cancel', 'ARMember'),
+                'cancelled_text' => __('canceled', 'ARMember'),
                 'display_update_card_button' => 'true',
                 'update_card_css' => '',
                 'update_card_hover_css' => '',
@@ -3042,47 +3268,12 @@ if (!class_exists('ARM_shortcodes')) {
                 $user_future_plans = get_user_meta($user_id, 'arm_user_future_plan_ids', true);
                 $user_future_plans = !empty($user_future_plans) ? $user_future_plans : array();
                 $arm_current_membership_container_class = 'arm_current_membership_container';
-                $is_paid_post = 0;
+                $is_paid_post = 0;                
                 if($tag=="arm_purchased_paid_post_list"){
                     $is_paid_post = 1;
                     $arm_current_membership_container_class = 'arm_paid_post_current_membership_container';  
-                    $user_plans = !empty($user_posts) ? $user_posts : array();
-                    $updated_user_plans = array();
-                    if( !empty( $user_plans ) ){
-                        foreach( $user_plans as $uplan_id => $upost_id ){
-                            $updated_user_plans[] = $uplan_id;
-                        }
-                    }
-                    if( !empty( $updated_user_plans ) ){
-                        $user_plans = $updated_user_plans;
-                    }
-                }else{
-                    if(!empty($user_plans) && !empty($user_posts))
-                    {
-                        foreach ($user_plans as $user_plans_key => $user_plans_val) {
-                            if(!empty($user_posts)){
-                                foreach ($user_posts as $user_post_key => $user_post_val) {
-                                    if($user_post_key==$user_plans_val){
-                                        unset($user_plans[$user_plans_key]);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if( !empty( $user_future_plans ) && !empty($user_posts) ){
-                        foreach( $user_future_plans as $f_plan_key => $f_plan_id ){
-                            $paid_post_id = $arm_pay_per_post_feature->arm_get_post_from_plan_id( $f_plan_id );
-                            if( !empty( $paid_post_id[0]['arm_subscription_plan_id'] && !empty( $paid_post_id[0]['arm_subscription_plan_post_id'] ) ) ){
-                                unset( $user_future_plans[$f_plan_key] );
-                            }
-                        }
-                    }
                 }
                 
-                $offset = (!empty($current_page) && $current_page > 1) ? (($current_page - 1) * $per_page) : 0;
-                $membership_count = count($user_plans);
-                $user_plans = array_slice($user_plans, $offset, $per_page);
                 $content = apply_filters('arm_before_current_membership_shortcode_content', $content, $atts);
                 $content .= "<div class='{$arm_current_membership_container_class}_loader_img'>";
                 $content .= "</div>";
@@ -3156,6 +3347,7 @@ if (!class_exists('ARM_shortcodes')) {
                     $has_start_date = true;
                     $has_end_date = true;
                     $has_trial_period = true;
+                    $has_code= true;
 
                     $has_renew_date = true;
                     $has_remaining_occurence = true;
@@ -3175,7 +3367,6 @@ if (!class_exists('ARM_shortcodes')) {
                     } else {
                         $has_plan = false;
                     }
-                    
 
                     if (in_array('current_membership_started_on', $labels)) {
                         $label_key = array_search('current_membership_started_on', $labels);
@@ -3225,6 +3416,7 @@ if (!class_exists('ARM_shortcodes')) {
                     } else {
                         $has_action_btn = false;
                     }
+                    
                     if (is_rtl()) {
                         $is_current_membership_class_rtl = 'is_current_membership_class_rtl';
                     } else {
@@ -3278,571 +3470,271 @@ if (!class_exists('ARM_shortcodes')) {
                             $total_columns++;
                         }
                     endif;
-
+                    
                     $content .= "</tr>";
                     $content .= "</thead>";
+                
 
-                    $user_all_plans = array();
-                    if(!empty($user_future_plans))
-                    {
-                        if($is_paid_post)
-                        {
-                            if( !empty( $user_future_plans ) ){
-                                foreach( $user_future_plans as $fPlanKey => $fPlanId ){
-                                    $fPlanData = $arm_pay_per_post_feature->arm_get_post_from_plan_id( $fPlanId );
-
-                                    if( !empty( $fPlanData[0]['arm_subscription_plan_id'] ) && !empty( $fPlanData[0]['arm_subscription_plan_post_id'] ) ){
-                                        array_push($user_all_plans, $fPlanData[0]['arm_subscription_plan_id']);
-                                    }
-                                }
-                            }
-
-                            $user_all_plans = array_merge($user_plans, $user_all_plans);
-                        }
-                        else
-                        {
-                            $user_all_plans = array_merge($user_plans, $user_future_plans);
-                        }
-                    } 
-                    else 
-                    {
-                       $user_all_plans = $user_plans;
-                    }
-
-                    
+                $all_user_plans = $arm_subscription_plans->arm_member_memberships($user_id, $is_paid_post, $current_page, $per_page);
+                $membership_count = $all_user_plans['total'];
+                $user_all_plans = $all_user_plans['memberships'];
                 if (!empty($user_all_plans)) {
                     
                     $sr_no = 0;
                     $change_plan_to_array = array();
                     foreach ($user_all_plans as $user_plan) {
-                        $planData = get_user_meta($user_id, 'arm_user_plan_' . $user_plan, true);
+                        $planData = get_user_meta($user_id, 'arm_user_plan_' . $user_plan['plan_id'], true);
                         $curPlanDetail = !empty($planData['arm_current_plan_detail']) ? $planData['arm_current_plan_detail'] : '';
-                        $start_plan = !empty($planData['arm_start_plan']) ? $planData['arm_start_plan'] : '';
-                        if(!empty($planData['arm_started_plan_date']) && $planData['arm_started_plan_date']<=$start_plan)
-                        {
-                            $start_plan = $planData['arm_started_plan_date'];
-                        }
-                        $expire_plan = !empty($planData['arm_expire_plan']) ? $planData['arm_expire_plan'] : '';
-                        $change_plan = !empty($planData['arm_change_plan_to']) ? $planData['arm_change_plan_to'] : '';
-                        $effective_from  = !empty($planData['arm_subscr_effective']) ? $planData['arm_subscr_effective'] : '';
 
-                        if($change_plan != '' && $effective_from != '' && !empty($effective_from) && !empty($change_plan)){
-                            $change_plan_to_array[$change_plan] = $effective_from;
-
-                        }
-
-                        $payment_mode = '';
-                        $payment_cycle = '';
-                        $is_plan_cancelled = '';
-                        $completed = '';
-                        $recurring_time = '';
-                        $recurring_profile = '';
-                        $next_due_date = '-';
-                        $user_payment_mode = '';
                         if (!empty($curPlanDetail)) {
                             $plan_info = new ARM_Plan(0);
                             $plan_info->init((object) $curPlanDetail);
                         } else {
-                            $plan_info = new ARM_Plan($user_plan);
+                            $plan_info = new ARM_Plan($user_plan['plan_id']);
                         }
-
                         $arm_plan_is_suspended = '';
-                        $suspended_plan_ids = get_user_meta($user_id, 'arm_user_suspended_plan_ids', true);
-                        $suspended_plan_ids = (isset($suspended_plan_ids) && !empty($suspended_plan_ids)) ? $suspended_plan_ids : array();
-                        if (!empty($suspended_plan_ids)) {
-                            if (in_array($user_plan, $suspended_plan_ids)) {
-                                $arm_plan_is_suspended = '<br/><span style="color: red;">(' . __('Suspended', 'ARMember') . ')</span>';
-                            }
+                        if (!empty($user_plan['is_suspended'])) {
+                            $arm_plan_is_suspended = '<br/><span style="color: red;">(' . $user_plan['is_suspended_text'] . ')</span>';
                         }
-
-                        if ($plan_info->exists()) {
-                            $sr_no++;
-                            $plan_options = $plan_info->options;
-
-                            if ($plan_info->is_recurring()) {
-                                $completed = $planData['arm_completed_recurring'];
-                                $is_plan_cancelled = $planData['arm_cencelled_plan'];
-                                $payment_mode = $planData['arm_payment_mode'];
-                                $payment_cycle = $planData['arm_payment_cycle'];
-                                $recurring_plan_options = $plan_info->prepare_recurring_data($payment_cycle);
-                                $recurring_time = $recurring_plan_options['rec_time'];
-                                $next_due_date = $planData['arm_next_due_payment'];
-
-
-                                if ($payment_mode == 'auto_debit_subscription') {
-                                    $user_payment_mode= '<br/>( ' . __('Auto Debit', 'ARMember') . ' )';
-                                } else {
-                                    $user_payment_mode= '';
-                                }
-                                $arm_trial_start_date = $planData['arm_trial_start'];
-                                $arm_is_user_in_trial = $planData['arm_is_trial_plan'];
-
-                                if ($recurring_time == 'infinite' || empty($expire_plan)) {
-                                    $remaining_occurence = __('Never Expires', 'ARMember');
-                                } else {
-                                    $remaining_occurence = $recurring_time - $completed;
-                                }
-
-                                if ($remaining_occurence > 0 || $recurring_time == 'infinite') {
-                                    if (!empty($next_due_date)) {
-                                        $next_due_date = date_i18n($date_format, $next_due_date);
-                                    }
-                                } else {
-                                    $next_due_date = '';
-                                }
-
-                                $arm_is_user_in_grace = $planData['arm_is_user_in_grace'];
-
-                                $arm_grace_period_end = $planData['arm_grace_period_end'];
+                        $content .="<tr class='arm_current_membership_list_item arm_current_membership_tr_" . $user_plan['plan_id'] . "' id='arm_current_membership_tr_" . $user_plan['plan_id'] . "'>";
+                        if ($has_no) :
+                            $content .= "<td data-label='{$l_has_no}' class='arm_current_membership_list_item_plan_sr' id='arm_current_membership_list_item_plan_sr_" . $user_plan['plan_id'] . "'>" .  $user_plan['sr_no'] . "</td>";
+                        endif;
+                        if ($has_plan) :
+                            $content .= "<td data-label='{$l_has_plan}' class='arm_current_membership_list_item_plan_name' id='arm_current_membership_list_item_plan_name_" . $user_plan['plan_id'] . "'>";
+                            if($is_paid_post==1) {
+                                $arm_paid_post_id = !empty($plan_info->isPaidPost) ? $plan_info->isPaidPost : 0;
+                                $content .= "<a href=".get_permalink($arm_paid_post_id)." target='_blank'>" . stripslashes($plan_info->name) . "</a>";  
                             } else {
-                                $recurring_profile = '-';
-                                $arm_trial_start_date = '';
-                                $remaining_occurence = '-';
-                                $arm_is_user_in_grace = 0;
-                                $arm_grace_period_end = '';
-                                $arm_is_user_in_trial = 0;
+                                $content .= stripslashes($plan_info->name);
+                            }
+                            $content .=  " " . $arm_plan_is_suspended . "</td>";
 
+                        endif;
+                        if ($has_recurring_profile):
+                            $content .= "<td data-label='{$l_recurring_profile}' class='arm_current_membership_list_item_plan_profile' id='arm_current_membership_list_item_plan_profile_" . $user_plan['plan_id'] . "'>";
+
+                            $content .=$user_plan['recurring_profile_html'];
+
+                            $content .="</td>";
+                        endif;
+                        if ($has_start_date):
+                           
+                            $content .= "<td data-label='{$l_start_date}' class='arm_current_membership_list_item_plan_start' id='arm_current_membership_list_item_plan_start_" . $user_plan['plan_id'] . "'>";
+                            if(!empty($user_plan['start_date'])){
+                               $content .=  $user_plan['start_date'];
+                            }
+                            
+                            if (!empty($user_plan['is_trial'])) {
+                                // if($user_plan['arm_trial_start_date'] <  $user_plan['start_date']){
+                                    $content.="<br/><span class='arm_current_membership_trial_active'>(".$user_plan['is_trial_text'].")</span>";
+                                // }
+                            }
+                            $content .= "</td>";   
+                        endif;
+                        if ($has_end_date):
+                            $content .= "<td data-label='{$l_end_date}' class='arm_current_membership_list_item_plan_end' id='arm_current_membership_list_item_plan_end_" . $user_plan['plan_id'] . "'>";
+
+                            if (!empty($user_plan['end_date'])) {
+                                $content .= $user_plan['end_date'];
+                            } else {
+                                $content .= "-";
+                            }
+                            $content.= "</td>";
+                        endif;
+                        if ($has_trial_period):
+                            $content .= "<td data-label='{$l_trial_period}' class='arm_current_membership_list_item_plan_trial_period' id='arm_current_membership_list_item_plan_trial_period_" . $user_plan['plan_id'] . "'>";
+                            if (!empty($user_plan['is_trial'])) {
+                                $content .= $user_plan['trial_period'];
+                            } else {
+                                $content .= '-';
                             }
 
-                            $recurring_profile = $plan_info->new_user_plan_text(false, $payment_cycle);
+                            $content .="</td>";
+                        endif;
+                        if ($has_remaining_occurence):
+                            $content .= "<td data-label='{$l_renew_date}' class='arm_current_membership_list_item_remaining_occurence' id='arm_current_membership_list_item_remaining_occurence_" . $user_plan['plan_id'] . "'>";
+                            $content .= $user_plan['remaining_occurence'];
+                            $content .="</td>";
+                        endif;
+                        if ($has_renew_date):
+                            $content .= "<td data-label='{$l_renew_date}' class='arm_current_membership_list_item_renew_date' id='arm_current_membership_list_item_renew_date_" . $user_plan['plan_id'] . "'>";
 
+                            $content.= $user_plan['renew_date'];
 
-                            $content .="<tr class='arm_current_membership_list_item' id='arm_current_membership_tr_" . $user_plan . "'>";
-                            
-
-                            if ($has_no) :
-                                $content .= "<td data-label='{$l_has_no}' class='arm_current_membership_list_item_plan_sr' id='arm_current_membership_list_item_plan_sr_" . $user_plan . "'>" . $sr_no . "</td>";
-                            endif;
-
-                            if ($has_plan) :
-                                
-                                $content .= "<td data-label='{$l_has_plan}' class='arm_current_membership_list_item_plan_name' id='arm_current_membership_list_item_plan_name_" . $user_plan . "'>";
-                                if($is_paid_post==1){
-                                    $arm_paid_post_id = !empty($plan_info->isPaidPost) ? $plan_info->isPaidPost : 0;
-                                    $content .= "<a href=".get_permalink($arm_paid_post_id)." target='_blank'>" . stripslashes($plan_info->name) . "</a>";  
-                                }else{
-
-                                    $content .= stripslashes($plan_info->name);
-                                }
-                                $content .=  " " . $arm_plan_is_suspended . "</td>";
-
-                            endif;
-                            if ($has_recurring_profile):
-                                $content .= "<td data-label='{$l_recurring_profile}' class='arm_current_membership_list_item_plan_profile' id='arm_current_membership_list_item_plan_profile_" . $user_plan . "'>";
-                                /* if ($plan_info->is_recurring()) {
-                                  $content .= $plan_info->user_plan_text(false, $payment_cycle);
-                                  } else {
-                                  $content .="--";
-                                  }
-                                  if ($plan_info->is_recurring()) {
-                                  if ($payment_mode == 'auto_debit_subscription') {
-                                  $content .= ' ( ' . __('Auto Debit Subscription', 'ARMember') . ' )';
-                                  } else {
-                                  $content .= ' ( ' . __('Manual Subscription', 'ARMember') . ' )';
-                                  }
-                                  } */
-
-                                $content .=$recurring_profile;
-
-                                $content .="</td>";
-                            endif;
-                            if ($has_start_date):
-                               
-                                $content .= "<td data-label='{$l_start_date}' class='arm_current_membership_list_item_plan_start' id='arm_current_membership_list_item_plan_start_" . $user_plan . "'>";
-                                if(!empty($start_plan)){
-                                   $content .=  date_i18n($date_format, $start_plan);
-                                }
-                                
-                                 if (!empty($arm_trial_start_date)) {
-                                    if($arm_is_user_in_trial == 1 || $arm_is_user_in_trial == '1'){
-
-                                    if($arm_trial_start_date <  $start_plan){
-                                        $content.="<br/><span class='arm_current_membership_trial_active'>(".$trial_active.")</span>";
-                                    }
-                                }
-                                 }
-                                 $content .= "</td>";   
-
-
-                            endif;
-                            if ($has_end_date):
-                                $content .= "<td data-label='{$l_end_date}' class='arm_current_membership_list_item_plan_end' id='arm_current_membership_list_item_plan_end_" . $user_plan . "'>";
-
-                                if ($plan_info->is_free() || $plan_info->is_lifetime() || ($plan_info->is_recurring() && $recurring_time == 'infinite')) {
-                                    //$content .= __('Never Expires', 'ARMember');
-                                    if($plan_info->is_recurring() && $recurring_time == 'infinite' && (isset($planData['arm_cencelled_plan']) && $planData['arm_cencelled_plan']=='yes')) 
-                                    {
-                                        $content .= date_i18n($date_format, $planData['arm_next_due_payment']);
-                                    } else {
-                                        $content .= __('Never Expires', 'ARMember');    
-                                    }
-                                } else {
-
-                                    if (isset($plan_options['access_type']) && !in_array($plan_options['access_type'], array('infinite', 'lifetime'))) {
-                                      
-                                        if (!empty($expire_plan)) {
-
-                                            $membership_expire_content = date_i18n($date_format, $expire_plan);
-                                           
-                                            $content .= $membership_expire_content;
-                                        } else {
-                                            $content.= '-';
-                                        }
-                                    } else {
-
-                                        $content .= "-";
-                                    }
-                                }
-                                $content.= "</td>";
-                            endif;
-                            if ($has_trial_period):
-                                $content .= "<td data-label='{$l_trial_period}' class='arm_current_membership_list_item_plan_trial_period' id='arm_current_membership_list_item_plan_trial_period_" . $user_plan . "'>";
-                                if (!empty($arm_trial_start_date)) {
-                                    $content .=date_i18n($date_format, $arm_trial_start_date);
-                                    $content .= " " . __('To', 'ARMember');
-                                    $content .=" " . date_i18n($date_format, strtotime('-1 day', $start_plan));
-                                } else {
-                                    $content .= '-';
-                                }
-
-                                $content .="</td>";
-                            endif;
-
-                            if ($has_remaining_occurence):
-                                $content .= "<td data-label='{$l_renew_date}' class='arm_current_membership_list_item_remaining_occurence' id='arm_current_membership_list_item_remaining_occurence_" . $user_plan . "'>";
-
-                                /* if ($plan_info->is_recurring()) {
-
-                                  if ($recurring_time == 'infinite') {
-                                  $content .= '--';
-                                  } else {
-                                  if (!empty($expire_plan)) {
-                                  if ($recurring_time == 'infinite') {
-                                  $content .= '--';
-                                  } else {
-
-                                  if ($plan_info->has_trial_period() && $completed == 0) {
-                                  $remaining = $recurring_time;
-                                  $content .= $recurring_time;
-                                  } else {
-                                  $total_rec = $recurring_time;
-                                  $remaining = $total_rec - $completed;
-                                  $content .= $remaining;
-                                  }
-                                  }
-                                  } else {
-                                  $content .= '--';
-                                  }
-                                  }
-                                  } else {
-                                  $content .="--";
-                                  } */
-
-                                $content .= $remaining_occurence;
-                                $content .="</td>";
-                            endif;
-                            if ($has_renew_date):
-                                $content .= "<td data-label='{$l_renew_date}' class='arm_current_membership_list_item_renew_date' id='arm_current_membership_list_item_renew_date_" . $user_plan . "'>";
-
-                                $content.= $next_due_date;
-                                $grace_message = '';
-
-                                $next_cycle_due = '';
-                                if($plan_info->is_recurring()){
-
-                                    if(!empty($expire_plan)){
-                                        if($remaining_occurence == 0){
-                                        $next_cycle_due = __('No cycles due', 'ARMember');
-                                        }
-                                        else{
-                                            $next_cycle_due = "<br/>(". $remaining_occurence." ".__('cycles due', 'ARMember').")";
-                                        }
-                                    }
-
-                                    if($arm_is_user_in_grace == "1" || $arm_is_user_in_grace == 1){
-                                        $arm_grace_period_end = date_i18n($date_format, $arm_grace_period_end );
-                                        $grace_message .= "<br/>( ".__('grace period expires on', 'ARMember')." ".$arm_grace_period_end." )";
-
-                                    }
-                                }
-                                
-                                $content .=$next_cycle_due.$grace_message.$user_payment_mode."</td>";
-                            endif;
-                            if ($has_action_btn):
-                                $arm_disable_button = '';
-                                if ($setup_id == '' || $setup_id == '0') {
+                            $next_cycle_due = '';
+                            if(!empty($user_plan['next_cycle_due'])){
+                                    $next_cycle_due = "<br/>(". $user_plan['remaining_occurence']." ".__('cycles due', 'ARMember').")";
+                            }
+                            $grace_message = '';
+                            if(!empty($grace_period_end['grace_period_end'])){
+                                $grace_message .= "<br/>( ".__('grace period expires on', 'ARMember')." ".$grace_period_end['grace_period_end']." )";
+                            }
+                            $user_payment_mode = '';
+                            if (!empty($user_plan['user_payment_mode'])) {
+                                $user_payment_mode = '<br>( '.$user_plan['user_payment_mode']." )";
+                            }
+                            $content .=$next_cycle_due.$grace_message.$user_payment_mode."</td>";
+                        endif;
+                        if ($has_action_btn):
+                            $arm_disable_button = '';
+                            if ($setup_id == '' || $setup_id == '0') {
+                                $arm_disable_button = 'disabled';
+                            }
+                            else{
+                                $setup_data = $arm_membership_setup->arm_get_membership_setup($setup_id);
+                                if(empty($setup_data)){
                                     $arm_disable_button = 'disabled';
                                 }
-                                else{
-                                    $setup_data = $arm_membership_setup->arm_get_membership_setup($setup_id);
-                                    if(empty($setup_data)){
-                                        $arm_disable_button = 'disabled';
-                                    }
-                                }
+                            }
 
-                                if ($display_cancel_button == 'true' || $display_renew_button == 'true' || $display_update_card_button == 'true'){
-                                        $content .= "<td id='arm_cm_plan_action_btn' data-label='{$l_action_btn}' class='arm_current_membership_list_item_action_btn_" . $user_plan . "'><div class='arm_current_membership_action_div'>";
+                            if ($display_cancel_button == 'true' || $display_renew_button == 'true' || $display_update_card_button == 'true'){
+                                $content .= "<td id='arm_cm_plan_action_btn' data-label='{$l_action_btn}' class='arm_current_membership_list_item_action_btn_" . $user_plan['plan_id'] . "'><div class='arm_current_membership_action_div'>";
 
-                                        if(!in_array($user_plan, $user_future_plans)){
-                                            if ($display_renew_button == 'true' && !$plan_info->is_lifetime() && !$plan_info->is_free() && $is_plan_cancelled != 'yes') {
-                                                        $make_payment_content = '<div class="arm_cm_renew_btn_div"><button type="button" class= "arm_renew_subscription_button" data-plan_id="' . $user_plan . '" ' . $arm_disable_button .' data-is_paid_post="'.$is_paid_post.'">' . $make_payment_text . '</button></div>';
-                                                    if($change_plan == '' || $effective_from == '' || empty($effective_from) || empty($change_plan)){
-                                                        $renew_content = '<div class="arm_cm_renew_btn_div"><button type="button" class= "arm_renew_subscription_button" data-plan_id="' . $user_plan . '" ' . $arm_disable_button .  ' data-is_paid_post="'.$is_paid_post.'">' . $renew_text . '</button></div>';
-                                                    }
-                                                    else{
-                                                        $renew_content = '';
-                                                    }
-                                                        if ($is_plan_cancelled == 'yes') {
-                                                            $renew_content = '';
-                                                        }
-                                                        if ($plan_info->is_recurring()) {
+                                if(!in_array($user_plan['plan_id'], $user_future_plans)){
+                                    if ($display_renew_button == 'true' && !$plan_info->is_lifetime() && !$plan_info->is_free() && $user_plan['is_plan_cancelled'] != 'yes') {
+                                        $make_payment_content = '<div class="arm_cm_renew_btn_div"><button type="button" class= "arm_renew_subscription_button" data-plan_id="' . $user_plan['plan_id'] . '" ' . $arm_disable_button .' data-is_paid_post="'.$is_paid_post.'">' . $make_payment_text . '</button></div>';
+                                        if($user_plan['change_plan'] == '' || $effective_from == '' || empty($effective_from) || empty($user_plan['change_plan'])){
+                                            $renew_content = '<div class="arm_cm_renew_btn_div"><button type="button" class= "arm_renew_subscription_button" data-plan_id="' . $user_plan['plan_id'] . '" ' . $arm_disable_button .  ' data-is_paid_post="'.$is_paid_post.'">' . $renew_text . '</button></div>';
+                                        }
+                                        else{
+                                            $renew_content = '';
+                                        }
+                                        if ($user_plan['is_plan_cancelled'] == 'yes') {
+                                            $renew_content = '';
+                                        }
+                                        if ($plan_info->is_recurring()) {
 
-                                                            if ($payment_mode == 'manual_subscription') {
-                                                                if ($recurring_time == 'infinite') {
+                                            if ($user_plan['payment_mode'] == 'manual_subscription') {
+                                                if ($user_plan['recurring_time'] == 'infinite') {
+                                                    $content .= $make_payment_content;
+                                                } else {
+                                                    if ($user_plan['remaining_occurence'] > 0) {
+                                                        $content .= $make_payment_content;
+                                                    } else {
+                                                        $now = current_time('mysql');
+                                                        $arm_last_payment_status = $wpdb->get_var($wpdb->prepare("SELECT `arm_transaction_status` FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_user_id`=%d AND `arm_plan_id`=%d AND `arm_created_date`<=%s ORDER BY `arm_log_id` DESC LIMIT 0,1", $user_id, $user_plan['plan_id'], $now));
+                                                        if($arm_last_payment_status == 'failed'){
+                                                            if(!empty($expire_plan)){
+                                                                if(strtotime($now) < $expire_plan){
                                                                     $content .= $make_payment_content;
-                                                                } else {
-                                                                    if ($remaining_occurence > 0) {
-                                                                        $content .= $make_payment_content;
-                                                                    } else {
-
-                                                                        $now = current_time('mysql');
-
-                                                                      $arm_last_payment_status = $wpdb->get_var($wpdb->prepare("SELECT `arm_transaction_status` FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_user_id`=%d AND `arm_plan_id`=%d AND `arm_created_date`<=%s ORDER BY `arm_log_id` DESC LIMIT 0,1", $user_id, $user_plan, $now));
-
-
-                                                                        if($arm_last_payment_status == 'failed'){
-
-                                                                                if(!empty($expire_plan)){
-
-                                                                                if(strtotime($now) < $expire_plan){
-                                                                                        $content .= $make_payment_content;
-                                                                                    }
-                                                                                    else{
-                                                                                        $content .= $renew_content;
-                                                                                    }
-
-                                                                            }
-                                                                            else{
-                                                                                    $content .= $make_payment_content; 
-                                                                            }
-                                                                        }
-                                                                        else{
-                                                                             $content .= $renew_content;
-                                                                        }
-                                                                    }
                                                                 }
-                                                            } else {
-                                                                if ($recurring_time != 'infinite') {
-                                                                    if ($remaining_occurence == 0) {
-                                                                        
-                                                                        $now = current_time('mysql');
-
-                                                                      $arm_last_payment_status = $wpdb->get_var($wpdb->prepare("SELECT `arm_transaction_status` FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_user_id`=%d AND `arm_plan_id`=%d AND `arm_created_date`<=%s ORDER BY `arm_log_id` DESC LIMIT 0,1", $user_id, $user_plan, $now));
-
-
-                                                                      if($arm_last_payment_status == 'failed'){
-                                                                        if(!empty($expire_plan)){
-                                                                                if(strtotime($now) < $expire_plan){
-
-                                                                                    $content .= $make_payment_content;
-                                                                                }
-                                                                                else{
-                                                                                    $content .= $renew_content;
-                                                                                }
-                                                                            }
-                                                                            else{
-                                                                                $content .= $make_payment_content; 
-                                                                            }
-                                                                      }
-                                                                      else{
-                                                                        $content .= $renew_content;
-                                                                      }
-                                                                    }
+                                                                else{
+                                                                    $content .= $renew_content;
                                                                 }
                                                             }
-                                                        } else {
+                                                            else{
+                                                                $content .= $make_payment_content; 
+                                                            }
+                                                        }
+                                                        else{
                                                             $content .= $renew_content;
                                                         }
-                                                if((isset($display_cancel_button) && $display_cancel_button == 'true') && (isset($is_plan_cancelled) && $is_plan_cancelled != 'yes') && !$plan_info->is_recurring()) {
-                                                        $content .= '<div class="arm_cm_cancel_btn_div" id="arm_cm_cancel_btn_div_' . $user_plan . '"><button type="button" id="arm_cancel_subscription_link_' . $user_plan . '" class= "arm_cancel_subscription_button arm_cancel_membership_link" data-plan_id = "' . $user_plan . '">'.$cancel_text.'</button><img src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" id="arm_field_loader_img_' . $user_plan . '" style="display: none;"/></div>';
                                                     }
+                                                }
+                                            } else {
+                                                if ($user_plan['recurring_time'] != 'infinite') {
+                                                    if ($user_plan['remaining_occurence'] == 0) {
+                                                        $now = current_time('mysql');
+                                                        $arm_last_payment_status = $wpdb->get_var($wpdb->prepare("SELECT `arm_transaction_status` FROM `" . $ARMember->tbl_arm_payment_log . "` WHERE `arm_user_id`=%d AND `arm_plan_id`=%d AND `arm_created_date`<=%s ORDER BY `arm_log_id` DESC LIMIT 0,1", $user_id, $user_plan['plan_id'], $now));
+                                                        if($arm_last_payment_status == 'failed'){
+                                                            if(!empty($expire_plan)){
+                                                                if(strtotime($now) < $expire_plan){
+                                                                    $content .= $make_payment_content;
+                                                                }
+                                                                else{
+                                                                    $content .= $renew_content;
+                                                                }
+                                                            }
+                                                            else{
+                                                                $content .= $make_payment_content; 
+                                                            }
+                                                        }
+                                                        else{
+                                                            $content .= $renew_content;
+                                                        }
+                                                    }
+                                                }
                                             }
+                                        } else {
+                                            $content .= $renew_content;
+                                        }
+                                        if((isset($display_cancel_button) && $display_cancel_button == 'true') && (isset($user_plan['is_plan_cancelled']) && $user_plan['is_plan_cancelled'] != 'yes') && !$plan_info->is_recurring()) {
+                                            $content .= '<div class="arm_cm_cancel_btn_div" id="arm_cm_cancel_btn_div_' . $user_plan['plan_id'] . '"><button type="button" id="arm_cancel_subscription_link_' . $user_plan['plan_id'] . '" class= "arm_cancel_subscription_button arm_cancel_membership_link" data-plan_id = "' . $user_plan['plan_id'] . '">'.$cancel_text.'</button><img src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" id="arm_field_loader_img_' . $user_plan['plan_id'] . '" style="display: none;"/></div>';
+                                        }
+                                    }
 
-                                            if($plan_info->is_lifetime() || $plan_info->is_free()) {
-                                                if((isset($display_cancel_button) && $display_cancel_button == 'true') && (isset($is_plan_cancelled) && $is_plan_cancelled != 'yes')) {
-                                                        $content .= '<div class="arm_cm_cancel_btn_div" id="arm_cm_cancel_btn_div_' . $user_plan . '"><button type="button" id="arm_cancel_subscription_link_' . $user_plan . '" class= "arm_cancel_subscription_button arm_cancel_membership_link" data-plan_id = "' . $user_plan . '">'.$cancel_text.'</button><img src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" id="arm_field_loader_img_' . $user_plan . '" style="display: none;"/></div>';
-                                                    }  
-                                            }
+                                    if($plan_info->is_lifetime() || $plan_info->is_free()) {
+                                        if((isset($display_cancel_button) && $display_cancel_button == 'true') && (isset($user_plan['is_plan_cancelled']) && $user_plan['is_plan_cancelled'] != 'yes')) {
+                                            $content .= '<div class="arm_cm_cancel_btn_div" id="arm_cm_cancel_btn_div_' . $user_plan['plan_id'] . '"><button type="button" id="arm_cancel_subscription_link_' . $user_plan['plan_id'] . '" class= "arm_cancel_subscription_button arm_cancel_membership_link" data-plan_id = "' . $user_plan['plan_id'] . '">'.$cancel_text.'</button><img src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" id="arm_field_loader_img_' . $user_plan['plan_id'] . '" style="display: none;"/></div>';
+                                        }  
+                                    }
 
-                                            if ($plan_info->is_recurring()) 
+                                    if ($plan_info->is_recurring()) 
+                                    {
+                                        if($display_update_card_button == 'true' && $user_plan['payment_mode'] == 'auto_debit_subscription' && $user_plan['is_plan_cancelled'] != 'yes')
+                                        {
+                                            if($planData['arm_user_gateway']=='paypal')
                                             {
-                                                if($display_update_card_button == 'true' && $payment_mode == 'auto_debit_subscription' && $is_plan_cancelled != 'yes')
-                                                {
-                                                    if($planData['arm_user_gateway']=='paypal')
-                                                    {
-                                                        $active_gateways = $arm_payment_gateways->arm_get_active_payment_gateways();
+                                                $active_gateways = $arm_payment_gateways->arm_get_active_payment_gateways();
 
-                                                        $pg_options = $active_gateways[$planData['arm_user_gateway']];
-                                                        $sandbox = (isset($pg_options['paypal_payment_mode']) && $pg_options['paypal_payment_mode'] == 'sandbox') ? TRUE : FALSE;
-                                                        if($sandbox) {
-                                                            $paypal_url = 'https://www.sandbox.paypal.com/myaccount/wallet';
-                                                        } else {
-                                                            $paypal_url = 'https://www.paypal.com/myaccount/wallet';
-                                                        }
-                                                        $content .= '<div class="arm_cm_update_btn_div"><a href="'.$paypal_url.'" target="_blank"><button type="button" class= "arm_update_card_button_style">' . $update_card_text . '</button></a></div>';
-                                                    }
-                                                    else if($planData['arm_user_gateway']=='2checkout')
-                                                    {
-                                                        $active_gateways = $arm_payment_gateways->arm_get_active_payment_gateways();
-
-                                                        $pg_options = $active_gateways[$planData['arm_user_gateway']];
-                                                        $sandbox = (isset($pg_options['payment_mode']) && $pg_options['payment_mode'] == 'sandbox') ? TRUE : FALSE;
-                                                        if($sandbox) {
-                                                            $two_checkout_url = 'https://sandbox.2checkout.com/sandbox/sales/customer/change_billing_method';
-                                                        } else {
-                                                            $two_checkout_url = 'https://www.2checkout.com/va/sales/customer/change_billing_method';
-                                                        }
-                                                        $content .= '<div class="arm_cm_update_btn_div"><a href="'.$two_checkout_url.'" target="_blank"><button type="button" class= "arm_update_card_button_style">' . $update_card_text . '</button></a></div>';
-                                                    }
-                                                    //else if($planData['arm_user_gateway']=='stripe' || $planData['arm_user_gateway']=='authorize_net' || $planData['arm_user_gateway']=='paypal_pro')
-                                                    else if( $planData['arm_user_gateway']=='authorize_net' )
-                                                    {
-                                                        $content .= '<div class="arm_cm_update_btn_div"><button type="button" class= "arm_update_card_button arm_update_card_button_style" data-plan_id="' . $user_plan . '" ' . $arm_disable_button .'>' . $update_card_text . '</button></div>';
-
-
-                                                    } else {
-                                                        if( apply_filters('arm_display_update_card_button_from_outside', false, $planData['arm_user_gateway'], $planData ) ){
-
-                                                            $updated_card_button_outside = '';
-
-                                                            $updated_card_button_outside = apply_filters( 'arm_render_update_card_button_from_outside', $updated_card_button_outside,  $planData['arm_user_gateway'], $planData, $user_plan, $arm_disable_button, $update_card_text  );
-                                                            
-                                                            $content .= $updated_card_button_outside;
-                                                        } else {
-                                                            $content .= '<div class="arm_cm_update_btn_div"><button type="button" class= "arm_update_card_button arm_update_card_button_style" data-plan_id="' . $user_plan . '" ' . $arm_disable_button .'>' . $update_card_text . '</button></div>';
-                                                        }
-                                                    } /*else if( $planData['arm_user_gateway'] == 'stripe' ){
-                                                        $stripeOpt = $arm_payment_gateways->arm_get_active_payment_gateways();
-                                                        $stripe_opt = $stripeOpt['stripe'];
-
-                                                        if( 'test' == $stripe_opt['stripe_payment_mode'] ){
-                                                            $secret_key = $stripe_opt['stripe_test_secret_key'];
-                                                            $stripe_publishable_key = $stripe_opt['stripe_test_pub_key'];
-                                                        } else {
-                                                            $secret_key = $stripe_opt['stripe_secret_key'];
-                                                            $stripe_publishable_key = $stripe_opt['stripe_pub_key'];
-                                                        }
-
-                                                        $content .= '<div class="arm_cm_update_btn_div"><button type="button" class="arm_update_card_button_style arm_update_stripe_card" data-secret-key="' . base64_encode( strrev( $secret_key ) ) . '" data-plan_id="' . $user_plan . '" ' . $arm_disable_button .'>' . $update_card_text . '</button></div>';
-                                                        
-                                                    }*/
-
-                                                    $arm_card_btn_default = '';
-
-                                                    $content .= apply_filters("arm_get_gateways_update_card_detail_btn", $arm_card_btn_default, $planData, $user_plan, $update_card_text);
+                                                $pg_options = $active_gateways[$planData['arm_user_gateway']];
+                                                $sandbox = (isset($pg_options['paypal_payment_mode']) && $pg_options['paypal_payment_mode'] == 'sandbox') ? TRUE : FALSE;
+                                                if($sandbox) {
+                                                    $paypal_url = 'https://www.sandbox.paypal.com/myaccount/wallet';
+                                                } else {
+                                                    $paypal_url = 'https://www.paypal.com/myaccount/wallet';
                                                 }
+                                                $content .= '<div class="arm_cm_update_btn_div"><a href="'.$paypal_url.'" target="_blank"><button type="button" class= "arm_update_card_button_style">' . $update_card_text . '</button></a></div>';
+                                            }
+                                            else if($planData['arm_user_gateway']=='2checkout')
+                                            {
+                                                $active_gateways = $arm_payment_gateways->arm_get_active_payment_gateways();
 
-                                                if ($display_cancel_button == 'true') {
-                                                    if($change_plan == '' || $effective_from == '' || empty($effective_from) || empty($change_plan)){
-                                                        if (isset($is_plan_cancelled) && $is_plan_cancelled == 'yes') { 
+                                                $pg_options = $active_gateways[$planData['arm_user_gateway']];
+                                                $sandbox = (isset($pg_options['payment_mode']) && $pg_options['payment_mode'] == 'sandbox') ? TRUE : FALSE;
+                                                if($sandbox) {
+                                                    $two_checkout_url = 'https://sandbox.2checkout.com/sandbox/sales/customer/change_billing_method';
+                                                } else {
+                                                    $two_checkout_url = 'https://www.2checkout.com/va/sales/customer/change_billing_method';
+                                                }
+                                                $content .= '<div class="arm_cm_update_btn_div"><a href="'.$two_checkout_url.'" target="_blank"><button type="button" class= "arm_update_card_button_style">' . $update_card_text . '</button></a></div>';
+                                            }
+                                            else if( $planData['arm_user_gateway']=='authorize_net' )
+                                            {
+                                                $content .= '<div class="arm_cm_update_btn_div"><button type="button" class= "arm_update_card_button arm_update_card_button_style" data-plan_id="' . $user_plan['plan_id'] . '" ' . $arm_disable_button .'>' . $update_card_text . '</button></div>';
+                                            } else {
+                                                if( apply_filters('arm_display_update_card_button_from_outside', false, $planData['arm_user_gateway'], $planData ) ){
 
-                                                            $content .= '<div class="arm_cm_cancel_btn_div" id="arm_cm_cancel_btn_div_' . $user_plan . '"><button type="button" id="arm_cancel_subscription_link_' . $user_plan . '" class= "arm_cancel_subscription_button" data-plan_id = "' . $user_plan . '" style="cursor: default;" disabled="disabled">' . __('Cancelled', 'ARMember') .'</button></div>';
-                                                        } else {
-                                                            $content .= '<div class="arm_cm_cancel_btn_div" id="arm_cm_cancel_btn_div_' . $user_plan . '"><button type="button" id="arm_cancel_subscription_link_' . $user_plan . '" class= "arm_cancel_subscription_button arm_cancel_membership_link" data-plan_id = "' . $user_plan . '">'.$cancel_text.'</button><img src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" id="arm_field_loader_img_' . $user_plan . '" style="display: none;"/></div>';
-                                                        }
-                                                    }
+                                                    $updated_card_button_outside = '';
+
+                                                    $updated_card_button_outside = apply_filters( 'arm_render_update_card_button_from_outside', $updated_card_button_outside,  $planData['arm_user_gateway'], $planData, $user_plan['plan_id'], $arm_disable_button, $update_card_text  );
+                                                    
+                                                    $content .= $updated_card_button_outside;
+                                                } else {
+                                                    $content .= '<div class="arm_cm_update_btn_div"><button type="button" class= "arm_update_card_button arm_update_card_button_style" data-plan_id="' . $user_plan['plan_id'] . '" ' . $arm_disable_button .'>' . $update_card_text . '</button></div>';
+                                                }
+                                            } 
+                                            $arm_card_btn_default = '';
+                                            $content .= apply_filters("arm_get_gateways_update_card_detail_btn", $arm_card_btn_default, $planData, $user_plan['plan_id'], $update_card_text);
+                                        }
+
+                                        if ($display_cancel_button == 'true') {
+                                            if($user_plan['change_plan'] == '' || $effective_from == '' || empty($effective_from) || empty($user_plan['change_plan'])){
+                                                if (isset($user_plan['is_plan_cancelled']) && $user_plan['is_plan_cancelled'] == 'yes') {
+                                                    $content .= '<div class="arm_cm_cancel_btn_div" id="arm_cm_cancel_btn_div_' . $user_plan['plan_id'] . '"><button type="button" id="arm_cancel_subscription_link_' . $user_plan['plan_id'] . '" class= "arm_cancel_subscription_button" data-plan_id = "' . $user_plan['plan_id'] . '" style="cursor: default;" disabled="disabled">' . $cancelled_text .'</button></div>';
+                                                } else {
+                                                    $content .= '<div class="arm_cm_cancel_btn_div" id="arm_cm_cancel_btn_div_' . $user_plan['plan_id'] . '"><button type="button" id="arm_cancel_subscription_link_' . $user_plan['plan_id'] . '" class= "arm_cancel_subscription_button arm_cancel_membership_link" data-plan_id = "' . $user_plan['plan_id'] . '">'.$cancel_text.'</button><img src="' . MEMBERSHIP_IMAGES_URL . '/arm_loader.gif" id="arm_field_loader_img_' . $user_plan['plan_id'] . '" style="display: none;"/></div>';
                                                 }
                                             }
                                         }
-                                        $content .= '</div></td>';
-                            }
-                            endif;
-                            $content .="</tr>";
-                        }
-                    }
-
-
-
-                    if(!empty($change_plan_to_array)){
-                        foreach ($change_plan_to_array as $change_user_plan => $effective_from_date) {
-
-                            if(!empty($change_user_plan) && !empty($effective_from_date)){
-
-                                $change_plan_info = new ARM_Plan($change_user_plan);
-
-                                if ($change_plan_info->exists()) {
-                                    $sr_no++;
-
-                                    $content .="<tr class='arm_current_membership_list_item' id='arm_current_membership_tr_" . $change_user_plan . "'>";
-
-
-                                    if ($has_no) :
-                                        $content .= "<td data-label='{$l_has_no}' class='arm_current_membership_list_item_plan_sr' id='arm_current_membership_list_item_plan_sr_" . $change_user_plan . "'>" . $sr_no . "</td>";
-                                    endif;
-
-                                    if ($has_plan) :
-                                        $content .= "<td data-label='{$l_has_plan}' class='arm_current_membership_list_item_plan_name' id='arm_current_membership_list_item_plan_name_" . $change_user_plan . "'>" . stripslashes($change_plan_info->name) . "</td>";
-                                    endif;
-                                    if ($has_recurring_profile):
-                                        $content .= "<td data-label='{$l_recurring_profile}' class='arm_current_membership_list_item_plan_profile' id='arm_current_membership_list_item_plan_profile_" . $change_user_plan . "'>";
-                                        $recurring_profile = $change_plan_info->new_user_plan_text(false, '');
-
-                                        $content .=$recurring_profile."</td>";
-                                    endif;
-                                    if ($has_start_date):
-
-                                        $content .= "<td data-label='{$l_start_date}' class='arm_current_membership_list_item_plan_start' id='arm_current_membership_list_item_plan_start_" . $change_user_plan . "'>";
-                                        if(!empty($effective_from_date)){
-                                            $content .=  date_i18n($date_format, $effective_from_date);
-                                        }
-
-
-                                        $content .= "</td>";   
-
-
-                                    endif;
-                                    if ($has_end_date):
-                                        $content .= "<td data-label='{$l_end_date}' class='arm_current_membership_list_item_plan_end' id='arm_current_membership_list_item_plan_end_" . $change_user_plan . "'>";
-
-
-                                        $content.= "</td>";
-                                    endif;
-                                    if ($has_trial_period):
-                                        $content .= "<td data-label='{$l_trial_period}' class='arm_current_membership_list_item_plan_trial_period' id='arm_current_membership_list_item_plan_trial_period_" . $change_user_plan . "'>";
-
-                                        $content .="</td>";
-                                    endif;
-
-                                    if ($has_remaining_occurence):
-                                        $content .= "<td data-label='{$l_renew_date}' class='arm_current_membership_list_item_remaining_occurence' id='arm_current_membership_list_item_remaining_occurence_" . $change_user_plan . "'>";
-
-
-                                        $content .="</td>";
-                                    endif;
-                                    if ($has_renew_date):
-                                        $content .= "<td data-label='{$l_renew_date}' class='arm_current_membership_list_item_renew_date' id='arm_current_membership_list_item_renew_date_" . $change_user_plan . "'>";
-
-
-
-                                        $content .="</td>";
-                                    endif;
-                                    if ($has_action_btn):
-
-
-                                        if ($display_cancel_button == 'true' || $display_renew_button == 'true' || $display_update_card_button == 'true'){
-                                            $content .= "<td id='arm_cm_plan_action_btn' data-label='{$l_action_btn}' class='arm_current_membership_list_item_action_btn_" . $change_user_plan . "'>";
-                                            $content .= '</td>';
-                                        }
-
-                                    endif;
-                                    $content .="</tr>";
+                                    }
                                 }
-
+                                $content .= '</div></td>';
                             }
-
-                        }
+                        endif;
+                        $content .="</tr>";
                     }
-                  
                 }
                 else{
                      $content .="<tr class='arm_current_membership_list_item' id='arm_current_membership_list_item_no_plan'>";
@@ -3871,6 +3763,7 @@ if (!class_exists('ARM_shortcodes')) {
                     $content .= '<input type="hidden" class="arm_membership_field_' . $k . '" name="' . $k . '" value="' . $atts[$k] . '">';
                 }
                 $content .= "</form></div>";
+
                 $content .= "<div class='armclear'></div>";
                 $content = apply_filters('arm_after_current_membership_shortcode_content', $content, $atts);
             }
@@ -4072,9 +3965,11 @@ if (!class_exists('ARM_shortcodes')) {
                 if(!wp_script_is("arm_colpick-js", "enqueued")) {
                     wp_enqueue_script('arm_colpick-js', MEMBERSHIP_URL . '/js/colpick.min.js', array('jquery'), MEMBERSHIP_VERSION);
                 }
+                /*
                 if(!wp_script_is("arm_icheck-js", "enqueued")) {
-                    wp_enqueue_script('arm_icheck-js', MEMBERSHIP_URL . '/js/icheck.js', array('jquery'), MEMBERSHIP_VERSION);
+                    //wp_enqueue_script('arm_icheck-js', MEMBERSHIP_URL . '/js/icheck.js', array('jquery'), MEMBERSHIP_VERSION);
                 }
+                */
                 if(!wp_style_is( "arm_tinymce", "enqueued" )) {
                     wp_enqueue_style('arm_tinymce', MEMBERSHIP_URL . '/css/arm_tinymce.css', array(), MEMBERSHIP_VERSION);    
                 }
@@ -4105,7 +4000,7 @@ if (!class_exists('ARM_shortcodes')) {
                     }
                 ";
                 wp_add_inline_style( 'arm_tinymce', $internal_style_for_elementor );
-                add_action('wp_footer', array(&$this, 'arm_insert_shortcode_popup'));
+                add_action('wp_footer', array($this, 'arm_insert_shortcode_popup'));
             }
             
             ?>
@@ -4155,7 +4050,7 @@ if (!class_exists('ARM_shortcodes')) {
             }
             wp_enqueue_script('jquery');
             wp_enqueue_script('arm_bpopup', MEMBERSHIP_URL . '/js/jquery.bpopup.min.js', array('jquery'), MEMBERSHIP_VERSION);
-            wp_enqueue_script('arm_icheck-js', MEMBERSHIP_URL . '/js/icheck.js', array('jquery'), MEMBERSHIP_VERSION);
+            //wp_enqueue_script('arm_icheck-js', MEMBERSHIP_URL . '/js/icheck.js', array('jquery'), MEMBERSHIP_VERSION);
             wp_enqueue_script('arm_tinymce', MEMBERSHIP_URL . '/js/arm_tinymce_member.js', array('jquery'), MEMBERSHIP_VERSION);
             wp_enqueue_script('arm_colpick-js', MEMBERSHIP_URL . '/js/colpick.min.js', array('jquery'), MEMBERSHIP_VERSION);
             wp_enqueue_script('arm_t_chosen_jq_min', MEMBERSHIP_URL . '/js/chosen.jquery.min.js', array('jquery'), MEMBERSHIP_VERSION);
@@ -4503,15 +4398,7 @@ if (!class_exists('ARM_shortcodes')) {
                         $arm_filed_options=$arm_member_forms->arm_get_field_option_by_meta($meta_name);
                         
                         $arm_field_type=(isset($arm_filed_options['type']) && !empty($arm_filed_options['type']))? $arm_filed_options['type']:'';
-                        
-                        if($arm_field_type=="date"){
-                            if ($return_content != '') {
-                                $date_time_format = $arm_global_settings->arm_get_wp_date_format();
-                                $return_content = date_i18n($date_time_format, strtotime($return_content));
-                            }    
-
-                        }
-                        else if($arm_field_type=='file'){
+                        if($arm_field_type=='file'){
                             if ($return_content != '') {
                                 $exp_val = explode("/", $return_content);
                                 $filename = $exp_val[count($exp_val) - 1];
@@ -4552,39 +4439,9 @@ if (!class_exists('ARM_shortcodes')) {
                                 }
                             }
                         }
-                        /*
-                        else if($arm_field_type == 'checkbox'){
-                            if(!empty($return_content))
-                            {
-                                $return_content_checkbox = "";
-                                $return_content_checkbox_arr = $return_content;
-                                foreach ($return_content_checkbox_arr as $return_content_checkbox_arr_val) {
-                                    $arm_tmp_select_val = !empty($arm_filed_options['options']) ? $arm_filed_options['options'] : '';
-                                    $return_content_one_checkbox = "";
-                                    foreach($arm_tmp_select_val as $arm_tmp_select_key => $arm_tmp_val)
-                                    {
-                                        $arm_tmp_select_val_arr = explode(':', $arm_tmp_val);
-                                        $arm_tmp_selected_option_val = end($arm_tmp_select_val_arr);
-                                        if($arm_tmp_selected_option_val == $return_content_checkbox_arr_val)
-                                        {
-                                            $return_content_checkbox .= $return_content_one_checkbox .= str_replace(':'.$arm_tmp_selected_option_val, '', $arm_tmp_val).', ';
-                                            break;
-                                        }
-                                    }
-                                    if(empty($return_content_one_checkbox))
-                                    {
-                                        $return_content_checkbox .= $return_content_one_checkbox .= $return_content_checkbox_arr_val.', ';
-                                    }
-
-                                }
-                                if(!empty($return_content_checkbox))
-                                {
-                                    $return_content_checkbox = trim($return_content_checkbox);
-                                    $return_content = rtrim($return_content_checkbox,',');
-                                }
-                            }
+                        else{
+                            $return_content = is_string( $return_content ) ? nl2br($return_content) : $return_content;
                         }
-                        */
                     break;    
                 }
                 if(is_array($return_content)){
@@ -4668,7 +4525,6 @@ if (!class_exists('ARM_shortcodes')) {
                             $planData = get_user_meta($user_id, 'arm_user_plan_' . $plan_id, true);
                             $userPlanDatameta = !empty($planData) ? $planData : array();
                             $planData = shortcode_atts($defaultPlanData, $userPlanDatameta);
-
                             switch ($plan_info) {
                                 case 'arm_start_plan':
                                        
@@ -4741,269 +4597,6 @@ if (!class_exists('ARM_shortcodes')) {
                 }
             }
             return $content;
-        }
-
-        function arm_login_history_function($atts, $content, $tag) {
-
-            $default_login_history_fields = __('User', 'ARMember') . ',' . __('Logged in date', 'ARMember') . ',' . __('Logged in IP', 'ARMember') . ',' . __('Logged in using', 'ARMember') . ',' . __('Logged out date', 'ARMember') . ',' . __('Login duration', 'ARMember');
-            $defaults = array(
-                'label' => 'user,logged_in_date,logged_in_ip,logged_in_using,logged_out_date,login_duration',
-                'value' => $default_login_history_fields,
-                'current_page' => 0,
-            );
-            /* Extract Shortcode Attributes */
-            $args = shortcode_atts($defaults, $atts, $tag);
-            $labels = explode(',', rtrim($args['label'], ','));
-            $values = explode(',', rtrim($args['value'], ','));
-
-            extract($args);
-            /* ====================/.End Set Shortcode Attributes./==================== */
-            global $wp, $wpdb, $current_user, $current_site, $arm_errors, $ARMember, $arm_global_settings;
-            $date_format = $arm_global_settings->arm_get_wp_date_format();
-
-            $message_no_record = __("No Login History Found", 'ARMember');
-            if (is_user_logged_in()) {
-                $user_id = get_current_user_id();
-                $user_obj = new WP_User($user_id);
-                $per_page = 10;
-                $offset = (!empty($current_page) && $current_page > 1) ? (($current_page - 1) * $per_page) : 0;
-                $login_history_table = $ARMember->tbl_arm_login_history;
-                $login_history = $wpdb->get_results($wpdb->prepare("SELECT * FROM `{$login_history_table}` WHERE `arm_user_id` = %d ORDER BY `arm_logged_in_date` ASC ", $user_id));
-
-
-                $trans_count = count($login_history);
-                $transactions = array_slice($login_history, $offset, $per_page);
-
-                $content = apply_filters('arm_before_login_history_shortcode_content', $content, $args);
-
-
-                $content .= "<div class='arm_login_history_container'>";
-                $frontfontstyle = $arm_global_settings->arm_get_front_font_style();
-                $content .=!empty($frontfontstyle['google_font_url']) ? '<link id="google-font" rel="stylesheet" type="text/css" href="' . $frontfontstyle['google_font_url'] . '" />' : '';
-                $content .= '<style type="text/css">';
-                $transactionsWrapperClass = ".arm_login_history_container";
-                $content .= "
-						
-						$transactionsWrapperClass .arm_login_history_list_header th{
-							{$frontfontstyle['frontOptions']['level_2_font']['font']}
-						}
-						$transactionsWrapperClass .arm_login_history_list_item td{
-							{$frontfontstyle['frontOptions']['level_3_font']['font']}
-						}";
-                $content .= '</style>';
-
-                $content .= '<form method="POST" class="arm_login_history_form_container">';
-                $content .= '<div class="arm_template_loading" style="display: none;"><img src="' . MEMBERSHIP_IMAGES_URL . '/loader.gif" alt="Loading.."></div>';
-                $content .= "<div class='arm_login_history_wrapper'>";
-                if (!empty($transactions)) {
-
-                    if (is_rtl()) {
-                        $is_transaction_class_rtl = 'is_login_history_class_rtl';
-                    } else {
-                        $is_transaction_class_rtl = '';
-                    }
-                    $content .= "<div class='arm_login_history_content " . $is_transaction_class_rtl . "'>";
-                    $content .= "<table class='arm_user_login_history_list_table arm_front_grid' cellpadding='0' cellspacing='0' border='0'>";
-                    $content .= "<thead>";
-                    $content .= "<tr class='arm_login_history_list_header'>";
-                    $has_user = true;
-                    $has_logged_in_date = true;
-                    $has_logged_in_ip = true;
-                    $has_logged_in_using = true;
-                    $has_logged_out_date = true;
-                    $has_login_duration = true;
-
-                    if (in_array('user', $labels)) {
-
-                        $label_key = array_search('user', $labels);
-                        $l_user = !empty($values[$label_key]) ? $values[$label_key] : __('User', 'ARMember');
-                    } else {
-                        $has_user = false;
-                    }
-                    if (in_array('logged_in_date', $labels)) {
-                        $label_key = array_search('logged_in_date', $labels);
-                        $l_logged_in_date = !empty($values[$label_key]) ? $values[$label_key] : __('Logged in date', 'ARMember');
-                    } else {
-                        $has_logged_in_date = false;
-                    }
-                    if (in_array('logged_in_ip', $labels)) {
-                        $label_key = array_search('logged_in_ip', $labels);
-                        $l_logged_in_ip = !empty($values[$label_key]) ? $values[$label_key] : __('Logged in IP', 'ARMember');
-                    } else {
-                        $has_logged_in_ip = false;
-                    }
-                    if (in_array('logged_in_using', $labels)) {
-                        $label_key = array_search('logged_in_using', $labels);
-                        $l_logged_in_using = !empty($values[$label_key]) ? $values[$label_key] : __('Logged in using', 'ARMember');
-                    } else {
-                        $has_logged_in_using = false;
-                    }
-                    if (in_array('logged_out_date', $labels)) {
-                        $label_key = array_search('logged_out_date', $labels);
-                        $l_logged_out_date = !empty($values[$label_key]) ? $values[$label_key] : __('Logged out date', 'ARMember');
-                    } else {
-                        $has_logged_out_date = false;
-                    }
-                    if (in_array('login_duration', $labels)) {
-                        $label_key = array_search('login_duration', $labels);
-                        $l_login_duration = !empty($values[$label_key]) ? $values[$label_key] : __('Log in duration', 'ARMember');
-                    } else {
-                        $has_login_duration = false;
-                    }
-                    if ($has_user):
-                        $content .= "<th class='arm_sortable_th'>{$l_user}</th>";
-                    endif;
-                    if ($has_logged_in_date):
-                        $content .= "<th class='arm_sortable_th'>{$l_logged_in_date}</th>";
-                    endif;
-                    if ($has_logged_in_ip):
-                        $content .= "<th class='arm_sortable_th'>{$l_logged_in_ip}</th>";
-                    endif;
-                    if ($has_logged_in_using):
-                        $content .= "<th class='arm_sortable_th'>{$l_logged_in_using}</th>";
-                    endif;
-                    if ($has_logged_out_date):
-                        $content .= "<th class='arm_sortable_th'>{$l_logged_out_date}</th>";
-                    endif;
-                    if ($has_login_duration):
-                        $content .= "<th class='arm_sortable_th'>{$l_login_duration}</th>";
-                    endif;
-                    $content .= "</tr>";
-                    $content .= "</thead>";
-                    foreach ($transactions as $r => $history) {
-
-                        $content .="<tr class='arm_login_history_list_item'>";
-                        if ($has_user):
-                            $content .="<td data-label='{$l_user}'>" . $user_obj->data->display_name . "</td>";
-                        endif;
-                        if ($has_logged_in_date):
-                            $content .="<td data-label='{$l_logged_in_date}'>" . $history->arm_logged_in_date . "</td>";
-                        endif;
-                        if ($has_logged_in_ip):
-                            $content .="<td data-label='{$l_logged_in_ip}'>" . $history->arm_logged_in_ip . "</td>";
-                        endif;
-                        if ($has_logged_in_using):
-                            $content .="<td data-label='{$l_logged_in_using}'>" . $history->arm_history_browser . "</td>";
-                        endif;
-                        if ($has_logged_out_date):
-                            $content .="<td data-label='{$l_logged_out_date}'>" . (($history->arm_logout_date == '0000-00-00 00:00:00') ? __('Currently Logged in', 'ARMember') : $history->arm_logout_date) . "</td>";
-                        endif;
-                        if ($has_login_duration):
-                            $content .="<td data-label='{$l_login_duration}'>" . (($history->arm_login_duration == '00:00:00') ? '-' : $history->arm_login_duration) . "</td>";
-                        endif;
-                        $content .="</tr>";
-                    }
-                    $content .= "</table>";
-                    $transPaging = $arm_global_settings->arm_get_paging_links($current_page, $trans_count, $per_page, 'login_history');
-                    $content .= "<div class='arm_login_history_paging_container'>$transPaging</div>";
-                    $content .= "</div>";
-                } else {
-                    if (is_rtl()) {
-                        $is_transaction_class_rtl = 'is_login_histroy_class_rtl';
-                    } else {
-                        $is_transaction_class_rtl = '';
-                    }
-                    $content .= "<div class='arm_login_history_content " . $is_transaction_class_rtl . "'>";
-                    $content .= "<table class='arm_user_login_history_list_table arm_front_grid' cellpadding='0' cellspacing='0' border='0' style='border-collapse:unset;'>";
-                    $content .= "<thead>";
-                    $content .= "<tr class='arm_login_history_list_header'>";
-                    $has_user = true;
-                    $has_logged_in_date = true;
-                    $has_logged_in_ip = true;
-                    $has_logged_in_using = true;
-                    $has_logged_out_date = true;
-                    $has_login_duration = true;
-                    $i = 0;
-                    if (in_array('user', $labels)) {
-                        $label_key = array_search('user', $labels);
-                        $l_user = !empty($values[$label_key]) ? $values[$label_key] : __('User', 'ARMember');
-                        $i++;
-                    } else {
-                        $has_user = false;
-                    }
-                    if (in_array('logged_in_date', $labels)) {
-                        $label_key = array_search('logged_in_date', $labels);
-                        $l_logged_in_date = !empty($values[$label_key]) ? $values[$label_key] : __('Logged in date', 'ARMember');
-                        $i++;
-                    } else {
-                        $has_logged_in_date = false;
-                    }
-                    if (in_array('logged_in_ip', $labels)) {
-                        $label_key = array_search('logged_in_ip', $labels);
-                        $l_logged_in_ip = !empty($values[$label_key]) ? $values[$label_key] : __('Logged in IP', 'ARMember');
-                        $i++;
-                    } else {
-                        $has_logged_in_ip = false;
-                    }
-                    if (in_array('logged_in_using', $labels)) {
-                        $label_key = array_search('logged_in_using', $labels);
-                        $l_logged_in_using = !empty($values[$label_key]) ? $values[$label_key] : __('Logged in using', 'ARMember');
-                        $i++;
-                    } else {
-                        $has_logged_in_using = false;
-                    }
-                    if (in_array('logged_out_date', $labels)) {
-                        $label_key = array_search('logged_out_date', $labels);
-                        $l_logged_out_date = !empty($values[$label_key]) ? $values[$label_key] : __('Logged out date', 'ARMember');
-                        $i++;
-                    } else {
-                        $has_logged_out_date = false;
-                    }
-                    if (in_array('login_duration', $labels)) {
-                        $label_key = array_search('login_duration', $labels);
-                        $l_login_duration = !empty($values[$label_key]) ? $values[$label_key] : __('Log in duration', 'ARMember');
-                        $i++;
-                    } else {
-                        $has_login_duration = false;
-                    }
-                    if ($has_user):
-                        $content .= "<th class='arm_sortable_th'>{$l_user}</th>";
-                    endif;
-                    if ($has_logged_in_date):
-                        $content .= "<th class='arm_sortable_th'>{$l_logged_in_date}</th>";
-                    endif;
-                    if ($has_logged_in_ip):
-                        $content .= "<th class='arm_sortable_th'>{$l_logged_in_ip}</th>";
-                    endif;
-                    if ($has_logged_in_using):
-                        $content .= "<th class='arm_sortable_th'>{$l_logged_in_using}</th>";
-                    endif;
-                    if ($has_logged_out_date):
-                        $content .= "<th class='arm_sortable_th'>{$l_logged_out_date}</th>";
-                    endif;
-                    if ($has_login_duration):
-                        $content .= "<th class='arm_sortable_th'>{$l_login_duration}</th>";
-                    endif;
-                    $content .= "</tr>";
-                    $content .= "</thead>";
-
-
-                    $content .="<tr class='arm_login_history_list_item'>";
-                    $content .="<td colspan='" . $i . "' class='arm_no_login_history' style='text-align: center;'>$message_no_record</td>";
-                    $content .="</tr>";
-
-                    $content .= "</table>";
-
-                    $content .= "</div>";
-                }
-                $content .= "</div>";
-                $content .= "<div class='armclear'></div>";
-
-
-                /* Template Arguments Inputs */
-                foreach (array('label', 'value') as $k) {
-                    $content .= '<input type="hidden" class="arm_login_history_field_' . $k . '" name="' . $k . '" value="' . $args[$k] . '">';
-                }
-
-
-                $content .= '</form>';
-
-                $content .= "</div>";
-
-
-                $content = apply_filters('arm_after_login_history_shortcode_content', $content, $args);
-            }
-            return do_shortcode($content);
         }
 
         function arm_last_login_history_function() {

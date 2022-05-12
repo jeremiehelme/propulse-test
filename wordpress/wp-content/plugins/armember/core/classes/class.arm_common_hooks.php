@@ -4,7 +4,7 @@ if (!class_exists('ARM_common_hooks')) {
 	{
 		function __construct()
 		{
-			global $ARMember,$arm_crons,$arm_drip_rules,$arm_2checkout,$arm_authorize_net,$arm_paypal,$arm_stripe,$arm_stripe_sca,$arm_global_settings,$arm_member_forms,$arm_members_class,$arm_members_badges,$arm_membership_setup,$arm_modal_view_in_menu,$arm_restriction,$arm_shortcodes,$arm_social_feature,$is_woocommerce_feature,$arm_report_analytics,$arm_access_rules,$arm_pay_per_post_feature;
+			global $ARMember,$arm_crons,$arm_drip_rules,$arm_2checkout,$arm_authorize_net,$arm_paypal,$arm_stripe,$arm_stripe_sca,$arm_global_settings,$arm_member_forms,$arm_members_class,$arm_members_badges,$arm_membership_setup,$arm_modal_view_in_menu,$arm_restriction,$arm_shortcodes,$arm_social_feature,$is_woocommerce_feature,$arm_report_analytics,$arm_access_rules,$arm_pay_per_post_feature,$arm_transaction,$arm_email_settings, $arm_payment_gateways;
 			
 			
 			/* Hide Update Notification */
@@ -67,7 +67,9 @@ if (!class_exists('ARM_common_hooks')) {
 			add_action('wp', array($arm_membership_setup, 'arm_membership_setup_preview_func'));
 			add_action('wp', array($arm_restriction, 'arm_wp_head_redirect'), 6);
 			add_action('wp', array($arm_social_feature, 'arm_twitter_login_callback'), 5);
+			add_action('wp', array($arm_social_feature, 'arm_tumblr_login_callback'), 5);
             add_action('wp', array($arm_social_feature, 'arm_login_with_twitter'), 1);
+            add_action('wp', array($arm_social_feature, 'arm_login_with_tumblr'), 1);
             add_action('wp', array($arm_social_feature, 'arm_login_with_linkedin'), 1);
 			
 			/* Member Iterations */
@@ -110,6 +112,12 @@ if (!class_exists('ARM_common_hooks')) {
 
 			/*Element Templates Content Access Rules*/
 			add_filter( 'elementor/frontend/builder_content_data', array( $arm_restriction, 'arm_elementor_templates_content_check_access_rules'), 10, 2);
+
+			add_action('init', array($arm_transaction, 'arm_load_init_data'));
+
+			add_action('init', array($arm_email_settings, 'arm_redirect_aweber_url'));
+
+			add_action('admin_init', array( $arm_payment_gateways, 'arm_debug_log_download_file') );
 		}
 	}
 }
