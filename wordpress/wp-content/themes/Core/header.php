@@ -19,8 +19,6 @@
 </head>
 
 <?php
-$user = wp_get_current_user();
-echo "user : $user->user_login";
 $logo = get_field('logo', 'option');
 $logo_url = wp_get_attachment_url($logo);
 if (!$logo_url && isset($logo['url'])) {

@@ -11,7 +11,9 @@ if ($current_user && isset($current_user->ID)) {
 }
 get_header();
 
-
+if (isset($_GET['ppl'])) {
+  var_dump(getallheaders());
+}
 
 while (have_posts()) : the_post();
 
@@ -24,7 +26,8 @@ while (have_posts()) : the_post();
 
   $premiumArgs = [
     'post__not_in' => [get_the_ID()],
-    'posts_per_page' => 3
+    'posts_per_page' => 3,
+    'no_found_rows' => true
   ];
 
   $idCats = array_column(get_the_category(), 'term_id');
@@ -34,7 +37,6 @@ while (have_posts()) : the_post();
         'taxonomy' => 'category',
         'field'    => 'term_id',
         'terms'    => $idCats,
-        'no_found_rows' => true,
       )
     );
   }

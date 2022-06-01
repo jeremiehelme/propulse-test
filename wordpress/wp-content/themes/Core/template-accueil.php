@@ -25,6 +25,7 @@ if (checkArray($fields, 'titre')) {
 }
 
 $premiumsList = get_premiums(array('posts_per_page' => 3, 'no_found_rows' => true));
+print_r(count($premiumsList->posts));
 $premiumsList = $premiumsList->posts;
 // $nextPremium = array_shift($premiumsList);
 // $favoris = $nextPremium;
